@@ -1,0 +1,38 @@
+.iteration {
+    display: flex;
+    flex-direction: column;
+    background: #f4f4f4;
+    padding: 0px;
+    text-align: center;
+    border-radius: 3px;
+    border: 1px solid lightgrey;
+    font-family: "Segoe UI VSS (Regular)", "-apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    height: 100%;
+    .iterationname {
+        color: #212121;
+        font-weight: bold;
+        font-size: 12px;
+        padding: 2px;
+    }
+    .dates {
+        color: #666666;
+        font-size: 11px;
+        padding: 2px;
+    }
+}
+
+.current-sprint-marker {
+    margin-left: 3px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 1px;
+    padding-bottom: 2px;
+    background-color: rgb(16, 110, 190);
+    color: rgb(255, 255, 255);
+    font-size: 10px;
+    line-height: 1.5;
+    width: 100px;
+    min-width: 60px;
+    text-align: center;
+    border-radius: 5px;
+}

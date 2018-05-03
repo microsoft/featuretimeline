@@ -1,0 +1,75 @@
+.feature-timeline-main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+}
+
+.root-container {
+    height: 100%;
+}
+.container {
+    display: -ms-grid;
+    display: grid;
+    grid-column-gap: 5px;
+}
+
+.feature-container {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin button-dimension {
+    height: 20px;
+    padding: 3px;
+    margin: 2px;
+    border-radius: 5px;
+    border: solid 1px lightgray;
+    cursor: pointer;
+    font-family: sans-serif;
+}
+
+.command {
+    @include button-dimension();
+    background: lightgray;
+    color: black;
+    overflow: ellipse;
+    white-space: nowrap;
+}
+
+.button {
+    @include button-dimension();
+    background: lightgray;
+    color: white;
+}
+
+.non-button {
+    @include button-dimension();
+    background: transparent;
+    border: none;
+}
+
+.iteration-options {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.command-right-section,
+.last-header-column-command {
+    display: flex;
+    flex-direction: column;
+    .non-button,
+    .button {
+        margin-left: auto;
+        margin-right: 0;
+    }
+}
+
+.single-column-commands {
+    display: flex;
+    justify-content: space-between;
+}
+
+#root {
+    height: 100%;
+}

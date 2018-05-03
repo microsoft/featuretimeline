@@ -1,0 +1,204 @@
+{
+    "extends": [
+        "tslint:latest",
+        "tslint:recommended",
+        "tslint-react",
+        "tslint-microsoft-contrib",
+        "../tslint.json"
+    ],
+    "rules": {
+        "no-unused-variable": true,
+        "align": false,
+        "array-type": [
+            true,
+            "array"
+        ],
+        "arrow-parens": false,
+        "class-name": true,
+        "comment-format": [
+            false,
+            "check-space"
+        ],
+        "completed-docs": false,
+        "await-promise": false,
+        "curly": true,
+        "eofline": false,
+        "export-name": false,
+        "forin": false,
+        "function-name": false,
+        "indent": [
+            true,
+            "spaces",
+            4
+        ],
+        "interface-name": [
+            true,
+            "always-prefix"
+        ],
+        "jsdoc-format": true,
+        "jsx-no-lambda": true,
+        "jsx-no-bind": true,
+        "jsx-no-multiline-js": false,
+        "jsx-no-string-ref": true,
+        "jsx-self-close": true,
+        "jsx-wrap-multiline": true,
+        "label-position": true,
+        "max-line-length": [
+            false,
+            140
+        ],
+        "member-access": [
+            true,
+            "check-accessor"
+        ],
+        "max-classes-per-file": false,
+        "max-func-body-length": false,
+        "member-ordering": [
+            true,
+            {
+                "order": [
+                    "public-static-field",
+                    "protected-static-field",
+                    "private-static-field",
+                    "public-instance-field",
+                    "protected-instance-field",
+                    "public-static-method",
+                    "protected-static-method",
+                    "private-static-method",
+                    "public-instance-method",
+                    "instance-method"
+                ]
+            }
+        ],
+        "missing-jsdoc": false,
+        "newline-before-return": false,
+        "no-any": false,
+        "no-arg": true,
+        "no-bitwise": false,
+        "no-consecutive-blank-lines": [
+            true
+        ],
+        "no-console": [
+            true,
+            "debug",
+            "info",
+            "time",
+            "timeEnd",
+            "trace"
+        ],
+        "no-construct": true,
+        "no-debugger": true,
+        "no-duplicate-variable": true,
+        "no-empty": true,
+        "no-eval": true,
+        "no-for-in": false,
+        "no-implicit-dependencies": false,
+        "no-import-side-effect": false,
+        "no-namespace": false,
+        "no-null-keyword": false,
+        "no-object-literal-type-assertion": false,
+        "no-parameter-properties": false,
+        "no-relative-imports": true,
+        "no-reserved-keywords": false,
+        "no-shadowed-variable": false,
+        "no-single-line-block-comment": false,
+        "no-string-literal": false,
+        "no-submodule-imports": false,
+        "no-switch-case-fall-through": true,
+        "no-trailing-whitespace": true,
+        "no-unused-expression": false,
+        "no-unused-variable": true,
+        "no-unused-method": true,
+        "no-use-before-declare": false,
+        "no-var-requires": false,
+        "object-literal-shorthand": false,
+        "object-literal-sort-keys": false,
+        "one-line": [
+            true,
+            "check-open-brace",
+            "check-catch",
+            "check-finally",
+            "check-else",
+            "check-whitespace"
+        ],
+        "one-variable-per-declaration": [
+            true,
+            "ignore-for-loop"
+        ],
+        "ordered-imports": false,
+        "prefer-const": true,
+        "prefer-method-signature": false,
+        "prefer-type-cast": false,
+        "quotemark": [
+            true,
+            "double"
+        ],
+        "radix": true,
+        "react-a11y-anchors": false,
+        "react-a11y-aria-unsupported-elements": false,
+        "react-a11y-event-has-role": false,
+        "react-a11y-image-button-has-alt": false,
+        "react-a11y-img-has-alt": false,
+        "react-a11y-lang": false,
+        "react-a11y-meta": false,
+        "react-a11y-props": false,
+        "react-a11y-proptypes": false,
+        "react-a11y-role": false,
+        "react-a11y-role-has-required-aria-props": false,
+        "react-a11y-role-supports-aria-props": false,
+        "react-a11y-tabindex-no-positive": false,
+        "react-a11y-titles": false,
+        "react-anchor-blank-noopener": false,
+        "react-iframe-missing-sandbox": false,
+        "react-no-dangerous-html": false,
+        "react-this-binding-issue": false,
+        "react-tsx-curly-spacing": false,
+        "react-unused-props-and-state": false,
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "switch-default": false,
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "never",
+                "singleline": "never"
+            }
+        ],
+        "triple-equals": [
+            true,
+            "allow-null-check"
+        ],
+        "typedef": [
+            false,
+            "variable-declaration"
+        ],
+        "typedef-whitespace": [
+            true,
+            {
+                "call-signature": "nospace",
+                "index-signature": "nospace",
+                "parameter": "nospace",
+                "property-declaration": "nospace",
+                "variable-declaration": "nospace"
+            },
+            {
+                "call-signature": "onespace",
+                "index-signature": "onespace",
+                "parameter": "onespace",
+                "property-declaration": "onespace",
+                "variable-declaration": "onespace"
+            }
+        ],
+        "variable-name": false,
+        "whitespace": [
+            true,
+            "check-branch",
+            "check-decl",
+            "check-operator",
+            "check-separator",
+            "check-type"
+        ]
+    }
+}

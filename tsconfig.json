@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "sourceMap": false,
+        "noUnusedLocals": true,
+        "jsx": "react",
+        "experimentalDecorators": true,
+        "lib": [
+            "es2015",
+            "es2015.promise",
+            "dom"
+        ],
+        "target":"es5",
+        "moduleResolution": "node",
+        "types": [
+            "requirejs",
+            "react",
+            "react-dom",
+            "vss-web-extension-sdk"
+        ],
+        "typeRoots": [
+            "../node_modules/@types"
+        ]
+    },
+    "include": [
+        "./src/**/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

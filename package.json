@@ -1,0 +1,90 @@
+{
+  "name": "feature-timeline",
+  "version": "1.0.0",
+  "author": "ms-devlabs",
+  "license": "MIT",
+  "description": "A Work Item view.",
+  "main": "webpack.config.js",
+  "scripts": {
+    "clean": "rimraf dist *.vsix vss-extension-release.json src/*js libs",
+    "dev": "webpack-dev-server --hot --progress --colors --content-base ./dist --https --port 8888",
+    "dev:http": "webpack-dev-server --progress --colors --content-base ./ --port 8888",
+    "package:dev": "node ./scripts/packageDev",
+    "package:dev:http": "node ./scripts/packageDevHttp",
+    "package:release": "node ./scripts/packageRelease",
+    "package:beta": "node ./scripts/packageBeta",
+    "publish:dev": "npm run package:dev && node ./scripts/publishDev",
+    "build:release": "set NODE_ENV=production && npm run clean && mkdir dist && webpack --progress --colors --output-path ./dist -p && set NODE_ENV=",
+    "publish:release": "npm run build:release && node ./scripts/publishRelease",
+    "test": "jest",
+    "testupdate": "jest --updateSnapshot",
+    "postinstall": "typings install"
+  },
+  "keywords": [
+    "timeline",
+    "work item"
+  ],
+  "dependencies": {
+    "office-ui-fabric-react": "^5.68.0",
+    "react": "^16.2.0",
+    "react-dnd": "^2.6.0",
+    "react-dnd-html5-backend": "^2.6.0",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6",
+    "redux-saga": "^0.16.0",
+    "reselect": "^3.0.1",
+    "vss-web-extension-sdk": "^5.131.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.2.2",
+    "@types/jquery": "^2.0.41",
+    "@types/react": "^15.0.21",
+    "@types/react-dom": "^0.14.23",
+    "@types/react-redux": "^5.0.15",
+    "awesome-typescript-loader": "^4.0.1",
+    "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.28.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "jest": "^22.4.3",
+    "node-sass": "^4.8.3",
+    "redux-devtools": "^3.4.1",
+    "rimraf": "^2.6.1",
+    "sass-loader": "^6.0.7",
+    "source-map-loader": "^0.2.3",
+    "style-loader": "^0.16.1",
+    "tfx-cli": "^0.4.5",
+    "ts-jest": "^22.4.2",
+    "ts-loader": "^4.0.1",
+    "typescript": "^2.7.2",
+    "typings": "^2.1.0",
+    "uglifyjs-webpack-plugin": "^0.4.2",
+    "webpack": "^4.2.0",
+    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "node_modules/vss-web-extension-sdk/lib"
+    ],
+    "moduleNameMapper": {
+      "^VSS(.*)$": "<rootDir>/node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js",
+      "^TFS(.*)$": "<rootDir>/node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js"
+    }
+  }
+}

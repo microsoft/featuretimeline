@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test work item received 1`] = `
+Object {
+  "workItemInfos": Object {
+    "1": Object {
+      "children": Array [],
+      "level": 1,
+      "parent": 0,
+      "workItem": Object {
+        "id": 1,
+      },
+    },
+  },
+}
+`;
+
+exports[`work item updated 1`] = `
+Object {
+  "workItemInfos": Object {
+    "1": Object {
+      "children": Array [],
+      "level": 2,
+      "parent": 0,
+      "workItem": Object {
+        "fields": Object {
+          "System.Title": "hello",
+        },
+        "id": 1,
+      },
+    },
+  },
+}
+`;
+
+exports[`work item updated 2`] = `
+Object {
+  "workItemInfos": Object {
+    "1": Object {
+      "children": Array [],
+      "level": 2,
+      "parent": 0,
+      "workItem": Object {
+        "fields": Object {
+          "System.Title": "hi",
+        },
+        "id": 1,
+      },
+    },
+  },
+}
+`;

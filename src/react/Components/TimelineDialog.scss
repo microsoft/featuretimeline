@@ -1,0 +1,47 @@
+.timeline-dialog {
+    max-width: 60% !important;
+}
+
+.timeline-dialog .container {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.custom-duration-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    .div {
+        margin: 10px;
+    }
+}
+
+.dialog-contents {
+    display: flex;
+    flex-direction: column;
+}
+
+.dialog-grid-container {
+    margin-bottom: 20px;
+}
+
+.custom-duration-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-duration-iterations {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;    
+}
+
+.custom-duration-iteration {
+    width: 100%;
+    padding: 5px;
+    margin: 10px;
+}
+
+.text {
+    font-weight: bold;
+}
