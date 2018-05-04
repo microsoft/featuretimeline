@@ -21,7 +21,6 @@
     padding-right: 5px;
     padding-bottom: 2px;
     font-size: 12px;
-    margin-top: 2px;
 
 }
 
@@ -46,6 +45,7 @@
 .work-item-details-container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .title-without-infoicon {
@@ -65,6 +65,7 @@
     padding-right: 2px;
     padding-bottom: 2px;
     flex-grow: 1 0 auto;
+    font-weight: 200;
 }
 
 .work-item-shadow {
@@ -81,7 +82,7 @@
 
 .root-work-item {
     @include default;
-    margin-top: 5px;
+    margin-top: 0px;
     border-radius: 5px;
     height: calc(100% - 5px);
 }

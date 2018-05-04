@@ -2,11 +2,11 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow: auto;
 }
 
 .root-container {
     height: 100%;
+    overflow: auto;
 }
 .container {
     display: -ms-grid;
@@ -52,6 +52,15 @@
 .iteration-options {
     display: flex;
     justify-content: flex-end;
+
+    position: absolute;
+    right: 20px;
+    background: white;
+    left: 0;
+}
+
+.header-gap {
+    height: 22px;
 }
 
 .command-right-section,

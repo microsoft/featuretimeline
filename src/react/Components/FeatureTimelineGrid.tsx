@@ -241,7 +241,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         });
 
 
-        const extraColumns = this.props.gridView.hideParents ? [] : ['minmax(100px, 10%)'];
+        const extraColumns = this.props.gridView.hideParents ? [] : ['300px'];
         const gridStyle = getTemplateColumns(extraColumns, shadows.length, 'minmax(10%, 400px)');
 
         let childDialog = null;
@@ -312,6 +312,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         return (
             <div className="root-container">
                 {displayOptions}
+                {<div className="header-gap"></div>}
                 <div className="feature-timeline-main-container">
                     <div className="container" style={gridStyle}>
                         {commandHeading}

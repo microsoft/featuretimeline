@@ -1,6 +1,5 @@
 import { getCurrentIterationIndex } from "../iterationComparer";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-
 declare var it, expect;
 
 it('test get current iteration', () => {
