@@ -242,7 +242,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
 
         const extraColumns = this.props.gridView.hideParents ? [] : ['300px'];
-        const gridStyle = getTemplateColumns(extraColumns, shadows.length, 'minmax(10%, 400px)');
+        const gridStyle = getTemplateColumns(extraColumns, shadows.length, 'minmax(8%, 300px)');
 
         let childDialog = null;
         if (this.props.childItems.length > 0) {
