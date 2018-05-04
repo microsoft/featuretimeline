@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test get current iteration 1`] = `
+Object {
+  "finishDate": 2018-05-07T00:00:00.000Z,
+  "startDate": 2018-04-24T00:00:00.000Z,
+}
+`;
+
+exports[`test get current iteration 2`] = `
+Object {
+  "finishDate": 2018-04-09T00:00:00.000Z,
+  "startDate": 2018-03-27T00:00:00.000Z,
+}
+`;

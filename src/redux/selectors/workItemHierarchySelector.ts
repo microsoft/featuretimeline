@@ -1,10 +1,9 @@
 import { getWorkItemsForLevel } from './workItemsForLevel';
 import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } from '../store';
 import { IWorkItemInfo, WorkItemLevel } from '../store/workitems/types';
-import { TeamSettingsIteration, TimeFrame } from 'TFS/Work/Contracts';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { UIStatus } from '../types';
-import { compareIteration } from '../helpers/iterationComparer';
+import { compareIteration, getCurrentIterationIndex } from '../helpers/iterationComparer';
 
 export interface IWorkItemHierarchy {
     id: number;
@@ -92,7 +91,8 @@ function getWorkItemDetails(projectId: string, teamId: string, id: number, input
     }
 
     // If still null take currentIteration
-    const currentIteration = getCurrentIteration(projectId, teamId, input);
+    const allIterations = getIterations(projectId, teamId, input);
+    const currentIteration = allIterations[getCurrentIterationIndex(allIterations)];
     if (!iterationDuration.startIteration || !iterationDuration.endIteration) {
         iterationDuration.startIteration = currentIteration;
         iterationDuration.endIteration = currentIteration;
@@ -141,17 +141,6 @@ function getIterationDurationFromChildren(children: IWorkItemHierarchy[]): IIter
             kind: IterationDurationKind.ChildRollup
         }
     }, { startIteration: null, endIteration: null, kind: IterationDurationKind.None });
-}
-
-function getCurrentIteration(projectId: string, teamId: string, input: IFeatureTimelineRawState): TeamSettingsIteration {
-    const allIterations = getIterations(projectId, teamId, input);
-    const currentIterations = allIterations.filter((itr) => TimeFrame && itr.attributes.timeFrame === TimeFrame.Current);
-    if (currentIterations.length === 0) {
-        return allIterations[0];
-    }
-
-
-    return currentIterations[0];
 }
 
 function getIterations(projectId: string, teamId: string, input: IFeatureTimelineRawState) {

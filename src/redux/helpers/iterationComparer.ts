@@ -1,6 +1,6 @@
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration, TimeFrame } from "TFS/Work/Contracts";
 
-export function compareIteration(i1: TeamSettingsIteration, i2: TeamSettingsIteration) : number {
+export function compareIteration(i1: TeamSettingsIteration, i2: TeamSettingsIteration): number {
     if (hasDates(i1) && !hasDates(i2)) {
         return -1;
     }
@@ -20,6 +20,32 @@ export function compareIteration(i1: TeamSettingsIteration, i2: TeamSettingsIter
     return getStartTime(i1) - getStartTime(i2);
 }
 
+
+export function getCurrentIterationIndex(iterations: TeamSettingsIteration[]): number {
+    if (TimeFrame) {
+        return iterations.findIndex(i => i.attributes.timeFrame === TimeFrame.Current);
+    }
+
+    return iterations.findIndex(isCurrentIteration);
+}
+
+export function isCurrentIteration(iteration: TeamSettingsIteration): boolean {
+
+    if (TimeFrame) {
+        return iteration.attributes.timeFrame === TimeFrame.Current;
+    }
+
+    const today = new Date(Date.now());
+    const currentTimeStamp = (new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())).getTime();
+
+    if (!hasDates(iteration)
+        || (iteration.attributes.startDate.getTime() <= currentTimeStamp
+            && iteration.attributes.finishDate.getTime() >= currentTimeStamp)) {
+        return true;
+    }
+
+    return false;
+}
 
 function hasDates(iteration: TeamSettingsIteration): boolean {
     return !!iteration.attributes.startDate && !!iteration.attributes.finishDate;

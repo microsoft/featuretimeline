@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 import { ITeamSettingsIterationState } from './types';
 import { TeamSettingsIterationActions, TeamSettingsIterationReceivedType, TeamSettingsIterationReceivedAction, DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType, ShiftDisplayIterationLeftAction, ShiftDisplayIterationRightAction, ChangeDisplayIterationCountAction, RestoreDisplayIterationCountActionType, RestoreDisplayIterationCountAction } from './actions';
-import { TeamSettingsIteration, TimeFrame } from 'TFS/Work/Contracts';
+import { getCurrentIterationIndex } from '../../helpers/iterationComparer';
 
 // Type-safe initialState!
 export const initialState: ITeamSettingsIterationState = {
@@ -96,13 +96,6 @@ function handleChangeDisplayIterationCountAction(state: ITeamSettingsIterationSt
     return newState;
 }
 
-function getCurrentIterationIndex(iterations: TeamSettingsIteration[]): number {
-    if (TimeFrame) {
-        return iterations.findIndex(i => i.attributes.timeFrame === TimeFrame.Current);
-    }
-
-    return 0;
-}
 
 function handleShiftDisplayIterationLeft(state: ITeamSettingsIterationState, action: ShiftDisplayIterationLeftAction) {
     if (state.iterationDisplayOptions) {

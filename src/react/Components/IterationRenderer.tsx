@@ -1,6 +1,7 @@
 import "./IterationRenderer.scss";
 import * as React from "react";
-import { TeamSettingsIteration, TimeFrame } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { isCurrentIteration } from "../../redux/helpers/iterationComparer";
 
 export interface IIterationRendererProps {
     iteration: TeamSettingsIteration;
@@ -33,7 +34,7 @@ export class IterationRenderer extends React.Component<IIterationRendererProps, 
         }
 
         let currentMarker = null;
-        if (TimeFrame && iteration.attributes.timeFrame === TimeFrame.Current) {
+        if (isCurrentIteration(iteration)) {
             currentMarker = (
                 <span className="current-sprint-marker">Current</span>
             );
