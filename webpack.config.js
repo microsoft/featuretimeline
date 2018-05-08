@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+//const PrettierPlugin = require("prettier-webpack-plugin");
 
 /*
  * We've enabled UglifyJSPlugin for you! This minifies your app
@@ -42,17 +43,16 @@ const plugins = [
 			from: "./src/index.html",
 			to: "./"
 		},
-		// { from: "./src/rollup.css", to: "./" },
 		{
 			from: "./images",
 			to: "./images"
 		},
-		{ from: "./details.md", to: "details.md" }
-	]),
-	//new BundleAnalyzerPlugin()
+		{
+			from: "./details.md",
+			to: "details.md"
+		}
+	])
 ];
-//,
-	//new BundleAnalyzerPlugin()
 
 if (mode !== "development") {
 	plugins.unshift(new UglifyJSPlugin({
@@ -63,6 +63,11 @@ if (mode !== "development") {
 			comments: false
 		}
 	}));
+	plugins.unshift(new BundleAnalyzerPlugin({
+		analyzerMode: "static",
+		generateStatsFile: true
+	}));
+	//plugins.unshift(new PrettierPlugin());
 }
 module.exports = {
 	entry: './src/FeatureTimeline.tsx',
@@ -72,7 +77,7 @@ module.exports = {
 		libraryTarget: 'umd',
 		library: "FeatureTimeline"
 	},
-	devtool:"source-map",
+	devtool: "source-map",
 	mode: mode,
 	resolve: {
 		extensions: [".ts", ".tsx", ".js", ".json"]
@@ -118,8 +123,7 @@ module.exports = {
 							sourcemap: sourcemap
 						}
 					}
-				],
-				//fallback: 'style-loader'
+				]
 			}
 
 		]

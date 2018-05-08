@@ -37,12 +37,6 @@
     white-space: nowrap;
 }
 
-.button {
-    @include button-dimension();
-    background: lightgray;
-    color: white;
-}
-
 .non-button {
     @include button-dimension();
     background: transparent;
@@ -57,10 +51,20 @@
     right: 20px;
     background: white;
     left: 0;
+    align-items: center;
+}
+
+.iteration-options-label {
+    margin: 5px;
+    font-size: 16px;
+}
+
+.iteration-options-dropdown {
+    width: 130px;
 }
 
 .header-gap {
-    height: 22px;
+    height: 32px;
 }
 
 .command-right-section,

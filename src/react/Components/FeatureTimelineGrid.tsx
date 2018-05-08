@@ -33,7 +33,11 @@ import { TimelineDialog } from './TimelineDialog';
 import { UIStatus } from '../../redux/types';
 import { WorkitemGap } from './WorkItem/WorkItemGap';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
+import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import './FeatureTimelineGrid.scss';
+import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
+import { IconButton } from 'office-ui-fabric-react/lib/Button';
+initializeIcons(/* optional base url */);
 
 export interface IFeatureTimelineGridProps {
     projectId: string;
@@ -133,22 +137,21 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         const {
             uiState,
-            projectId,
-            teamId
+            rawState
         } = this.props;
-        if (!this.props.rawState || uiState === UIStatus.Loading) {
+        if (!rawState || uiState === UIStatus.Loading) {
             return (
                 <Spinner size={SpinnerSize.large} label="Loading..." />
             );
         }
 
-        if (this.props.rawState.error) {
+        if (rawState.error) {
             return (
                 <MessageBar
                     messageBarType={MessageBarType.error}
                     isMultiline={false}
                 >
-                    {this.props.rawState.error}
+                    {rawState.error}
                 </MessageBar>
             );
         }
@@ -197,7 +200,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             return (
                 <IterationDropTarget
                     {...shadow}
-                    isOverrideIterationInProgress={!!this.props.rawState.workItemOverrideIteration}
+                    isOverrideIterationInProgress={!!rawState.workItemOverrideIteration}
                     onOverrideIterationOver={this.props.dragHoverOverIteration.bind(this)}
                     changeIteration={this.props.changeIteration.bind(this)}
                 >
@@ -252,23 +255,67 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         let leftButton = <span className="non-button"></span>;
         if (iterationDisplayOptions && iterationDisplayOptions.startIndex > 0) {
-            leftButton = <span className="button" onClick={() => this.props.shiftDisplayIterationLeft()}>{"<<"}</span>;
+            leftButton = (
+                <IconButton
+                    className="button"
+                    onClick={() => this.props.shiftDisplayIterationLeft()}
+                    iconProps={
+                        {
+                            iconName: "ChevronLeftSmall"
+                        }
+                    }
+                >
+                </IconButton>
+            );
         }
 
         let rightButton = <span className="non-button"></span>;
         if (iterationDisplayOptions && iterationDisplayOptions.endIndex < (iterationDisplayOptions.totalIterations - 1)) {
-            rightButton = <span className="button" onClick={() => this.props.shiftDisplayIterationRight()}>{">>"}</span>
+            rightButton = (
+                <IconButton
+                    className="button"
+                    onClick={() => this.props.shiftDisplayIterationRight()}
+                    iconProps={
+                        {
+                            iconName: "ChevronRightSmall"
+                        }
+                    }
+                >
+                </IconButton>
+            );
         }
 
         let displayOptions = null;
         let commandHeading = [];
 
         if (!isSubGrid && (iterationDisplayOptions || columnHeading.length > 3)) {
+            let selectedKey = "all";
+            if (iterationDisplayOptions) {
+                if (iterationDisplayOptions.count === 3) {
+                    selectedKey = "three";
+                } else if (iterationDisplayOptions.count === 5) {
+                    selectedKey = "five";
+                }
+            }
             displayOptions = (
                 <div className="iteration-options">
-                    <span className="command" onClick={() => this.props.showThreeIterations(projectId, teamId)}>Show three Sprints</span>
-                    <span className="command" onClick={() => this.props.showFiveIterations(projectId, teamId)}>Show five Sprints</span>
-                    <span className="command" onClick={() => this.props.showAllIterations()}>Show all sprints</span>
+                    <div className="iteration-options-label">View: </div>
+                    <ComboBox
+                        className="iteration-options-dropdown"
+                        defaultSelectedKey={selectedKey}
+                        selectedKey={selectedKey}
+                        allowFreeform={false}
+                        autoComplete='off'
+                        options={
+                            [
+                                { key: 'all', text: 'All Sprints' },
+                                { key: 'three', text: 'Three Sprints' },
+                                { key: 'five', text: 'Five Sprints' },
+                            ]
+                        }
+                        onChanged={this._onViewChanged}
+                    >
+                    </ComboBox>
                 </div>
             );
 
@@ -326,6 +373,24 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                 </div>
             </div>
         );
+    }
+
+    private _onViewChanged = (item: { key: string, text: string }) => {
+        const {
+            projectId,
+            teamId
+        } = this.props;
+        switch (item.key) {
+            case "all":
+                this.props.showAllIterations();
+                break;
+            case "three":
+                this.props.showThreeIterations(projectId, teamId);
+                break;
+            case "five":
+                this.props.showFiveIterations(projectId, teamId);
+                break;
+        }
     }
 }
 
