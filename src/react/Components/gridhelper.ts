@@ -1,6 +1,9 @@
 import { IDimension } from "../../redux/types";
 
 export function getRowColumnStyle(dimension: IDimension) {
+    if (!dimension) {
+        return {};
+    }
     return getStyle(dimension.startRow, dimension.endRow, dimension.startCol, dimension.endCol);
 }
 

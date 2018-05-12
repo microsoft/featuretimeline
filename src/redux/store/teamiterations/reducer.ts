@@ -32,25 +32,31 @@ const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsItera
 
 function handleRestoreDisplayIterationCountAction(state: ITeamSettingsIterationState, action: RestoreDisplayIterationCountAction) {
     const newState = { ...state };
-    newState.iterationDisplayOptions = action.payload;
-    let { count } = action.payload;
-    const iterations = state.teamSettingsIterations[action.payload.projectId][action.payload.teamId] || [];
 
-    // Handle incase if the team iterations changed before restore
-    if (count > iterations.length) {
-        const currentIterationIndex = (iterations && getCurrentIterationIndex(iterations)) || 0;
+    try {
+        newState.iterationDisplayOptions = action.payload;
+        let { count } = action.payload;
+        const iterations = state.teamSettingsIterations[action.payload.projectId][action.payload.teamId] || [];
 
-        count = iterations.length;
+        // Handle incase if the team iterations changed before restore
+        if (count > iterations.length) {
+            const currentIterationIndex = (iterations && getCurrentIterationIndex(iterations)) || 0;
 
-        let startIndex = currentIterationIndex - Math.floor((count / 2));
-        if (startIndex < 0) {
-            startIndex = 0;
+            count = iterations.length;
+
+            let startIndex = currentIterationIndex - Math.floor((count / 2));
+            if (startIndex < 0) {
+                startIndex = 0;
+            }
+            const endIndex = startIndex + (count - 1);
+
+            newState.iterationDisplayOptions.count = count;
+            newState.iterationDisplayOptions.startIndex = startIndex;
+            newState.iterationDisplayOptions.endIndex = endIndex;
         }
-        const endIndex = startIndex + (count - 1);
-
-        newState.iterationDisplayOptions.count = count;
-        newState.iterationDisplayOptions.startIndex = startIndex;
-        newState.iterationDisplayOptions.endIndex = endIndex;
+    }
+    catch (error) {
+        console.log('Can not restore display options: ', error, action);
     }
     return newState;
 }
