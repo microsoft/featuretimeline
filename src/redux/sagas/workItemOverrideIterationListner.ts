@@ -9,7 +9,7 @@ import { OverrideIterationEndAction, SaveOverrideIterationAction } from "../stor
 
 export function* launchOverrideWorkItemIteration(action: OverrideIterationEndAction) {
     const overrideIterationState: IWorkItemOverrideIteration = yield select(workItemOverrideIterationSelector());
-    
+
     if (!overrideIterationState) {
         return;
     }

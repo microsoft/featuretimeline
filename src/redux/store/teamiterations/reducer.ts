@@ -34,7 +34,6 @@ function handleRestoreDisplayIterationCountAction(state: ITeamSettingsIterationS
     const newState = { ...state };
     newState.iterationDisplayOptions = action.payload;
     let { count } = action.payload;
-
     const iterations = state.teamSettingsIterations[action.payload.projectId][action.payload.teamId] || [];
 
     // Handle incase if the team iterations changed before restore

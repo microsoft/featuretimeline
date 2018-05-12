@@ -9,7 +9,7 @@ import { genericError } from '../store/error/actionCreators';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { InitializeAction } from '../store/common/actions';
-import { teamSettingsIterationReceived, changeDisplayIterationCount } from '../store/teamiterations/actionCreators';
+import { teamSettingsIterationReceived, restoreDisplayIterationCount } from '../store/teamiterations/actionCreators';
 import { workItemLinksReceived, workItemsReceived, setOverrideIteration } from '../store/workitems/actionCreators';
 import { WorkItemMetadataService } from '../../Services/WorkItemMetadataService';
 import { workItemTypesReceived } from '../store/workitemmetadata/actionCreators';
@@ -57,7 +57,7 @@ export function* handleInitialize(action: InitializeAction) {
             //call(metadatService.getStates.bind(metadatService), projectId),
             call(metadatService.getWorkItemTypes.bind(metadatService), projectId),
             call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations"),
-            call(dataService.getValue.bind(dataService), "iterationDisplayOptions"),
+            call(dataService.getValue.bind(dataService), "iterationDisplayOptions", { scopeType: 'User' }),
             call(workHttpClient.getTeamSettings.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext)
         ]);
@@ -65,7 +65,7 @@ export function* handleInitialize(action: InitializeAction) {
         yield put(backlogConfigurationReceived(projectId, teamId, bc));
         yield put(teamSettingsIterationReceived(projectId, teamId, tis));
         if (iterationDisplayOptions) {
-            yield put(changeDisplayIterationCount(iterationDisplayOptions.count, iterationDisplayOptions.projectId, iterationDisplayOptions.teamId));
+            yield put(restoreDisplayIterationCount(JSON.parse(iterationDisplayOptions)));
         }
         yield put(workItemTypesReceived(projectId, wits));
         //yield put(workItemStateColorsReceived(projectId, stateColors));

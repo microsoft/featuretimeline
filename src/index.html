@@ -27,13 +27,17 @@
         // We need to register the new contribution if this extension host is reused
         function registerContribution(contribution) {
             if (contribution.type === "ms.vss-web.tab") {
+                let title = "Feature Timeline";
+                if (contribution.id.indexOf("-dev") >= 0) {
+                    title = title + " Dev";
+                }
                 // Register the fully-qualified contribution id here.
                 // Because we're using the contribution id, we do NOT need to define a registeredObjectId in the extension manfiest.
                 VSS.register(contribution.id, {
-                    pageTitle: "Feature Timeline",
+                    pageTitle: title,
                     // We set the "dynamic" contribution property to true in the manifest so that it will get the tab name from this function.
-                    name: "Feature Timeline",
-                    title: "Feature Timeline",
+                    name: title,
+                    title: title,
                     updateContext: updateConfiguration,
                     isInvisible: function (state) {
                         return false;
@@ -44,7 +48,7 @@
 
         let previousContext = null
 
-        function updateConfiguration(tabContext) {            
+        function updateConfiguration(tabContext) {
             // if (!isBackground() && typeof tabContext === "object" && FeatureTimeline && JSON.stringify(previousContext) !== JSON.stringify(tabContext)) {
             //     FeatureTimeline.unmount();
             //     FeatureTimeline.initialize();
