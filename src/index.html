@@ -28,9 +28,6 @@
         function registerContribution(contribution) {
             if (contribution.type === "ms.vss-web.tab") {
                 let title = "Feature Timeline";
-                if (contribution.id.indexOf("-dev") >= 0) {
-                    title = title + " Dev";
-                }
                 // Register the fully-qualified contribution id here.
                 // Because we're using the contribution id, we do NOT need to define a registeredObjectId in the extension manfiest.
                 VSS.register(contribution.id, {
