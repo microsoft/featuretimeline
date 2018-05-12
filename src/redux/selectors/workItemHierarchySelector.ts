@@ -127,7 +127,7 @@ function getIterationDurationFromChildren(children: IWorkItemHierarchy[]): IIter
             startIteration = child.iterationDuration.startIteration;
             endIteration = child.iterationDuration.endIteration;
         } else {
-            if (compareIteration(child.iterationDuration.startIteration , startIteration) < 0) {
+            if (compareIteration(child.iterationDuration.startIteration, startIteration) < 0) {
                 startIteration = child.iterationDuration.startIteration;
             }
 
@@ -159,7 +159,11 @@ function getChildrenId(workItemInfos: IDictionaryNumberTo<IWorkItemInfo>, parent
     const childIds = [];
     for (const key in workItemInfos) {
         const workItem = workItemInfos[key];
-        if (workItem.parent === parentId && workItem.level !== WorkItemLevel.Parent) {
+        if (!workItem) {
+            console.log(`Invalid workitem id: ${key}`);
+        }
+        
+        if (workItem && workItem.parent === parentId && workItem.level !== WorkItemLevel.Parent) {
             childIds.push(workItem.workItem.id);
         }
     }
