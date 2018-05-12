@@ -31,7 +31,7 @@ const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsItera
 };
 
 function handleRestoreDisplayIterationCountAction(state: ITeamSettingsIterationState, action: RestoreDisplayIterationCountAction) {
-    const newState = { ...state };
+    let newState = { ...state };
 
     try {
         newState.iterationDisplayOptions = action.payload;
@@ -56,6 +56,7 @@ function handleRestoreDisplayIterationCountAction(state: ITeamSettingsIterationS
         }
     }
     catch (error) {
+        newState = state;
         console.log('Can not restore display options: ', error, action);
     }
     return newState;
