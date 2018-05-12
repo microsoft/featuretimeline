@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { DragDropGrid }  from "./react/Components/FeatureTimelineGrid";
+import { DragDropGrid } from "./react/Components/FeatureTimelineGrid";
 import { iePollyfill } from "./polyfill";
 
 export function initialize(): void {
-    if (!isBackground()) {  
-        iePollyfill(); 
+    if (!isBackground()) {
+        iePollyfill();
         ReactDOM.render(
-            <DragDropGrid /> , document.getElementById("root"));
+            <DragDropGrid />, document.getElementById("root"));
     }
 }
 

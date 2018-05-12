@@ -302,7 +302,6 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     <div className="iteration-options-label">View: </div>
                     <ComboBox
                         className="iteration-options-dropdown"
-                        defaultSelectedKey={selectedKey}
                         selectedKey={selectedKey}
                         allowFreeform={false}
                         autoComplete='off'
