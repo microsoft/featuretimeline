@@ -12,7 +12,7 @@ Building and testing the extension requires following.
 3) [tfx cli](https://docs.microsoft.com/en-us/vsts/extend/publish/command-line?view=vsts)
 4) [TypeScript](https://www.typescriptlang.org/)
 ```
-npm i -g typescript tfx-cli webpack
+npm i -g typescript tfx-cli webpack-cli
 ```
 
 Install dev prerequisites
