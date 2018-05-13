@@ -26,6 +26,7 @@
     "work item"
   ],
   "dependencies": {
+    "es6-promise": "^4.2.4",
     "npm": "^6.0.1",
     "office-ui-fabric-react": "^5.68.0",
     "react": "^16.2.0",

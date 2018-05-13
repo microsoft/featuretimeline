@@ -1,3 +1,5 @@
+require('es6-promise').polyfill();
+
 export function iePollyfill() {
     if (!Array.prototype.find) {
         Object.defineProperty(Array.prototype, 'find', {
