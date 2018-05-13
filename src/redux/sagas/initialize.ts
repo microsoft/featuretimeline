@@ -57,7 +57,7 @@ export function* handleInitialize(action: InitializeAction) {
             //call(metadatService.getStates.bind(metadatService), projectId),
             call(metadatService.getWorkItemTypes.bind(metadatService), projectId),
             call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations"),
-            call(dataService.getValue.bind(dataService), "iterationDisplayOptions", { scopeType: 'User' }),
+            call(dataService.getValue.bind(dataService), `${teamId}_iterationDisplayOptions`, { scopeType: 'User' }),
             call(workHttpClient.getTeamSettings.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext)
         ]);

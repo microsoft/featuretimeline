@@ -34,25 +34,17 @@ function handleRestoreDisplayIterationCountAction(state: ITeamSettingsIterationS
     let newState = { ...state };
 
     try {
-        newState.iterationDisplayOptions = action.payload;
+        newState.iterationDisplayOptions = { ...action.payload };
         let { count } = action.payload;
         const iterations = state.teamSettingsIterations[action.payload.projectId][action.payload.teamId] || [];
+        newState.iterationDisplayOptions.totalIterations = iterations.length;
 
         // Handle incase if the team iterations changed before restore
-        if (count > iterations.length) {
-            const currentIterationIndex = (iterations && getCurrentIterationIndex(iterations)) || 0;
 
-            count = iterations.length;
 
-            let startIndex = currentIterationIndex - Math.floor((count / 2));
-            if (startIndex < 0) {
-                startIndex = 0;
-            }
-            const endIndex = startIndex + (count - 1);
-
-            newState.iterationDisplayOptions.count = count;
-            newState.iterationDisplayOptions.startIndex = startIndex;
-            newState.iterationDisplayOptions.endIndex = endIndex;
+        if (iterations.length === 0 || !count || count > iterations.length || action.payload.endIndex >= iterations.length) {
+            console.log("Ignoring restore display options as iterations changed.");
+            newState.iterationDisplayOptions = null;
         }
     }
     catch (error) {
