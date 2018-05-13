@@ -27,6 +27,7 @@ export interface IGridView {
     workItemShadow: number;
     hideParents: boolean;
     iterationDisplayOptions: IIterationDisplayOptions;
+    teamIterations: TeamSettingsIteration[];
 }
 
 export function getGridView(
@@ -47,7 +48,8 @@ export function getGridView(
             isSubGrid,
             workItemShadow: 0,
             hideParents: false,
-            iterationDisplayOptions: null
+            iterationDisplayOptions: null,
+            teamIterations: []
         }
     }
 
@@ -75,7 +77,8 @@ export function getGridView(
         isSubGrid,
         workItemShadow,
         hideParents,
-        iterationDisplayOptions
+        iterationDisplayOptions,
+        teamIterations
     };
 
     // Calculate shadow and header

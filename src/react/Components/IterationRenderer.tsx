@@ -5,19 +5,20 @@ import { isCurrentIteration } from "../../redux/helpers/iterationComparer";
 
 export interface IIterationRendererProps {
     iteration: TeamSettingsIteration;
-
+    teamIterations: TeamSettingsIteration[];
 }
 
 function getMMDD(date: Date) {
     var mm = date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1); // getMonth() is zero-based
-   var dd  = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-   return `${mm}/${dd}`;
+    var dd = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+    return `${mm}/${dd}`;
 }
 
 export class IterationRenderer extends React.Component<IIterationRendererProps, {}> {
     public render(): JSX.Element {
         const {
-            iteration
+            iteration,
+            teamIterations,
         } = this.props;
 
         // TODO: Start and end date conversion?
@@ -34,7 +35,7 @@ export class IterationRenderer extends React.Component<IIterationRendererProps, 
         }
 
         let currentMarker = null;
-        if (isCurrentIteration(iteration)) {
+        if (isCurrentIteration(teamIterations, iteration)) {
             currentMarker = (
                 <span className="current-sprint-marker">Current</span>
             );

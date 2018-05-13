@@ -22,14 +22,28 @@ export function compareIteration(i1: TeamSettingsIteration, i2: TeamSettingsIter
 
 
 export function getCurrentIterationIndex(iterations: TeamSettingsIteration[]): number {
+    let index = 0;
     if (TimeFrame) {
-        return iterations.findIndex(i => i.attributes.timeFrame === TimeFrame.Current);
+        index = iterations.findIndex(i => i.attributes.timeFrame === TimeFrame.Current);
+    } else {
+        index = iterations.findIndex(_isCurrentIteration);
     }
 
-    return iterations.findIndex(isCurrentIteration);
+    if (index < 0 && iterations.length > 0) {
+        index = 0;
+    }
+
+    return index;
 }
 
-export function isCurrentIteration(iteration: TeamSettingsIteration): boolean {
+export function isCurrentIteration(iterations: TeamSettingsIteration[], iteration: TeamSettingsIteration): boolean {
+    const index = getCurrentIterationIndex(iterations);
+    const currentIteration = iterations[index];
+
+    return currentIteration.id === iteration.id;
+}
+
+function _isCurrentIteration(iteration: TeamSettingsIteration): boolean {
 
     if (TimeFrame) {
         return iteration.attributes.timeFrame === TimeFrame.Current;

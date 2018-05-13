@@ -183,14 +183,15 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             workItems,
             workItemShadow,
             iterationDisplayOptions,
-            isSubGrid
+            isSubGrid,
+            teamIterations
         } = this.props.gridView;
 
         const columnHeading = iterationHeader.map((iteration, index) => {
             const style = getRowColumnStyle(iteration.dimension);
             return (
                 <div className="columnheading" style={style}>
-                    <IterationRenderer iteration={iteration.teamIteration} />
+                    <IterationRenderer teamIterations={teamIterations} iteration={iteration.teamIteration} />
                 </div>
             );
 

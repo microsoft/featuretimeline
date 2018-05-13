@@ -111,10 +111,10 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
                     </div>
                     <div className="custom-duration-iterations">
                         <div className="custom-duration-iteration">
-                            <IterationRenderer iteration={startIteration} />
+                            <IterationRenderer teamIterations={this.props.gridView.teamIterations} iteration={startIteration} />
                         </div>
                         <div className="custom-duration-iteration">
-                            <IterationRenderer iteration={endIteration} />
+                            <IterationRenderer teamIterations={this.props.gridView.teamIterations} iteration={endIteration} />
                         </div>
                     </div>
                 </div>
