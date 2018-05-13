@@ -64,9 +64,6 @@ export function* handleInitialize(action: InitializeAction) {
 
         yield put(backlogConfigurationReceived(projectId, teamId, bc));
         yield put(teamSettingsIterationReceived(projectId, teamId, tis));
-        if (iterationDisplayOptions) {
-            yield put(restoreDisplayIterationCount(JSON.parse(iterationDisplayOptions)));
-        }
         yield put(workItemTypesReceived(projectId, wits));
         //yield put(workItemStateColorsReceived(projectId, stateColors));
 
@@ -182,6 +179,12 @@ export function* handleInitialize(action: InitializeAction) {
                 }
             }
         }
+
+        if (iterationDisplayOptions && iterationDisplayOptions !== "null") {
+            console.log(`parsed iteration displayoptions`, JSON.parse(iterationDisplayOptions));
+            yield put(restoreDisplayIterationCount(JSON.parse(iterationDisplayOptions)));
+        }
+
     } catch (error) {
         yield put(genericError(error));
     }
