@@ -148,8 +148,9 @@ export function* handleInitialize(action: InitializeAction) {
                 parentLinks = parentQueryResult ? parentQueryResult.workItemRelations : [];
             }
 
+            // Before changing the logic here test TFS2017
             parentWorkItemIds = parentLinks
-                .filter(link => link.target && link.rel)
+                .filter(link => link.target && link.source && link.target.id && link.source.id)
                 .map((link) => link.target.id);
             workItemsToPage.push(...parentWorkItemIds);
 
@@ -162,7 +163,6 @@ export function* handleInitialize(action: InitializeAction) {
             const linksReceived = childQueryResult ? childQueryResult.workItemRelations : [];
             linksReceived.push(...parentLinks);
             yield put(workItemLinksReceived(linksReceived));
-
 
             if (overriddenWorkItemIterations) {
                 const currentValueTypes: IDictionaryNumberTo<IOverriddenIterationDuration> = JSON.parse(overriddenWorkItemIterations);

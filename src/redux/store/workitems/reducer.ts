@@ -145,19 +145,23 @@ function handleReplaceWorkItems(state: IWorkItemsState, action: ReplaceWorkItems
 }
 
 function handleWorkItemLinksReceived(state: IWorkItemsState, action: WorkItemLinksReceivedAction): IWorkItemsState {
-    const newState = { ...state };
+    let newState = state;
     const children = action.payload.workItemLinks.filter((link) => link.source);
     for (const relation of children) {
-        let parentId = 0; relation.source.id;
-        let childId = 0; relation.target.id;
+        let parentId = 0;
+        let childId = 0;
         if (relation.rel === "System.LinkTypes.Hierarchy-Forward") {
             parentId = relation.source.id;
             childId = relation.target.id;
-        } else if (relation.rel === "System.LinkTypes.Hierarchy-Reverse") {
+        } else if (!relation.rel || relation.rel === "System.LinkTypes.Hierarchy-Reverse") {
             parentId = relation.target.id;
             childId = relation.source.id;
         }
-        changeParent(newState, childId, parentId);
+
+        if (childId > 0) {
+            newState = { ...state };
+            changeParent(newState, childId, parentId);
+        }
     }
     return newState;
 }
