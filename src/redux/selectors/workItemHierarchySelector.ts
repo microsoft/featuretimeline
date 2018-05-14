@@ -1,6 +1,6 @@
 import { getWorkItemsForLevel } from './workItemsForLevel';
 import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } from '../store';
-import { IWorkItemInfo, WorkItemLevel } from '../store/workitems/types';
+import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { UIStatus } from '../types';
 import { compareIteration, getCurrentIterationIndex } from '../helpers/iterationComparer';
@@ -32,7 +32,7 @@ export function getWorkItemHierarchy(
     } = input;
 
     // Fetch work items at parent level
-    const epicIds = getWorkItemsForLevel(workItemsState.workItemInfos, WorkItemLevel.Parent);
+    const epicIds = getWorkItemsForLevel(workItemsState.workItemInfos, WorkItemLevel.Parent, null);
 
     // Add unparent level as parent
     epicIds.unshift(0);
@@ -162,9 +162,21 @@ function getChildrenId(workItemInfos: IDictionaryNumberTo<IWorkItemInfo>, parent
         if (!workItem) {
             console.log(`Invalid workitem id: ${key}`);
         }
-        
-        if (workItem && workItem.parent === parentId && workItem.level !== WorkItemLevel.Parent) {
-            childIds.push(workItem.workItem.id);
+
+        if (workItem && workItem.parent === parentId) {
+            switch (workItem.level) {
+                // For current backlog level work item types take only InProgress items
+                case WorkItemLevel.Current: {
+                    if (workItem.stateCategory === StateCategory.InProgress) {
+                        childIds.push(workItem.workItem.id);
+                    }
+                    break;
+                }
+                case WorkItemLevel.Child: {
+                    childIds.push(workItem.workItem.id);
+                    break;
+                }
+            }
         }
     }
     return childIds;

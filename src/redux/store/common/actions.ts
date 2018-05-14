@@ -1,5 +1,6 @@
 import { Action } from "redux";
 
+export const ResetType = "@@common/reset";
 export const InitializeType = "@@common/initialize";
 export const ShowDetailsType = "@@common/showdetails";
 export const CloseDetailsType = "@@common/closedetails";
@@ -12,6 +13,12 @@ export interface InitializeAction extends Action {
         backlogLevelName: string;
     }
 }
+
+export interface ResetAction extends Action {
+    type: "@@common/reset";
+    payload: void;
+}
+
 
 export interface ShowDetailsAction extends Action {
     type: "@@common/showdetails";
@@ -28,4 +35,4 @@ export interface CloseDetailsAction extends Action {
     }
 }
 
-export type CommonActions = InitializeAction | ShowDetailsAction | CloseDetailsAction;
+export type CommonActions = ResetAction | InitializeAction | ShowDetailsAction | CloseDetailsAction;

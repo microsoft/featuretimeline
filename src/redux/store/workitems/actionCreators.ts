@@ -4,12 +4,12 @@ import {
     StartUpdateWorkitemIterationActionType, ChangeParentAction,
     ChangeParentActionType, WorkItemsReceivedAction,
     WorkItemsReceivedActionType, WorkItemLinksReceivedAction,
-    ReplaceWorkItemsAction, ReplaceWorkItemsActionType, LaunchWorkItemFormAction,
+    LaunchWorkItemFormAction,
     LaunchWorkItemFormActionType, SetOverrideIterationAction, SetOverrideIterationType, ClearOverrideIterationAction, ClearOverrideIterationType, WorkItemSavedAction, WorkItemSavedActionType, WorkItemSaveFailedActionType, WorkItemSaveFailedAction
 } from './actions';
 
 import { WorkItem, WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration, WorkItemTypeStateInfo } from 'TFS/Work/Contracts';
 
 export const startUpdateWorkItemIteration: ActionCreator<StartUpdateWorkitemIterationAction> =
     (workItem: number, teamIteration: TeamSettingsIteration, override: boolean) => ({
@@ -53,13 +53,15 @@ export const workItemsReceived: ActionCreator<WorkItemsReceivedAction> =
     (workItems: WorkItem[],
         parentWorkItemIds: number[],
         currentLevelWorkItemIds: number[],
-        childLevelWorkItemIds: number[]) => ({
+        childLevelWorkItemIds: number[],
+        workItemTypeStateInfo: WorkItemTypeStateInfo[]) => ({
             type: WorkItemsReceivedActionType,
             payload: {
                 workItems,
                 parentWorkItemIds,
                 currentLevelWorkItemIds,
                 childLevelWorkItemIds,
+                workItemTypeStateInfo
             }
         });
 
@@ -68,14 +70,6 @@ export const workItemLinksReceived: ActionCreator<WorkItemLinksReceivedAction> =
         type: WorkItemLinksReceivedActionType,
         payload: {
             workItemLinks
-        }
-    });
-
-export const replaceWorkItems: ActionCreator<ReplaceWorkItemsAction> =
-    (workItems: WorkItem[]) => ({
-        type: ReplaceWorkItemsActionType,
-        payload: {
-            workItems
         }
     });
 

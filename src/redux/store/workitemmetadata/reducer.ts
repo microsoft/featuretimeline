@@ -3,12 +3,14 @@ import { IWorkItemMetadataState, IWorkItemMetadata } from './types';
 import { WorkItemTypesReceivedActionType, MetaDataActions, WorkItemTypesReceivedAction, WorkItemStateColorsReceivedAction, WorkItemStateColorsReceivedActionType } from './actions';
 
 // Type-safe initialState!
-export const initialState: IWorkItemMetadataState = {
-    // project -> metadata
-    metadata: {}
+export const getInitialState = (): IWorkItemMetadataState => {
+    return {
+        // project -> metadata
+        metadata: {}
+    }
 };
 
-const reducer: Reducer<IWorkItemMetadataState> = (state: IWorkItemMetadataState = initialState, action: MetaDataActions) => {
+const reducer: Reducer<IWorkItemMetadataState> = (state: IWorkItemMetadataState = getInitialState(), action: MetaDataActions) => {
     switch (action.type) {
         case WorkItemTypesReceivedActionType:
             return handleWorkItemTypesReceived(state, action as WorkItemTypesReceivedAction);

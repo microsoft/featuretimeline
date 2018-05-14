@@ -1,4 +1,4 @@
-import { combineReducers, Reducer } from 'redux';
+import { combineReducers, Reducer, Action } from 'redux';
 import { IWorkItemsState } from './workitems/types';
 import { IWorkItemMetadataState } from './workitemmetadata/types';
 import { ITeamSettingsIterationState } from './teamiterations/types';
@@ -14,6 +14,7 @@ import showHideDetailsReducer from "./common/reducer";
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import savedOverriddenWorkItemIterationsReducer from "./workitems/overrideWorkItemIterationReducer";
 import overrideIterationReducer from "./overrideIterationProgress/reducer";
+import { ResetType } from './common/actions';
 
 export interface IIterationDuration {
     startIteration: TeamSettingsIteration;
@@ -51,23 +52,49 @@ export interface IFeatureTimelineRawState {
     loading: boolean;
     // This will contain any overridden iterations by the UI in extension storage
     savedOverriddenWorkItemIterations: IDictionaryNumberTo<IOverriddenIterationDuration>;
-    
+
     // list of work item ids for which the details window is shown 
     workItemDetails: number[];
 
     workItemOverrideIteration?: IWorkItemOverrideIteration;
 }
 
+const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFeatureTimelineRawState => {
+    debugger;
+    switch (action.type) {
+        case ResetType: {
+            return {
+                workItemsState: undefined,
+                workItemMetadata: undefined,
+                iterationState: undefined,
+                error: null,
+                loading: false,
+                backlogConfiguration: undefined,
+                savedOverriddenWorkItemIterations: undefined,
+                workItemDetails: undefined,
+                workItemOverrideIteration: undefined
+            } as IFeatureTimelineRawState;
+        }
+    }
+
+    return state;
+}
+
+const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
+    workItemsState: workItemReducer,
+    workItemMetadata: metadataReducer,
+    iterationState: teamIterationsReducer,
+    error: errorReducer,
+    backlogConfiguration: backlogConfigurationReducer,
+    loading: loadingReducer,
+    workItemDetails: showHideDetailsReducer,
+    workItemOverrideIteration: overrideIterationReducer,
+    savedOverriddenWorkItemIterations: savedOverriddenWorkItemIterationsReducer
+});
+
 // setup reducers
-export const reducers: Reducer<IFeatureTimelineRawState> =
-    combineReducers<IFeatureTimelineRawState>({
-        workItemsState: workItemReducer,
-        workItemMetadata: metadataReducer,
-        iterationState: teamIterationsReducer,
-        error: errorReducer,
-        backlogConfiguration: backlogConfigurationReducer,
-        loading: loadingReducer,
-        workItemDetails: showHideDetailsReducer,
-        workItemOverrideIteration: overrideIterationReducer,
-        savedOverriddenWorkItemIterations: savedOverriddenWorkItemIterationsReducer
-    });
+export const reducers: Reducer<IFeatureTimelineRawState> = (state: IFeatureTimelineRawState, action: Action) => {
+    const intermediateState = intermediateReducer(state, action);
+    const finalState = crossSliceReducer(intermediateState, action);
+    return finalState;
+}

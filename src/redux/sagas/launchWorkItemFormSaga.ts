@@ -1,7 +1,7 @@
 import { LaunchWorkItemFormAction } from "../store/workItems/actions";
 import { put, call } from "redux-saga/effects";
 import { WorkItemFormNavigationService, IWorkItemFormNavigationService } from "TFS/WorkItemTracking/Services";
-import { createInitialize } from "../store/common/actioncreators";
+import { createInitialize, resetAllData } from "../store/common/actioncreators";
 import { getProjectId, getTeamId, getBacklogLevel } from "../selectors";
 
 
@@ -14,8 +14,8 @@ export function* launchWorkItemFormSaga(action: LaunchWorkItemFormAction) {
     // our best bet is to update the workitems and relations by reinitializing
     const projectId = getProjectId();
     const teamId = getTeamId();
-    const backlogLevel = getBacklogLevel();
+    const backlogLevelName = getBacklogLevel();
 
-    const initializeAction = createInitialize(projectId, teamId, backlogLevel);
-    yield put(initializeAction);
+    yield put(resetAllData());
+    yield put(createInitialize(projectId, teamId, backlogLevelName));
 }

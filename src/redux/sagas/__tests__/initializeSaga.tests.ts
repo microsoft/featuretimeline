@@ -1,11 +1,11 @@
 declare var it, expect;
 
-import { callinitialize } from '../initialize';
+import { callInitialize } from '../initialize';
 import { createInitialize } from '../../store/common/actioncreators';
 
 it('test initialize saga basic test', () => {
     const initializeAction = createInitialize("projectId", "teamId", "backlogLevel");
-    const saga = callinitialize(initializeAction);
+    const saga = callInitialize(initializeAction);
 
     // Expect loading true
     expect(saga.next()).toMatchSnapshot();

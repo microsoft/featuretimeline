@@ -1,5 +1,10 @@
 import { ActionCreator } from 'redux';
-import { InitializeAction, InitializeType, ShowDetailsAction, ShowDetailsType, CloseDetailsAction, CloseDetailsType } from './actions';
+import { InitializeAction, InitializeType, ShowDetailsAction, ShowDetailsType, CloseDetailsAction, CloseDetailsType, ResetAction, ResetType } from './actions';
+
+export const resetAllData: ActionCreator<ResetAction> = () => ({
+    type: ResetType,
+    payload: null
+});
 
 export const createInitialize: ActionCreator<InitializeAction> =
     (projectId: string, teamId: string, backlogLevelName: string) => ({
@@ -17,9 +22,9 @@ export const showDetails: ActionCreator<ShowDetailsAction> =
         payload: { id }
     });
 
-    
+
 export const closeDetails: ActionCreator<CloseDetailsAction> =
-(id: number) => ({
-    type: CloseDetailsType,
-    payload: { id }
-});
+    (id: number) => ({
+        type: CloseDetailsType,
+        payload: { id }
+    });

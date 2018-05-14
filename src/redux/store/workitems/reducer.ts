@@ -1,8 +1,6 @@
 import {
     ChangeParentAction,
     ChangeParentActionType,
-    ReplaceWorkItemsAction,
-    ReplaceWorkItemsActionType,
     WorkItemActions,
     WorkItemsReceivedAction,
     WorkItemsReceivedActionType,
@@ -13,20 +11,21 @@ import {
 } from './actions';
 import { IWorkItemsState, WorkItemLevel } from './types';
 import { Reducer } from 'redux';
+import { getWorkItemStateCategory } from '../../helpers/getWorkItemStateCategory';
 
 // Type-safe initialState!
-export const initialState: IWorkItemsState = {
-    workItemInfos: {}
+const getIntialState = () => {
+    return {
+        workItemInfos: {}
+    }
 };
 
-const reducer: Reducer<IWorkItemsState> = (state: IWorkItemsState = initialState, action: WorkItemActions) => {
+const reducer: Reducer<IWorkItemsState> = (state: IWorkItemsState = getIntialState(), action: WorkItemActions) => {
     switch (action.type) {
         case ChangeParentActionType:
             return handleChangeParent(state, action as ChangeParentAction);
         case WorkItemsReceivedActionType:
             return handleWorkItemsReceived(state, action as WorkItemsReceivedAction);
-        case ReplaceWorkItemsActionType:
-            return handleReplaceWorkItems(state, action as ReplaceWorkItemsAction);
         case WorkItemLinksReceivedActionType:
             return handleWorkItemLinksReceived(state, action as WorkItemLinksReceivedAction);
         case StartUpdateWorkitemIterationActionType:
@@ -105,7 +104,8 @@ function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceiv
     const {
         workItems,
         parentWorkItemIds,
-        currentLevelWorkItemIds
+        currentLevelWorkItemIds,
+        workItemTypeStateInfo
     } = action.payload;
 
     for (const workItem of workItems) {
@@ -117,27 +117,14 @@ function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceiv
             level = WorkItemLevel.Current;
         }
 
+        const stateCategory = getWorkItemStateCategory(workItem.fields["System.WorkItemType"], workItem.fields["System.State"], workItemTypeStateInfo);
+
         newState.workItemInfos[workItem.id] = {
             workItem,
             children: [],
             parent: 0,
-            level
-        };
-    }
-
-    return newState;
-}
-
-function handleReplaceWorkItems(state: IWorkItemsState, action: ReplaceWorkItemsAction): IWorkItemsState {
-    const newState = { ...state };
-    const {
-        workItems
-    } = action.payload;
-
-    for (const workItem of workItems) {
-        newState.workItemInfos[workItem.id] = {
-            ...newState.workItemInfos[workItem.id],
-            workItem: workItem
+            level,
+            stateCategory
         };
     }
 

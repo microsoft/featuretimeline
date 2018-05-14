@@ -2,7 +2,7 @@ import { takeEvery, takeLatest } from "redux-saga/effects";
 import { ClearOverrideIterationType, LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType } from "../store/workItems/actions";
 import { launchWorkItemFormSaga } from "./launchWorkItemFormSaga";
 import { InitializeType } from "../store/common/actions";
-import { callinitialize } from "./initialize";
+import { callInitialize } from "./initialize";
 import { launchOverrideWorkItemIteration, launchClearOverrideIteration, launchSaveOverrideIteration } from "./workItemOverrideIterationListner";
 import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../store/overrideIterationProgress/actions";
 import { updateWorkItemIteration } from "./updateWorkItemIterationListner";
@@ -14,7 +14,7 @@ export function* watchSagaActions() {
     yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);
     yield takeEvery(ClearOverrideIterationType, launchClearOverrideIteration);
     yield takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga);
-    yield takeEvery(InitializeType, callinitialize);
+    yield takeEvery(InitializeType, callInitialize);
     yield takeEvery(StartUpdateWorkitemIterationActionType, updateWorkItemIteration);
 
     yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions);

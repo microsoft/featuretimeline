@@ -23,14 +23,14 @@ import { IOverriddenIterationDuration } from '../store';
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
 
 // Setup to call initialize saga for every initialize action
-
-export function* callinitialize(action: InitializeAction) {
+export function* callInitialize(action: InitializeAction) {
     yield put(loading(true));
     yield call(handleInitialize, action);
     yield put(loading(false));
 }
 
 export function* handleInitialize(action: InitializeAction) {
+    debugger;
     const {
         projectId,
         teamId
@@ -75,7 +75,9 @@ export function* handleInitialize(action: InitializeAction) {
         backlogConfig.portfolioBacklogs.sort((b1, b2) => b1.rank - b2.rank);
         const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
         const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${w.name}'`).join(",");
-        const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates.filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
+        const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
+            .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
+
         const orderField = backlogConfig.backlogFields.typeFields["Order"];
 
         let backlogIteration = teamSettings.backlogIteration.path || teamSettings.backlogIteration.name;
@@ -159,7 +161,7 @@ export function* handleInitialize(action: InitializeAction) {
             workItems.sort((w1, w2) => w1.fields[orderField] - w2.fields[orderField]);
 
             // Call action creators to update work items and links in the store
-            yield put(workItemsReceived(workItems, parentWorkItemIds, backlogLevelWorkItemIds, childWorkItemIds));
+            yield put(workItemsReceived(workItems, parentWorkItemIds, backlogLevelWorkItemIds, childWorkItemIds, backlogConfig.workItemTypeMappedStates));
             const linksReceived = childQueryResult ? childQueryResult.workItemRelations : [];
             linksReceived.push(...parentLinks);
             yield put(workItemLinksReceived(linksReceived));

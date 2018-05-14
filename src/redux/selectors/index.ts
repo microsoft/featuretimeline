@@ -3,7 +3,7 @@ import { createSelector } from "reselect";
 import { getWorkItemsForLevel } from "./workItemsForLevel";
 import { getUIStatus } from "./uistatus";
 import { IFeatureTimelineRawState } from "../store";
-import { WorkItemLevel } from "../store/workitems/types";
+import { WorkItemLevel, StateCategory } from "../store/workitems/types";
 import { getWorkItemHierarchy } from "./workItemHierarchySelector";
 import { getGridView } from "./gridViewSelector";
 import { getTeamIterations } from "./teamIterations";
@@ -39,14 +39,14 @@ export const iterationDisplayOptionsSelector = () => {
         });
 }
 
-export const workItemIdsSelector = (level: WorkItemLevel) => {
+export const workItemIdsSelector = (level: WorkItemLevel, stateCategory: StateCategory) => {
     return createSelector(
         [getProjectId, getTeamId, getRawState],
         (projectId, teamId, state) => {
             if (!state || !state.workItemsState || !state.workItemsState.workItemInfos) {
                 return [];
             }
-            return getWorkItemsForLevel(state.workItemsState.workItemInfos, level);
+            return getWorkItemsForLevel(state.workItemsState.workItemInfos, level, stateCategory);
         });
 }
 

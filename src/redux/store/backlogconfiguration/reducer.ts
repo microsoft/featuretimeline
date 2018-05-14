@@ -3,11 +3,13 @@ import { IBacklogConfigurationState } from './types';
 import { BacklogConfigurationActions, BacklogConfigurationReceivedType, BacklogConfigurationReceivedAction } from './actions';
 
 // Type-safe initialState!
-export const initialState: IBacklogConfigurationState = {
-    backlogConfigurations: {}
+const getInitialState = () => {
+    return {
+        backlogConfigurations: {}
+    }
 };
 
-const reducer: Reducer<IBacklogConfigurationState> = (state: IBacklogConfigurationState = initialState, action: BacklogConfigurationActions) => {
+const reducer: Reducer<IBacklogConfigurationState> = (state: IBacklogConfigurationState = getInitialState(), action: BacklogConfigurationActions) => {
     switch (action.type) {
         case BacklogConfigurationReceivedType:
             return handleBacklogConfigurationReceived(state, action as BacklogConfigurationReceivedAction);

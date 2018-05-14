@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
-    "version": "0.0.193",
+    "version": "0.0.194",
     "name": "Feature timeline",
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",

@@ -1,14 +1,13 @@
 import { Action } from "redux";
 import { WorkItem, WorkItemLink } from "TFS/WorkItemTracking/Contracts";
 import { TrackableAction } from "./types";
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration, WorkItemTypeStateInfo } from "TFS/Work/Contracts";
 export const StartUpdateWorkitemIterationActionType = "@@workitems/StartUpdateWorkitemIterationAction";
 export const WorkItemSavedActionType = "@@workitems/WorkItemSavedAction";
 export const WorkItemSaveFailedActionType = "@@workitems/WorkItemSaveFailedAction";
 export const ChangeParentActionType = "@@workitems/ChangeParentAction";
 export const WorkItemsReceivedActionType = "@@workitems/WorkItemsReceived";
 export const WorkItemLinksReceivedActionType = "@@workitems/WorkItemLinksReceived"
-export const ReplaceWorkItemsActionType = "@@workitems/ReplaceWorkItems";
 export const LaunchWorkItemFormActionType = "@@workitems/LaunchWorkItemForm";
 export const SetOverrideIterationType = "@@workitems/setoverrideiteration";
 export const ClearOverrideIterationType = "@@overrideIteration/cleareoverrideiteration";
@@ -52,6 +51,7 @@ export interface WorkItemsReceivedAction extends Action {
         parentWorkItemIds: number[];
         currentLevelWorkItemIds: number[];
         childLevelWorkItemIds: number[];
+        workItemTypeStateInfo: WorkItemTypeStateInfo[]
     }
 }
 
@@ -59,13 +59,6 @@ export interface WorkItemLinksReceivedAction extends Action {
     type: "@@workitems/WorkItemLinksReceived";
     payload: {
         workItemLinks: WorkItemLink[];
-    }
-}
-
-export interface ReplaceWorkItemsAction extends Action {
-    type: "@@workitems/ReplaceWorkItems";
-    payload: {
-        workItems: WorkItem[];
     }
 }
 
@@ -93,5 +86,5 @@ export interface ClearOverrideIterationAction extends Action {
 }
 
 
-export type WorkItemActions = StartUpdateWorkitemIterationAction | ChangeParentAction | WorkItemsReceivedAction | WorkItemLinksReceivedAction | ReplaceWorkItemsAction | LaunchWorkItemFormAction;
+export type WorkItemActions = StartUpdateWorkitemIterationAction | ChangeParentAction | WorkItemsReceivedAction | WorkItemLinksReceivedAction | LaunchWorkItemFormAction;
 export type OverrideIterationActions = SetOverrideIterationAction | ClearOverrideIterationAction;

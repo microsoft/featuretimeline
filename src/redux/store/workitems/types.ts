@@ -7,11 +7,20 @@ export enum WorkItemLevel {
     Child
 }
 
+export enum StateCategory {
+    Proposed,
+    InProgress,
+    Resolved,
+    Completed,
+    Removed
+}
+
 export interface IWorkItemInfo {    
     workItem: WorkItem;
     children: number[];
     parent: number;
     level: WorkItemLevel;
+    stateCategory: StateCategory;
 }
 
 export interface IWorkItemsState {

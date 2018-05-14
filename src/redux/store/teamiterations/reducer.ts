@@ -4,13 +4,14 @@ import { TeamSettingsIterationActions, TeamSettingsIterationReceivedType, TeamSe
 import { getCurrentIterationIndex } from '../../helpers/iterationComparer';
 
 // Type-safe initialState!
-export const initialState: ITeamSettingsIterationState = {
-    // project -> team -> teamsettingsiterations
-    teamSettingsIterations: {},
-    iterationDisplayOptions: null
+export const getInitialState = (): ITeamSettingsIterationState => {
+    return {
+        // project -> team -> teamsettingsiterations
+        teamSettingsIterations: {},
+        iterationDisplayOptions: null
+    };
 };
-
-const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsIterationState = initialState,
+const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsIterationState = getInitialState(),
     action: TeamSettingsIterationActions) => {
     switch (action.type) {
         case TeamSettingsIterationReceivedType:
