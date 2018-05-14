@@ -7,9 +7,11 @@ import {
     WorkItemLinksReceivedAction,
     WorkItemLinksReceivedActionType,
     StartUpdateWorkitemIterationAction,
-    StartUpdateWorkitemIterationActionType
+    StartUpdateWorkitemIterationActionType,
+    StartMarkInProgressActionType,
+    StartMarkInProgressAction
 } from './actions';
-import { IWorkItemsState, WorkItemLevel } from './types';
+import { IWorkItemsState, WorkItemLevel, StateCategory } from './types';
 import { Reducer } from 'redux';
 import { getWorkItemStateCategory } from '../../helpers/getWorkItemStateCategory';
 
@@ -30,6 +32,8 @@ const reducer: Reducer<IWorkItemsState> = (state: IWorkItemsState = getIntialSta
             return handleWorkItemLinksReceived(state, action as WorkItemLinksReceivedAction);
         case StartUpdateWorkitemIterationActionType:
             return handleStartUpdateWorkItemIteration(state, action as StartUpdateWorkitemIterationAction);
+        case StartMarkInProgressActionType:
+            return handleStartMarkInProgress(state, action as StartMarkInProgressAction);
         default:
             return state;
     }
@@ -49,6 +53,27 @@ function handleStartUpdateWorkItemIteration(state: IWorkItemsState, action: Star
     }
     return newState;
 }
+
+function handleStartMarkInProgress(workItemState: IWorkItemsState, action: StartMarkInProgressAction): IWorkItemsState {
+    const {
+        workItem,
+        teamIteration,
+        state
+    } = action.payload;
+
+    const newState = { ...workItemState };
+    let workItemObject = newState.workItemInfos[workItem];
+    if (workItemObject) {
+        workItemObject = { ...workItemObject };
+        workItemObject.workItem.fields = { ...workItemObject.workItem.fields };
+        workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
+        workItemObject.workItem.fields["System.State"] = state;
+        workItemObject.stateCategory = StateCategory.InProgress;
+        newState.workItemInfos[workItem]= workItemObject;
+    }
+    return newState;
+}
+
 
 function handleChangeParent(state: IWorkItemsState, action: ChangeParentAction): IWorkItemsState {
     const {

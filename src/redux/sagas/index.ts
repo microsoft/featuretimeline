@@ -1,5 +1,5 @@
 import { takeEvery, takeLatest } from "redux-saga/effects";
-import { ClearOverrideIterationType, LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType } from "../store/workItems/actions";
+import { ClearOverrideIterationType, LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType, StartMarkInProgressActionType } from "../store/workitems/actions";
 import { launchWorkItemFormSaga } from "./launchWorkItemFormSaga";
 import { InitializeType } from "../store/common/actions";
 import { callInitialize } from "./initialize";
@@ -8,6 +8,7 @@ import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../st
 import { updateWorkItemIteration } from "./updateWorkItemIterationListner";
 import { saveDisplayOptions } from './displayOptions';
 import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType } from "../store/teamiterations/actions";
+import { markWorkItemInProgressListner } from "./markWorkItemInProgressListner";
 
 export function* watchSagaActions() {
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
@@ -16,6 +17,7 @@ export function* watchSagaActions() {
     yield takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga);
     yield takeEvery(InitializeType, callInitialize);
     yield takeEvery(StartUpdateWorkitemIterationActionType, updateWorkItemIteration);
+    yield takeEvery(StartMarkInProgressActionType, markWorkItemInProgressListner);
 
     yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions);
     yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions);

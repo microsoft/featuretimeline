@@ -2,14 +2,22 @@ import * as React from 'react';
 import configureStore from '../../redux/configureStore';
 import DraggableWorkItemRenderer from './WorkItem/DraggableWorkItemRenderer';
 import HTML5Backend from 'react-dnd-html5-backend';
+import SplitterLayout from 'react-splitter-layout';
+import { Button, IconButton } from 'office-ui-fabric-react/lib/Button';
 import {
     changeDisplayIterationCount,
     displayAllIterations,
     shiftDisplayIterationLeft,
     shiftDisplayIterationRight
 } from '../../redux/store/teamiterations/actionCreators';
-import { clearOverrideIteration, launchWorkItemForm, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
-import { closeDetails, createInitialize, showDetails } from '../../redux/store/common/actioncreators';
+import { clearOverrideIteration, launchWorkItemForm, startUpdateWorkItemIteration, startMarkInProgress } from '../../redux/store/workitems/actionCreators';
+import {
+    closeDetails,
+    createInitialize,
+    showDetails,
+    toggleProposedWorkItemsPane
+} from '../../redux/store/common/actioncreators';
+import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import { connect, Provider } from 'react-redux';
 import { DragDropContext } from 'react-dnd';
 import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../redux/store/overrideIterationProgress/actionCreators';
@@ -24,6 +32,7 @@ import {
 import { getRowColumnStyle, getTemplateColumns } from './gridhelper';
 import { IFeatureTimelineRawState, IWorkItemOverrideIteration } from '../../redux/store';
 import { IGridView } from '../../redux/selectors/gridViewSelector';
+import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { IterationDropTarget } from './DroppableIterationShadow';
 import { IterationRenderer } from './IterationRenderer';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
@@ -32,11 +41,10 @@ import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { TimelineDialog } from './TimelineDialog';
 import { UIStatus } from '../../redux/types';
 import { WorkitemGap } from './WorkItem/WorkItemGap';
+import { ConnectedWorkItemsList } from './WorkItemList';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
-import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import './FeatureTimelineGrid.scss';
-import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
-import { IconButton } from 'office-ui-fabric-react/lib/Button';
+
 initializeIcons(/* optional base url */);
 
 export interface IFeatureTimelineGridProps {
@@ -46,6 +54,7 @@ export interface IFeatureTimelineGridProps {
     uiState: UIStatus;
     gridView: IGridView,
     childItems: number[];
+    showPropsedWorkeItemsPane: boolean;
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
     closeDetails: (id: number) => void;
@@ -59,6 +68,8 @@ export interface IFeatureTimelineGridProps {
     shiftDisplayIterationLeft: () => void;
     shiftDisplayIterationRight: () => void;
     showAllIterations: () => void;
+    toggleProposedWorkItemsPane: () => void;
+    markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
 }
 
 const makeMapStateToProps = () => {
@@ -69,7 +80,8 @@ const makeMapStateToProps = () => {
             rawState: getRawState(state),
             uiState: uiStatusSelector()(state),
             gridView: gridViewSelector()(state),
-            childItems: state.workItemDetails
+            childItems: state.workItemDetails,
+            showPropsedWorkeItemsPane: state.showProposedWorkItemsPane
         }
     }
 }
@@ -102,6 +114,9 @@ const mapDispatchToProps = (dispatch) => {
         changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => {
             dispatch(startUpdateWorkItemIteration([id], teamIteration, override));
         },
+        markInProgress: (id: number, teamIteration: TeamSettingsIteration, state: string) => {
+            dispatch(startMarkInProgress(id, teamIteration, state));
+        },
         showThreeIterations: (projectId: string, teamId: string) => {
             dispatch(changeDisplayIterationCount(3, projectId, teamId));
         },
@@ -116,8 +131,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         shiftDisplayIterationRight: () => {
             dispatch(shiftDisplayIterationRight(1));
+        },
+        toggleProposedWorkItemsPane: () => {
+            dispatch(toggleProposedWorkItemsPane());
         }
-
     };
 };
 
@@ -204,6 +221,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     isOverrideIterationInProgress={!!rawState.workItemOverrideIteration}
                     onOverrideIterationOver={this.props.dragHoverOverIteration.bind(this)}
                     changeIteration={this.props.changeIteration.bind(this)}
+                    markInProgress={this.props.markInProgress.bind(this)}
                 >
                     &nbsp;
                 </IterationDropTarget>
@@ -356,22 +374,35 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             }
         }
 
+        const commands = (
+            <div className="header-commands">
+                {!this.props.showPropsedWorkeItemsPane && <Button onClick={this.props.toggleProposedWorkItemsPane}>Plan Features</Button>}
+                {displayOptions}
+            </div>
+        );
+
         return (
             <div className="root-container">
-                {displayOptions}
+                {commands}
                 {<div className="header-gap"></div>}
-                <div className="feature-timeline-main-container">
-                    <div className="container" style={gridStyle}>
-                        {commandHeading}
-                        {columnHeading}
-                        {shadows}
-                        {workItemShadowCell}
-                        {workItemCells}
-                        {workItemGaps}
-                        {childDialog}
+                <SplitterLayout secondaryInitialSize={300}>
+                    <div className="feature-timeline-main-container">
+                        <div className="container" style={gridStyle}>
+                            {commandHeading}
+                            {columnHeading}
+                            {shadows}
+                            {workItemShadowCell}
+                            {workItemCells}
+                            {workItemGaps}
+                            {childDialog}
+                        </div>
                     </div>
-                </div>
+                    {
+                        this.props.showPropsedWorkeItemsPane && <ConnectedWorkItemsList />
+                    }
+                </SplitterLayout>
             </div>
+
         );
     }
 
@@ -397,6 +428,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 const ConntectedFeatureTimeline = connect(
     makeMapStateToProps, mapDispatchToProps
 )(FeatureTimelineGrid);
+
 
 export const PrimaryGrid = () => {
     const initialState: IFeatureTimelineRawState = {

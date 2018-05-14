@@ -1,5 +1,5 @@
 import * as VSS_Service from 'VSS/Service';
-import { StartUpdateWorkitemIterationAction } from "../store/workItems/actions";
+import { StartUpdateWorkitemIterationAction } from "../store/workitems/actions";
 import { put, call } from "redux-saga/effects";
 import { WorkItemTrackingHttpClient3_2 } from 'TFS/WorkItemTracking/RestClient';
 import { JsonPatchDocument } from 'VSS/WebApi/Contracts';

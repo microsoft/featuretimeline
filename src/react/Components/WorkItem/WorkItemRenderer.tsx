@@ -8,6 +8,7 @@ import {
     TooltipHost, TooltipOverflowMode
 } from 'office-ui-fabric-react/lib/Tooltip';
 import { css } from '@uifabric/utilities/lib/css';
+import { hexToRgb } from '../colorhelper';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;
@@ -281,20 +282,3 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 }
 
 
-function hexToRgb(hex: string, opacity: number) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    const rgb = result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-
-    if (rgb) {
-        const {
-            r,
-            g,
-            b
-        } = rgb;
-        return `rgba(${r},${g},${b}, ${opacity})`;
-    }
-}

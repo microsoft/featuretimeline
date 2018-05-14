@@ -13,7 +13,7 @@ export const sampleData = {
               'System.Title': 'Performance',
               'Microsoft.VSTS.Common.StackRank': 999873514
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/657579'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/657579'
           },
           children: [
             1214178
@@ -33,7 +33,7 @@ export const sampleData = {
               'System.Title': 'Move <team> out of the L1',
               'Microsoft.VSTS.Common.StackRank': 999810274
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/974044'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/974044'
           },
           children: [
             1146754
@@ -53,7 +53,7 @@ export const sampleData = {
               'System.Title': 'Remove Kanban L2 tests',
               'Microsoft.VSTS.Common.StackRank': 6591
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1035397'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1035397'
           },
           children: [],
           parent: 1221435,
@@ -71,7 +71,7 @@ export const sampleData = {
               'System.Title': 'Make checklist card annotations more flexible (no restriction on type, just child link)',
               'Microsoft.VSTS.Common.StackRank': 25826165
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1082105'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1082105'
           },
           children: [],
           parent: 0,
@@ -89,7 +89,7 @@ export const sampleData = {
               'System.Title': ' Team Pane and Team Favorites',
               'Microsoft.VSTS.Common.StackRank': 25759732
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1126969'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1126969'
           },
           children: [],
           parent: 1170196,
@@ -107,7 +107,7 @@ export const sampleData = {
               'System.Title': 'Org URL change: Fix MSFT Teams integration with board ',
               'Microsoft.VSTS.Common.StackRank': 25826885
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1144489'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1144489'
           },
           children: [
             1176575,
@@ -129,7 +129,7 @@ export const sampleData = {
               'System.Title': 'Team Removal: Third party co-ordinations',
               'Microsoft.VSTS.Common.StackRank': 25754657
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1146754'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1146754'
           },
           children: [
             1228612,
@@ -150,7 +150,7 @@ export const sampleData = {
               'System.Title': 'Consolidate Edit iteration dialog use to use the new control in sprints hub',
               'Microsoft.VSTS.Common.StackRank': 9210
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1163059'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1163059'
           },
           children: [],
           parent: 1221435,
@@ -167,7 +167,7 @@ export const sampleData = {
               'System.State': 'Proposed',
               'System.Title': 'Teams'
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1170196'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1170196'
           },
           children: [
             1126969
@@ -187,7 +187,7 @@ export const sampleData = {
               'System.Title': 'Org URL change: Fix MSFT Teams integration with board ',
               'Microsoft.VSTS.Common.StackRank': 5445
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1176575'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1176575'
           },
           children: [],
           parent: 1144489,
@@ -205,7 +205,7 @@ export const sampleData = {
               'System.Title': 'Working days in Sprints date control is not updated after updating capacity in capacity pivot',
               'Microsoft.VSTS.Common.StackRank': 2535
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1191835'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1191835'
           },
           children: [],
           parent: 1221435,
@@ -223,7 +223,7 @@ export const sampleData = {
               'System.Title': 'Test coverage for Stakeholder scenarios',
               'Microsoft.VSTS.Common.StackRank': 5577
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1201188'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1201188'
           },
           children: [],
           parent: 1221435,
@@ -241,7 +241,7 @@ export const sampleData = {
               'System.Title': '[Agile Hubs - Routing L2 tests] L2 tests for routing changes',
               'Microsoft.VSTS.Common.StackRank': 8292
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1207971'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1207971'
           },
           children: [],
           parent: 1221435,
@@ -259,7 +259,7 @@ export const sampleData = {
               'System.Title': 'Spec: Taskboard customization ',
               'Microsoft.VSTS.Common.StackRank': 25826525
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1210122'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1210122'
           },
           children: [],
           parent: 0,
@@ -277,7 +277,7 @@ export const sampleData = {
               'System.Title': 'Performance work for Agile Hubs',
               'Microsoft.VSTS.Common.StackRank': 25825985
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1214178'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1214178'
           },
           children: [
             1214191,
@@ -306,7 +306,7 @@ export const sampleData = {
               'System.Title': 'Sprints hub performance scenarios',
               'Microsoft.VSTS.Common.StackRank': 8760
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1214191'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1214191'
           },
           children: [],
           parent: 1214178,
@@ -324,7 +324,7 @@ export const sampleData = {
               'System.Title': 'Rename performance scenarios for new Agile hubs',
               'Microsoft.VSTS.Common.StackRank': 8744
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1214206'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1214206'
           },
           children: [],
           parent: 1214178,
@@ -342,7 +342,7 @@ export const sampleData = {
               'System.Title': 'Add Plan scenario to VSTS tracked perf scenarios',
               'Microsoft.VSTS.Common.StackRank': 8710
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1214208'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1214208'
           },
           children: [],
           parent: 1214178,
@@ -360,7 +360,7 @@ export const sampleData = {
               'System.Title': 'Investigate LWP + old platform shim performance impacts',
               'Microsoft.VSTS.Common.StackRank': 1999989178
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1214215'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1214215'
           },
           children: [],
           parent: 1214178,
@@ -378,7 +378,7 @@ export const sampleData = {
               'System.Title': 'Follow up with Open ALM on Org URL change',
               'Microsoft.VSTS.Common.StackRank': 1999920032
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1214905'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1214905'
           },
           children: [],
           parent: 1144489,
@@ -396,7 +396,7 @@ export const sampleData = {
               'System.Title': 'Spike on rebuild skype team tab (aspx to template)',
               'Microsoft.VSTS.Common.StackRank': 5452
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1214908'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1214908'
           },
           children: [],
           parent: 1144489,
@@ -414,7 +414,7 @@ export const sampleData = {
               'System.Title': 'Fix TTI when switching backlog levels',
               'Microsoft.VSTS.Common.StackRank': 512
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1215933'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1215933'
           },
           children: [],
           parent: 1214178,
@@ -432,7 +432,7 @@ export const sampleData = {
               'System.Title': 'Right pane error experience',
               'Microsoft.VSTS.Common.StackRank': 2366
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1216209'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1216209'
           },
           children: [],
           parent: 1221435,
@@ -450,7 +450,7 @@ export const sampleData = {
               'System.Title': 'Consolidate client side url utitlities',
               'Microsoft.VSTS.Common.StackRank': 1999994709
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1216996'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1216996'
           },
           children: [],
           parent: 1221435,
@@ -468,7 +468,7 @@ export const sampleData = {
               'System.Title': 'Make Sprints Hub Right pane sibling of pivot rather than sibling of the Hub',
               'Microsoft.VSTS.Common.StackRank': 13262
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1218835'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1218835'
           },
           children: [],
           parent: 1221435,
@@ -486,7 +486,7 @@ export const sampleData = {
               'System.Title': 'Charts on the board aren\'t rendered',
               'Microsoft.VSTS.Common.StackRank': 3380
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1219506'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1219506'
           },
           children: [],
           parent: 1221435,
@@ -504,7 +504,7 @@ export const sampleData = {
               'System.Title': 'SPIKE: Board/Taskboard ',
               'Microsoft.VSTS.Common.StackRank': 25827065
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1220873'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1220873'
           },
           children: [],
           parent: 0,
@@ -522,7 +522,7 @@ export const sampleData = {
               'System.Title': 'Public Preview: Agile Hubs in horizontal nav',
               'Microsoft.VSTS.Common.StackRank': 25826705
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1221435'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1221435'
           },
           children: [
             1035397,
@@ -563,7 +563,7 @@ export const sampleData = {
               'System.Title': 'SPIKE: Team Service has first class artifact',
               'Microsoft.VSTS.Common.StackRank': 25826345
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1224415'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1224415'
           },
           children: [],
           parent: 0,
@@ -581,7 +581,7 @@ export const sampleData = {
               'System.Title': 'Vertical nav: Mapping pane link to n-1 backlog is full page reload',
               'Microsoft.VSTS.Common.StackRank': 9971
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1227335'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1227335'
           },
           children: [],
           parent: 1221435,
@@ -599,7 +599,7 @@ export const sampleData = {
               'System.Title': 'Backcompat support contributions on Sprints hub ',
               'Microsoft.VSTS.Common.StackRank': 2852
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1227568'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1227568'
           },
           children: [],
           parent: 1221435,
@@ -617,7 +617,7 @@ export const sampleData = {
               'System.Title': 'Include 3rd party back-compat data provider for agile hubs',
               'Microsoft.VSTS.Common.StackRank': 9464
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1228612'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1228612'
           },
           children: [],
           parent: 1146754,
@@ -635,7 +635,7 @@ export const sampleData = {
               'System.Title': 'Sprints Hub: Capacity Page: Inconsistent behavior of clear button when invalid values specified.',
               'Microsoft.VSTS.Common.StackRank': 2286
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1230513'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1230513'
           },
           children: [],
           parent: 1221435,
@@ -653,7 +653,7 @@ export const sampleData = {
               'System.Title': 'Update Delivery Plans for team removal',
               'Microsoft.VSTS.Common.StackRank': 9802
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1230805'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1230805'
           },
           children: [],
           parent: 1146754,
@@ -671,7 +671,7 @@ export const sampleData = {
               'System.Title': 'Sprint Directory: Follow up with new telemetry format',
               'Microsoft.VSTS.Common.StackRank': 3528
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1230889'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1230889'
           },
           children: [],
           parent: 1221435,
@@ -689,7 +689,7 @@ export const sampleData = {
               'System.Title': 'Compare performance between old hub and new hubs',
               'Microsoft.VSTS.Common.StackRank': 1999992874
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1232404'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1232404'
           },
           children: [],
           parent: 1214178,
@@ -707,7 +707,7 @@ export const sampleData = {
               'System.Title': 'Better break down the performance timing (data provider, client rendering)',
               'Microsoft.VSTS.Common.StackRank': 1999993028
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1232406'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1232406'
           },
           children: [],
           parent: 1214178,
@@ -725,7 +725,7 @@ export const sampleData = {
               'System.Title': 'Add save card telemetry for taskboard',
               'Microsoft.VSTS.Common.StackRank': 1999993182
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1232407'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1232407'
           },
           children: [],
           parent: 1214178,
@@ -743,7 +743,7 @@ export const sampleData = {
               'System.Title': 'List all sql calls on agile hubs and validate the necessity ',
               'Microsoft.VSTS.Common.StackRank': 1999993336
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1232411'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1232411'
           },
           children: [],
           parent: 1214178,
@@ -761,7 +761,7 @@ export const sampleData = {
               'System.Title': 'Team routing problems',
               'Microsoft.VSTS.Common.StackRank': 1658
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1233668'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1233668'
           },
           children: [],
           parent: 1221435,
@@ -779,7 +779,7 @@ export const sampleData = {
               'System.Title': 'Directory Set: Bugs 2/2',
               'Microsoft.VSTS.Common.StackRank': 3549
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1233791'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1233791'
           },
           children: [],
           parent: 1221435,
@@ -797,7 +797,7 @@ export const sampleData = {
               'System.Title': 'Sprints directory: New Sprint does not have correct default team selected',
               'Microsoft.VSTS.Common.StackRank': 4481
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1234056'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1234056'
           },
           children: [],
           parent: 1221435,
@@ -815,7 +815,7 @@ export const sampleData = {
               'System.Title': 'New Sprint pane',
               'Microsoft.VSTS.Common.StackRank': 528
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1235251'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1235251'
           },
           children: [],
           parent: 1221435,
@@ -833,7 +833,7 @@ export const sampleData = {
               'System.Title': 'Sprints Hub: Add sprint picker view action V2',
               'Microsoft.VSTS.Common.StackRank': 3296
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1237518'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1237518'
           },
           children: [],
           parent: 1221435,
@@ -851,7 +851,7 @@ export const sampleData = {
               'System.Title': 'Alex B Bug Bash 2',
               'Microsoft.VSTS.Common.StackRank': 5915
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1241480'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1241480'
           },
           children: [],
           parent: 1221435,
@@ -869,7 +869,7 @@ export const sampleData = {
               'System.Title': 'Alex B Bug BAsh',
               'Microsoft.VSTS.Common.StackRank': 3718
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1241481'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1241481'
           },
           children: [],
           parent: 1221435,
@@ -887,7 +887,7 @@ export const sampleData = {
               'System.Title': 'Navneet Bug Bash',
               'Microsoft.VSTS.Common.StackRank': 3887
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1241482'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1241482'
           },
           children: [],
           parent: 1221435,
@@ -905,7 +905,7 @@ export const sampleData = {
               'System.Title': 'Becca Bug BAsh',
               'Microsoft.VSTS.Common.StackRank': 3338
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1241484'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1241484'
           },
           children: [],
           parent: 1221435,
@@ -923,7 +923,7 @@ export const sampleData = {
               'System.Title': 'New Agile Hubs',
               'Microsoft.VSTS.Common.StackRank': 999778655
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1242252'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1242252'
           },
           children: [
             1221435,
@@ -944,7 +944,7 @@ export const sampleData = {
               'System.Title': 'Memory warning on backlogs page',
               'Microsoft.VSTS.Common.StackRank': 6506
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1244971'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1244971'
           },
           children: [],
           parent: 1214178,
@@ -962,7 +962,7 @@ export const sampleData = {
               'System.Title': 'Inline new feature education',
               'Microsoft.VSTS.Common.StackRank': 25761506
             },
-            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workItems/1248017'
+            url: 'https://mseng.visualstudio.com/DefaultCollection/b924d696-3eae-4116-8443-9a18392d8544/_apis/wit/workitems/1248017'
           },
           children: [],
           parent: 1242252,

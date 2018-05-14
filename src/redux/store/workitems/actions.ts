@@ -3,6 +3,7 @@ import { WorkItem, WorkItemLink } from "TFS/WorkItemTracking/Contracts";
 import { TrackableAction } from "./types";
 import { TeamSettingsIteration, WorkItemTypeStateInfo } from "TFS/Work/Contracts";
 export const StartUpdateWorkitemIterationActionType = "@@workitems/StartUpdateWorkitemIterationAction";
+export const StartMarkInProgressActionType = "@@workitems/StartMarkInProgressAction";
 export const WorkItemSavedActionType = "@@workitems/WorkItemSavedAction";
 export const WorkItemSaveFailedActionType = "@@workitems/WorkItemSaveFailedAction";
 export const ChangeParentActionType = "@@workitems/ChangeParentAction";
@@ -18,6 +19,15 @@ export interface StartUpdateWorkitemIterationAction extends Action {
         workItem: number;
         teamIteration: TeamSettingsIteration;
         override: boolean;
+    }
+}
+
+export interface StartMarkInProgressAction extends Action {
+    type: "@@workitems/StartMarkInProgressAction";
+    payload: {
+        workItem: number;
+        teamIteration: TeamSettingsIteration;
+        state: string;
     }
 }
 
@@ -86,5 +96,5 @@ export interface ClearOverrideIterationAction extends Action {
 }
 
 
-export type WorkItemActions = StartUpdateWorkitemIterationAction | ChangeParentAction | WorkItemsReceivedAction | WorkItemLinksReceivedAction | LaunchWorkItemFormAction;
+export type WorkItemActions = StartMarkInProgressAction | StartUpdateWorkitemIterationAction | ChangeParentAction | WorkItemsReceivedAction | WorkItemLinksReceivedAction | LaunchWorkItemFormAction;
 export type OverrideIterationActions = SetOverrideIterationAction | ClearOverrideIterationAction;

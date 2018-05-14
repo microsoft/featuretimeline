@@ -5,7 +5,7 @@ import {
     ChangeParentActionType, WorkItemsReceivedAction,
     WorkItemsReceivedActionType, WorkItemLinksReceivedAction,
     LaunchWorkItemFormAction,
-    LaunchWorkItemFormActionType, SetOverrideIterationAction, SetOverrideIterationType, ClearOverrideIterationAction, ClearOverrideIterationType, WorkItemSavedAction, WorkItemSavedActionType, WorkItemSaveFailedActionType, WorkItemSaveFailedAction
+    LaunchWorkItemFormActionType, SetOverrideIterationAction, SetOverrideIterationType, ClearOverrideIterationAction, ClearOverrideIterationType, WorkItemSavedAction, WorkItemSavedActionType, WorkItemSaveFailedActionType, WorkItemSaveFailedAction, StartMarkInProgressActionType, StartMarkInProgressAction
 } from './actions';
 
 import { WorkItem, WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
@@ -20,6 +20,17 @@ export const startUpdateWorkItemIteration: ActionCreator<StartUpdateWorkitemIter
             override
         }
     });
+
+export const startMarkInProgress: ActionCreator<StartMarkInProgressAction> =
+    (workItem: number, teamIteration: TeamSettingsIteration, state: string) => ({
+        type: StartMarkInProgressActionType,
+        payload: {
+            workItem,
+            teamIteration,
+            state
+        }
+    });
+
 
 export const workItemSaved: ActionCreator<WorkItemSavedAction> =
     (workItems: number[]) => ({

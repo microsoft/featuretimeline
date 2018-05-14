@@ -2,6 +2,7 @@ import { DropTarget } from 'react-dnd';
 import { IIterationSahdowProps, IterationShadow } from './IterationShadow';
 import React = require('react');
 import { IWorkItemRendererProps } from './WorkItem/WorkItemRenderer';
+import { IWorkItemListItemProps } from './WorkItem/WorkItemListItem';
 
 
 export class DroppableIterationShadow extends React.Component<IIterationSahdowProps, {}> {
@@ -22,9 +23,15 @@ const iterationDropTarget = {
             return;
         }
 
-        const draggedItem = monitor.getItem() as IWorkItemRendererProps;
-
-        dropTargetProps.changeIteration(draggedItem.id, dropTargetProps.teamIteration, draggedItem.allowOverride);
+        let draggedItem = monitor.getItem();
+        debugger;
+        if (draggedItem["dimension"]) {
+            const item = draggedItem as IWorkItemRendererProps;
+            dropTargetProps.changeIteration(item.id, dropTargetProps.teamIteration, draggedItem.allowOverride);
+        } else {
+            const item = draggedItem as IWorkItemListItemProps;
+            dropTargetProps.markInProgress(item.id, dropTargetProps.teamIteration, item.inProgressState);
+        }
 
         return { moved: true };
     }

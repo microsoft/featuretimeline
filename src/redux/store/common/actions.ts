@@ -4,6 +4,7 @@ export const ResetType = "@@common/reset";
 export const InitializeType = "@@common/initialize";
 export const ShowDetailsType = "@@common/showdetails";
 export const CloseDetailsType = "@@common/closedetails";
+export const ToggleProposedWorkItemsPaneType = "@@common/toggleproposedworkitemspane";
 
 export interface InitializeAction extends Action {
     type: "@@common/initialize";
@@ -35,4 +36,9 @@ export interface CloseDetailsAction extends Action {
     }
 }
 
-export type CommonActions = ResetAction | InitializeAction | ShowDetailsAction | CloseDetailsAction;
+export interface ToggleProposedWorkItemsPaneAction extends Action {
+    type: "@@common/toggleproposedworkitemspane";
+    payload: void;
+}
+
+export type CommonActions = ResetAction | InitializeAction | ShowDetailsAction | CloseDetailsAction | ToggleProposedWorkItemsPaneAction;

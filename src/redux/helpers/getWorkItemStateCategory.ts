@@ -11,3 +11,14 @@ export function getWorkItemStateCategory(
 
     return StateCategory[stateInfo.states[state]];
 }
+
+export function getDefaultInProgressState(
+    workItemType: string,
+    workItemTypeMappedStates: WorkItemTypeStateInfo[]): string {
+
+    const stateInfo: WorkItemTypeStateInfo = workItemTypeMappedStates
+        .filter(wtms => wtms.workItemTypeName.toLowerCase() === workItemType.toLowerCase())[0];
+
+
+    return Object.keys(stateInfo.states).filter(s => stateInfo.states[s] === "InProgress")[0];
+}

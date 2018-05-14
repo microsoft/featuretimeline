@@ -30,7 +30,6 @@ export function* callInitialize(action: InitializeAction) {
 }
 
 export function* handleInitialize(action: InitializeAction) {
-    debugger;
     const {
         projectId,
         teamId
@@ -90,7 +89,7 @@ export function* handleInitialize(action: InitializeAction) {
         const workItemTypeAndStatesClause =
             stateInfo
                 .map(si => {
-                    const states = Object.keys(si.states).filter(state => si.states[state] === "InProgress")
+                    const states = Object.keys(si.states).filter(state => si.states[state] === "InProgress" || si.states[state] === "Proposed")
                         .map(state => _escape(state))
                         .join("', '");
 
@@ -115,8 +114,7 @@ export function* handleInitialize(action: InitializeAction) {
                         AND      (${teamFieldClause})
                         ORDER BY [${orderField}] ASC,[System.Id] ASC`;
 
-        const queryResults: WitContracts.WorkItemQueryResult = yield call(witHttpClient.queryByWiql.bind(witHttpClient), { query: wiql }, projectId);
-
+        const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
         // Get work items for backlog level
         const backlogLevelWorkItemIds: number[] = [];
         let childWorkItemIds: number[] = [];
@@ -130,7 +128,7 @@ export function* handleInitialize(action: InitializeAction) {
 
             let pagedWorkItems = yield call(_pageWorkItemFields, potentialBacklogLevelWorkItemIds, [orderField]);
 
-            pagedWorkItems = pagedWorkItems.filter((wi) => _isInProgress(wi, bc));
+            // pagedWorkItems = pagedWorkItems.filter((wi) => _isInProgress(wi, bc));
 
             const childBacklogLevel = yield call(_findChildBacklogLevel, currentBacklogLevel, bc);
             const parentBacklogLevel = yield call(_findParentBacklogLevel, currentBacklogLevel, bc);
@@ -196,9 +194,9 @@ function _escape(value: string): string {
     return value.replace("'", "''");
 }
 
-function _isInProgress(workItem: WitContracts.WorkItem, backlogConfig: Contracts.BacklogConfiguration) {
-    return (backlogConfig.workItemTypeMappedStates.find((t) => t.workItemTypeName == workItem.fields["System.WorkItemType"]).states[workItem.fields["System.State"]] === "InProgress");
-}
+// function _isInProgress(workItem: WitContracts.WorkItem, backlogConfig: Contracts.BacklogConfiguration) {
+//     return (backlogConfig.workItemTypeMappedStates.find((t) => t.workItemTypeName == workItem.fields["System.WorkItemType"]).states[workItem.fields["System.State"]] === "InProgress");
+// }
 
 function _findChildBacklogLevel(
     backlogLevel: Contracts.BacklogLevelConfiguration,

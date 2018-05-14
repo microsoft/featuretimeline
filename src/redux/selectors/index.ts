@@ -7,6 +7,7 @@ import { WorkItemLevel, StateCategory } from "../store/workitems/types";
 import { getWorkItemHierarchy } from "./workItemHierarchySelector";
 import { getGridView } from "./gridViewSelector";
 import { getTeamIterations } from "./teamIterations";
+import { planFeatures } from "./planFeatures";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
 export const getProjectId = () => {
@@ -50,6 +51,15 @@ export const workItemIdsSelector = (level: WorkItemLevel, stateCategory: StateCa
         });
 }
 
+export const planFeaturesSelector = () => {
+    return createSelector(
+        [uiStatusSelector(), getProjectId, getTeamId, getRawState],
+        (uiStatus, projectId, teamId, state) => {
+            return planFeatures(uiStatus, projectId, teamId, state);
+        }
+    );
+}
+
 export const workItemOverrideIterationSelector = () => {
     return createSelector([getRawState], (state) => state.workItemOverrideIteration);
 }
@@ -74,5 +84,5 @@ export const gridViewSelector = () => {
         workItemOverrideIterationSelector(),
         iterationDisplayOptionsSelector()
     ],
-    getGridView)
+        getGridView)
 }

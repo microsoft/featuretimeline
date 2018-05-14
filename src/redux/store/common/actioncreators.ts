@@ -1,5 +1,8 @@
 import { ActionCreator } from 'redux';
-import { InitializeAction, InitializeType, ShowDetailsAction, ShowDetailsType, CloseDetailsAction, CloseDetailsType, ResetAction, ResetType } from './actions';
+import { InitializeAction, InitializeType, ShowDetailsAction, 
+    ShowDetailsType, CloseDetailsAction, CloseDetailsType, 
+    ResetAction, ResetType, 
+    ToggleProposedWorkItemsPaneAction, ToggleProposedWorkItemsPaneType } from './actions';
 
 export const resetAllData: ActionCreator<ResetAction> = () => ({
     type: ResetType,
@@ -28,3 +31,8 @@ export const closeDetails: ActionCreator<CloseDetailsAction> =
         type: CloseDetailsType,
         payload: { id }
     });
+
+export const toggleProposedWorkItemsPane: ActionCreator<ToggleProposedWorkItemsPaneAction> = () => ({
+    type: ToggleProposedWorkItemsPaneType,
+    payload: null
+}) 

@@ -43,7 +43,7 @@
     border: none;
 }
 
-.iteration-options {
+.header-commands {
     display: flex;
     justify-content: flex-end;
 
@@ -52,6 +52,10 @@
     background: white;
     left: 0;
     align-items: center;
+}
+
+.iteration-options {
+    display: flex;
 }
 
 .iteration-options-label {

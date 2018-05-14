@@ -1,4 +1,4 @@
-import { ClearOverrideIterationAction } from "../store/workItems/actions";
+import { ClearOverrideIterationAction } from "../store/workitems/actions";
 import { put, call, select } from "redux-saga/effects";
 import { workItemOverrideIterationSelector } from "../selectors";
 import { IWorkItemOverrideIteration } from "../store";

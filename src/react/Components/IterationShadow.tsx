@@ -9,6 +9,7 @@ export interface IIterationSahdowProps extends IGridIteration {
     isOverrideIterationInProgress: boolean;
     onOverrideIterationOver: (iteration: string) => void;
     changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => void;
+    markInProgress: (id: number, teamIteration: TeamSettingsIteration, state: string) => void;
 
     connectDropTarget?: (element: JSX.Element) => JSX.Element;
     isOver?: boolean;
