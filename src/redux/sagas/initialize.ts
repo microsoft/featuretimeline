@@ -117,7 +117,7 @@ export function* handleInitialize(action: InitializeAction) {
             const parentBacklogLevel = yield call(_findParentBacklogLevel, currentBacklogLevel, bc);
             backlogLevelWorkItemIds.push(...pagedWorkItems.map((wi) => wi.id));
 
-            const childQueryResult: WitContracts.WorkItemQueryResult = yield call(_runChildWorkItemQuery, backlogLevelWorkItemIds, projectId, childBacklogLevel);
+            const childQueryResult: WitContracts.WorkItemQueryResult = yield call(_runChildWorkItemQuery, backlogLevelWorkItemIds, projectId, backlogConfig, childBacklogLevel);
             if (childQueryResult && childQueryResult.workItemRelations) {
                 childWorkItemIds = childQueryResult.workItemRelations
                     .filter(link => link.target && link.rel)
@@ -177,14 +177,16 @@ function getBacklogLevelQueryWiql(backlogConfig: Contracts.BacklogConfiguration,
     const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
     const orderField = backlogConfig.backlogFields.typeFields["Order"];
     const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${w.name}'`).join(",");
-    const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
-        .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
+    
     let backlogIteration = teamSettings.backlogIteration.path || teamSettings.backlogIteration.name;
     if (backlogIteration[0] === "\\") {
         const webContext = VSS.getWebContext();
         backlogIteration = webContext.project.name + backlogIteration;
     }
     backlogIteration = _escape(backlogIteration);
+    
+    const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
+        .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
     const workItemTypeAndStatesClause = stateInfo
         .map(si => {
             const states = Object.keys(si.states).filter(state => si.states[state] === stateCategory)
@@ -247,6 +249,7 @@ function _findParentBacklogLevel(
 async function _runChildWorkItemQuery(
     ids: number[],
     project: string,
+    backlogConfig: Contracts.BacklogConfiguration,
     backlogLevel: Contracts.BacklogLevelConfiguration):
     Promise<WitContracts.WorkItemQueryResult> {
     if (!ids || ids.length === 0) {
@@ -254,13 +257,25 @@ async function _runChildWorkItemQuery(
     }
 
     const idClause = ids.join(",");
-    const witClause = backlogLevel.workItemTypes.map(wit => "'" + wit.name + "'").join(",");
+    const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
+        .filter(wtms => backlogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
+    const workItemTypeAndStatesClause = stateInfo
+        .map(si => {
+            const states = Object.keys(si.states).filter(state => si.states[state] !== "Removed")
+                .map(state => _escape(state))
+                .join("', '");
+            return `(
+                Target.[System.WorkItemType] = '${_escape(si.workItemTypeName)}'
+                             AND Target.[System.State] IN ('${states}')
+                            )`;
+        }).join(" OR ");
+
     const wiql =
         `SELECT [System.Id]
      FROM WorkItemLinks 
      WHERE   (Source.[System.TeamProject] = @project and Source.[System.Id] in (${idClause})) 
          AND ([System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward')
-         AND (Target.[System.TeamProject] = @project and Target.[System.WorkItemType] in (${witClause}))  
+         AND (Target.[System.TeamProject] = @project and ${workItemTypeAndStatesClause})  
      MODE (MayContain)`;
     const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
     return witHttpClient.queryByWiql({ query: wiql }, project);
