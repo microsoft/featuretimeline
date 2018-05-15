@@ -16,7 +16,6 @@ export function* restorePlanFeaturesDisplayOptions() {
     let teamId = yield select(getTeamId);
     const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
 
-    debugger;
     const stateString = yield call([dataService, dataService.getValue], `${teamId}_planFeaturesDisplayOptions`, { scopeType: 'User' });
     if (stateString) {
         const state = JSON.parse(stateString) as IPlanFeaturesState;
