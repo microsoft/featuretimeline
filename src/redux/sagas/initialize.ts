@@ -12,7 +12,6 @@ import { loading } from '../store/loading/actionCreators';
 import { restoreDisplayIterationCount, teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
 import { workItemTypesReceived } from '../store/workitemmetadata/actionCreators';
 import { setOverrideIteration, workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
-import { ALLOW_PLAN_FEATURES, getFeatureCookies } from './featureStateReader';
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
@@ -77,11 +76,8 @@ export function* handleInitialize(action: InitializeAction) {
         if (queryResults && queryResults.workItems) {
             queryResultWits.push(...queryResults.workItems);
         }
-        // query for Proposed work items if feature is on
-        const featureCookies = yield call(getFeatureCookies);
-        const allowPlanFeatures = featureCookies.findIndex(c => c.indexOf(ALLOW_PLAN_FEATURES) >= 0) >= 0;
-
-        if (allowPlanFeatures) {
+        // query for Proposed work items
+        {
             const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Proposed");
             const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
 
@@ -173,14 +169,14 @@ function getBacklogLevelQueryWiql(backlogConfig: Contracts.BacklogConfiguration,
     const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
     const orderField = backlogConfig.backlogFields.typeFields["Order"];
     const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${w.name}'`).join(",");
-    
+
     let backlogIteration = teamSettings.backlogIteration.path || teamSettings.backlogIteration.name;
     if (backlogIteration[0] === "\\") {
         const webContext = VSS.getWebContext();
         backlogIteration = webContext.project.name + backlogIteration;
     }
     backlogIteration = _escape(backlogIteration);
-    
+
     const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
         .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
     const workItemTypeAndStatesClause = stateInfo

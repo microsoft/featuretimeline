@@ -27,9 +27,9 @@ export class WorkItemListItem extends React.Component<IWorkItemListItemProps, {}
         let style = {};
 
         if (isDragging) {
-            style['background'] = hexToRgb(this.props.color, 0.1);
+            style['border-color'] = hexToRgb(this.props.color, 0.1);
         } else {
-            style['background'] = hexToRgb(this.props.color, 0.8);
+            style['border-color'] = hexToRgb(this.props.color, 0.8);
         }
 
         const className = "work-item-list-item";

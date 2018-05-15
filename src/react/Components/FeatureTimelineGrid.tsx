@@ -47,7 +47,6 @@ import { ConnectedWorkItemsList } from './WorkItemList';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import './FeatureTimelineGrid.scss';
-import { ALLOW_PLAN_FEATURES } from '../../redux/sagas/featureStateReader';
 
 initializeIcons(/* optional base url */);
 
@@ -59,7 +58,6 @@ export interface IFeatureTimelineGridProps {
     gridView: IGridView,
     childItems: number[];
     planFeaturesState: IPlanFeaturesState;
-    allowPlanFeatures: boolean;
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
     closeDetails: (id: number) => void;
@@ -80,7 +78,6 @@ export interface IFeatureTimelineGridProps {
 
 const makeMapStateToProps = () => {
     return (state: IFeatureTimelineRawState) => {
-        const allowPlanFeatures = state.featureState && !!state.featureState[ALLOW_PLAN_FEATURES];
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
@@ -89,7 +86,6 @@ const makeMapStateToProps = () => {
             gridView: gridViewSelector()(state),
             childItems: state.workItemDetails,
             planFeaturesState: planFeatureStateSelector()(state),
-            allowPlanFeatures
         }
     }
 }
@@ -165,8 +161,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         const {
             uiState,
-            rawState,
-            allowPlanFeatures
+            rawState
         } = this.props;
         if (!rawState || uiState === UIStatus.Loading) {
             return (
@@ -388,14 +383,13 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
-                {allowPlanFeatures && (
-                    <Checkbox
-                        className="plan-feature-checkbox"
-                        label={"Plan Features"}
-                        onChange={this._onShowPlanFeaturesChanged}
-                        checked={this.props.planFeaturesState.show} />
-                )
-                }
+
+                <Checkbox
+                    className="plan-feature-checkbox"
+                    label={"Plan Features"}
+                    onChange={this._onShowPlanFeaturesChanged}
+                    checked={this.props.planFeaturesState.show} />
+
             </div>
         );
 
@@ -414,7 +408,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         );
 
         let contents = grid;
-        if (!isSubGrid && this.props.allowPlanFeatures && this.props.planFeaturesState.show) {
+        if (!isSubGrid && this.props.planFeaturesState.show) {
             contents = (
                 <SplitterLayout
                     secondaryInitialSize={this.props.planFeaturesState.paneWidth}

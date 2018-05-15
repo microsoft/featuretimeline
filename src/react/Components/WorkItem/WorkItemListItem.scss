@@ -1,8 +1,10 @@
 @mixin default {
     display: flex;
     flex-direction: row;
-    color: white;
+    color: black;
     text-align: center;
+    border-style: solid;
+    border-left-width: 8px;
     margin: 4px;
     font-size: 12px;
     padding: 2px;
