@@ -41,7 +41,20 @@ export function getWorkItemHierarchy(
 }
 
 function getWorkItemsDetails(projectId: string, teamId: string, ids: number[], input: IFeatureTimelineRawState, isRoot: boolean): IWorkItemHierarchy[] {
+    if (isRoot) {
+        ids = ids.filter(id => hasInProgressChildren(projectId, teamId, id, input))
+    }
     return ids.map(id => getWorkItemDetails(projectId, teamId, id, input, isRoot));
+}
+
+function hasInProgressChildren(projectId: string, teamId: string, id: number, input: IFeatureTimelineRawState): boolean {
+    const {
+        workItemsState
+    } = input;
+
+
+    const children = getChildrenId(workItemsState.workItemInfos, id);
+    return children.some(c => workItemsState.workItemInfos[c].stateCategory === StateCategory.InProgress);
 }
 
 function getWorkItemDetails(projectId: string, teamId: string, id: number, input: IFeatureTimelineRawState, isRoot: boolean): IWorkItemHierarchy {
