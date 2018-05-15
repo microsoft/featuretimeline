@@ -6,7 +6,7 @@ var manifest = require("../vss-extension.json");
 var extensionId = manifest.id;
 
 // Package extension
-var command = `tfx extension create --extension-id ${extensionId}-beta --overrides-file configs/beta.json --manifest-globs vss-extension.json --no-prompt --json`;
+var command = `tfx extension create --rev-version --extension-id ${extensionId}-beta --overrides-file configs/beta.json --manifest-globs vss-extension.json --no-prompt --json`;
 exec(command, (error, stdout) => {
     if (error) {
         console.error(`Could not create package: '${error}'`);
