@@ -3,7 +3,7 @@ import configureStore from '../../redux/configureStore';
 import DraggableWorkItemRenderer from './WorkItem/DraggableWorkItemRenderer';
 import HTML5Backend from 'react-dnd-html5-backend';
 import SplitterLayout from 'react-splitter-layout';
-import { Button, IconButton } from 'office-ui-fabric-react/lib/Button';
+import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import {
     changeDisplayIterationCount,
     displayAllIterations,
