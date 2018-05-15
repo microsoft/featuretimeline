@@ -1,25 +1,22 @@
-import * as VSS_Service from 'VSS/Service';
-import {
-    all,
-    call,
-    put
-} from 'redux-saga/effects';
-import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';
-import { genericError } from '../store/error/actionCreators';
-import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
-import { InitializeAction } from '../store/common/actions';
-import { teamSettingsIterationReceived, restoreDisplayIterationCount } from '../store/teamiterations/actionCreators';
-import { workItemLinksReceived, workItemsReceived, setOverrideIteration } from '../store/workitems/actionCreators';
+import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
+import * as VSS_Service from 'VSS/Service';
+import { all, call, put } from 'redux-saga/effects';
 import { WorkItemMetadataService } from '../../Services/WorkItemMetadataService';
+import { PageWorkItemHelper } from '../helpers/PageWorkItemHelper';
+import { IOverriddenIterationDuration } from '../store';
+import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';
+import { toggleProposedWorkItemsPane } from '../store/common/actioncreators';
+import { InitializeAction } from '../store/common/actions';
+import { genericError } from '../store/error/actionCreators';
+import { loading } from '../store/loading/actionCreators';
+import { restoreDisplayIterationCount, teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
 import { workItemTypesReceived } from '../store/workitemmetadata/actionCreators';
+import { setOverrideIteration, workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
+import { ALLOW_PLAN_FEATURES, getFeatureCookies } from './featureStateReader';
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
-import { loading } from '../store/loading/actionCreators';
-import { IOverriddenIterationDuration } from '../store';
-import { toggleProposedWorkItemsPane } from '../store/common/actioncreators';
-import { getFeatureCookies, ALLOW_PLAN_FEATURES } from './featureStateReader';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
@@ -289,6 +286,5 @@ async function _pageWorkItemFields(
         "System.IterationPath"
     ];
     commonFields.push(...fields);
-    const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
-    return witHttpClient.getWorkItems(ids, commonFields);
+    return PageWorkItemHelper.pageWorkItems(ids, /* projectName */ null, commonFields);
 }
