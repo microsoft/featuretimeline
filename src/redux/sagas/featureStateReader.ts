@@ -4,12 +4,12 @@ export const allowPlanFeatures = "allowPlanFeatures";
 export function* initializeFeatureState() {
     const enabledFeatures = getFeatureCookies();
     for (const feature of enabledFeatures) {
+        console.log("enabling feautre", feature);
         yield put(toggleFeatureState(feature.replace("_feature_", ""), true));
     }
 }
 
 function getFeatureCookies(): string[] {
-    debugger;
     const features = [];
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookies: string[] = decodedCookie.split(';');

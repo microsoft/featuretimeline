@@ -84,8 +84,8 @@ const makeMapStateToProps = () => {
             uiState: uiStatusSelector()(state),
             gridView: gridViewSelector()(state),
             childItems: state.workItemDetails,
-            showPropsedWorkeItemsPane: state.showProposedWorkItemsPane,
-            allowPlanFeatures: state.featureState[allowPlanFeatures]
+            showPropsedWorkeItemsPane: !!state.featureState[allowPlanFeatures] && state.showProposedWorkItemsPane,
+            allowPlanFeatures: !!state.featureState[allowPlanFeatures]
         }
     }
 }
@@ -378,7 +378,6 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                 commandHeading.push(lastHeaderColumnCommand);
             }
         }
-
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
