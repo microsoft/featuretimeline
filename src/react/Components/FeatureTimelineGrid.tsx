@@ -375,33 +375,41 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             }
         }
 
-        const commands = (
+        const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
                 <Checkbox className="plan-feature-checkbox" label={"Plan Features"} onChange={this._onShowPlanFeaturesChanged} checked={this.props.showPropsedWorkeItemsPane} />
             </div>
         );
 
+        const grid = (
+            <div className="feature-timeline-main-container">
+                <div className="container" style={gridStyle}>
+                    {commandHeading}
+                    {columnHeading}
+                    {shadows}
+                    {workItemShadowCell}
+                    {workItemCells}
+                    {workItemGaps}
+                    {childDialog}
+                </div>
+            </div>
+        );
+
+        let contents = grid;
+        if (!isSubGrid && this.props.showPropsedWorkeItemsPane) {
+            contents = <SplitterLayout secondaryInitialSize={300}>
+                {grid}
+                <ConnectedWorkItemsList />
+
+            </SplitterLayout>
+        }
+        
         return (
             <div className="root-container">
                 {commands}
                 {<div className="header-gap"></div>}
-                <SplitterLayout secondaryInitialSize={300}>
-                    <div className="feature-timeline-main-container">
-                        <div className="container" style={gridStyle}>
-                            {commandHeading}
-                            {columnHeading}
-                            {shadows}
-                            {workItemShadowCell}
-                            {workItemCells}
-                            {workItemGaps}
-                            {childDialog}
-                        </div>
-                    </div>
-                    {
-                        this.props.showPropsedWorkeItemsPane && <ConnectedWorkItemsList />
-                    }
-                </SplitterLayout>
+                {contents}
             </div>
 
         );
