@@ -4,7 +4,9 @@ export const ResetType = "@@common/reset";
 export const InitializeType = "@@common/initialize";
 export const ShowDetailsType = "@@common/showdetails";
 export const CloseDetailsType = "@@common/closedetails";
-export const ToggleProposedWorkItemsPaneType = "@@common/toggleproposedworkitemspane";
+export const TogglePlanFeaturesPaneType = "@@common/toggleplanfeaturespane";
+export const PlanFeaturesPaneWidthChangedType = "@@common/planfeaturespanewidthchanged";
+export const PlanFeaturesPaneFilterChangedType = "@@common/planfeaturespanefilterchanged";
 export const ToggleFeatureStateType = "@@common/togglefeaturestate";
 export interface InitializeAction extends Action {
     type: "@@common/initialize";
@@ -36,9 +38,19 @@ export interface CloseDetailsAction extends Action {
     }
 }
 
-export interface ToggleProposedWorkItemsPaneAction extends Action {
-    type: "@@common/toggleproposedworkitemspane";
+export interface TogglePlanFeaturesPaneAction extends Action {
+    type: "@@common/toggleplanfeaturespane";
     payload: boolean;
+}
+
+export interface PlanFeaturesPaneWidthChangedAction extends Action {
+    type: "@@common/planfeaturespanewidthchanged";
+    payload: number;
+}
+
+export interface PlanFeaturesPaneFilterChangedAction extends Action {
+    type: "@@common/planfeaturespanefilterchanged";
+    payload: string;
 }
 
 export interface ToggleFeatureStateAction extends Action {
@@ -49,4 +61,7 @@ export interface ToggleFeatureStateAction extends Action {
     }
 }
 
-export type CommonActions = ToggleFeatureStateAction | ResetAction | InitializeAction | ShowDetailsAction | CloseDetailsAction | ToggleProposedWorkItemsPaneAction;
+export type CommonActions = ToggleFeatureStateAction | ResetAction | InitializeAction
+    | ShowDetailsAction | CloseDetailsAction;
+export type PlanFeaturesPaneActions = TogglePlanFeaturesPaneAction
+    | PlanFeaturesPaneFilterChangedAction | PlanFeaturesPaneWidthChangedAction;

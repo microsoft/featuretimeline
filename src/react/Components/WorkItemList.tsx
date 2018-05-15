@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { IFeatureTimelineRawState } from '../../redux/store';
-import { planFeaturesSelector } from '../../redux/selectors';
+import { planFeaturesSelector, planFeatureStateSelector } from '../../redux/selectors';
 import { launchWorkItemForm } from '../../redux/store/workitems/actionCreators';
 import { List } from 'office-ui-fabric-react/lib/List';
 import DraggableWorkItemListItemRenderer from './WorkItem/DraggableWorkItemListItemRenderer';
 import { MessageBar } from 'office-ui-fabric-react/lib/MessageBar';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { changePlanFeaturesFilter } from '../../redux/store/common/actioncreators';
 
 export interface IWorkItemListItem {
     id: number;
@@ -17,19 +18,19 @@ export interface IWorkItemListItem {
 
 export interface IWorkItemListProps {
     workItems: IWorkItemListItem[];
+    filter: string;
     launchWorkItemForm: (id: number) => void;
+    onPlanFeaturesFilterChanged: (filter: string) => void;
 }
 
 export interface IWorkItemListState {
-    filter: string;
+
 }
 
 class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListState> {
     public constructor(props: IWorkItemListProps) {
         super(props);
-        this.state = {
-            filter: null
-        }
+        this.state = {};
     }
 
     public render() {
@@ -46,7 +47,11 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
         }
         return (
             <div className="work-item-list-container">
-                <TextField placeholder="Search Features" onChanged={this._changeFilter} ></TextField>
+                <TextField
+                    placeholder="Search Features"
+                    onChanged={this._changeFilter}
+                    value={this.props.filter}
+                />
                 <List
                     items={workItems}
                     onRenderCell={this._onRenderCell}
@@ -57,15 +62,14 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
     }
 
     private _changeFilter = (text: string) => {
-        this.setState({
-            filter: text
-        });
+        this.props.onPlanFeaturesFilterChanged(text);
     }
 
     private _filteredItems = (arg0: IWorkItemListItem[]): IWorkItemListItem[] => {
         const {
             filter
-        } = this.state;
+        } = this.props;
+
         if (!filter || !arg0) {
             return arg0;
         }
@@ -83,7 +87,8 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
 const makeMapStateToProps = () => {
     return (state: IFeatureTimelineRawState) => {
         return {
-            workItems: planFeaturesSelector()(state)
+            workItems: planFeaturesSelector()(state),
+            filter: planFeatureStateSelector()(state).filter
         }
     }
 }
@@ -95,7 +100,9 @@ const mapDispatchToProps = (dispatch) => {
                 dispatch(launchWorkItemForm(id));
             }
         },
-
+        onPlanFeaturesFilterChanged: (filter: string) => {
+            dispatch(changePlanFeaturesFilter(filter));
+        }
     };
 };
 export const ConnectedWorkItemsList = connect(

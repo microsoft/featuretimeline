@@ -1,7 +1,7 @@
 import { takeEvery, takeLatest } from "redux-saga/effects";
 import { ClearOverrideIterationType, LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType, StartMarkInProgressActionType } from "../store/workitems/actions";
 import { launchWorkItemFormSaga } from "./launchWorkItemFormSaga";
-import { InitializeType, ToggleProposedWorkItemsPaneType } from "../store/common/actions";
+import { InitializeType, TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType } from "../store/common/actions";
 import { callInitialize } from "./initialize";
 import { launchOverrideWorkItemIteration, launchClearOverrideIteration, launchSaveOverrideIteration } from "./workItemOverrideIterationListner";
 import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../store/overrideIterationProgress/actions";
@@ -9,7 +9,7 @@ import { updateWorkItemIteration } from "./updateWorkItemIterationListner";
 import { saveDisplayOptions } from './displayOptions';
 import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType } from "../store/teamiterations/actions";
 import { markWorkItemInProgressListner } from "./markWorkItemInProgressListner";
-import { savePlanFeatures } from "./planFeaturesOptions";
+import { savePlanFeaturesDisplayOptions, restorePlanFeaturesDisplayOptions } from "./planFeaturesDisplayOptions";
 import { initializeFeatureState } from "./featureStateReader";
 
 export function* watchSagaActions() {
@@ -27,5 +27,9 @@ export function* watchSagaActions() {
     yield takeLatest(ShiftDisplayIterationRightActionType, saveDisplayOptions);
     yield takeLatest(ChangeDisplayIterationCountActionType, saveDisplayOptions);
 
-    yield takeLatest(ToggleProposedWorkItemsPaneType, savePlanFeatures);
+    yield takeLatest(TogglePlanFeaturesPaneType, savePlanFeaturesDisplayOptions);
+    yield takeLatest(PlanFeaturesPaneFilterChangedType, savePlanFeaturesDisplayOptions);
+    yield takeLatest(PlanFeaturesPaneWidthChangedType, savePlanFeaturesDisplayOptions);
+
+    yield takeLatest(InitializeType, restorePlanFeaturesDisplayOptions);
 }

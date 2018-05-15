@@ -8,6 +8,7 @@ import { getWorkItemHierarchy } from "./workItemHierarchySelector";
 import { getGridView } from "./gridViewSelector";
 import { getTeamIterations } from "./teamIterations";
 import { planFeatures } from "./planFeatures";
+import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
 export const getProjectId = () => {
@@ -51,14 +52,6 @@ export const workItemIdsSelector = (level: WorkItemLevel, stateCategory: StateCa
         });
 }
 
-export const proposedWorkItemPaneSelector = () => {
-    return createSelector(
-        [getRawState],
-        (state) => {
-            return state.showProposedWorkItemsPane;
-        }
-    );
-}
 
 export const planFeaturesSelector = () => {
     return createSelector(
@@ -75,6 +68,16 @@ export const workItemOverrideIterationSelector = () => {
 
 export const uiStatusSelector = () => {
     return createSelector([getProjectId, getTeamId, getRawState], getUIStatus);
+}
+
+export const planFeatureStateSelector = () => {
+    return createSelector([getRawState], (state) => {
+        if(!state || !state.planFeaturesState) {
+            return getDefaultPlanFeaturesPaneState();
+        }
+
+        return state.planFeaturesState;
+    })
 }
 
 export const workItemHierarchySelector = () => {

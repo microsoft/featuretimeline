@@ -45,6 +45,12 @@ export interface IWorkItemOverrideIteration {
     changingStart: boolean; // Weather we are changing start iteration or end iteration
 }
 
+export interface IPlanFeaturesState {
+    show: boolean;
+    paneWidth: number;
+    filter: string;
+}
+
 export interface IFeatureTimelineRawState {
     workItemsState: IWorkItemsState;
     workItemMetadata: IWorkItemMetadataState;
@@ -59,7 +65,7 @@ export interface IFeatureTimelineRawState {
     workItemDetails: number[];
 
     workItemOverrideIteration?: IWorkItemOverrideIteration;
-    showProposedWorkItemsPane: boolean;
+    planFeaturesState: IPlanFeaturesState;
     featureState: IDictionaryStringTo<boolean>;
 }
 
@@ -93,7 +99,7 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     workItemDetails: showHideDetailsReducer,
     workItemOverrideIteration: overrideIterationReducer,
     savedOverriddenWorkItemIterations: savedOverriddenWorkItemIterationsReducer,
-    showProposedWorkItemsPane: togglePaneReducer,
+    planFeaturesState: togglePaneReducer,
     featureState: featureStateReducer
 });
 

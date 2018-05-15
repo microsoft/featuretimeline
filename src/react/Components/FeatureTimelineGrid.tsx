@@ -15,7 +15,8 @@ import {
     closeDetails,
     createInitialize,
     showDetails,
-    toggleProposedWorkItemsPane
+    togglePlanFeaturesPane,
+    changePlanFeaturesWidth
 } from '../../redux/store/common/actioncreators';
 import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import { connect, Provider } from 'react-redux';
@@ -27,10 +28,11 @@ import {
     getRawState,
     getTeamId,
     gridViewSelector,
-    uiStatusSelector
+    uiStatusSelector,
+    planFeatureStateSelector
 } from '../../redux/selectors';
 import { getRowColumnStyle, getTemplateColumns } from './gridhelper';
-import { IFeatureTimelineRawState, IWorkItemOverrideIteration } from '../../redux/store';
+import { IFeatureTimelineRawState, IWorkItemOverrideIteration, IPlanFeaturesState } from '../../redux/store';
 import { IGridView } from '../../redux/selectors/gridViewSelector';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { IterationDropTarget } from './DroppableIterationShadow';
@@ -56,7 +58,7 @@ export interface IFeatureTimelineGridProps {
     uiState: UIStatus;
     gridView: IGridView,
     childItems: number[];
-    showPropsedWorkeItemsPane: boolean;
+    planFeaturesState: IPlanFeaturesState;
     allowPlanFeatures: boolean;
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
@@ -71,7 +73,8 @@ export interface IFeatureTimelineGridProps {
     shiftDisplayIterationLeft: () => void;
     shiftDisplayIterationRight: () => void;
     showAllIterations: () => void;
-    toggleProposedWorkItemsPane: (show: boolean) => void;
+    togglePlanFeaturesPane: (show: boolean) => void;
+    resizePlanFeaturesPane: (width: number) => void;
     markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
 }
 
@@ -85,7 +88,7 @@ const makeMapStateToProps = () => {
             uiState: uiStatusSelector()(state),
             gridView: gridViewSelector()(state),
             childItems: state.workItemDetails,
-            showPropsedWorkeItemsPane: allowPlanFeatures && state.showProposedWorkItemsPane,
+            planFeaturesState: planFeatureStateSelector()(state),
             allowPlanFeatures
         }
     }
@@ -137,8 +140,11 @@ const mapDispatchToProps = (dispatch) => {
         shiftDisplayIterationRight: () => {
             dispatch(shiftDisplayIterationRight(1));
         },
-        toggleProposedWorkItemsPane: (show: boolean) => {
-            dispatch(toggleProposedWorkItemsPane(show));
+        togglePlanFeaturesPane: (show: boolean) => {
+            dispatch(togglePlanFeaturesPane(show));
+        },
+        resizePlanFeaturesPane: (width: number) => {
+            dispatch(changePlanFeaturesWidth(width));
         }
     };
 };
@@ -382,7 +388,14 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
-                {allowPlanFeatures && <Checkbox className="plan-feature-checkbox" label={"Plan Features"} onChange={this._onShowPlanFeaturesChanged} checked={this.props.showPropsedWorkeItemsPane} />}
+                {allowPlanFeatures && (
+                    <Checkbox
+                        className="plan-feature-checkbox"
+                        label={"Plan Features"}
+                        onChange={this._onShowPlanFeaturesChanged}
+                        checked={this.props.planFeaturesState.show} />
+                )
+                }
             </div>
         );
 
@@ -401,12 +414,17 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         );
 
         let contents = grid;
-        if (!isSubGrid && this.props.showPropsedWorkeItemsPane) {
-            contents = <SplitterLayout secondaryInitialSize={300}>
-                {grid}
-                <ConnectedWorkItemsList />
+        if (!isSubGrid && this.props.planFeaturesState.show) {
+            contents = (
+                <SplitterLayout
+                    secondaryInitialSize={this.props.planFeaturesState.paneWidth}
+                    onSecondaryPaneSizeChange={this._onPaneWidthChanged}
+                >
+                    {grid}
+                    <ConnectedWorkItemsList />
 
-            </SplitterLayout>
+                </SplitterLayout>
+            );
         }
 
         return (
@@ -420,7 +438,11 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
     }
 
     private _onShowPlanFeaturesChanged = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => {
-        this.props.toggleProposedWorkItemsPane(checked);
+        this.props.togglePlanFeaturesPane(checked);
+    }
+
+    private _onPaneWidthChanged = (width: number) => {
+        this.props.resizePlanFeaturesPane(width);
     }
 
     private _onViewChanged = (item: { key: string, text: string }) => {

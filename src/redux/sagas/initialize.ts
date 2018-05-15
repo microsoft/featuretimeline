@@ -6,7 +6,6 @@ import { WorkItemMetadataService } from '../../Services/WorkItemMetadataService'
 import { PageWorkItemHelper } from '../helpers/PageWorkItemHelper';
 import { IOverriddenIterationDuration } from '../store';
 import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';
-import { toggleProposedWorkItemsPane } from '../store/common/actioncreators';
 import { InitializeAction } from '../store/common/actions';
 import { genericError } from '../store/error/actionCreators';
 import { loading } from '../store/loading/actionCreators';
@@ -49,7 +48,7 @@ export function* handleInitialize(action: InitializeAction) {
 
     try {
         // Fetch backlog config, team iterations, workItem types and state metadata in parallel
-        const [bc, tis, wits, overriddenWorkItemIterations, iterationDisplayOptions, ts, tfv, planFeatures] = yield all([
+        const [bc, tis, wits, overriddenWorkItemIterations, iterationDisplayOptions, ts, tfv] = yield all([
             call(workHttpClient.getBacklogConfigurations.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamIterations.bind(workHttpClient), teamContext),
             //call(metadatService.getStates.bind(metadatService), projectId),
@@ -57,15 +56,13 @@ export function* handleInitialize(action: InitializeAction) {
             call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations"),
             call(dataService.getValue.bind(dataService), `${teamId}_iterationDisplayOptions`, { scopeType: 'User' }),
             call(workHttpClient.getTeamSettings.bind(workHttpClient), teamContext),
-            call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext),
-            call([dataService, dataService.getValue], `showPlanFeatures`, { scopeType: 'User' })
+            call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext)
         ]);
 
         yield put(backlogConfigurationReceived(projectId, teamId, bc));
         yield put(teamSettingsIterationReceived(projectId, teamId, tis));
         yield put(workItemTypesReceived(projectId, wits));
         //yield put(workItemStateColorsReceived(projectId, stateColors));
-        yield put(toggleProposedWorkItemsPane(!!planFeatures));
 
         const backlogConfig: Contracts.BacklogConfiguration = bc;
         const teamSettings: Contracts.TeamSetting = ts;
@@ -84,7 +81,6 @@ export function* handleInitialize(action: InitializeAction) {
         const featureCookies = yield call(getFeatureCookies);
         const allowPlanFeatures = featureCookies.findIndex(c => c.indexOf(ALLOW_PLAN_FEATURES) >= 0) >= 0;
 
-        debugger;
         if (allowPlanFeatures) {
             const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Proposed");
             const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
