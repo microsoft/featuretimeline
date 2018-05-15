@@ -43,6 +43,7 @@ import { UIStatus } from '../../redux/types';
 import { WorkitemGap } from './WorkItem/WorkItemGap';
 import { ConnectedWorkItemsList } from './WorkItemList';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import './FeatureTimelineGrid.scss';
 
 initializeIcons(/* optional base url */);
@@ -68,7 +69,7 @@ export interface IFeatureTimelineGridProps {
     shiftDisplayIterationLeft: () => void;
     shiftDisplayIterationRight: () => void;
     showAllIterations: () => void;
-    toggleProposedWorkItemsPane: () => void;
+    toggleProposedWorkItemsPane: (show: boolean) => void;
     markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
 }
 
@@ -132,8 +133,8 @@ const mapDispatchToProps = (dispatch) => {
         shiftDisplayIterationRight: () => {
             dispatch(shiftDisplayIterationRight(1));
         },
-        toggleProposedWorkItemsPane: () => {
-            dispatch(toggleProposedWorkItemsPane());
+        toggleProposedWorkItemsPane: (show: boolean) => {
+            dispatch(toggleProposedWorkItemsPane(show));
         }
     };
 };
@@ -376,8 +377,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         const commands = (
             <div className="header-commands">
-                {!this.props.showPropsedWorkeItemsPane && <Button onClick={this.props.toggleProposedWorkItemsPane}>Plan Features</Button>}
                 {displayOptions}
+                <Checkbox className="plan-feature-checkbox" label={"Plan Features"} onChange={this._onShowPlanFeaturesChanged} checked={this.props.showPropsedWorkeItemsPane} />
             </div>
         );
 
@@ -404,6 +405,10 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             </div>
 
         );
+    }
+
+    private _onShowPlanFeaturesChanged = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => {
+        this.props.toggleProposedWorkItemsPane(checked);
     }
 
     private _onViewChanged = (item: { key: string, text: string }) => {

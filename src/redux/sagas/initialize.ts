@@ -18,6 +18,7 @@ import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { loading } from '../store/loading/actionCreators';
 import { IOverriddenIterationDuration } from '../store';
+import { toggleProposedWorkItemsPane } from '../store/common/actioncreators';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
@@ -50,7 +51,7 @@ export function* handleInitialize(action: InitializeAction) {
 
     try {
         // Fetch backlog config, team iterations, workItem types and state metadata in parallel
-        const [bc, tis, wits, overriddenWorkItemIterations, iterationDisplayOptions, ts, tfv] = yield all([
+        const [bc, tis, wits, overriddenWorkItemIterations, iterationDisplayOptions, ts, tfv, planFeatures] = yield all([
             call(workHttpClient.getBacklogConfigurations.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamIterations.bind(workHttpClient), teamContext),
             //call(metadatService.getStates.bind(metadatService), projectId),
@@ -58,13 +59,15 @@ export function* handleInitialize(action: InitializeAction) {
             call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations"),
             call(dataService.getValue.bind(dataService), `${teamId}_iterationDisplayOptions`, { scopeType: 'User' }),
             call(workHttpClient.getTeamSettings.bind(workHttpClient), teamContext),
-            call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext)
+            call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext),
+            call([dataService, dataService.getValue], `showPlanFeatures`, { scopeType: 'User' })
         ]);
 
         yield put(backlogConfigurationReceived(projectId, teamId, bc));
         yield put(teamSettingsIterationReceived(projectId, teamId, tis));
         yield put(workItemTypesReceived(projectId, wits));
         //yield put(workItemStateColorsReceived(projectId, stateColors));
+        yield put(toggleProposedWorkItemsPane(!!planFeatures));
 
         const backlogConfig: Contracts.BacklogConfiguration = bc;
         const teamSettings: Contracts.TeamSetting = ts;

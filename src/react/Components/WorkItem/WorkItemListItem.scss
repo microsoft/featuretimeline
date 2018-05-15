@@ -1,0 +1,28 @@
+@mixin default {
+    display: flex;
+    flex-direction: row;
+    color: white;
+    text-align: center;
+    margin-top: 2px;
+    font-size: 15px;
+    padding: 2px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: 5px;
+}
+
+.work-item-list-item {
+    @include default;
+    .title-contents {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        cursor: pointer;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-bottom: 2px;
+        flex-grow: 1 0 auto;
+        font-weight: 200;
+    }
+}

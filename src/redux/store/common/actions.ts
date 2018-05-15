@@ -38,7 +38,7 @@ export interface CloseDetailsAction extends Action {
 
 export interface ToggleProposedWorkItemsPaneAction extends Action {
     type: "@@common/toggleproposedworkitemspane";
-    payload: void;
+    payload: boolean;
 }
 
 export type CommonActions = ResetAction | InitializeAction | ShowDetailsAction | CloseDetailsAction | ToggleProposedWorkItemsPaneAction;

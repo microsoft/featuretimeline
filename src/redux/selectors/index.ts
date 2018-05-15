@@ -51,6 +51,15 @@ export const workItemIdsSelector = (level: WorkItemLevel, stateCategory: StateCa
         });
 }
 
+export const proposedWorkItemPaneSelector = () => {
+    return createSelector(
+        [getRawState],
+        (state) => {
+            return state.showProposedWorkItemsPane;
+        }
+    );
+}
+
 export const planFeaturesSelector = () => {
     return createSelector(
         [uiStatusSelector(), getProjectId, getTeamId, getRawState],

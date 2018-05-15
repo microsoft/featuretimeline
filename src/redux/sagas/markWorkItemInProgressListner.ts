@@ -11,7 +11,6 @@ export function* markWorkItemInProgressListner(action: StartMarkInProgressAction
         payload
     } = action;
 
-    debugger;
     try {
         const doc: JsonPatchDocument = [{
             "op": "add",

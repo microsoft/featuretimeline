@@ -26,7 +26,7 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
     public render() {
         if (this.props.workItems.length === 0) {
             return (
-                <MessageBar>No Proposed Features</MessageBar>
+                <MessageBar>No new features to plan.</MessageBar>
             );
         }
         return (

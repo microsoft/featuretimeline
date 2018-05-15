@@ -3,7 +3,7 @@ import { ToggleProposedWorkItemsPaneAction, ToggleProposedWorkItemsPaneType } fr
 const reducer: Reducer<boolean> = (state: boolean = false, action: ToggleProposedWorkItemsPaneAction) => {
     switch (action.type) {
         case ToggleProposedWorkItemsPaneType:
-            return !state;
+            return action.payload;
         default:
             return state;
     }

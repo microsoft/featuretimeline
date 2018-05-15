@@ -32,7 +32,7 @@ export const closeDetails: ActionCreator<CloseDetailsAction> =
         payload: { id }
     });
 
-export const toggleProposedWorkItemsPane: ActionCreator<ToggleProposedWorkItemsPaneAction> = () => ({
+export const toggleProposedWorkItemsPane: ActionCreator<ToggleProposedWorkItemsPaneAction> = (show: boolean) => ({
     type: ToggleProposedWorkItemsPaneType,
-    payload: null
+    payload: show
 }) 
