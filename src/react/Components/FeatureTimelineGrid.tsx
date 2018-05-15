@@ -45,7 +45,7 @@ import { ConnectedWorkItemsList } from './WorkItemList';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import './FeatureTimelineGrid.scss';
-import { allowPlanFeatures } from '../../redux/sagas/featureStateReader';
+import { ALLOW_PLAN_FEATURES } from '../../redux/sagas/featureStateReader';
 
 initializeIcons(/* optional base url */);
 
@@ -77,6 +77,7 @@ export interface IFeatureTimelineGridProps {
 
 const makeMapStateToProps = () => {
     return (state: IFeatureTimelineRawState) => {
+        const allowPlanFeatures = state.featureState && !!state.featureState[ALLOW_PLAN_FEATURES];
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
@@ -84,8 +85,8 @@ const makeMapStateToProps = () => {
             uiState: uiStatusSelector()(state),
             gridView: gridViewSelector()(state),
             childItems: state.workItemDetails,
-            showPropsedWorkeItemsPane: !!state.featureState[allowPlanFeatures] && state.showProposedWorkItemsPane,
-            allowPlanFeatures: !!state.featureState[allowPlanFeatures]
+            showPropsedWorkeItemsPane: allowPlanFeatures && state.showProposedWorkItemsPane,
+            allowPlanFeatures
         }
     }
 }

@@ -19,6 +19,7 @@ import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { loading } from '../store/loading/actionCreators';
 import { IOverriddenIterationDuration } from '../store';
 import { toggleProposedWorkItemsPane } from '../store/common/actioncreators';
+import { getFeatureCookies, ALLOW_PLAN_FEATURES } from './featureStateReader';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
@@ -88,11 +89,12 @@ export function* handleInitialize(action: InitializeAction) {
             backlogIteration = webContext.project.name + backlogIteration;
         }
         backlogIteration = _escape(backlogIteration);
-
+        const featureCookies = yield call(getFeatureCookies);
+        const allowPlanFeatures = featureCookies.findIndex(c => c.indexOf(ALLOW_PLAN_FEATURES) >= 0) >= 0;
         const workItemTypeAndStatesClause =
             stateInfo
                 .map(si => {
-                    const states = Object.keys(si.states).filter(state => si.states[state] === "InProgress" || si.states[state] === "Proposed")
+                    const states = Object.keys(si.states).filter(state => si.states[state] === "InProgress" || (allowPlanFeatures && si.states[state] === "Proposed"))
                         .map(state => _escape(state))
                         .join("', '");
 

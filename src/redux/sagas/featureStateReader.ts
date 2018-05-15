@@ -1,6 +1,6 @@
 import { toggleFeatureState } from "../store/common/actioncreators";
 import { put } from "redux-saga/effects";
-export const allowPlanFeatures = "allowPlanFeatures";
+export const ALLOW_PLAN_FEATURES = "allowPlanFeatures";
 export function* initializeFeatureState() {
     const enabledFeatures = getFeatureCookies();
     for (const feature of enabledFeatures) {
@@ -9,10 +9,11 @@ export function* initializeFeatureState() {
     }
 }
 
-function getFeatureCookies(): string[] {
+export function getFeatureCookies(): string[] {
     const features = [];
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookies: string[] = decodedCookie.split(';');
+    console.log("all cookies:", cookies);
     for (const cookie of cookies) {
         const parts = cookie.trim().split('=');
         const name = parts[0];
