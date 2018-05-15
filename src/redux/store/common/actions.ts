@@ -5,7 +5,7 @@ export const InitializeType = "@@common/initialize";
 export const ShowDetailsType = "@@common/showdetails";
 export const CloseDetailsType = "@@common/closedetails";
 export const ToggleProposedWorkItemsPaneType = "@@common/toggleproposedworkitemspane";
-
+export const ToggleFeatureStateType = "@@common/togglefeaturestate";
 export interface InitializeAction extends Action {
     type: "@@common/initialize";
     payload: {
@@ -41,4 +41,12 @@ export interface ToggleProposedWorkItemsPaneAction extends Action {
     payload: boolean;
 }
 
-export type CommonActions = ResetAction | InitializeAction | ShowDetailsAction | CloseDetailsAction | ToggleProposedWorkItemsPaneAction;
+export interface ToggleFeatureStateAction extends Action {
+    type: "@@common/togglefeaturestate",
+    payload: {
+        featureName: string;
+        isEnabled: boolean
+    }
+}
+
+export type CommonActions = ToggleFeatureStateAction | ResetAction | InitializeAction | ShowDetailsAction | CloseDetailsAction | ToggleProposedWorkItemsPaneAction;

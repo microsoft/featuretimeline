@@ -1,8 +1,10 @@
 import { ActionCreator } from 'redux';
-import { InitializeAction, InitializeType, ShowDetailsAction, 
-    ShowDetailsType, CloseDetailsAction, CloseDetailsType, 
-    ResetAction, ResetType, 
-    ToggleProposedWorkItemsPaneAction, ToggleProposedWorkItemsPaneType } from './actions';
+import {
+    InitializeAction, InitializeType, ShowDetailsAction,
+    ShowDetailsType, CloseDetailsAction, CloseDetailsType,
+    ResetAction, ResetType,
+    ToggleProposedWorkItemsPaneAction, ToggleProposedWorkItemsPaneType, ToggleFeatureStateAction, ToggleFeatureStateType
+} from './actions';
 
 export const resetAllData: ActionCreator<ResetAction> = () => ({
     type: ResetType,
@@ -35,4 +37,12 @@ export const closeDetails: ActionCreator<CloseDetailsAction> =
 export const toggleProposedWorkItemsPane: ActionCreator<ToggleProposedWorkItemsPaneAction> = (show: boolean) => ({
     type: ToggleProposedWorkItemsPaneType,
     payload: show
-}) 
+})
+
+export const toggleFeatureState: ActionCreator<ToggleFeatureStateAction> = (featureName: string, isEnabled: boolean) => ({
+    type: ToggleFeatureStateType,
+    payload: {
+        featureName,
+        isEnabled
+    }
+});

@@ -10,6 +10,7 @@ import { saveDisplayOptions } from './displayOptions';
 import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType } from "../store/teamiterations/actions";
 import { markWorkItemInProgressListner } from "./markWorkItemInProgressListner";
 import { savePlanFeatures } from "./planFeaturesOptions";
+import { initializeFeatureState } from "./featureStateReader";
 
 export function* watchSagaActions() {
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
@@ -17,6 +18,7 @@ export function* watchSagaActions() {
     yield takeEvery(ClearOverrideIterationType, launchClearOverrideIteration);
     yield takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga);
     yield takeEvery(InitializeType, callInitialize);
+    yield takeEvery(InitializeType, initializeFeatureState);
     yield takeEvery(StartUpdateWorkitemIterationActionType, updateWorkItemIteration);
     yield takeEvery(StartMarkInProgressActionType, markWorkItemInProgressListner);
 

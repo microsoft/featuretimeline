@@ -10,6 +10,7 @@ import teamIterationsReducer from './teamiterations/reducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
 import togglePaneReducer from './common/togglePaneReducer';
+import featureStateReducer from './common/featureStateReducer';
 import backlogConfigurationReducer from './backlogconfiguration/reducer';
 import showHideDetailsReducer from "./common/reducer";
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
@@ -59,6 +60,7 @@ export interface IFeatureTimelineRawState {
 
     workItemOverrideIteration?: IWorkItemOverrideIteration;
     showProposedWorkItemsPane: boolean;
+    featureState: IDictionaryStringTo<boolean>;
 }
 
 const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFeatureTimelineRawState => {
@@ -91,7 +93,8 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     workItemDetails: showHideDetailsReducer,
     workItemOverrideIteration: overrideIterationReducer,
     savedOverriddenWorkItemIterations: savedOverriddenWorkItemIterationsReducer,
-    showProposedWorkItemsPane: togglePaneReducer
+    showProposedWorkItemsPane: togglePaneReducer,
+    featureState: featureStateReducer
 });
 
 // setup reducers

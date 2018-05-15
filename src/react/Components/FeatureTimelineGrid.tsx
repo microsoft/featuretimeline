@@ -45,6 +45,7 @@ import { ConnectedWorkItemsList } from './WorkItemList';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import './FeatureTimelineGrid.scss';
+import { allowPlanFeatures } from '../../redux/sagas/featureStateReader';
 
 initializeIcons(/* optional base url */);
 
@@ -56,6 +57,7 @@ export interface IFeatureTimelineGridProps {
     gridView: IGridView,
     childItems: number[];
     showPropsedWorkeItemsPane: boolean;
+    allowPlanFeatures: boolean;
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
     closeDetails: (id: number) => void;
@@ -82,7 +84,8 @@ const makeMapStateToProps = () => {
             uiState: uiStatusSelector()(state),
             gridView: gridViewSelector()(state),
             childItems: state.workItemDetails,
-            showPropsedWorkeItemsPane: state.showProposedWorkItemsPane
+            showPropsedWorkeItemsPane: state.showProposedWorkItemsPane,
+            allowPlanFeatures: state.featureState[allowPlanFeatures]
         }
     }
 }
@@ -155,7 +158,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         const {
             uiState,
-            rawState
+            rawState,
+            allowPlanFeatures
         } = this.props;
         if (!rawState || uiState === UIStatus.Loading) {
             return (
@@ -378,7 +382,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
-                <Checkbox className="plan-feature-checkbox" label={"Plan Features"} onChange={this._onShowPlanFeaturesChanged} checked={this.props.showPropsedWorkeItemsPane} />
+                {allowPlanFeatures && <Checkbox className="plan-feature-checkbox" label={"Plan Features"} onChange={this._onShowPlanFeaturesChanged} checked={this.props.showPropsedWorkeItemsPane} />}
             </div>
         );
 
@@ -404,7 +408,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
             </SplitterLayout>
         }
-        
+
         return (
             <div className="root-container">
                 {commands}
