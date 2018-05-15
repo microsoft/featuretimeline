@@ -73,50 +73,31 @@ export function* handleInitialize(action: InitializeAction) {
 
         // For now show only lowest level of portfolio backlog
         backlogConfig.portfolioBacklogs.sort((b1, b2) => b1.rank - b2.rank);
-        const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
-        const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${w.name}'`).join(",");
-        const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
-            .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
+        const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "InProgress");
+        const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
 
-        const orderField = backlogConfig.backlogFields.typeFields["Order"];
-
-        let backlogIteration = teamSettings.backlogIteration.path || teamSettings.backlogIteration.name;
-        if (backlogIteration[0] === "\\") {
-            const webContext = VSS.getWebContext();
-            backlogIteration = webContext.project.name + backlogIteration;
+        const queryResultWits = [];
+        if (queryResults && queryResults.workItems) {
+            queryResultWits.push(...queryResults.workItems);
         }
-        backlogIteration = _escape(backlogIteration);
+        // query for Proposed work items if feature is on
         const featureCookies = yield call(getFeatureCookies);
         const allowPlanFeatures = featureCookies.findIndex(c => c.indexOf(ALLOW_PLAN_FEATURES) >= 0) >= 0;
-        const workItemTypeAndStatesClause =
-            stateInfo
-                .map(si => {
-                    const states = Object.keys(si.states).filter(state => si.states[state] === "InProgress" || (allowPlanFeatures && si.states[state] === "Proposed"))
-                        .map(state => _escape(state))
-                        .join("', '");
 
-                    return `(
-                             [System.WorkItemType] = '${_escape(si.workItemTypeName)}'
-                             AND [System.State] IN ('${states}')
-                            )`;
+        debugger;
+        if (allowPlanFeatures) {
+            const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Proposed");
+            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
 
-                }).join(" OR ");
+            if (queryResults && queryResults.workItems) {
+                // Page only first 50 proposed items for optimization
+                queryResultWits.push(...queryResults.workItems.splice(0, 50));
+            }
+        }
 
-        const teamFieldClause = teamFieldValues.values.map((tfValue) => {
-            const operator = tfValue.includeChildren ? "UNDER" : "=";
-            return `[${_escape(teamFieldValues.field.referenceName)}] ${operator} '${_escape(tfValue.value)}'`;
+        const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
+        const orderField = backlogConfig.backlogFields.typeFields["Order"];
 
-        }).join(" OR ");
-
-        const wiql = `SELECT   System.Id
-                        FROM     WorkItems
-                        WHERE    [System.WorkItemType] IN (${workItemTypes})
-                        AND      [System.IterationPath] UNDER '${backlogIteration}'
-                        AND      (${workItemTypeAndStatesClause})
-                        AND      (${teamFieldClause})
-                        ORDER BY [${orderField}] ASC,[System.Id] ASC`;
-
-        const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
         // Get work items for backlog level
         const backlogLevelWorkItemIds: number[] = [];
         let childWorkItemIds: number[] = [];
@@ -124,9 +105,9 @@ export function* handleInitialize(action: InitializeAction) {
         let workItemsToPage: number[] = [];
 
         // Get child work items and page all work items
-        if (queryResults && queryResults.workItems && queryResults.workItems.length > 0) {
+        if (queryResultWits.length > 0) {
 
-            const potentialBacklogLevelWorkItemIds = queryResults.workItems.map(w => w.id);
+            const potentialBacklogLevelWorkItemIds = queryResultWits.map(w => w.id);
 
             let pagedWorkItems = yield call(_pageWorkItemFields, potentialBacklogLevelWorkItemIds, [orderField]);
 
@@ -190,6 +171,42 @@ export function* handleInitialize(action: InitializeAction) {
     } catch (error) {
         yield put(genericError(error));
     }
+}
+
+function getBacklogLevelQueryWiql(backlogConfig: Contracts.BacklogConfiguration, teamSettings: Contracts.TeamSetting, teamFieldValues: Contracts.TeamFieldValues, stateCategory: string) {
+    const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
+    const orderField = backlogConfig.backlogFields.typeFields["Order"];
+    const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${w.name}'`).join(",");
+    const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
+        .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
+    let backlogIteration = teamSettings.backlogIteration.path || teamSettings.backlogIteration.name;
+    if (backlogIteration[0] === "\\") {
+        const webContext = VSS.getWebContext();
+        backlogIteration = webContext.project.name + backlogIteration;
+    }
+    backlogIteration = _escape(backlogIteration);
+    const workItemTypeAndStatesClause = stateInfo
+        .map(si => {
+            const states = Object.keys(si.states).filter(state => si.states[state] === stateCategory)
+                .map(state => _escape(state))
+                .join("', '");
+            return `(
+                             [System.WorkItemType] = '${_escape(si.workItemTypeName)}'
+                             AND [System.State] IN ('${states}')
+                            )`;
+        }).join(" OR ");
+    const teamFieldClause = teamFieldValues.values.map((tfValue) => {
+        const operator = tfValue.includeChildren ? "UNDER" : "=";
+        return `[${_escape(teamFieldValues.field.referenceName)}] ${operator} '${_escape(tfValue.value)}'`;
+    }).join(" OR ");
+    const wiql = `SELECT   System.Id
+                        FROM     WorkItems
+                        WHERE    [System.WorkItemType] IN (${workItemTypes})
+                        AND      [System.IterationPath] UNDER '${backlogIteration}'
+                        AND      (${workItemTypeAndStatesClause})
+                        AND      (${teamFieldClause})
+                        ORDER BY [${orderField}] ASC,[System.Id] ASC`;
+    return wiql;
 }
 
 function _escape(value: string): string {
