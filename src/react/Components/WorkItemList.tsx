@@ -6,6 +6,7 @@ import { launchWorkItemForm } from '../../redux/store/workitems/actionCreators';
 import { List } from 'office-ui-fabric-react/lib/List';
 import DraggableWorkItemListItemRenderer from './WorkItem/DraggableWorkItemListItemRenderer';
 import { MessageBar } from 'office-ui-fabric-react/lib/MessageBar';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
 
 export interface IWorkItemListItem {
     id: number;
@@ -20,23 +21,56 @@ export interface IWorkItemListProps {
 }
 
 export interface IWorkItemListState {
+    filter: string;
 }
 
 class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListState> {
+    public constructor(props: IWorkItemListProps) {
+        super(props);
+        this.state = {
+            filter: null
+        }
+    }
+
     public render() {
-        if (this.props.workItems.length === 0) {
+        if (this.props.workItems.length === 0 || !this.props.workItems) {
             return (
                 <MessageBar>No new features to plan.</MessageBar>
             );
         }
+
+        const workItems = this._filteredItems(this.props.workItems);
+        let message = null;
+        if (workItems.length === 0) {
+            message = <MessageBar>Only top 50 Proposed features are available.</MessageBar>;
+        }
         return (
             <div className="work-item-list-container">
+                <TextField placeholder="Search Features" onChanged={this._changeFilter} ></TextField>
                 <List
-                    items={this.props.workItems}
+                    items={workItems}
                     onRenderCell={this._onRenderCell}
                 />
+                {message}
             </div>
         );
+    }
+
+    private _changeFilter = (text: string) => {
+        this.setState({
+            filter: text
+        });
+    }
+
+    private _filteredItems = (arg0: IWorkItemListItem[]): IWorkItemListItem[] => {
+        const {
+            filter
+        } = this.state;
+        if (!filter || !arg0) {
+            return arg0;
+        }
+
+        return arg0.filter(w => w.title.toLowerCase().indexOf(filter.toLowerCase()) >= 0);
     }
 
     private _onRenderCell = (item: IWorkItemListItem, index: number) => {
