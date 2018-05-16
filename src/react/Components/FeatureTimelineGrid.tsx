@@ -411,6 +411,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         if (!isSubGrid && this.props.planFeaturesState.show) {
             contents = (
                 <SplitterLayout
+                    customClassName={"timeline-splitter"}
                     secondaryInitialSize={this.props.planFeaturesState.paneWidth}
                     onSecondaryPaneSizeChange={this._onPaneWidthChanged}
                 >
