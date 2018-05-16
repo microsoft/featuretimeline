@@ -27,7 +27,7 @@ import {
     getProjectId,
     getRawState,
     getTeamId,
-    gridViewSelector,
+    primaryGridViewSelector,
     uiStatusSelector,
     planFeatureStateSelector
 } from '../../redux/selectors';
@@ -83,7 +83,7 @@ const makeMapStateToProps = () => {
             teamId: getTeamId(),
             rawState: getRawState(state),
             uiState: uiStatusSelector()(state),
-            gridView: gridViewSelector()(state),
+            gridView: primaryGridViewSelector()(state),
             childItems: state.workItemDetails,
             planFeaturesState: planFeatureStateSelector()(state),
         }

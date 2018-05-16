@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { IFeatureTimelineRawState } from '../../redux/store';
-import { planFeaturesSelector, planFeatureStateSelector } from '../../redux/selectors';
+import { unplannedFeaturesSelector, planFeatureStateSelector } from '../../redux/selectors';
 import { launchWorkItemForm } from '../../redux/store/workitems/actionCreators';
 import { List } from 'office-ui-fabric-react/lib/List';
 import DraggableWorkItemListItemRenderer from './WorkItem/DraggableWorkItemListItemRenderer';
@@ -87,7 +87,7 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
 const makeMapStateToProps = () => {
     return (state: IFeatureTimelineRawState) => {
         return {
-            workItems: planFeaturesSelector()(state),
+            workItems: unplannedFeaturesSelector()(state),
             filter: planFeatureStateSelector()(state).filter
         }
     }

@@ -12,6 +12,15 @@ export function getTeamIterations(
         return [];
     }
 
+    if (!rawState ||
+        !rawState.iterationState ||
+        !rawState.iterationState.teamSettingsIterations ||
+        !rawState.iterationState.teamSettingsIterations[projectId] ||
+        !rawState.iterationState.teamSettingsIterations[projectId][teamId]) {
+
+        return [];
+    }   
+
     return rawState.iterationState.teamSettingsIterations[projectId][teamId];
 
 }

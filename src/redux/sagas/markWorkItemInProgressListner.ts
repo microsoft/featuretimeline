@@ -16,10 +16,6 @@ export function* markWorkItemInProgressListner(action: StartMarkInProgressAction
             "op": "add",
             "path": "/fields/System.IterationPath",
             "value": payload.teamIteration.path
-        }, {
-            "op": "add",
-            "path": "/fields/System.State",
-            "value": payload.state
         }];
 
         // Update work item Iteration path  and state

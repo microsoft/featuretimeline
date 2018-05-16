@@ -4,10 +4,10 @@ import { getWorkItemsForLevel } from "./workItemsForLevel";
 import { getUIStatus } from "./uistatus";
 import { IFeatureTimelineRawState } from "../store";
 import { WorkItemLevel, StateCategory } from "../store/workitems/types";
-import { getWorkItemHierarchy } from "./workItemHierarchySelector";
+import { getEpicHierarchy, FeatureFilter } from "./workItemHierarchySelector";
 import { getGridView } from "./gridViewSelector";
 import { getTeamIterations } from "./teamIterations";
-import { planFeatures } from "./planFeatures";
+import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
@@ -53,11 +53,12 @@ export const workItemIdsSelector = (level: WorkItemLevel, stateCategory: StateCa
 }
 
 
-export const planFeaturesSelector = () => {
+export const unplannedFeaturesSelector = () => {
     return createSelector(
         [uiStatusSelector(), getProjectId, getTeamId, getRawState],
         (uiStatus, projectId, teamId, state) => {
-            return planFeatures(uiStatus, projectId, teamId, state);
+            //return getUnplannedFeatures(uiStatus, projectId, teamId, state);
+            return getUnplannedFeatures2(projectId, teamId, uiStatus, state);
         }
     );
 }
@@ -72,7 +73,7 @@ export const uiStatusSelector = () => {
 
 export const planFeatureStateSelector = () => {
     return createSelector([getRawState], (state) => {
-        if(!state || !state.planFeaturesState) {
+        if (!state || !state.planFeaturesState) {
             return getDefaultPlanFeaturesPaneState();
         }
 
@@ -80,19 +81,21 @@ export const planFeatureStateSelector = () => {
     })
 }
 
-export const workItemHierarchySelector = () => {
-    return createSelector([getProjectId, getTeamId, uiStatusSelector(), getRawState], getWorkItemHierarchy);
+export const epicsHierarchySelector = () => {
+    return createSelector(
+        [getProjectId, getTeamId, uiStatusSelector(), getRawState, () => FeatureFilter.WithoutIteration],
+        getEpicHierarchy);
 };
 
 export const teamIterationsSelector = () => {
     return createSelector([getProjectId, getTeamId, uiStatusSelector(), getRawState], getTeamIterations);
 }
 
-export const gridViewSelector = () => {
+export const primaryGridViewSelector = () => {
     return createSelector([
         uiStatusSelector(),
         teamIterationsSelector(),
-        workItemHierarchySelector(),
+        epicsHierarchySelector(),
         workItemOverrideIterationSelector(),
         iterationDisplayOptionsSelector()
     ],
