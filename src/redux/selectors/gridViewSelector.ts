@@ -16,6 +16,7 @@ export interface IGridWorkItem {
     isGap?: boolean;
     crop: CropWorkItem;
     gapColor?: string;
+    useV2Styles: boolean;
 }
 
 export interface IGridView {
@@ -28,6 +29,7 @@ export interface IGridView {
     hideParents: boolean;
     iterationDisplayOptions: IIterationDisplayOptions;
     teamIterations: TeamSettingsIteration[];
+    featureStates: IDictionaryStringTo<boolean>;
 }
 
 export function getGridView(
@@ -35,6 +37,7 @@ export function getGridView(
     teamIterations: TeamSettingsIteration[],
     workItems: IWorkItemHierarchy[],
     workItemOverrideIteration: IWorkItemOverrideIteration,
+    featureStates: IDictionaryStringTo<boolean>,
     iterationDisplayOptions: IIterationDisplayOptions = null,
     isSubGrid: boolean = false
 ): IGridView {
@@ -49,12 +52,14 @@ export function getGridView(
             workItemShadow: 0,
             hideParents: false,
             iterationDisplayOptions: null,
-            teamIterations: []
+            teamIterations: [],
+            featureStates
         }
     }
 
     const hideParents = isSubGrid || (workItems.length === 1 && workItems[0].id === 0);
     const displayIterations = getDisplayIterations(teamIterations, workItems, iterationDisplayOptions);
+    const useV2Styles = !!featureStates["use_v2_styles"];
     const gridWorkItems = getGridWorkItems(
         teamIterations,
         displayIterations,
@@ -62,7 +67,8 @@ export function getGridView(
         workItems,
         /* startRow */ 3,
         /* startCol */ 1,
-        hideParents);
+        hideParents,
+        useV2Styles);
 
     let workItemShadow = 0;
     if (workItemOverrideIteration && workItemOverrideIteration.workItemId) {
@@ -78,7 +84,8 @@ export function getGridView(
         workItemShadow,
         hideParents,
         iterationDisplayOptions,
-        teamIterations
+        teamIterations,
+        featureStates
     };
 
     // Calculate shadow and header
@@ -188,7 +195,8 @@ export function getGridWorkItems(
     workItems: IWorkItemHierarchy[],
     startRow: number,
     startColumn: number,
-    hideParents: boolean): IGridWorkItem[] {
+    hideParents: boolean,
+    useV2Styles: boolean): IGridWorkItem[] {
 
     const output: IGridWorkItem[] = [];
     workItems = workItems.sort(workItemCompare);
@@ -216,7 +224,7 @@ export function getGridWorkItems(
                 endCol: parentEndColumn
             };
 
-            const gridItem: IGridWorkItem = { workItem: parent, dimension, crop: CropWorkItem.None };
+            const gridItem: IGridWorkItem = { workItem: parent, dimension, crop: CropWorkItem.None, useV2Styles };
             output.push(gridItem);
 
         }
@@ -265,7 +273,7 @@ export function getGridWorkItems(
                     endCol: childEndColumn
                 };
 
-                const gridItem: IGridWorkItem = { workItem: child, dimension, crop };
+                const gridItem: IGridWorkItem = { workItem: child, dimension, crop, useV2Styles };
                 output.push(gridItem);
 
                 childStartRow++;
@@ -289,7 +297,8 @@ export function getGridWorkItems(
                 },
                 isGap: true,
                 gapColor: parent.color,
-                crop: CropWorkItem.None
+                crop: CropWorkItem.None,
+                useV2Styles
             });
         }
 

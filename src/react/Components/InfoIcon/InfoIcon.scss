@@ -6,6 +6,19 @@
     align-items: center;
 }
 
+.info-icon2 {
+    margin-left: 5px;
+    color: transparent !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+
 .info-icon:hover {
     color: white !important;
+}
+
+.info-icon2:hover {
+    color: grey !important;
 }

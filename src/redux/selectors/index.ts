@@ -67,6 +67,10 @@ export const workItemOverrideIterationSelector = () => {
     return createSelector([getRawState], (state) => state.workItemOverrideIteration);
 }
 
+export const featureStateSelector = () => {
+    return createSelector([getRawState], (state) => state.featureState || {});
+}
+
 export const uiStatusSelector = () => {
     return createSelector([getProjectId, getTeamId, getRawState], getUIStatus);
 }
@@ -97,6 +101,7 @@ export const primaryGridViewSelector = () => {
         teamIterationsSelector(),
         epicsHierarchySelector(),
         workItemOverrideIterationSelector(),
+        featureStateSelector(),        
         iterationDisplayOptionsSelector()
     ],
         getGridView)

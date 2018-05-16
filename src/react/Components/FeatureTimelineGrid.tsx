@@ -259,6 +259,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     overrideIterationEnd={() => this.props.overrideIterationEnd()}
                     allowOverride={!this.props.gridView.isSubGrid}
                     crop={w.crop}
+                    useV2Styles={w.useV2Styles}
                 />
             );
         });

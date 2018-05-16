@@ -1,4 +1,5 @@
 import './WorkItemRenderer.scss';
+import './WorkItemRenderer2.scss';
 import * as React from 'react';
 import { InfoIcon } from '../InfoIcon/InfoIcon';
 import { IIterationDuration, IWorkItemOverrideIteration } from '../../../redux/store';
@@ -19,6 +20,7 @@ export interface IWorkItemRendererProps {
     iterationDuration: IIterationDuration;
     dimension: IDimension;
     crop: CropWorkItem;
+    useV2Styles: boolean;
     onClick: (id: number) => void;
     showDetails: (id: number) => void;
     overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
@@ -60,7 +62,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             allowOverride,
             isDragging,
             crop,
-            iterationDuration
+            iterationDuration,
+            useV2Styles
         } = this.props;
 
         const {
@@ -83,13 +86,19 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             style['height'] = height + "px";
         }
 
+        const styleProp = useV2Styles ? 'border-color' : 'background';
+        const classSuffice = useV2Styles ? '2' : '';
         if (isDragging) {
-            style['background'] = hexToRgb(this.props.color, 0.1);
+            style[styleProp] = hexToRgb(this.props.color, 0.1);
         } else {
-            style['background'] = hexToRgb(this.props.color, 0.8);
+            style[styleProp] = hexToRgb(this.props.color, 0.8);
         }
 
-        const className = isRoot ? "root-work-item" : "work-item";
+        if(useV2Styles) {
+            //style['background'] = hexToRgb(this.props.color, 0.01);
+        }
+
+        const className = isRoot ? "root-work-item" + classSuffice : "work-item" + classSuffice;
         let cropClassName = "crop-none";
         let canOverrideLeft = allowOverride;
         let canOverrideRight = allowOverride;
@@ -118,8 +127,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             }
         }
 
-        const infoIcon = shouldShowDetails ? <InfoIcon id={id} onClick={id => showDetails(id)} /> : null;
-        const additionalTitleClass = infoIcon ? "title-with-infoicon" : "title-without-infoicon";
+        const infoIcon = shouldShowDetails ? <InfoIcon id={id} onClick={id => showDetails(id)} useV2Styles={useV2Styles} /> : null;
+        const additionalTitleClass = infoIcon ? "title-with-infoicon" + classSuffice : "title-without-infoicon" + classSuffice;
 
         let leftHandle = null;
         let rightHandle = null;
@@ -127,7 +136,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         if (!isRoot && allowOverride) {
             leftHandle = canOverrideLeft && (
                 <div
-                    className="small-border"
+                    className={"small-border" + classSuffice}
                     onMouseDown={this._leftMouseDown}
                     onMouseUp={this._mouseUp}
                 />
@@ -135,7 +144,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
             rightHandle = canOverrideRight && (
                 <div
-                    className="small-border"
+                    className={"small-border" + classSuffice}
                     onMouseDown={this._rightMouseDown}
                     onMouseUp={this._mouseUp}
                 />
@@ -146,7 +155,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         if (leftCropped) {
             startsFrom = (<TooltipHost
                 content={`Starts at ${iterationDuration.startIteration.name}`}>
-                <div className="work-item-start-iteration-indicator">{`${iterationDuration.startIteration.name}`}</div>
+                <div className={"work-item-start-iteration-indicator"+ classSuffice}>{`${iterationDuration.startIteration.name}`}</div>
             </TooltipHost>
             );
         }
@@ -155,7 +164,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         if (rightCropped) {
             endsAt = (<TooltipHost
                 content={`Ends at ${iterationDuration.endIteration.name}`}>
-                <div className="work-item-end-iteration-indicator">{`${iterationDuration.endIteration.name}`}</div>
+                <div className={"work-item-end-iteration-indicator"+ classSuffice}>{`${iterationDuration.endIteration.name}`}</div>
             </TooltipHost>
             );
         }
@@ -167,11 +176,11 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             >
                 {leftHandle}
                 <div
-                    className={css("work-item-details-container", additionalTitleClass)}
+                    className={css("work-item-details-container" + classSuffice, additionalTitleClass)}
                 >
                     {startsFrom}
                     <div
-                        className="title-contents"
+                        className={"title-contents" + classSuffice}
                         onClick={() => onClick(id)}
                     >
                         <TooltipHost
