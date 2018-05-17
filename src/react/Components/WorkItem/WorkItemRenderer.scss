@@ -27,6 +27,14 @@
     @include rootContainer();
 }
 
+.root-work-item-renderer {
+    @include rootContainer();
+    margin-top: 0px;
+    border-radius: 5px;
+    height: calc(100% - 5px);
+}
+
+
 .work-item-start-iteration-indicator {
     @include work-item-iteration-indicator;
     border-top-left-radius: 50px;
@@ -89,12 +97,6 @@
     @include work-item();
 }
 
-.root-work-item {
-    @include work-item();
-    margin-top: 0px;
-    border-radius: 5px;
-    height: calc(100% - 5px);
-}
 
 .work-item-gap {
     margin-top: 10px;

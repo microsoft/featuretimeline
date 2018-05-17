@@ -97,7 +97,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             style['background'] = hexToRgb(this.props.color, 0.7);
         }
 
-        const workItemClassName = isRoot ? "root-work-item" : "work-item";
+        const workItemClassName = isRoot ? "root-work-item-renderer" : "work-item-renderer";
         let canOverrideLeft = allowOverride;
         let canOverrideRight = allowOverride;
         let leftCropped = false;
@@ -166,7 +166,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
         debugger;
         let stateIndicator = null;
-        if (workItemStateColor) {
+        if (workItemStateColor && !isRoot) {
             const stateColorStyle = {};
             const color = "#" + (workItemStateColor.color.length > 6 ? workItemStateColor.color.substr(2) : workItemStateColor.color)
             stateColorStyle['background'] = color;
@@ -179,11 +179,11 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
         const item = (
             <div
-                className="work-item-renderer"
+                className={workItemClassName}
                 style={style}
                 ref={(e) => this._div = e}
             >
-                <div className={workItemClassName}>
+                <div className={"work-item"}>
                     {leftHandle}
                     <div
                         className={css("work-item-details-container", additionalTitleClass)}
@@ -208,7 +208,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                     {rightHandle}
                 </div>
                 {
-                    progressIndicator &&
+                    progressIndicator && 
+                    !isRoot &&
                     (<ProgressDetails
                         {...progressIndicator}
                         onClick={() => showDetails(id)}
