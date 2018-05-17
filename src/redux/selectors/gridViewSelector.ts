@@ -167,6 +167,12 @@ export function getDisplayIterations(
     };
 
     workItems.forEach(child => calcFirstLastIteration(child));
+    
+    // If there are no planned workitems use first and last team iteration
+    if (!firstIteration || !lastIteration) {
+        firstIteration = teamIterations[0];
+        lastIteration = teamIterations[teamIterations.length - 1];
+    }
 
     // Get two to the left and two to the right iterations from teamIterations
     let startIndex = teamIterations.findIndex(i => i.id === firstIteration.id) - 2;

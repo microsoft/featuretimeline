@@ -49,7 +49,7 @@ export function getEpicHierarchy(projectId: string,
     const inProgressFilter = (feature: IWorkItemHierarchy) => workItemInfos[feature.id].stateCategory === StateCategory.InProgress;
 
     // include only features that have explicit iteration
-    const explicitIterationFilter = (feature: IWorkItemHierarchy) => feature.iterationDuration.kind !== IterationDurationKind.CurrentIteration;
+    const explicitIterationFilter = (feature: IWorkItemHierarchy) => feature.iterationDuration.kind !== IterationDurationKind.FallBackToCurrentIteration;
 
     let filter = (feature: IWorkItemHierarchy) => true;
     if (featureFilter === FeatureFilter.InProgress) {
@@ -104,7 +104,7 @@ function getWorkItemDetails(
     const workItem = workItemInfo && workItemInfo.workItem;
     let workItemType = null;
     let workItemStateColor: WorkItemStateColor = null;
-    
+
     if (workItem) {
         const workItemTypeName = workItem.fields["System.WorkItemType"];
         const state = workItem.fields["System.State"].toLowerCase();
@@ -158,6 +158,7 @@ function getWorkItemIterationDuration(
     workItem: WorkItem) {
 
     let iterationDuration = getIterationDurationFromChildren(children);
+
     const allIterations = getTeamIterations(projectId, teamId, UIStatus.Default, input);
 
     // if the start/end iteration is overridden use that value
@@ -186,7 +187,7 @@ function getWorkItemIterationDuration(
     if (!iterationDuration.startIteration || !iterationDuration.endIteration) {
         iterationDuration.startIteration = currentIteration;
         iterationDuration.endIteration = currentIteration;
-        iterationDuration.kind = IterationDurationKind.CurrentIteration;
+        iterationDuration.kind = IterationDurationKind.FallBackToCurrentIteration;
     }
     return iterationDuration;
 }
@@ -200,16 +201,19 @@ function getIterationDurationFromChildren(
             endIteration
         } = prev;
 
-        if (!startIteration || !endIteration) {
-            startIteration = child.iterationDuration.startIteration;
-            endIteration = child.iterationDuration.endIteration;
-        } else {
-            if (compareIteration(child.iterationDuration.startIteration, startIteration) < 0) {
+        // Use child iteration only if it is explicit derived
+        if (child.iterationDuration.kind !== IterationDurationKind.FallBackToCurrentIteration) {
+            if ((!startIteration || !endIteration)) {
                 startIteration = child.iterationDuration.startIteration;
-            }
-
-            if (compareIteration(child.iterationDuration.endIteration, endIteration) > 0) {
                 endIteration = child.iterationDuration.endIteration;
+            } else {
+                if (compareIteration(child.iterationDuration.startIteration, startIteration) < 0) {
+                    startIteration = child.iterationDuration.startIteration;
+                }
+
+                if (compareIteration(child.iterationDuration.endIteration, endIteration) > 0) {
+                    endIteration = child.iterationDuration.endIteration;
+                }
             }
         }
         return {

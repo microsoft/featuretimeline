@@ -27,7 +27,7 @@ export interface IIterationDuration {
 
 export enum IterationDurationKind {
     None,
-    CurrentIteration,
+    FallBackToCurrentIteration,
     ChildRollup,
     UserOverridden
 }
