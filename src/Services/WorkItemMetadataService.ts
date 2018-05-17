@@ -25,10 +25,9 @@ export class WorkItemMetadataService {
         return this._workItemTypes;
     }
 
-
     private _states: IDictionaryStringTo<WorkItemStateColor[]> = null;
 
-    public async getStates(projectId): Promise<IDictionaryStringTo<WorkItemStateColor[]>> {
+    public async getStates(projectId, workItemTypeNames: string[]): Promise<IDictionaryStringTo<WorkItemStateColor[]>> {
         if (this._states) {
             return this._states;
         }
@@ -36,10 +35,8 @@ export class WorkItemMetadataService {
         const map = {};
         const witHttpClient = getClient(WorkItemTrackingHttpClient);
         if (witHttpClient.getWorkItemTypeStates) {
-            const workItemTypes = await this.getWorkItemTypes(projectId);
-
-            for (const wit of workItemTypes) {
-                map[wit.name] = await witHttpClient.getWorkItemTypeStates(projectId, wit.referenceName);
+            for (const wit of workItemTypeNames) {
+                map[wit] = await witHttpClient.getWorkItemTypeStates(projectId, wit);
             }
         }
 

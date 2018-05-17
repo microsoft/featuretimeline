@@ -104,7 +104,7 @@ function getWorkItemDetails(
     const workItem = workItemInfo && workItemInfo.workItem;
     let workItemType = null;
     let workItemStateColor: WorkItemStateColor = null;
-
+    
     if (workItem) {
         const workItemTypeName = workItem.fields["System.WorkItemType"];
         const state = workItem.fields["System.State"].toLowerCase();

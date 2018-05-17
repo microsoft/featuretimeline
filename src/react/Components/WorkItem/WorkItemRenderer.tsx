@@ -164,8 +164,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             );
         }
 
-        debugger;
-        let stateIndicator = null;
+        let stateIndicator = null;        
         if (workItemStateColor && !isRoot) {
             const stateColorStyle = {};
             const color = "#" + (workItemStateColor.color.length > 6 ? workItemStateColor.color.substr(2) : workItemStateColor.color)
