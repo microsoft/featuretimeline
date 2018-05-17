@@ -10,7 +10,7 @@ import { InitializeAction } from '../store/common/actions';
 import { genericError } from '../store/error/actionCreators';
 import { loading } from '../store/loading/actionCreators';
 import { restoreDisplayIterationCount, teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
-import { workItemTypesReceived } from '../store/workitemmetadata/actionCreators';
+import { workItemTypesReceived, workItemStateColorsReceived } from '../store/workitemmetadata/actionCreators';
 import { setOverrideIteration, workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import Contracts = require('TFS/Work/Contracts');
@@ -47,10 +47,10 @@ export function* handleInitialize(action: InitializeAction) {
 
     try {
         // Fetch backlog config, team iterations, workItem types and state metadata in parallel
-        const [bc, tis, wits, overriddenWorkItemIterations, iterationDisplayOptions, ts, tfv] = yield all([
+        const [bc, tis, stateColors, wits, overriddenWorkItemIterations, iterationDisplayOptions, ts, tfv] = yield all([
             call(workHttpClient.getBacklogConfigurations.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamIterations.bind(workHttpClient), teamContext),
-            //call(metadatService.getStates.bind(metadatService), projectId),
+            call([metadatService, metadatService.getStates], projectId),
             call(metadatService.getWorkItemTypes.bind(metadatService), projectId),
             call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations"),
             call(dataService.getValue.bind(dataService), `${teamId}_iterationDisplayOptions`, { scopeType: 'User' }),
@@ -61,7 +61,7 @@ export function* handleInitialize(action: InitializeAction) {
         yield put(backlogConfigurationReceived(projectId, teamId, bc));
         yield put(teamSettingsIterationReceived(projectId, teamId, tis));
         yield put(workItemTypesReceived(projectId, wits));
-        //yield put(workItemStateColorsReceived(projectId, stateColors));
+        yield put(workItemStateColorsReceived(projectId, stateColors));
 
         const backlogConfig: Contracts.BacklogConfiguration = bc;
         const teamSettings: Contracts.TeamSetting = ts;

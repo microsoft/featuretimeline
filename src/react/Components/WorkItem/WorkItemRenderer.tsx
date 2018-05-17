@@ -9,9 +9,13 @@ import {
 } from 'office-ui-fabric-react/lib/Tooltip';
 import { css } from '@uifabric/utilities/lib/css';
 import { hexToRgb } from '../colorhelper';
+import { ProgressDetails } from '../ProgressDetails/ProgressDetails';
+import { IProgressIndicator } from '../../../redux/selectors/gridViewSelector';
+import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;
+    workItemStateColor: WorkItemStateColor;
     color: string;
     isRoot: boolean;
     shouldShowDetails: boolean;
@@ -19,6 +23,8 @@ export interface IWorkItemRendererProps {
     iterationDuration: IIterationDuration;
     dimension: IDimension;
     crop: CropWorkItem;
+    progressIndicator: IProgressIndicator;
+
     onClick: (id: number) => void;
     showDetails: (id: number) => void;
     overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
@@ -60,7 +66,9 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             allowOverride,
             isDragging,
             crop,
-            iterationDuration
+            iterationDuration,
+            progressIndicator,
+            workItemStateColor
         } = this.props;
 
         const {
@@ -86,30 +94,26 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         if (isDragging) {
             style['background'] = hexToRgb(this.props.color, 0.1);
         } else {
-            style['background'] = hexToRgb(this.props.color, 0.8);
+            style['background'] = hexToRgb(this.props.color, 0.7);
         }
 
-        const className = isRoot ? "root-work-item" : "work-item";
-        let cropClassName = "crop-none";
+        const workItemClassName = isRoot ? "root-work-item" : "work-item";
         let canOverrideLeft = allowOverride;
         let canOverrideRight = allowOverride;
         let leftCropped = false;
         let rightCropped = false;
         switch (crop) {
             case CropWorkItem.Left: {
-                cropClassName = "crop-left";
                 canOverrideLeft = false;
                 leftCropped = true;
                 break;
             }
             case CropWorkItem.Right: {
-                cropClassName = "crop-right";
                 canOverrideRight = false;
                 rightCropped = true;
                 break;
             }
             case CropWorkItem.Both: {
-                cropClassName = "crop-both";
                 canOverrideLeft = false;
                 canOverrideRight = false;
                 leftCropped = true;
@@ -160,31 +164,57 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             );
         }
 
+        debugger;
+        let stateIndicator = null;
+        if (workItemStateColor) {
+            const stateColorStyle = {};
+            const color = "#" + (workItemStateColor.color.length > 6 ? workItemStateColor.color.substr(2) : workItemStateColor.color)
+            stateColorStyle['background'] = color;
+            stateIndicator = (
+                <TooltipHost content={workItemStateColor.name}>
+                    <div className="state-indicator" style={stateColorStyle} />
+                </TooltipHost>
+            )
+        }
+
         const item = (
-            <div style={style}
-                className={css(className, cropClassName)}
+            <div
+                className="work-item-renderer"
+                style={style}
                 ref={(e) => this._div = e}
             >
-                {leftHandle}
-                <div
-                    className={css("work-item-details-container", additionalTitleClass)}
-                >
-                    {startsFrom}
+                <div className={workItemClassName}>
+                    {leftHandle}
                     <div
-                        className="title-contents"
-                        onClick={() => onClick(id)}
+                        className={css("work-item-details-container", additionalTitleClass)}
                     >
-                        <TooltipHost
-                            content={title}
-                            overflowMode={TooltipOverflowMode.Parent}
+                        {stateIndicator}
+
+                        {startsFrom}
+                        <div
+                            className="title-contents"
+                            onClick={() => onClick(id)}
                         >
-                            {title}
-                        </TooltipHost>
+                            <TooltipHost
+                                content={title}
+                                overflowMode={TooltipOverflowMode.Parent}
+                            >
+                                {title}
+                            </TooltipHost>
+                        </div>
+                        {endsAt}
                     </div>
-                    {endsAt}
+                    {infoIcon}
+                    {rightHandle}
                 </div>
-                {infoIcon}
-                {rightHandle}
+                {
+                    progressIndicator &&
+                    (<ProgressDetails
+                        {...progressIndicator}
+                        onClick={() => showDetails(id)}
+                    />
+                    )
+                }
             </div>
         );
 

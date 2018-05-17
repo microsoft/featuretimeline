@@ -2,6 +2,7 @@ import { WorkItemType, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts
 
 export interface IWorkItemMetadata {
     workItemTypes: WorkItemType[];
+    // workItemType => stateColor
     workItemStateColors: IDictionaryStringTo<WorkItemStateColor[]>;
 }
 

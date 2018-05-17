@@ -1,0 +1,15 @@
+.progress-indicator-container {
+    width: 100px;
+}
+.progress-details-parts-container {
+    display: flex;
+    margin-left: 15px;
+    height: 3px;
+    background: white;
+    width: 100%;
+    cursor: pointer;
+}
+
+.progress-completed {
+    background: limegreen;
+}

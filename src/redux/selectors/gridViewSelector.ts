@@ -9,13 +9,18 @@ export interface IGridIteration {
     teamIteration: TeamSettingsIteration;
     dimension: IDimension;
 }
+export interface IProgressIndicator {
+    childCount: number;
+    completedCount: number;
+}
 
 export interface IGridWorkItem {
     dimension: IDimension;
     workItem: IWorkItemHierarchy;
-    isGap?: boolean;
+    progressIndicator: IProgressIndicator;
     crop: CropWorkItem;
     gapColor?: string;
+    isGap?: boolean;
 }
 
 export interface IGridView {
@@ -216,9 +221,17 @@ export function getGridWorkItems(
                 endCol: parentEndColumn
             };
 
-            const gridItem: IGridWorkItem = { workItem: parent, dimension, crop: CropWorkItem.None };
+            const gridItem: IGridWorkItem =
+                {
+                    workItem: parent,
+                    dimension,
+                    crop: CropWorkItem.None,
+                    progressIndicator: {
+                        childCount: children.length,
+                        completedCount: children.filter(c => c.isComplete).length
+                    }
+                };
             output.push(gridItem);
-
         }
 
         let childStartRow = parentStartRow;
@@ -265,15 +278,20 @@ export function getGridWorkItems(
                     endCol: childEndColumn
                 };
 
-                const gridItem: IGridWorkItem = { workItem: child, dimension, crop };
+                const gridItem: IGridWorkItem = {
+                    workItem: child, dimension, crop, progressIndicator: {
+                        childCount: child.children.length,
+                        completedCount: child.children.filter(c => c.isComplete).length
+                    }
+                };
                 output.push(gridItem);
 
                 childStartRow++;
             }
         });
 
+        // Insert Gap
         if (children.length > 0 && index < (workItems.length - 1)) {
-
             output.push({
                 workItem: <IWorkItemHierarchy>{
                     id: -1,
@@ -289,7 +307,8 @@ export function getGridWorkItems(
                 },
                 isGap: true,
                 gapColor: parent.color,
-                crop: CropWorkItem.None
+                crop: CropWorkItem.None,
+                progressIndicator: null
             });
         }
 

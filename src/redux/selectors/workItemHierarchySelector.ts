@@ -1,21 +1,24 @@
 import { getWorkItemsForLevel } from './workItemsForLevel';
 import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } from '../store';
 import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
-import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { UIStatus } from '../types';
 import { compareIteration, getCurrentIterationIndex } from '../helpers/iterationComparer';
 import { getTeamIterations } from './teamIterations';
+
 
 export interface IWorkItemHierarchy {
     id: number;
     title: string;
     color: string;
+    workItemStateColor: WorkItemStateColor;
     isRoot: boolean;
     workItem: WorkItem;
     order: number;
     iterationDuration: IIterationDuration;
     children: IWorkItemHierarchy[];
     shouldShowDetails: boolean;
+    isComplete: boolean;
 }
 
 export enum FeatureFilter {
@@ -97,12 +100,19 @@ function getWorkItemDetails(
         workItemMetadata
     } = input;
 
-    const workItem = id && workItemsState.workItemInfos[id].workItem;
+    const workItemInfo = id && workItemsState.workItemInfos[id];
+    const workItem = workItemInfo && workItemInfo.workItem;
     let workItemType = null;
+    let workItemStateColor: WorkItemStateColor = null;
 
     if (workItem) {
         const workItemTypeName = workItem.fields["System.WorkItemType"];
-        workItemType = workItemMetadata.metadata[projectId].workItemTypes.filter((wit) => wit.name.toLowerCase() === workItemTypeName.toLowerCase())[0];
+        const state = workItem.fields["System.State"].toLowerCase();
+        const metadata = workItemMetadata.metadata[projectId];
+        workItemType = metadata.workItemTypes.filter((wit) => wit.name.toLowerCase() === workItemTypeName.toLowerCase())[0];
+        if (metadata.workItemStateColors[workItemTypeName]) {
+            workItemStateColor = metadata.workItemStateColors[workItemTypeName].filter(sc => sc.name.toLowerCase() === state)[0];
+        }
     }
 
     const children = getWorkItemsDetails(projectId, teamId, getChildrenIds(workItemsState.workItemInfos, id), input, /* isRoot */ false);
@@ -121,7 +131,9 @@ function getWorkItemDetails(
         iterationDuration,
         children,
         isRoot,
-        shouldShowDetails: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden)
+        shouldShowDetails: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden),
+        isComplete: workItemInfo && workItemInfo.stateCategory === StateCategory.Completed,
+        workItemStateColor
     };
 
     return workItemDetails;

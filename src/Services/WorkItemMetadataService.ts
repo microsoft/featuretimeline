@@ -33,12 +33,14 @@ export class WorkItemMetadataService {
             return this._states;
         }
 
-        const witHttpClient = getClient(WorkItemTrackingHttpClient);
-        const workItemTypes = await this.getWorkItemTypes(projectId);
-        
         const map = {};
-        for (const wit of workItemTypes) {
-            map[wit.name] = await witHttpClient.getWorkItemTypeStates(projectId, wit.referenceName);
+        const witHttpClient = getClient(WorkItemTrackingHttpClient);
+        if (witHttpClient.getWorkItemTypeStates) {
+            const workItemTypes = await this.getWorkItemTypes(projectId);
+
+            for (const wit of workItemTypes) {
+                map[wit.name] = await witHttpClient.getWorkItemTypeStates(projectId, wit.referenceName);
+            }
         }
 
         this._states = map;

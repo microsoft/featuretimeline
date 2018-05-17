@@ -1,6 +1,6 @@
-@mixin default {
+@mixin rootContainer {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     color: white;
     text-align: center;
     margin-top: 10px;
@@ -21,7 +21,10 @@
     padding-right: 5px;
     padding-bottom: 2px;
     font-size: 12px;
+}
 
+.work-item-renderer {
+    @include rootContainer();
 }
 
 .work-item-start-iteration-indicator {
@@ -65,23 +68,29 @@
     padding-right: 2px;
     padding-bottom: 2px;
     flex-grow: 1 0 auto;
-    font-weight: 200;
+    font-weight: 400;
 }
 
 .work-item-shadow {
-    @include default;
+    @include rootContainer;
 }
 
 .work-item-details-container:hover+.info-icon {
     color: white !important;
 }
 
+@mixin work-item {
+    display: flex;
+    flex-direction: row;
+    width: 100%; // calc(100% - 30px);
+}
+
 .work-item {
-    @include default;
+    @include work-item();
 }
 
 .root-work-item {
-    @include default;
+    @include work-item();
     margin-top: 0px;
     border-radius: 5px;
     height: calc(100% - 5px);
@@ -90,4 +99,15 @@
 .work-item-gap {
     margin-top: 10px;
     border: 1px solid lightgrey;
+}
+
+.state-indicator {
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    padding: 5px;
+    margin: 2px;
+    cursor: pointer;
 }
