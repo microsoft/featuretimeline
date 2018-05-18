@@ -16,6 +16,7 @@ import showHideDetailsReducer from "./common/reducer";
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import savedOverriddenWorkItemIterationsReducer from "./workitems/overrideWorkItemIterationReducer";
 import overrideIterationReducer from "./overrideIterationProgress/reducer";
+import settingsReducer from "./common/settingsReducer";
 import { ResetType } from './common/actions';
 
 export interface IIterationDuration {
@@ -67,6 +68,7 @@ export interface IFeatureTimelineRawState {
     workItemOverrideIteration?: IWorkItemOverrideIteration;
     planFeaturesState: IPlanFeaturesState;
     featureState: IDictionaryStringTo<boolean>;
+    settingsState: ISettingsState;
 }
 
 const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFeatureTimelineRawState => {
@@ -100,7 +102,8 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     workItemOverrideIteration: overrideIterationReducer,
     savedOverriddenWorkItemIterations: savedOverriddenWorkItemIterationsReducer,
     planFeaturesState: togglePaneReducer,
-    featureState: featureStateReducer
+    featureState: featureStateReducer,
+    settingsState: settingsReducer
 });
 
 // setup reducers
@@ -108,4 +111,8 @@ export const reducers: Reducer<IFeatureTimelineRawState> = (state: IFeatureTimel
     const intermediateState = intermediateReducer(state, action);
     const finalState = crossSliceReducer(intermediateState, action);
     return finalState;
+}
+
+export interface ISettingsState {
+    showWorkItemDetails: boolean;
 }

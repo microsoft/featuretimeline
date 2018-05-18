@@ -1,7 +1,7 @@
 import { takeEvery, takeLatest } from "redux-saga/effects";
 import { ClearOverrideIterationType, LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType, StartMarkInProgressActionType } from "../store/workitems/actions";
 import { launchWorkItemFormSaga } from "./launchWorkItemFormSaga";
-import { InitializeType, TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType } from "../store/common/actions";
+import { InitializeType, TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkitemDetailsType } from "../store/common/actions";
 import { callInitialize } from "./initialize";
 import { launchOverrideWorkItemIteration, launchClearOverrideIteration, launchSaveOverrideIteration } from "./workItemOverrideIterationListner";
 import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../store/overrideIterationProgress/actions";
@@ -11,6 +11,7 @@ import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, Sh
 import { markWorkItemInProgressListner } from "./markWorkItemInProgressListner";
 import { savePlanFeaturesDisplayOptions, restorePlanFeaturesDisplayOptions } from "./planFeaturesDisplayOptions";
 import { initializeFeatureState } from "./featureStateReader";
+import { saveSettings, restoreSettings } from "./saveSettings";
 
 export function* watchSagaActions() {
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
@@ -31,5 +32,8 @@ export function* watchSagaActions() {
     yield takeLatest(PlanFeaturesPaneFilterChangedType, savePlanFeaturesDisplayOptions);
     yield takeLatest(PlanFeaturesPaneWidthChangedType, savePlanFeaturesDisplayOptions);
 
+    yield takeLatest(ToggleShowWorkitemDetailsType, saveSettings);
+
     yield takeLatest(InitializeType, restorePlanFeaturesDisplayOptions);
+    yield takeLatest(InitializeType, restoreSettings);
 }

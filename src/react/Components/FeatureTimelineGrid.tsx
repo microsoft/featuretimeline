@@ -16,7 +16,8 @@ import {
     createInitialize,
     showDetails,
     togglePlanFeaturesPane,
-    changePlanFeaturesWidth
+    changePlanFeaturesWidth,
+    toggleShowWorkItemDetails
 } from '../../redux/store/common/actioncreators';
 import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import { connect, Provider } from 'react-redux';
@@ -29,10 +30,11 @@ import {
     getTeamId,
     primaryGridViewSelector,
     uiStatusSelector,
-    planFeatureStateSelector
+    planFeatureStateSelector,
+    settingsStateSelector
 } from '../../redux/selectors';
 import { getRowColumnStyle, getTemplateColumns } from './gridhelper';
-import { IFeatureTimelineRawState, IWorkItemOverrideIteration, IPlanFeaturesState } from '../../redux/store';
+import { IFeatureTimelineRawState, IWorkItemOverrideIteration, IPlanFeaturesState, ISettingsState } from '../../redux/store';
 import { IGridView } from '../../redux/selectors/gridViewSelector';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { IterationDropTarget } from './DroppableIterationShadow';
@@ -58,6 +60,7 @@ export interface IFeatureTimelineGridProps {
     gridView: IGridView,
     childItems: number[];
     planFeaturesState: IPlanFeaturesState;
+    settingsState: ISettingsState;
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
     closeDetails: (id: number) => void;
@@ -74,6 +77,7 @@ export interface IFeatureTimelineGridProps {
     togglePlanFeaturesPane: (show: boolean) => void;
     resizePlanFeaturesPane: (width: number) => void;
     markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
+    toggleShowWorkItemDetails: (show: boolean) => void;
 }
 
 const makeMapStateToProps = () => {
@@ -86,6 +90,7 @@ const makeMapStateToProps = () => {
             gridView: primaryGridViewSelector()(state),
             childItems: state.workItemDetails,
             planFeaturesState: planFeatureStateSelector()(state),
+            settingsState: settingsStateSelector()(state)
         }
     }
 }
@@ -138,6 +143,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         togglePlanFeaturesPane: (show: boolean) => {
             dispatch(togglePlanFeaturesPane(show));
+        },
+        toggleShowWorkItemDetails: (show: boolean) => {
+            dispatch(toggleShowWorkItemDetails(show));
         },
         resizePlanFeaturesPane: (width: number) => {
             dispatch(changePlanFeaturesWidth(width));
@@ -392,6 +400,12 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     onChange={this._onShowPlanFeaturesChanged}
                     checked={this.props.planFeaturesState.show} />
 
+                <Checkbox
+                    className="show-work-item-details-checkbox"
+                    label={"Show Details"}
+                    onChange={this._onShowWorkItemDetailsChanged}
+                    checked={this.props.settingsState.showWorkItemDetails} />
+
             </div>
         );
 
@@ -436,6 +450,10 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
     private _onShowPlanFeaturesChanged = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => {
         this.props.togglePlanFeaturesPane(checked);
+    }
+
+    private _onShowWorkItemDetailsChanged = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => {
+        this.props.toggleShowWorkItemDetails(checked);
     }
 
     private _onPaneWidthChanged = (width: number) => {

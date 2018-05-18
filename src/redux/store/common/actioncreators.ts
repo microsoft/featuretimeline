@@ -3,7 +3,7 @@ import {
     InitializeAction, InitializeType, ShowDetailsAction,
     ShowDetailsType, CloseDetailsAction, CloseDetailsType,
     ResetAction, ResetType,
-    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType
+    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType
 } from './actions';
 
 export const resetAllData: ActionCreator<ResetAction> = () => ({
@@ -56,4 +56,9 @@ export const toggleFeatureState: ActionCreator<ToggleFeatureStateAction> = (feat
         featureName,
         isEnabled
     }
+});
+
+export const toggleShowWorkItemDetails: ActionCreator<ToggleShowWorkItemDetailsAction> = (show: boolean) => ({
+    type: ToggleShowWorkitemDetailsType,
+    payload: show
 });

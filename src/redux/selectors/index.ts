@@ -9,6 +9,7 @@ import { getGridView } from "./gridViewSelector";
 import { getTeamIterations } from "./teamIterations";
 import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
+import { getDefaultSettingsState } from "../store/common/settingsReducer";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
 export const getProjectId = () => {
@@ -80,6 +81,16 @@ export const planFeatureStateSelector = () => {
         return state.planFeaturesState;
     })
 }
+
+export const settingsStateSelector = () => {
+    return createSelector([getRawState], (state) => {
+        if (!state || !state.settingsState) {
+            return getDefaultSettingsState();
+        }
+        return state.settingsState;
+    })
+}
+
 
 export const epicsHierarchySelector = () => {
     return createSelector(

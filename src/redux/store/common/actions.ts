@@ -8,6 +8,8 @@ export const TogglePlanFeaturesPaneType = "@@common/toggleplanfeaturespane";
 export const PlanFeaturesPaneWidthChangedType = "@@common/planfeaturespanewidthchanged";
 export const PlanFeaturesPaneFilterChangedType = "@@common/planfeaturespanefilterchanged";
 export const ToggleFeatureStateType = "@@common/togglefeaturestate";
+export const ToggleShowWorkitemDetailsType = "@@common/toggleshowworkitemdetails";
+
 export interface InitializeAction extends Action {
     type: "@@common/initialize";
     payload: {
@@ -61,7 +63,13 @@ export interface ToggleFeatureStateAction extends Action {
     }
 }
 
+export interface ToggleShowWorkItemDetailsAction extends Action {
+    type: "@@common/toggleshowworkitemdetails",
+    payload: boolean;
+}
+
 export type CommonActions = ToggleFeatureStateAction | ResetAction | InitializeAction
     | ShowDetailsAction | CloseDetailsAction;
 export type PlanFeaturesPaneActions = TogglePlanFeaturesPaneAction
     | PlanFeaturesPaneFilterChangedAction | PlanFeaturesPaneWidthChangedAction;
+export type SettingsActions = ToggleShowWorkItemDetailsAction;
