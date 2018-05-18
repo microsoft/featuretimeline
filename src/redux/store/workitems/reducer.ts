@@ -57,8 +57,7 @@ function handleStartUpdateWorkItemIteration(state: IWorkItemsState, action: Star
 function handleStartMarkInProgress(workItemState: IWorkItemsState, action: StartMarkInProgressAction): IWorkItemsState {
     const {
         workItem,
-        teamIteration,
-        state
+        teamIteration
     } = action.payload;
 
     const newState = { ...workItemState };
