@@ -79,6 +79,10 @@
     font-weight: 400;
 }
 
+.start-group {
+    display: flex;
+}
+
 .work-item-shadow {
     @include rootContainer;
 }

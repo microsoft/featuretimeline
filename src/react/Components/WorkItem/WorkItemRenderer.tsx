@@ -164,7 +164,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             );
         }
 
-        let stateIndicator = null;        
+        let stateIndicator = null;
         if (workItemStateColor && !isRoot) {
             const stateColorStyle = {};
             const color = "#" + (workItemStateColor.color.length > 6 ? workItemStateColor.color.substr(2) : workItemStateColor.color)
@@ -187,9 +187,10 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                     <div
                         className={css("work-item-details-container", additionalTitleClass)}
                     >
-                        {stateIndicator}
-
-                        {startsFrom}
+                        <div className="start-group">
+                            {stateIndicator}
+                            {startsFrom}
+                        </div>
                         <div
                             className="title-contents"
                             onClick={() => onClick(id)}
@@ -207,7 +208,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                     {rightHandle}
                 </div>
                 {
-                    progressIndicator && 
+                    progressIndicator &&
                     !isRoot &&
                     (<ProgressDetails
                         {...progressIndicator}
