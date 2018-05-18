@@ -1,5 +1,8 @@
 .timeline-dialog {
     max-width: 60% !important;
+    .ms-Dialog--close {
+        overflow: auto;
+    }
 }
 
 .timeline-dialog .container {

@@ -282,7 +282,11 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
 
         const extraColumns = this.props.gridView.hideParents ? [] : ['300px'];
-        const gridStyle = getTemplateColumns(extraColumns, shadows.length, 'minmax(8%, 300px)');
+        let min = '200px';
+        if (isSubGrid) {
+            min = '150px';
+        }
+        const gridStyle = getTemplateColumns(extraColumns, shadows.length, `minmax(${min}, 300px)`);
 
         let childDialog = null;
         if (this.props.childItems.length > 0) {
@@ -431,6 +435,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     customClassName={"timeline-splitter"}
                     secondaryInitialSize={this.props.planFeaturesState.paneWidth}
                     onSecondaryPaneSizeChange={this._onPaneWidthChanged}
+                    percentage={true}
+                    primaryMinSize="75"
                 >
                     {grid}
                     <ConnectedWorkItemsList />
