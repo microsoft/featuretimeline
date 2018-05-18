@@ -430,10 +430,14 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         let contents = grid;
         if (!isSubGrid && this.props.planFeaturesState.show) {
+            let paneWidth = this.props.planFeaturesState.paneWidth;
+            if(paneWidth > 25) {
+                paneWidth = 25;
+            }
             contents = (
                 <SplitterLayout
                     customClassName={"timeline-splitter"}
-                    secondaryInitialSize={this.props.planFeaturesState.paneWidth}
+                    secondaryInitialSize={paneWidth}
                     onSecondaryPaneSizeChange={this._onPaneWidthChanged}
                     percentage={true}
                     primaryMinSize="75"
