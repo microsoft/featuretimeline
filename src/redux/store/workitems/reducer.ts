@@ -67,7 +67,6 @@ function handleStartMarkInProgress(workItemState: IWorkItemsState, action: Start
         workItemObject = { ...workItemObject };
         workItemObject.workItem.fields = { ...workItemObject.workItem.fields };
         workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
-        workItemObject.workItem.fields["System.State"] = state;
         workItemObject.stateCategory = StateCategory.InProgress;
         newState.workItemInfos[workItem]= workItemObject;
     }
