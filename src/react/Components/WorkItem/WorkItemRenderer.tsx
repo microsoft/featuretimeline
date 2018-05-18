@@ -12,18 +12,20 @@ import { hexToRgb } from '../colorhelper';
 import { ProgressDetails } from '../ProgressDetails/ProgressDetails';
 import { IProgressIndicator } from '../../../redux/selectors/gridViewSelector';
 import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
+import { State } from '../State/State';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;
     workItemStateColor: WorkItemStateColor;
     color: string;
     isRoot: boolean;
-    shouldShowDetails: boolean;
+    showInfoIcon: boolean;
     allowOverride: boolean;
     iterationDuration: IIterationDuration;
     dimension: IDimension;
     crop: CropWorkItem;
     progressIndicator: IProgressIndicator;
+    showWorkItemDetails: boolean;
 
     onClick: (id: number) => void;
     showDetails: (id: number) => void;
@@ -62,13 +64,14 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             onClick,
             showDetails,
             isRoot,
-            shouldShowDetails,
+            showInfoIcon,
             allowOverride,
             isDragging,
             crop,
             iterationDuration,
             progressIndicator,
-            workItemStateColor
+            workItemStateColor,
+            showWorkItemDetails
         } = this.props;
 
         const {
@@ -92,12 +95,12 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         }
 
         if (isDragging) {
-            style['background'] = hexToRgb(this.props.color, 0.1);
+            style['border-color'] = hexToRgb(this.props.color, 0.1);
         } else {
-            style['background'] = hexToRgb(this.props.color, 0.7);
+            style['border-color'] = hexToRgb(this.props.color, 0.7);
         }
 
-        const workItemClassName = isRoot ? "root-work-item-renderer" : "work-item-renderer";
+        const rendererClass = isRoot ? "root-work-item-renderer" : "work-item-renderer";
         let canOverrideLeft = allowOverride;
         let canOverrideRight = allowOverride;
         let leftCropped = false;
@@ -122,8 +125,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             }
         }
 
-        const infoIcon = shouldShowDetails ? <InfoIcon id={id} onClick={id => showDetails(id)} /> : null;
-        const additionalTitleClass = infoIcon ? "title-with-infoicon" : "title-without-infoicon";
+        const infoIcon = showInfoIcon ? <InfoIcon id={id} onClick={id => showDetails(id)} /> : null;
+        const additionalDetailsContainer = infoIcon ? "work-item-details-with-infoicon" : "work-item-details-without-infoicon";
 
         let leftHandle = null;
         let rightHandle = null;
@@ -131,7 +134,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         if (!isRoot && allowOverride) {
             leftHandle = canOverrideLeft && (
                 <div
-                    className="small-border"
+                    className="work-item-iteration-override-handle"
                     onMouseDown={this._leftMouseDown}
                     onMouseUp={this._mouseUp}
                 />
@@ -139,7 +142,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
             rightHandle = canOverrideRight && (
                 <div
-                    className="small-border"
+                    className="work-item-iteration-override-handle"
                     onMouseDown={this._rightMouseDown}
                     onMouseUp={this._mouseUp}
                 />
@@ -148,74 +151,79 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
         let startsFrom = <div />;
         if (leftCropped) {
-            startsFrom = (<TooltipHost
-                content={`Starts at ${iterationDuration.startIteration.name}`}>
-                <div className="work-item-start-iteration-indicator">{`${iterationDuration.startIteration.name}`}</div>
-            </TooltipHost>
+            startsFrom = (
+                <TooltipHost
+                    content={`Starts at ${iterationDuration.startIteration.name}`}>
+                    <div className="work-item-start-iteration-indicator">{`${iterationDuration.startIteration.name}`}</div>
+                </TooltipHost>
             );
         }
 
         let endsAt = <div />;
         if (rightCropped) {
-            endsAt = (<TooltipHost
-                content={`Ends at ${iterationDuration.endIteration.name}`}>
-                <div className="work-item-end-iteration-indicator">{`${iterationDuration.endIteration.name}`}</div>
-            </TooltipHost>
+            endsAt = (
+                <TooltipHost
+                    content={`Ends at ${iterationDuration.endIteration.name}`}>
+                    <div className="work-item-end-iteration-indicator">{`${iterationDuration.endIteration.name}`}</div>
+                </TooltipHost>
             );
         }
 
-        let stateIndicator = null;
-        if (workItemStateColor && !isRoot) {
-            const stateColorStyle = {};
-            const color = "#" + (workItemStateColor.color.length > 6 ? workItemStateColor.color.substr(2) : workItemStateColor.color)
-            stateColorStyle['background'] = color;
-            stateIndicator = (
-                <TooltipHost content={workItemStateColor.name}>
-                    <div className="state-indicator" style={stateColorStyle} />
-                </TooltipHost>
-            )
-        }
 
+        let secondRow = null;
+
+        if (showWorkItemDetails) {
+            let stateIndicator = null;
+            if (workItemStateColor && !isRoot) {
+                stateIndicator = <State workItemStateColor={workItemStateColor} />;
+            }
+
+            let progressDetails = null;
+            if (progressIndicator && !isRoot) {
+                progressDetails = <ProgressDetails
+                    {...progressIndicator}
+                    onClick={() => showDetails(id)}
+                />
+            }
+
+            secondRow = (
+                <div className="work-item-detail-row">
+                    {stateIndicator}
+                    {progressDetails}
+                </div>
+            );
+        }
         const item = (
             <div
-                className={workItemClassName}
+                className={rendererClass}
                 style={style}
                 ref={(e) => this._div = e}
             >
-                <div className={"work-item"}>
-                    {leftHandle}
-                    <div
-                        className={css("work-item-details-container", additionalTitleClass)}
-                    >
-                        <div className="start-group">
-                            {stateIndicator}
-                            {startsFrom}
-                        </div>
+                {leftHandle}
+                <div className="work-item-detail-rows">
+                    <div className="work-item-detail-row">
                         <div
-                            className="title-contents"
-                            onClick={() => onClick(id)}
+                            className={css("work-item-details-container", additionalDetailsContainer)}
                         >
-                            <TooltipHost
-                                content={title}
-                                overflowMode={TooltipOverflowMode.Parent}
+                            {startsFrom}
+                            <div
+                                className="title-contents"
+                                onClick={() => onClick(id)}
                             >
-                                {title}
-                            </TooltipHost>
+                                <TooltipHost
+                                    content={title}
+                                    overflowMode={TooltipOverflowMode.Parent}
+                                >
+                                    {title}
+                                </TooltipHost>
+                            </div>
+                            {endsAt}
                         </div>
-                        {endsAt}
+                        {infoIcon}
                     </div>
-                    {infoIcon}
-                    {rightHandle}
+                    {secondRow}
                 </div>
-                {
-                    progressIndicator &&
-                    !isRoot &&
-                    (<ProgressDetails
-                        {...progressIndicator}
-                        onClick={() => showDetails(id)}
-                    />
-                    )
-                }
+                {rightHandle}
             </div>
         );
 

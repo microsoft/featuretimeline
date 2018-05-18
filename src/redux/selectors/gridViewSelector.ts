@@ -1,4 +1,4 @@
-import { IWorkItemOverrideIteration } from "../store";
+import { IWorkItemOverrideIteration, ISettingsState } from "../store";
 import { IWorkItemHierarchy } from "./workItemHierarchySelector";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 import { UIStatus, IDimension, CropWorkItem } from "../types";
@@ -19,6 +19,7 @@ export interface IGridWorkItem {
     workItem: IWorkItemHierarchy;
     progressIndicator: IProgressIndicator;
     crop: CropWorkItem;
+    showWorkItemDetails: boolean;
     gapColor?: string;
     isGap?: boolean;
 }
@@ -40,6 +41,7 @@ export function getGridView(
     teamIterations: TeamSettingsIteration[],
     workItems: IWorkItemHierarchy[],
     workItemOverrideIteration: IWorkItemOverrideIteration,
+    settingState: ISettingsState,
     iterationDisplayOptions: IIterationDisplayOptions = null,
     isSubGrid: boolean = false
 ): IGridView {
@@ -67,7 +69,8 @@ export function getGridView(
         workItems,
         /* startRow */ 3,
         /* startCol */ 1,
-        hideParents);
+        hideParents,
+        settingState.showWorkItemDetails);
 
     let workItemShadow = 0;
     if (workItemOverrideIteration && workItemOverrideIteration.workItemId) {
@@ -167,7 +170,7 @@ export function getDisplayIterations(
     };
 
     workItems.forEach(child => calcFirstLastIteration(child));
-    
+
     // If there are no planned workitems use first and last team iteration
     if (!firstIteration || !lastIteration) {
         firstIteration = teamIterations[0];
@@ -199,7 +202,8 @@ export function getGridWorkItems(
     workItems: IWorkItemHierarchy[],
     startRow: number,
     startColumn: number,
-    hideParents: boolean): IGridWorkItem[] {
+    hideParents: boolean,
+    showWorkItemDetails: boolean): IGridWorkItem[] {
 
     const output: IGridWorkItem[] = [];
     workItems = workItems.sort(workItemCompare);
@@ -235,7 +239,8 @@ export function getGridWorkItems(
                     progressIndicator: {
                         childCount: children.length,
                         completedCount: children.filter(c => c.isComplete).length
-                    }
+                    },
+                    showWorkItemDetails
                 };
             output.push(gridItem);
         }
@@ -288,7 +293,8 @@ export function getGridWorkItems(
                     workItem: child, dimension, crop, progressIndicator: {
                         childCount: child.children.length,
                         completedCount: child.children.filter(c => c.isComplete).length
-                    }
+                    },
+                    showWorkItemDetails
                 };
                 output.push(gridItem);
 
@@ -303,7 +309,7 @@ export function getGridWorkItems(
                     id: -1,
                     title: "",
                     children: [],
-                    shouldShowDetails: false
+                    showInfoIcon: false
                 },
                 dimension: {
                     startRow: parentEndRow - 1,
@@ -314,7 +320,8 @@ export function getGridWorkItems(
                 isGap: true,
                 gapColor: parent.color,
                 crop: CropWorkItem.None,
-                progressIndicator: null
+                progressIndicator: null,
+                showWorkItemDetails
             });
         }
 

@@ -62,6 +62,7 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
             getTeamIterations(this.props.projectId, this.props.teamId, this.props.uiState, this.props.rawState),
             [gridWorkItem.workItem],
             /* workItemOverrideIteration */ null,
+            this.props.settingsState,
             /* iterationDisplayOptions */ null,
             /* isSubGrid */ true);
 

@@ -247,7 +247,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         if (workItemShadow) {
             const workItem = workItems.filter(w => !w.isGap && w.workItem.id === workItemShadow)[0];
             workItemShadowCell = (
-                <WorkItemShadow {...workItem.dimension} />
+                <WorkItemShadow dimension={workItem.dimension} twoRows={workItem.showWorkItemDetails} />
             );
         }
 
@@ -261,7 +261,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     iterationDuration={w.workItem.iterationDuration}
                     dimension={w.dimension}
                     onClick={id => this.props.launchWorkItemForm(id)}
-                    shouldShowDetails={w.workItem.shouldShowDetails}
+                    showInfoIcon={w.workItem.showInfoIcon}
                     showDetails={id => this.props.showDetails(id)}
                     overrideIterationStart={payload => this.props.overrideIterationStart(payload)}
                     overrideIterationEnd={() => this.props.overrideIterationEnd()}
@@ -269,6 +269,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     progressIndicator={w.progressIndicator}
                     crop={w.crop}
                     workItemStateColor={w.workItem.workItemStateColor}
+                    showWorkItemDetails={w.showWorkItemDetails}
                 />
             );
         });

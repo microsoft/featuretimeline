@@ -108,6 +108,7 @@ export const primaryGridViewSelector = () => {
         teamIterationsSelector(),
         epicsHierarchySelector(),
         workItemOverrideIterationSelector(),
+        settingsStateSelector(),
         iterationDisplayOptionsSelector()
     ],
         getGridView)

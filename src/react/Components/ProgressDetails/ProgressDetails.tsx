@@ -21,18 +21,15 @@ export class ProgressDetails extends React.Component<IProgressIndicatorProps, {}
 
         const style = {};
         style['width'] = `${(completedCount * 100 / childCount)}%`;
-        const tooltip = `${completedCount} of ${childCount} completed.`;
+        const progressText = `${completedCount}/${childCount}`;
         return (
-            <div className="progress-indicator-container"
-                onClick={onClick}
-            >
-                <TooltipHost
-                    content={tooltip}
-                >
-                    <div className="progress-details-parts-container">
-                        <div className="progress-completed" style={style} />
-                    </div>
-                </TooltipHost >
+            <div className="progress-indicator-container" onClick={onClick}>
+                <div className="progress-details-parts">
+                    <div className="progress-completed" style={style} />
+                </div>
+                <TooltipHost content={progressText}>
+                    <div className="progress-text"> {progressText}</div>
+                </TooltipHost>
             </div>
         )
     }

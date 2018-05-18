@@ -17,7 +17,7 @@ export interface IWorkItemHierarchy {
     order: number;
     iterationDuration: IIterationDuration;
     children: IWorkItemHierarchy[];
-    shouldShowDetails: boolean;
+    showInfoIcon: boolean;
     isComplete: boolean;
 }
 
@@ -131,7 +131,7 @@ function getWorkItemDetails(
         iterationDuration,
         children,
         isRoot,
-        shouldShowDetails: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden),
+        showInfoIcon: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden),
         isComplete: workItemInfo && workItemInfo.stateCategory === StateCategory.Completed,
         workItemStateColor
     };
