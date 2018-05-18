@@ -187,7 +187,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             }
 
             secondRow = (
-                <div className="work-item-detail-row">
+                <div className="work-item-detail-row secondary-row">
                     {stateIndicator}
                     {progressDetails}
                 </div>

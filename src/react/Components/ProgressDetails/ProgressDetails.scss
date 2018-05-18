@@ -5,7 +5,7 @@
 }
 
 .progress-details-parts {
-    width: 100px;
+    width: 70px;
     display: flex;
     margin-left: 15px;
     height: 10px;
@@ -20,5 +20,6 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    margin-left: 5px;
 
 }

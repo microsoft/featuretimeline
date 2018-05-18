@@ -23,14 +23,14 @@ export class ProgressDetails extends React.Component<IProgressIndicatorProps, {}
         style['width'] = `${(completedCount * 100 / childCount)}%`;
         const progressText = `${completedCount}/${childCount}`;
         return (
-            <div className="progress-indicator-container" onClick={onClick}>
-                <div className="progress-details-parts">
-                    <div className="progress-completed" style={style} />
-                </div>
-                <TooltipHost content={progressText}>
+            <TooltipHost content={progressText}>
+                <div className="progress-indicator-container" onClick={onClick}>
+                    <div className="progress-details-parts">
+                        <div className="progress-completed" style={style} />
+                    </div>
                     <div className="progress-text"> {progressText}</div>
-                </TooltipHost>
-            </div>
+                </div>
+            </TooltipHost>
         )
     }
 }
