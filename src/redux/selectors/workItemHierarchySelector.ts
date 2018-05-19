@@ -5,6 +5,7 @@ import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { UIStatus } from '../types';
 import { compareIteration, getCurrentIterationIndex } from '../helpers/iterationComparer';
 import { getTeamIterations } from './teamIterations';
+import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 
 
 export interface IWorkItemHierarchy {
@@ -169,8 +170,10 @@ function getWorkItemIterationDuration(
         const overridedBy = input.savedOverriddenWorkItemIterations[id].user;
         const startIteration = allIterations.find(i => i.id === si);
         const endIteration = allIterations.find(i => i.id === ei);
+
         if (startIteration && endIteration) {
-            iterationDuration = { startIteration, endIteration, kind: IterationDurationKind.UserOverridden, overridedBy };
+            const childrenAreOutofBounds = areChildrenOutOfBounds(startIteration, endIteration, iterationDuration, allIterations);
+            iterationDuration = { startIteration, endIteration, kind: IterationDurationKind.UserOverridden, overridedBy, childrenAreOutofBounds };
         }
     }
 
@@ -219,7 +222,7 @@ function getIterationDurationFromChildren(
         return {
             startIteration,
             endIteration,
-            kind: IterationDurationKind.ChildRollup
+            kind: !startIteration ? IterationDurationKind.None : IterationDurationKind.ChildRollup
         }
     }, { startIteration: null, endIteration: null, kind: IterationDurationKind.None });
 }
@@ -242,4 +245,22 @@ function getChildrenIds(
         }
     }
     return childIds;
+}
+
+function areChildrenOutOfBounds(
+    start: TeamSettingsIteration, 
+    end: TeamSettingsIteration, 
+    iterationDuration: IIterationDuration, 
+    allIterations: TeamSettingsIteration[]): boolean {
+    if (iterationDuration.kind === IterationDurationKind.None || !start || !end) {
+        return false;
+    }
+
+    const startIndex = allIterations.findIndex(itr => itr.id == start.id);
+    const endIndex = allIterations.findIndex(itr => itr.id == end.id);
+
+    const childStartIndex = allIterations.findIndex(itr => itr.id == iterationDuration.startIteration.id);
+    const childEndIndex = allIterations.findIndex(itr => itr.id == iterationDuration.endIteration.id);
+
+    return childStartIndex < startIndex || childEndIndex > endIndex;
 }

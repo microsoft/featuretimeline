@@ -270,9 +270,9 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     crop={w.crop}
                     workItemStateColor={w.workItem.workItemStateColor}
                     showWorkItemDetails={w.showWorkItemDetails}
-                />
+                    />
             );
-        });
+            });
 
         const workItemGaps = workItems.filter(w => w.isGap).map(w => {
             return (

@@ -24,6 +24,7 @@ export interface IIterationDuration {
     endIteration: TeamSettingsIteration;
     kind: IterationDurationKind;
     overridedBy?: string; // User name for the case when kind is UserOverridden
+    childrenAreOutofBounds?: boolean; // Indicates if the child work items has iterations that are out of bounds
 }
 
 export enum IterationDurationKind {

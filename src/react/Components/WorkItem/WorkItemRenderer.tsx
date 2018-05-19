@@ -13,6 +13,7 @@ import { ProgressDetails } from '../ProgressDetails/ProgressDetails';
 import { IProgressIndicator } from '../../../redux/selectors/gridViewSelector';
 import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { State } from '../State/State';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;
@@ -174,8 +175,24 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
         if (showWorkItemDetails) {
             let stateIndicator = null;
+
             if (workItemStateColor && !isRoot) {
                 stateIndicator = <State workItemStateColor={workItemStateColor} />;
+            }
+
+            let warning = null;
+            if (iterationDuration.childrenAreOutofBounds) {
+                warning = (
+                    <TooltipHost
+                        content="Some user stories for this feature are outside the bounds of start or end iteration of this feature.">
+                        <Icon
+                            iconName={'Warning'}
+                            className="work-item-warning"
+                            onClick={() => showDetails(id)}
+                        />
+                    </TooltipHost >
+                );
+
             }
 
             let progressDetails = null;
@@ -189,6 +206,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             secondRow = (
                 <div className="work-item-detail-row secondary-row">
                     {stateIndicator}
+                    {warning}
                     {progressDetails}
                 </div>
             );
