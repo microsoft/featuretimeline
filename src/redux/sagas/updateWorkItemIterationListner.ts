@@ -17,7 +17,7 @@ export function* updateWorkItemIteration(action: StartUpdateWorkitemIterationAct
         const doc: JsonPatchDocument = [{
             "op": "add",
             "path": "/fields/System.IterationPath",
-            "value": payload.teamIteration.path
+            "value": payload.teamIteration.path || payload.teamIteration.name
         }];
 
         if (payload.override) {
