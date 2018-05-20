@@ -21,7 +21,6 @@ export class IterationRenderer extends React.Component<IIterationRendererProps, 
             teamIterations,
         } = this.props;
 
-        // TODO: Start and end date conversion?
         const startDate = iteration.attributes && iteration.attributes["startDate"] ? getMMDD(new Date(iteration.attributes["startDate"])) : null;
         const endDate = iteration.attributes && iteration.attributes["finishDate"] ? getMMDD(new Date(iteration.attributes["finishDate"])) : null;
 
@@ -34,10 +33,10 @@ export class IterationRenderer extends React.Component<IIterationRendererProps, 
             );
         }
 
-        const unplanned = !teamIterations.some(ti => ti.id === iteration.id);
+        const isBacklogIteration = !teamIterations.some(ti => ti.id === iteration.id);
 
         let marker = null;
-        if (unplanned) {
+        if (isBacklogIteration) {
             marker = (
                 <span className="unplanned-sprint-marker">Backlog</span>
             );

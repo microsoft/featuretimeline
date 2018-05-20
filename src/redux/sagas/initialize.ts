@@ -71,10 +71,10 @@ export function* handleInitialize(action: InitializeAction) {
         backlogConfig.portfolioBacklogs.sort((b1, b2) => b1.rank - b2.rank);
         const workItemTypeNames = [];
         backlogConfig.portfolioBacklogs.reduce((workItemTypeNames, backlog) => {
-             workItemTypeNames.push(...backlog.workItemTypes.map(w => w.name));
-             return workItemTypeNames;
+            workItemTypeNames.push(...backlog.workItemTypes.map(w => w.name));
+            return workItemTypeNames;
         }, workItemTypeNames);
-        
+
         workItemTypeNames.push(...backlogConfig.requirementBacklog.workItemTypes.map(w => w.name));
 
         const stateColors = yield call([metadatService, metadatService.getStates], projectId, workItemTypeNames);
@@ -90,11 +90,11 @@ export function* handleInitialize(action: InitializeAction) {
         // query for Proposed work items
         {
             const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Proposed");
-            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
+            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId, /** team**/ null, /* teamPrecision */ null, /*top*/ 50 );
 
             if (queryResults && queryResults.workItems) {
                 // Page only first 50 proposed items for optimization
-                queryResultWits.push(...queryResults.workItems.splice(0, 50));
+                queryResultWits.push(...queryResults.workItems);
             }
         }
 
@@ -176,7 +176,12 @@ export function* handleInitialize(action: InitializeAction) {
     }
 }
 
-function getBacklogLevelQueryWiql(backlogConfig: Contracts.BacklogConfiguration, teamSettings: Contracts.TeamSetting, teamFieldValues: Contracts.TeamFieldValues, stateCategory: string) {
+function getBacklogLevelQueryWiql(
+    backlogConfig: Contracts.BacklogConfiguration,
+    teamSettings: Contracts.TeamSetting,
+    teamFieldValues: Contracts.TeamFieldValues,
+    stateCategory: string) {
+
     const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
     const orderField = backlogConfig.backlogFields.typeFields["Order"];
     const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${w.name}'`).join(",");
@@ -192,18 +197,25 @@ function getBacklogLevelQueryWiql(backlogConfig: Contracts.BacklogConfiguration,
         .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
     const workItemTypeAndStatesClause = stateInfo
         .map(si => {
-            const states = Object.keys(si.states).filter(state => si.states[state] === stateCategory)
+            const states = Object.keys(si.states)
+                .filter(state => si.states[state] === stateCategory)
                 .map(state => _escape(state))
                 .join("', '");
+
             return `(
                              [System.WorkItemType] = '${_escape(si.workItemTypeName)}'
                              AND [System.State] IN ('${states}')
                             )`;
-        }).join(" OR ");
-    const teamFieldClause = teamFieldValues.values.map((tfValue) => {
-        const operator = tfValue.includeChildren ? "UNDER" : "=";
-        return `[${_escape(teamFieldValues.field.referenceName)}] ${operator} '${_escape(tfValue.value)}'`;
-    }).join(" OR ");
+        })
+        .join(" OR ");
+
+    const teamFieldClause = teamFieldValues.values
+        .map((tfValue) => {
+            const operator = tfValue.includeChildren ? "UNDER" : "=";
+            return `[${_escape(teamFieldValues.field.referenceName)}] ${operator} '${_escape(tfValue.value)}'`;
+        })
+        .join(" OR ");
+
     const wiql = `SELECT   System.Id
                         FROM     WorkItems
                         WHERE    [System.WorkItemType] IN (${workItemTypes})
