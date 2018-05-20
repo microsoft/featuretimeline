@@ -90,7 +90,7 @@ export function* handleInitialize(action: InitializeAction) {
         // query for Proposed work items
         {
             const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Proposed");
-            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId, /** team**/ null, /* teamPrecision */ null, /*top*/ 50 );
+            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId, /** team**/ null, /* teamPrecision */ null, /*top*/ 50);
 
             if (queryResults && queryResults.workItems) {
                 // Page only first 50 proposed items for optimization
@@ -143,9 +143,11 @@ export function* handleInitialize(action: InitializeAction) {
             const workItems: WitContracts.WorkItem[] = yield call(_pageWorkItemFields, workItemsToPage, [orderField]);
             workItems.push(...pagedWorkItems);
             workItems.sort((w1, w2) => w1.fields[orderField] - w2.fields[orderField]);
-
+            debugger;
             // Call action creators to update work items and links in the store
             yield put(workItemsReceived(workItems, parentWorkItemIds, backlogLevelWorkItemIds, childWorkItemIds, backlogConfig.workItemTypeMappedStates));
+
+            debugger;
             const linksReceived = childQueryResult ? childQueryResult.workItemRelations : [];
             linksReceived.push(...parentLinks);
             yield put(workItemLinksReceived(linksReceived));

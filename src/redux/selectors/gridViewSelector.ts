@@ -165,12 +165,12 @@ export function getDisplayIterations(
         return teamIterations.slice(iterationDisplayOptions.startIndex, iterationDisplayOptions.endIndex + 1);
     }
 
-   
+
     const hasBacklogIteration = (workItem: IWorkItemHierarchy) => {
         if (!isSubGrid) {
             return false;
         }
-        
+
         if (workItem.iterationDuration.kind === IterationDurationKind.BacklogIteration) {
             return true;
         }
@@ -178,26 +178,31 @@ export function getDisplayIterations(
         return workItem.children.some(child => hasBacklogIteration(child));
     }
 
-    
+
     let firstIteration: TeamSettingsIteration = null;
     let lastIteration: TeamSettingsIteration = null;
     let showBacklogIteration = false;
 
     // Get all iterations that come in the range of the workItems
     const calcFirstLastIteration = (workItem: IWorkItemHierarchy) => {
-        if (firstIteration === null) {
-            firstIteration = workItem.iterationDuration.startIteration;
-            lastIteration = workItem.iterationDuration.endIteration;
-        } else {
-            if (compareIteration(workItem.iterationDuration.startIteration, firstIteration) < 0) {
-                firstIteration = workItem.iterationDuration.startIteration;
-            }
 
-            if (compareIteration(workItem.iterationDuration.endIteration, lastIteration) > 0) {
+        // If it is not sub grid and workItem iteration is backlog iteration than ignore it
+        if (!isSubGrid && workItem.iterationDuration.kind === IterationDurationKind.BacklogIteration) {
+            // Do nothing
+        } else {
+            if (firstIteration === null) {
+                firstIteration = workItem.iterationDuration.startIteration;
                 lastIteration = workItem.iterationDuration.endIteration;
+            } else {
+                if (compareIteration(workItem.iterationDuration.startIteration, firstIteration) < 0) {
+                    firstIteration = workItem.iterationDuration.startIteration;
+                }
+
+                if (compareIteration(workItem.iterationDuration.endIteration, lastIteration) > 0) {
+                    lastIteration = workItem.iterationDuration.endIteration;
+                }
             }
         }
-
         showBacklogIteration = isSubGrid && (showBacklogIteration || (workItem.iterationDuration.kind === IterationDurationKind.BacklogIteration));
 
         workItem.children.forEach(child => calcFirstLastIteration(child));
@@ -207,7 +212,7 @@ export function getDisplayIterations(
 
 
     const candidateIterations = [...teamIterations];
-    if(showBacklogIteration) {
+    if (showBacklogIteration) {
         candidateIterations.push(backlogIteration);
         candidateIterations.sort(compareIteration);
     }
@@ -226,7 +231,7 @@ export function getDisplayIterations(
     startIndex = startIndex < 0 ? 0 : startIndex;
     endIndex = endIndex >= candidateIterations.length ? candidateIterations.length - 1 : endIndex;
 
-    const displayIterations = candidateIterations.slice(startIndex, endIndex + 1);   
+    const displayIterations = candidateIterations.slice(startIndex, endIndex + 1);
 
     return displayIterations;
 }

@@ -15,6 +15,7 @@
     "package:release": "node ./scripts/packageRelease",
     "package:beta": "node ./scripts/packageBeta",
     "publish:dev": "npm run package:dev && node ./scripts/publishDev",
+    "build:dev": "npm run clean && mkdir dist && webpack",
     "build:release": "set NODE_ENV=production && npm run clean && mkdir dist && webpack --progress --colors --output-path ./dist -p && set NODE_ENV=",
     "publish:release": "npm run build:release && node ./scripts/publishRelease",
     "test": "jest",
