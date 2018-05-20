@@ -22,5 +22,26 @@ export function getTeamIterations(
     }   
 
     return rawState.iterationState.teamSettingsIterations[projectId][teamId];
+}
 
+export function getBacklogIteration(
+    projectId: string,
+    teamId: string,
+    uiStatus: UIStatus,
+    rawState: IFeatureTimelineRawState): TeamSettingsIteration {
+
+    if (uiStatus !== UIStatus.Default) {
+        return null;
+    }
+
+    if (!rawState ||
+        !rawState.teamSetting ||
+        !rawState.teamSetting.teamSetting ||
+        !rawState.teamSetting.teamSetting[projectId] ||
+        !rawState.teamSetting.teamSetting[projectId][teamId]) {
+
+        return null;
+    }   
+
+    return rawState.teamSetting.teamSetting[projectId][teamId].backlogIteration;
 }

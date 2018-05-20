@@ -53,7 +53,7 @@ export function getUnplannedFeatures2(projectId: string,
     const epics = getEpicHierarchy(projectId, teamId, uiStatus, input, FeatureFilter.None)
     const unplannedFeatures = epics.reduce((prev, epic) => {
         if (epic.children) {
-            prev.push(...epic.children.filter(c => c.iterationDuration.kind === IterationDurationKind.FallBackToCurrentIteration));
+            prev.push(...epic.children.filter(c => c.iterationDuration.kind === IterationDurationKind.BacklogIteration));
         }
         return prev;
     }, []);

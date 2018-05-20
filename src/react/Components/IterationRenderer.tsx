@@ -22,8 +22,8 @@ export class IterationRenderer extends React.Component<IIterationRendererProps, 
         } = this.props;
 
         // TODO: Start and end date conversion?
-        const startDate = iteration.attributes["startDate"] ? getMMDD(new Date(iteration.attributes["startDate"])) : null;
-        const endDate = iteration.attributes["finishDate"] ? getMMDD(new Date(iteration.attributes["finishDate"])) : null;
+        const startDate = iteration.attributes && iteration.attributes["startDate"] ? getMMDD(new Date(iteration.attributes["startDate"])) : null;
+        const endDate = iteration.attributes && iteration.attributes["finishDate"] ? getMMDD(new Date(iteration.attributes["finishDate"])) : null;
 
         let dates: JSX.Element = null;
         if (startDate && endDate) {
@@ -34,18 +34,25 @@ export class IterationRenderer extends React.Component<IIterationRendererProps, 
             );
         }
 
-        let currentMarker = null;
-        if (isCurrentIteration(teamIterations, iteration)) {
-            currentMarker = (
+        const unplanned = !teamIterations.some(ti => ti.id === iteration.id);
+
+        let marker = null;
+        if (unplanned) {
+            marker = (
+                <span className="unplanned-sprint-marker">Backlog</span>
+            );
+        } else if (isCurrentIteration(teamIterations, iteration)) {
+            marker = (
                 <span className="current-sprint-marker">Current</span>
             );
         }
+        const name = iteration && iteration.name || "";
 
         return (
             <div className="iteration">
                 <div className="iterationname">
-                    <span>{iteration.name}</span>
-                    {currentMarker}
+                    <span>{name}</span>
+                    {marker}
                 </div>
                 {dates}
             </div>

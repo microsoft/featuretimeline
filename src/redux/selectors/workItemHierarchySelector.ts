@@ -3,7 +3,7 @@ import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } f
 import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
 import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { UIStatus } from '../types';
-import { compareIteration, getCurrentIterationIndex } from '../helpers/iterationComparer';
+import { compareIteration } from '../helpers/iterationComparer';
 import { getTeamIterations } from './teamIterations';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 
@@ -50,7 +50,7 @@ export function getEpicHierarchy(projectId: string,
     const inProgressFilter = (feature: IWorkItemHierarchy) => workItemInfos[feature.id].stateCategory === StateCategory.InProgress;
 
     // include only features that have explicit iteration
-    const explicitIterationFilter = (feature: IWorkItemHierarchy) => feature.iterationDuration.kind !== IterationDurationKind.FallBackToCurrentIteration;
+    const explicitIterationFilter = (feature: IWorkItemHierarchy) => feature.iterationDuration.kind !== IterationDurationKind.BacklogIteration;
 
     let filter = (feature: IWorkItemHierarchy) => true;
     if (featureFilter === FeatureFilter.InProgress) {
@@ -162,6 +162,8 @@ function getWorkItemIterationDuration(
 
     const allIterations = getTeamIterations(projectId, teamId, UIStatus.Default, input);
 
+    const teamSettings = input.teamSetting.teamSetting[projectId][teamId];
+
     // if the start/end iteration is overridden use that value
     if (input.savedOverriddenWorkItemIterations &&
         input.savedOverriddenWorkItemIterations[id]) {
@@ -183,14 +185,14 @@ function getWorkItemIterationDuration(
         const iteration = allIterations.find((i) => i.path === iterationPath);
         iterationDuration.startIteration = iteration;
         iterationDuration.endIteration = iteration;
+        iterationDuration.kind = IterationDurationKind.Self;
     }
 
     // If still null take currentIteration
-    const currentIteration = allIterations[getCurrentIterationIndex(allIterations)];
     if (!iterationDuration.startIteration || !iterationDuration.endIteration) {
-        iterationDuration.startIteration = currentIteration;
-        iterationDuration.endIteration = currentIteration;
-        iterationDuration.kind = IterationDurationKind.FallBackToCurrentIteration;
+        iterationDuration.startIteration = teamSettings.backlogIteration;
+        iterationDuration.endIteration = teamSettings.backlogIteration;
+        iterationDuration.kind = IterationDurationKind.BacklogIteration;
     }
     return iterationDuration;
 }
@@ -203,9 +205,8 @@ function getIterationDurationFromChildren(
             startIteration,
             endIteration
         } = prev;
-
         // Use child iteration only if it is explicit derived
-        if (child.iterationDuration.kind !== IterationDurationKind.FallBackToCurrentIteration) {
+        if (child.iterationDuration.kind !== IterationDurationKind.BacklogIteration) {
             if ((!startIteration || !endIteration)) {
                 startIteration = child.iterationDuration.startIteration;
                 endIteration = child.iterationDuration.endIteration;
@@ -222,9 +223,9 @@ function getIterationDurationFromChildren(
         return {
             startIteration,
             endIteration,
-            kind: !startIteration ? IterationDurationKind.None : IterationDurationKind.ChildRollup
+            kind: !startIteration ? IterationDurationKind.BacklogIteration : IterationDurationKind.ChildRollup
         }
-    }, { startIteration: null, endIteration: null, kind: IterationDurationKind.None });
+    }, { startIteration: null, endIteration: null, kind: IterationDurationKind.BacklogIteration });
 }
 
 function getChildrenIds(
@@ -252,7 +253,7 @@ function areChildrenOutOfBounds(
     end: TeamSettingsIteration, 
     iterationDuration: IIterationDuration, 
     allIterations: TeamSettingsIteration[]): boolean {
-    if (iterationDuration.kind === IterationDurationKind.None || !start || !end) {
+    if (iterationDuration.kind === IterationDurationKind.BacklogIteration || !start || !end) {
         return false;
     }
 

@@ -15,6 +15,7 @@ import { setOverrideIteration, workItemLinksReceived, workItemsReceived } from '
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
+import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
@@ -58,6 +59,7 @@ export function* handleInitialize(action: InitializeAction) {
         ]);
 
         yield put(backlogConfigurationReceived(projectId, teamId, bc));
+        yield put(teamSettingsReceived(projectId, teamId, ts));
         yield put(teamSettingsIterationReceived(projectId, teamId, tis));
         yield put(workItemTypesReceived(projectId, wits));
 

@@ -1,23 +1,25 @@
-import { combineReducers, Reducer, Action } from 'redux';
-import { IWorkItemsState } from './workitems/types';
-import { IWorkItemMetadataState } from './workitemmetadata/types';
-import { ITeamSettingsIterationState } from './teamiterations/types';
+import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { Action, Reducer, combineReducers } from 'redux';
+import backlogConfigurationReducer from './backlogconfiguration/reducer';
 import { IBacklogConfigurationState } from './backlogconfiguration/types';
-
-import workItemReducer from './workitems/reducer';
-import metadataReducer from './workitemmetadata/reducer';
-import teamIterationsReducer from './teamiterations/reducer';
+import { ResetType } from './common/actions';
+import featureStateReducer from './common/featureStateReducer';
+import showHideDetailsReducer from "./common/reducer";
+import settingsReducer from "./common/settingsReducer";
+import togglePaneReducer from './common/togglePaneReducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
-import togglePaneReducer from './common/togglePaneReducer';
-import featureStateReducer from './common/featureStateReducer';
-import backlogConfigurationReducer from './backlogconfiguration/reducer';
-import showHideDetailsReducer from "./common/reducer";
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import savedOverriddenWorkItemIterationsReducer from "./workitems/overrideWorkItemIterationReducer";
 import overrideIterationReducer from "./overrideIterationProgress/reducer";
-import settingsReducer from "./common/settingsReducer";
-import { ResetType } from './common/actions';
+import teamSettingReducer from './teamSettings/reducer';
+import { ITeamSettingState } from './teamSettings/types';
+import teamIterationsReducer from './teamiterations/reducer';
+import { ITeamSettingsIterationState } from './teamiterations/types';
+import metadataReducer from './workitemmetadata/reducer';
+import { IWorkItemMetadataState } from './workitemmetadata/types';
+import savedOverriddenWorkItemIterationsReducer from "./workitems/overrideWorkItemIterationReducer";
+import workItemReducer from './workitems/reducer';
+import { IWorkItemsState } from './workitems/types';
+
 
 export interface IIterationDuration {
     startIteration: TeamSettingsIteration;
@@ -28,8 +30,8 @@ export interface IIterationDuration {
 }
 
 export enum IterationDurationKind {
-    None,
-    FallBackToCurrentIteration,
+    BacklogIteration,
+    Self,
     ChildRollup,
     UserOverridden
 }
@@ -59,6 +61,7 @@ export interface IFeatureTimelineRawState {
     iterationState: ITeamSettingsIterationState;
     error: string;
     backlogConfiguration: IBacklogConfigurationState;
+    teamSetting: ITeamSettingState;
     loading: boolean;
     // This will contain any overridden iterations by the UI in extension storage
     savedOverriddenWorkItemIterations: IDictionaryNumberTo<IOverriddenIterationDuration>;
@@ -82,6 +85,7 @@ const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFe
                 error: null,
                 loading: false,
                 backlogConfiguration: undefined,
+                teamSetting: undefined,
                 savedOverriddenWorkItemIterations: undefined,
                 workItemDetails: undefined,
                 workItemOverrideIteration: undefined
@@ -98,6 +102,7 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     iterationState: teamIterationsReducer,
     error: errorReducer,
     backlogConfiguration: backlogConfigurationReducer,
+    teamSetting: teamSettingReducer,
     loading: loadingReducer,
     workItemDetails: showHideDetailsReducer,
     workItemOverrideIteration: overrideIterationReducer,

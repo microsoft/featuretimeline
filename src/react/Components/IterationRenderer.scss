@@ -21,13 +21,12 @@
     }
 }
 
-.current-sprint-marker {
+@mixin marker {
     margin-left: 3px;
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 1px;
     padding-bottom: 2px;
-    background-color: rgb(16, 110, 190);
     color: rgb(255, 255, 255);
     font-size: 10px;
     line-height: 1.5;
@@ -35,4 +34,14 @@
     min-width: 60px;
     text-align: center;
     border-radius: 5px;
+}
+
+.current-sprint-marker {
+    @include marker();
+    background-color: rgb(16, 110, 190);
+}
+
+.unplanned-sprint-marker {
+    @include marker();
+    background-color: orangered;
 }

@@ -59,6 +59,7 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
         const gridWorkItem = this._getGridWorkItem();
         const gridView = getGridView(
             this.props.uiState,
+            this.props.gridView.backlogIteration,
             getTeamIterations(this.props.projectId, this.props.teamId, this.props.uiState, this.props.rawState),
             [gridWorkItem.workItem],
             /* workItemOverrideIteration */ null,

@@ -6,7 +6,7 @@ import { IFeatureTimelineRawState } from "../store";
 import { WorkItemLevel, StateCategory } from "../store/workitems/types";
 import { getEpicHierarchy, FeatureFilter } from "./workItemHierarchySelector";
 import { getGridView } from "./gridViewSelector";
-import { getTeamIterations } from "./teamIterations";
+import { getTeamIterations, getBacklogIteration } from "./teamIterations";
 import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
 import { getDefaultSettingsState } from "../store/common/settingsReducer";
@@ -102,9 +102,15 @@ export const teamIterationsSelector = () => {
     return createSelector([getProjectId, getTeamId, uiStatusSelector(), getRawState], getTeamIterations);
 }
 
+export const backlogIterationSelector = () => {
+    return createSelector([getProjectId, getTeamId, uiStatusSelector(), getRawState], getBacklogIteration);
+}
+
+
 export const primaryGridViewSelector = () => {
     return createSelector([
         uiStatusSelector(),
+        backlogIterationSelector(),
         teamIterationsSelector(),
         epicsHierarchySelector(),
         workItemOverrideIterationSelector(),

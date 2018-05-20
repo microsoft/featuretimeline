@@ -62,6 +62,9 @@ function _isCurrentIteration(iteration: TeamSettingsIteration): boolean {
 }
 
 function hasDates(iteration: TeamSettingsIteration): boolean {
+    if (!iteration || !iteration.attributes) {
+        return false;
+    }
     return !!iteration.attributes.startDate && !!iteration.attributes.finishDate;
 }
 
