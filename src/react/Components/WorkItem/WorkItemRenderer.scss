@@ -39,7 +39,6 @@
 }
 
 .work-item-detail-row {
-    margin-bottom: 5px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -126,6 +125,8 @@
 
 .secondary-row {
     font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .work-item-warning {
