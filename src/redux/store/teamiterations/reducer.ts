@@ -140,10 +140,11 @@ function handleTeamSettingsIterationReceived(state: ITeamSettingsIterationState,
         TeamSettingsIterations
     } = action.payload;
 
-    const projectData = newState.teamSettingsIterations[projectId] ? { ...newState.teamSettingsIterations[projectId] } : {};
+    const teamSettingsIterations = {...newState.teamSettingsIterations};
+    const projectData = teamSettingsIterations[projectId] ? { ...teamSettingsIterations[projectId] } : {};
     projectData[teamId] = TeamSettingsIterations;
-    newState.teamSettingsIterations[projectId] = projectData;
-
+    teamSettingsIterations[projectId] = {...projectData};
+    newState.teamSettingsIterations = teamSettingsIterations;
     return newState;
 }
 

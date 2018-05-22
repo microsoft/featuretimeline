@@ -28,9 +28,11 @@ function handleWorkItemTypesReceived(state: IWorkItemMetadataState, action: Work
         workItemTypes
     } = action.payload;
 
-    const projectData: IWorkItemMetadata = newState.metadata[projectId] ? { ...newState.metadata[projectId] } : {} as IWorkItemMetadata;
+    const metadata = {...newState.metadata};
+    const projectData: IWorkItemMetadata = metadata[projectId] ? { ...metadata[projectId] } : {} as IWorkItemMetadata;
     projectData.workItemTypes = workItemTypes;
-    newState.metadata[projectId] = projectData;
+    metadata[projectId] = {...projectData};
+    newState.metadata = metadata;
     return newState;
 }
 
@@ -41,9 +43,11 @@ function handleWorkItemStateColorsReceived(state: IWorkItemMetadataState, action
         workItemTypeStateColors
     } = action.payload;
 
-    const projectData: IWorkItemMetadata = newState.metadata[projectId] ? { ...newState.metadata[projectId] } : {} as IWorkItemMetadata;
+    const metadata = {...newState.metadata};
+    const projectData: IWorkItemMetadata = metadata[projectId] ? { ...metadata[projectId] } : {} as IWorkItemMetadata;
     projectData.workItemStateColors = workItemTypeStateColors;
-    newState.metadata[projectId] = projectData;
+    metadata[projectId] = {...projectData};
+    newState.metadata = metadata;
     return newState;
 }
 
