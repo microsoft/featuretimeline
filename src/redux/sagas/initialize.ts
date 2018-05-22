@@ -16,6 +16,7 @@ import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
+import { trackTTI } from '../helpers/TelemetryClientSettings';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
@@ -36,6 +37,8 @@ export function* handleInitialize(action: InitializeAction) {
         teamId,
         projectId
     } as TFS_Core_Contracts.TeamContext;
+
+    const startTime = new Date().getTime();
 
     const workHttpClient = VSS_Service.getClient(WorkHttpClient);
     const metadatService = WorkItemMetadataService.getInstance();
@@ -173,10 +176,13 @@ export function* handleInitialize(action: InitializeAction) {
             yield put(restoreDisplayIterationCount(JSON.parse(iterationDisplayOptions)));
         }
 
+        const endTime = new Date().getTime();
+        yield call(trackTTI, "initialize", endTime - startTime);
     } catch (error) {
         yield put(genericError(error));
     }
 }
+
 
 function getBacklogLevelQueryWiql(
     backlogConfig: Contracts.BacklogConfiguration,

@@ -27,6 +27,7 @@
     "work item"
   ],
   "dependencies": {
+    "applicationinsights-js": "^1.0.17",
     "es6-promise": "^4.2.4",
     "npm": "^6.0.1",
     "office-ui-fabric-react": "^5.68.0",
@@ -40,6 +41,7 @@
     "redux-logger": "^3.0.6",
     "redux-saga": "^0.16.0",
     "reselect": "^3.0.1",
+    "telemetryclient-team-services-extension": "^1.0.10",
     "vss-web-extension-sdk": "^5.131.0"
   },
   "devDependencies": {
