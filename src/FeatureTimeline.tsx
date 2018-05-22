@@ -19,5 +19,5 @@ export function unmount(): void {
 
 function isBackground() {
     const contributionContext = VSS.getConfiguration();
-    return contributionContext.host && contributionContext.host.background;
+    return !contributionContext || !contributionContext.foregroundInstance;
 }

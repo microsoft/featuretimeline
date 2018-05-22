@@ -143,11 +143,9 @@ export function* handleInitialize(action: InitializeAction) {
             const workItems: WitContracts.WorkItem[] = yield call(_pageWorkItemFields, workItemsToPage, [orderField]);
             workItems.push(...pagedWorkItems);
             workItems.sort((w1, w2) => w1.fields[orderField] - w2.fields[orderField]);
-            debugger;
             // Call action creators to update work items and links in the store
             yield put(workItemsReceived(workItems, parentWorkItemIds, backlogLevelWorkItemIds, childWorkItemIds, backlogConfig.workItemTypeMappedStates));
 
-            debugger;
             const linksReceived = childQueryResult ? childQueryResult.workItemRelations : [];
             linksReceived.push(...parentLinks);
             yield put(workItemLinksReceived(linksReceived));
