@@ -76,7 +76,7 @@
 
         function isBackground() {
             const contributionContext = VSS.getConfiguration();
-            return !contributionContext || !contributionContext.foregroundInstance;
+            return contributionContext && contributionContext.host && contributionContext.host.background;
         }
     </script>
     <div id="root" />
