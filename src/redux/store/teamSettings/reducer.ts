@@ -26,11 +26,9 @@ function handleTeamSettingReceived(state: ITeamSettingState, action: TeamSetting
         teamSetting
     } = action.payload;
 
-    const teamSettings = { ...newState.teamSetting };
-    const projectData = teamSetting[projectId] ? { ...teamSetting[projectId] } : {};
+    const projectData = newState.teamSetting[projectId] ? { ...newState.teamSetting[projectId] } : {};
     projectData[teamId] = teamSetting;
-    teamSettings[projectId] = { ...projectData };
-    newState.teamSetting = teamSettings;
+    newState.teamSetting[projectId] = projectData;
 
     return newState;
 }

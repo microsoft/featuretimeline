@@ -26,11 +26,10 @@ function handleBacklogConfigurationReceived(state: IBacklogConfigurationState, a
         backlogConfiguration
     } = action.payload;
 
-    const backlogConfigurations = {...newState.backlogConfigurations};
-    const projectData = backlogConfigurations[projectId] ? { ...backlogConfigurations[projectId] } : {};
+    const projectData = newState.backlogConfigurations[projectId] ? { ...newState.backlogConfigurations[projectId] } : {};
     projectData[teamId] = backlogConfiguration;
-    backlogConfigurations[projectId] = { ...projectData };
-    newState.backlogConfigurations = backlogConfigurations;
+    newState.backlogConfigurations[projectId] = projectData;
+
     return newState;
 }
 

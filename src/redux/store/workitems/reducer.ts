@@ -14,7 +14,6 @@ import {
 import { IWorkItemsState, WorkItemLevel, StateCategory } from './types';
 import { Reducer } from 'redux';
 import { getWorkItemStateCategory } from '../../helpers/getWorkItemStateCategory';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 
 // Type-safe initialState!
 const getIntialState = () => {
@@ -40,13 +39,19 @@ const reducer: Reducer<IWorkItemsState> = (state: IWorkItemsState = getIntialSta
     }
 };
 
-function handleStartUpdateWorkItemIteration(workItemState: IWorkItemsState, action: StartUpdateWorkitemIterationAction): IWorkItemsState {
+function handleStartUpdateWorkItemIteration(state: IWorkItemsState, action: StartUpdateWorkitemIterationAction): IWorkItemsState {
     const {
         workItem,
         teamIteration
     } = action.payload;
 
-    return changeIteration(workItemState, workItem, teamIteration);
+    const newState = { ...state };
+    const workItemObject = newState.workItemInfos[workItem];
+    if (workItemObject) {
+        workItemObject.workItem.fields = { ...workItemObject.workItem.fields };
+        workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
+    }
+    return newState;
 }
 
 function handleStartMarkInProgress(workItemState: IWorkItemsState, action: StartMarkInProgressAction): IWorkItemsState {
@@ -55,27 +60,18 @@ function handleStartMarkInProgress(workItemState: IWorkItemsState, action: Start
         teamIteration
     } = action.payload;
 
-    return changeIteration(workItemState, workItem, teamIteration);
-}
-
-
-function changeIteration(workItemState: IWorkItemsState, workItem: number, teamIteration: TeamSettingsIteration) {
     const newState = { ...workItemState };
-    const workItemInfos = { ...newState.workItemInfos };
-    let workItemObject = workItemInfos[workItem];
+    let workItemObject = newState.workItemInfos[workItem];
     if (workItemObject) {
         workItemObject = { ...workItemObject };
-        const workItemO = { ...workItemObject.workItem };
-        workItemO.fields = {};
-        workItemO.fields = { ...workItemObject.workItem.fields };
-        workItemO.fields["System.IterationPath"] = teamIteration.path;
+        workItemObject.workItem.fields = { ...workItemObject.workItem.fields };
+        workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
         workItemObject.stateCategory = StateCategory.InProgress;
-        workItemObject.workItem = workItemO;
-        workItemInfos[workItem] = workItemObject;
+        newState.workItemInfos[workItem]= workItemObject;
     }
-    newState.workItemInfos = workItemInfos;
     return newState;
 }
+
 
 function handleChangeParent(state: IWorkItemsState, action: ChangeParentAction): IWorkItemsState {
     const {
@@ -97,35 +93,33 @@ function changeParent(newState: IWorkItemsState, childId: number, parentId: numb
         return;
     }
 
-    const workItemInfos = { ...newState.workItemInfos };
-    const newParentInfo = workItemInfos[parentId];
+    const newParentInfo = newState.workItemInfos[parentId];
 
     // Remove work item from old parent
     if (oldParentId) {
         const oldParentInfo = newState[oldParentId];
-        workItemInfos[oldParentId] = {
+        newState.workItemInfos[oldParentId] = {
             ...oldParentInfo
         };
-        workItemInfos[oldParentId].children = oldParentInfo.children.filter((id) => id !== childId);
+        newState.workItemInfos[oldParentId].children = oldParentInfo.children.filter((id) => id !== childId);
     }
 
     if (parentId) {
         //Add workItem as child of new parent
-        workItemInfos[parentId] = {
+        newState.workItemInfos[parentId] = {
             ...newParentInfo
         };
 
-        workItemInfos[parentId].children = [...newParentInfo.children, childId];
+        newState.workItemInfos[parentId].children = [...newParentInfo.children, childId];
     };
 
 
     //Set parent id
-    workItemInfos[childId] = {
+    newState.workItemInfos[childId] = {
         ...newState.workItemInfos[childId],
         parent: parentId
     };
 
-    newState.workItemInfos = workItemInfos;
 }
 
 function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceivedAction): IWorkItemsState {
@@ -137,7 +131,6 @@ function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceiv
         workItemTypeStateInfo
     } = action.payload;
 
-    const workItemInfos = { ...newState.workItemInfos };
     for (const workItem of workItems) {
 
         let level = WorkItemLevel.Child;
@@ -149,7 +142,7 @@ function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceiv
 
         const stateCategory = getWorkItemStateCategory(workItem.fields["System.WorkItemType"], workItem.fields["System.State"], workItemTypeStateInfo);
 
-        workItemInfos[workItem.id] = {
+        newState.workItemInfos[workItem.id] = {
             workItem,
             children: [],
             parent: 0,
@@ -157,7 +150,7 @@ function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceiv
             stateCategory
         };
     }
-    newState.workItemInfos = workItemInfos;
+
     return newState;
 }
 
