@@ -1,7 +1,7 @@
 **Plan or track work items in progress by visualizing them on a sprint calendar**. 
 Portfolio level work items are worked for multiple sprints and this tool helps you visualize features or epics across sprints, yes you heard it right, **cross sprint schedule**!!!
 
-![Feature timeline](images/main-img.png "Feature timeline")
+![Feature timeline](images/FT_doc1.png "Feature timeline")
 
 
 ## Get started
