@@ -207,7 +207,15 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                         <Icon
                             iconName={'Warning'}
                             className="work-item-warning"
-                            onClick={() => showDetails(id)}
+                            onClick={() => {
+                                if (!isSubGrid) 
+                                { 
+                                    showDetails(id); 
+                                } else {
+                                    onClick(id);
+                                }
+                            }
+                            }
                         />
                     </TooltipHost >
                 );
