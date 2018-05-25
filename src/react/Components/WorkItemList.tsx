@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IFeatureTimelineRawState } from '../../redux/store';
+import { IFeatureTimelineRawState } from '../../redux/store/types';
 import { unplannedFeaturesSelector, planFeatureStateSelector } from '../../redux/selectors';
 import { launchWorkItemForm } from '../../redux/store/workitems/actionCreators';
 import { List } from 'office-ui-fabric-react/lib/List';

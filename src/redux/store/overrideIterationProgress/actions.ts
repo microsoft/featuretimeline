@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { IWorkItemOverrideIteration } from "..";
+import { IWorkItemOverrideIteration } from "../types";
 
 export const OverrideIterationStartType = "@@overrideIteration/start";
 export const OverrideIterationEndType = "@@overrideIteration/end";

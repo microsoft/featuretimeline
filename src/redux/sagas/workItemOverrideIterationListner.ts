@@ -1,7 +1,7 @@
 import { ClearOverrideIterationAction } from "../store/workitems/actions";
 import { put, call, select } from "redux-saga/effects";
 import { workItemOverrideIterationSelector } from "../selectors";
-import { IWorkItemOverrideIteration } from "../store";
+import { IWorkItemOverrideIteration } from "../store/types";
 import { setOverrideIteration } from "../store/workitems/actionCreators";
 import { cleanupOverrideIteration, saveOverrideIteration } from "../store/overrideIterationProgress/actionCreators";
 import { OverrideIterationEndAction, SaveOverrideIterationAction } from "../store/overrideIterationProgress/actions";

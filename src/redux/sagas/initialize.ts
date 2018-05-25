@@ -4,7 +4,7 @@ import * as VSS_Service from 'VSS/Service';
 import { all, call, put } from 'redux-saga/effects';
 import { WorkItemMetadataService } from '../../Services/WorkItemMetadataService';
 import { PageWorkItemHelper } from '../helpers/PageWorkItemHelper';
-import { IOverriddenIterationDuration } from '../store';
+import { IOverriddenIterationDuration } from '../store/types';
 import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';
 import { InitializeAction } from '../store/common/actions';
 import { genericError } from '../store/error/actionCreators';

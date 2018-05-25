@@ -1,4 +1,4 @@
-import { IFeatureTimelineRawState } from "../store";
+import { IFeatureTimelineRawState } from "../store/types";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 import { UIStatus } from "../types";
 

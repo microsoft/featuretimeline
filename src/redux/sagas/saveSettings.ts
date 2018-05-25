@@ -1,13 +1,13 @@
 import { call, select, put } from 'redux-saga/effects';
 import { getTeamId, settingsStateSelector } from '../selectors';
-import { ISettingsState, ProgressTrackingCriteria } from '../store/types';
-import { toggleShowWorkItemDetails, changeProgressTrackingCriteria } from '../store/common/actioncreators';
+import { ISettingsState } from '../store/types';
+import { restoreSettingsState } from '../store/common/actioncreators';
 
 export function* saveSettings() {
     let teamId = yield select(getTeamId);
     let value = yield select(settingsStateSelector());
-    const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
 
+    const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
     value = value ? JSON.stringify(value) : null;
     yield call([dataService, dataService.setValue], `${teamId}_settings`, value, { scopeType: 'User' });
 }
@@ -19,7 +19,6 @@ export function* restoreSettings() {
     const stateString = yield call([dataService, dataService.getValue], `${teamId}_settings`, { scopeType: 'User' });
     if (stateString) {
         const state = JSON.parse(stateString) as ISettingsState;
-        yield put(toggleShowWorkItemDetails(state.showWorkItemDetails));
-        yield put(changeProgressTrackingCriteria(state.progressTrackingCriteria || ProgressTrackingCriteria.ChildWorkItems));
+        yield put(restoreSettingsState(state));
     }
 }

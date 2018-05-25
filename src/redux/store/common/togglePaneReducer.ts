@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneActions, PlanFeaturesPaneWidthChangedType } from './actions';
-import { IPlanFeaturesState } from '..';
+import { IPlanFeaturesState } from '../types';
 export const getDefaultPlanFeaturesPaneState = (): IPlanFeaturesState => {
     return {
         show: false,

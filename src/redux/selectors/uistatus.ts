@@ -1,4 +1,4 @@
-import { IFeatureTimelineRawState } from "../store";
+import { IFeatureTimelineRawState } from "../store/types";
 import { UIStatus } from "../types";
 import { compareIteration } from "../helpers/iterationComparer";
 

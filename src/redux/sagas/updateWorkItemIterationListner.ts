@@ -5,7 +5,7 @@ import { WorkItemTrackingHttpClient3_2 } from 'TFS/WorkItemTracking/RestClient';
 import { JsonPatchDocument } from 'VSS/WebApi/Contracts';
 import { workItemSaved, workItemSaveFailed, clearOverrideIteration } from '../store/workitems/actionCreators';
 import { saveOverrideIteration } from '../store/overrideIterationProgress/actionCreators';
-import { IWorkItemOverrideIteration } from '../store';
+import { IWorkItemOverrideIteration } from '../store/types';
 
 
 export function* updateWorkItemIteration(action: StartUpdateWorkitemIterationAction) {

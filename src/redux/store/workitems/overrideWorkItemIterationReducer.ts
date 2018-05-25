@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { IOverriddenIterationDuration } from '..';
+import { IOverriddenIterationDuration } from '../types';
 import { SetOverrideIterationType, ClearOverrideIterationType, OverrideIterationActions } from './actions';
 
 const reducer: Reducer<IDictionaryNumberTo<IOverriddenIterationDuration>> =

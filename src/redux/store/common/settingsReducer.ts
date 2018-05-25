@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { ISettingsState, ProgressTrackingCriteria } from '../types';
-import { SettingsActions, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType } from './actions';
+import { SettingsActions, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, RestoreSettingsType } from './actions';
 
 
 export const getDefaultSettingsState = (): ISettingsState => {
@@ -22,6 +22,8 @@ const reducer: Reducer<ISettingsState> = (state: ISettingsState = getDefaultSett
         case ChangeProgressTrackingCriteriaType:
             newState.progressTrackingCriteria = payload as ProgressTrackingCriteria;
             return newState;
+        case RestoreSettingsType:
+            return payload as ISettingsState;
         default:
             return state;
     }

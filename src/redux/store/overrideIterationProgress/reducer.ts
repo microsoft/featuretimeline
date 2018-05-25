@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import { OverrideIterationActions, OverrideIterationHoverOverIterationType, OverrideIterationStartType, OverrideIterationCleanupType } from './actions';
-import { IWorkItemOverrideIteration } from '..';
+import { IWorkItemOverrideIteration } from '../types';
 const reducer: Reducer<IWorkItemOverrideIteration> = (state: IWorkItemOverrideIteration = null, action: OverrideIterationActions) => {
     switch (action.type) {
         case OverrideIterationStartType:

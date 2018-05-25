@@ -1,6 +1,6 @@
 import { ActionCreator } from 'redux';
 import { OverrideIterationStartAction, OverrideIterationStartType, OverrideIterationEndAction, OverrideIterationEndType, OverrideIterationHoverOverIterationAction, OverrideIterationHoverOverIterationType, OverrideIterationCleanupAction, OverrideIterationCleanupType, SaveOverrideIterationAction, SaveOverrideIterationActionType } from './actions';
-import { IWorkItemOverrideIteration } from '..';
+import { IWorkItemOverrideIteration } from '../types';
 
 export const startOverrideIteration: ActionCreator<OverrideIterationStartAction> =
     (payload: IWorkItemOverrideIteration) => ({

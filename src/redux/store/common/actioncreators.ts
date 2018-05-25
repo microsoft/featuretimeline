@@ -3,9 +3,9 @@ import {
     InitializeAction, InitializeType, ShowDetailsAction,
     ShowDetailsType, CloseDetailsAction, CloseDetailsType,
     ResetAction, ResetType,
-    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaAction, ChangeProgressTrackingCriteriaType
+    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaAction, ChangeProgressTrackingCriteriaType, RestoreSettingsAction, RestoreSettingsType
 } from './actions';
-import { ProgressTrackingCriteria } from '../types';
+import { ProgressTrackingCriteria, ISettingsState } from '../types';
 
 export const resetAllData: ActionCreator<ResetAction> = () => ({
     type: ResetType,
@@ -68,4 +68,9 @@ export const toggleShowWorkItemDetails: ActionCreator<ToggleShowWorkItemDetailsA
 export const changeProgressTrackingCriteria: ActionCreator<ChangeProgressTrackingCriteriaAction> = (criteria: ProgressTrackingCriteria) => ({
     type: ChangeProgressTrackingCriteriaType,
     payload: criteria
+});
+
+export const restoreSettingsState: ActionCreator<RestoreSettingsAction> = (state: ISettingsState) => ({
+    type: RestoreSettingsType,
+    payload: state
 });

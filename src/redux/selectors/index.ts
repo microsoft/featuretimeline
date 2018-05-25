@@ -2,7 +2,7 @@ import { IContributionContext } from "../store/common/types";
 import { createSelector } from "reselect";
 import { getWorkItemsForLevel } from "./workItemsForLevel";
 import { getUIStatus } from "./uistatus";
-import { IFeatureTimelineRawState } from "../store";
+import { IFeatureTimelineRawState } from "../store/types";
 import { WorkItemLevel, StateCategory } from "../store/workitems/types";
 import { getEpicHierarchy, FeatureFilter } from "./workItemHierarchySelector";
 import { getGridView } from "./gridViewSelector";

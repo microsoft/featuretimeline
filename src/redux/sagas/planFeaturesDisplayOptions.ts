@@ -1,6 +1,6 @@
 import { call, select, put } from 'redux-saga/effects';
 import { getTeamId, planFeatureStateSelector } from '../selectors';
-import { IPlanFeaturesState } from '../store';
+import { IPlanFeaturesState } from '../store/types';
 import { changePlanFeaturesFilter, changePlanFeaturesWidth, togglePlanFeaturesPane } from '../store/common/actioncreators';
 
 export function* savePlanFeaturesDisplayOptions() {
