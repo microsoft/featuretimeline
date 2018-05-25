@@ -20,6 +20,7 @@ export interface IWorkItemRendererProps {
     workItemStateColor: WorkItemStateColor;
     color: string;
     isRoot: boolean;
+    isSubGrid: boolean;
     showInfoIcon: boolean;
     allowOverride: boolean;
     iterationDuration: IIterationDuration;
@@ -75,7 +76,9 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             progressIndicator,
             workItemStateColor,
             settingsState,
-            childrernWithNoEfforts
+            childrernWithNoEfforts,
+            efforts,
+            isSubGrid
         } = this.props;
 
         const {
@@ -189,10 +192,14 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             }
 
             if (settingsState.progressTrackingCriteria === ProgressTrackingCriteria.EffortsField && childrernWithNoEfforts > 0) {
-                warningMessages.push("Some user stories for this feature do not have efforts set.");
+                warningMessages.push("Some user stories for this feature do not have story points set.");
             }
 
-            if(warningMessages.length > 0) {
+            if (isSubGrid && efforts === 0 && settingsState.progressTrackingCriteria === ProgressTrackingCriteria.EffortsField) {
+                warningMessages.push("Story points are not set.")
+            }
+
+            if (warningMessages.length > 0 && !isRoot) {
                 const content = warningMessages.join(",");
                 warning = (
                     <TooltipHost
@@ -204,7 +211,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                         />
                     </TooltipHost >
                 );
-  
+
             }
             let progressDetails = null;
             debugger;
