@@ -1,7 +1,7 @@
 import { takeEvery, takeLatest } from "redux-saga/effects";
 import { ClearOverrideIterationType, LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType, StartMarkInProgressActionType } from "../store/workitems/actions";
 import { launchWorkItemFormSaga } from "./launchWorkItemFormSaga";
-import { InitializeType, TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkitemDetailsType } from "../store/common/actions";
+import { InitializeType, TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType } from "../store/common/actions";
 import { callInitialize } from "./initialize";
 import { launchOverrideWorkItemIteration, launchClearOverrideIteration, launchSaveOverrideIteration } from "./workItemOverrideIterationListner";
 import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../store/overrideIterationProgress/actions";
@@ -33,6 +33,7 @@ export function* watchSagaActions() {
     yield takeLatest(PlanFeaturesPaneWidthChangedType, savePlanFeaturesDisplayOptions);
 
     yield takeLatest(ToggleShowWorkitemDetailsType, saveSettings);
+    yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings);
 
     yield takeLatest(InitializeType, restorePlanFeaturesDisplayOptions);
     yield takeLatest(InitializeType, restoreSettings);

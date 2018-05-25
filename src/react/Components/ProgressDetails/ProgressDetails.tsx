@@ -10,20 +10,20 @@ export interface IProgressIndicatorProps extends IProgressIndicator {
 export class ProgressDetails extends React.Component<IProgressIndicatorProps, {}> {
     public render() {
         const {
-            childCount,
-            completedCount,
+            total,
+            completed,
             onClick
         } = this.props;
 
-        if (childCount <= 0) {
+        if (total <= 0) {
             return null;
         }
 
         const style = {};
-        style['width'] = `${(completedCount * 100 / childCount)}%`;
-        const progressText = `${completedCount}/${childCount}`;
+        style['width'] = `${(completed * 100 / total)}%`;
+        const progressText = `${completed}/${total}`;
         return (
-            <TooltipHost content={progressText}>
+            <TooltipHost content={progressText} className="progress-indicator-tooltip">
                 <div className="progress-indicator-container" onClick={onClick}>
                     <div className="progress-details-parts">
                         <div className="progress-completed" style={style} />

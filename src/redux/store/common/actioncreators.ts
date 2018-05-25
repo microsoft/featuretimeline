@@ -3,8 +3,9 @@ import {
     InitializeAction, InitializeType, ShowDetailsAction,
     ShowDetailsType, CloseDetailsAction, CloseDetailsType,
     ResetAction, ResetType,
-    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType
+    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaAction, ChangeProgressTrackingCriteriaType
 } from './actions';
+import { ProgressTrackingCriteria } from '../types';
 
 export const resetAllData: ActionCreator<ResetAction> = () => ({
     type: ResetType,
@@ -61,4 +62,10 @@ export const toggleFeatureState: ActionCreator<ToggleFeatureStateAction> = (feat
 export const toggleShowWorkItemDetails: ActionCreator<ToggleShowWorkItemDetailsAction> = (show: boolean) => ({
     type: ToggleShowWorkitemDetailsType,
     payload: show
+});
+
+
+export const changeProgressTrackingCriteria: ActionCreator<ChangeProgressTrackingCriteriaAction> = (criteria: ProgressTrackingCriteria) => ({
+    type: ChangeProgressTrackingCriteriaType,
+    payload: criteria
 });

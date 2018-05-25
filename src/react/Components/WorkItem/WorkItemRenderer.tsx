@@ -1,7 +1,6 @@
 import './WorkItemRenderer.scss';
 import * as React from 'react';
 import { InfoIcon } from '../InfoIcon/InfoIcon';
-import { IIterationDuration, IWorkItemOverrideIteration } from '../../../redux/store';
 import { IDimension, CropWorkItem } from '../../../redux/types';
 import { getRowColumnStyle } from '../gridhelper';
 import {
@@ -14,6 +13,7 @@ import { IProgressIndicator } from '../../../redux/selectors/gridViewSelector';
 import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { State } from '../State/State';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import { ISettingsState, ProgressTrackingCriteria, IIterationDuration, IWorkItemOverrideIteration } from '../../../redux/store/types';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;
@@ -26,7 +26,9 @@ export interface IWorkItemRendererProps {
     dimension: IDimension;
     crop: CropWorkItem;
     progressIndicator: IProgressIndicator;
-    showWorkItemDetails: boolean;
+    settingsState: ISettingsState;
+    efforts: number;
+    childrernWithNoEfforts: number;
 
     onClick: (id: number) => void;
     showDetails: (id: number) => void;
@@ -72,7 +74,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             iterationDuration,
             progressIndicator,
             workItemStateColor,
-            showWorkItemDetails
+            settingsState,
+            childrernWithNoEfforts
         } = this.props;
 
         const {
@@ -170,10 +173,9 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             );
         }
 
-
         let secondRow = null;
 
-        if (showWorkItemDetails) {
+        if (settingsState.showWorkItemDetails) {
             let stateIndicator = null;
 
             if (workItemStateColor && !isRoot) {
@@ -181,10 +183,20 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             }
 
             let warning = null;
+            let warningMessages = [];
             if (iterationDuration.childrenAreOutofBounds) {
+                warningMessages.push("Some user stories for this feature are outside the bounds of start or end iteration of this feature.");
+            }
+
+            if (settingsState.progressTrackingCriteria === ProgressTrackingCriteria.EffortsField && childrernWithNoEfforts > 0) {
+                warningMessages.push("Some user stories for this feature do not have efforts set.");
+            }
+
+            if(warningMessages.length > 0) {
+                const content = warningMessages.join(",");
                 warning = (
                     <TooltipHost
-                        content="Some user stories for this feature are outside the bounds of start or end iteration of this feature.">
+                        content={content}>
                         <Icon
                             iconName={'Warning'}
                             className="work-item-warning"
@@ -192,25 +204,27 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                         />
                     </TooltipHost >
                 );
-
+  
             }
-
             let progressDetails = null;
+            debugger;
             if (progressIndicator && !isRoot) {
-                progressDetails = <ProgressDetails
-                    {...progressIndicator}
-                    onClick={() => showDetails(id)}
-                />
+                progressDetails = (
+                    <ProgressDetails
+                        {...progressIndicator}
+                        onClick={() => showDetails(id)}
+                    />);
             }
 
             secondRow = (
                 <div className="work-item-detail-row secondary-row">
                     {stateIndicator}
-                    {warning}
                     {progressDetails}
+                    {warning}
                 </div>
             );
         }
+
         const item = (
             <div
                 className={rendererClass}

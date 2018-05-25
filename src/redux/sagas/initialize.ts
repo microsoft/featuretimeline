@@ -100,6 +100,7 @@ export function* handleInitialize(action: InitializeAction) {
 
         const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
         const orderField = backlogConfig.backlogFields.typeFields["Order"];
+        const effortField = backlogConfig.backlogFields.typeFields["Effort"];
 
         // Get work items for backlog level
         const backlogLevelWorkItemIds: number[] = [];
@@ -140,14 +141,12 @@ export function* handleInitialize(action: InitializeAction) {
                 .map((link) => link.target.id);
             workItemsToPage.push(...parentWorkItemIds);
 
-            const workItems: WitContracts.WorkItem[] = yield call(_pageWorkItemFields, workItemsToPage, [orderField]);
+            const workItems: WitContracts.WorkItem[] = yield call(_pageWorkItemFields, workItemsToPage, [effortField, orderField]);
             workItems.push(...pagedWorkItems);
             workItems.sort((w1, w2) => w1.fields[orderField] - w2.fields[orderField]);
-            debugger;
             // Call action creators to update work items and links in the store
             yield put(workItemsReceived(workItems, parentWorkItemIds, backlogLevelWorkItemIds, childWorkItemIds, backlogConfig.workItemTypeMappedStates));
 
-            debugger;
             const linksReceived = childQueryResult ? childQueryResult.workItemRelations : [];
             linksReceived.push(...parentLinks);
             yield put(workItemLinksReceived(linksReceived));

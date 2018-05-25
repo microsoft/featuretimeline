@@ -1,4 +1,4 @@
-import { IWorkItemOverrideIteration, ISettingsState, IterationDurationKind } from "../store";
+import { IWorkItemOverrideIteration, ISettingsState, IterationDurationKind, ProgressTrackingCriteria } from "../store/types";
 import { IWorkItemHierarchy } from "./workItemHierarchySelector";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 import { UIStatus, IDimension, CropWorkItem } from "../types";
@@ -10,8 +10,8 @@ export interface IGridIteration {
     dimension: IDimension;
 }
 export interface IProgressIndicator {
-    childCount: number;
-    completedCount: number;
+    total: number;
+    completed: number;
 }
 
 export interface IGridWorkItem {
@@ -19,7 +19,7 @@ export interface IGridWorkItem {
     workItem: IWorkItemHierarchy;
     progressIndicator: IProgressIndicator;
     crop: CropWorkItem;
-    showWorkItemDetails: boolean;
+    settingsState: ISettingsState;
     gapColor?: string;
     isGap?: boolean;
 }
@@ -84,7 +84,7 @@ export function getGridView(
         /* startRow */ 3,
         /* startCol */ 1,
         hideParents,
-        settingState.showWorkItemDetails);
+        settingState);
 
     let workItemShadow = 0;
     if (workItemOverrideIteration && workItemOverrideIteration.workItemId) {
@@ -253,8 +253,11 @@ export function getGridWorkItems(
     startRow: number,
     startColumn: number,
     hideParents: boolean,
-    showWorkItemDetails: boolean): IGridWorkItem[] {
+    settingsState: ISettingsState): IGridWorkItem[] {
 
+    const {
+        progressTrackingCriteria
+    } = settingsState;
     const output: IGridWorkItem[] = [];
     workItems = workItems.sort(workItemCompare);
 
@@ -285,11 +288,8 @@ export function getGridWorkItems(
                     workItem: parent,
                     dimension,
                     crop: CropWorkItem.None,
-                    progressIndicator: {
-                        childCount: children.length,
-                        completedCount: children.filter(c => c.isComplete).length
-                    },
-                    showWorkItemDetails
+                    progressIndicator: getProgress(children, progressTrackingCriteria),                    
+                    settingsState
                 };
             output.push(gridItem);
         }
@@ -348,11 +348,9 @@ export function getGridWorkItems(
                 };
 
                 const gridItem: IGridWorkItem = {
-                    workItem: child, dimension, crop, progressIndicator: {
-                        childCount: child.children.length,
-                        completedCount: child.children.filter(c => c.isComplete).length
-                    },
-                    showWorkItemDetails
+                    workItem: child, dimension, crop, 
+                    progressIndicator: getProgress(child.children, progressTrackingCriteria),
+                    settingsState
                 };
                 output.push(gridItem);
 
@@ -379,7 +377,7 @@ export function getGridWorkItems(
                 gapColor: parent.color,
                 crop: CropWorkItem.None,
                 progressIndicator: null,
-                showWorkItemDetails
+                settingsState
             });
         }
 
@@ -389,3 +387,30 @@ export function getGridWorkItems(
     return output;
 }
 
+
+function getProgress(children: IWorkItemHierarchy[], criteria: ProgressTrackingCriteria) {
+    const completedChildren = children.filter(c => c.isComplete);
+    switch (criteria) {
+        case ProgressTrackingCriteria.ChildWorkItems: {
+            return {
+                total: children.length,
+                completed: completedChildren.length
+            }
+        }
+        case ProgressTrackingCriteria.EffortsField: {
+            return {
+                total: getEfforts(children),
+                completed: getEfforts(completedChildren)
+            }
+        }
+    }
+
+    return {
+        total: 0,
+        completed: 0
+    }
+}
+
+function getEfforts(workItems: IWorkItemHierarchy[]): number {
+    return workItems.reduce((prev, w) => prev + w.efforts, 0);
+}

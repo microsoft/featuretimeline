@@ -1,4 +1,5 @@
 import { Action } from "redux";
+import { ProgressTrackingCriteria } from "../types";
 
 export const ResetType = "@@common/reset";
 export const InitializeType = "@@common/initialize";
@@ -9,6 +10,7 @@ export const PlanFeaturesPaneWidthChangedType = "@@common/planfeaturespanewidthc
 export const PlanFeaturesPaneFilterChangedType = "@@common/planfeaturespanefilterchanged";
 export const ToggleFeatureStateType = "@@common/togglefeaturestate";
 export const ToggleShowWorkitemDetailsType = "@@common/toggleshowworkitemdetails";
+export const ChangeProgressTrackingCriteriaType = "@@common/changeprogresstrackingcriteria";
 
 export interface InitializeAction extends Action {
     type: "@@common/initialize";
@@ -68,8 +70,13 @@ export interface ToggleShowWorkItemDetailsAction extends Action {
     payload: boolean;
 }
 
+export interface ChangeProgressTrackingCriteriaAction extends Action {
+    type: "@@common/changeprogresstrackingcriteria",
+    payload: ProgressTrackingCriteria;
+}
+
 export type CommonActions = ToggleFeatureStateAction | ResetAction | InitializeAction
     | ShowDetailsAction | CloseDetailsAction;
 export type PlanFeaturesPaneActions = TogglePlanFeaturesPaneAction
     | PlanFeaturesPaneFilterChangedAction | PlanFeaturesPaneWidthChangedAction;
-export type SettingsActions = ToggleShowWorkItemDetailsAction;
+export type SettingsActions = ToggleShowWorkItemDetailsAction | ChangeProgressTrackingCriteriaAction;

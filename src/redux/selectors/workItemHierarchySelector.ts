@@ -1,5 +1,5 @@
 import { getWorkItemsForLevel } from './workItemsForLevel';
-import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } from '../store';
+import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } from '../store/types';
 import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
 import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { UIStatus } from '../types';
@@ -20,6 +20,8 @@ export interface IWorkItemHierarchy {
     children: IWorkItemHierarchy[];
     showInfoIcon: boolean;
     isComplete: boolean;
+    efforts: number;
+    childrenWithNoEfforts: number;
 }
 
 export enum FeatureFilter {
@@ -122,19 +124,22 @@ function getWorkItemDetails(
     let iterationDuration = getWorkItemIterationDuration(children, projectId, teamId, input, id, workItem);
 
     const orderFieldName = input.backlogConfiguration.backlogConfigurations[projectId][teamId].backlogFields.typeFields["Order"];
+    const effortFieldName = input.backlogConfiguration.backlogConfigurations[projectId][teamId].backlogFields.typeFields["Effort"];
     const color = workItemType ? "#" + (workItemType.color.length > 6 ? workItemType.color.substr(2) : workItemType.color) : "#c2c8d1";
     const workItemDetails = {
         id,
         title: workItem ? workItem.fields["System.Title"] : "Unparented",
         color,
         order: workItem ? workItem.fields[orderFieldName] : 0,
+        efforts: workItem ? workItem.fields[effortFieldName] || 0 : 0,
         workItem,
         iterationDuration,
         children,
         isRoot,
         showInfoIcon: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden),
         isComplete: workItemInfo && workItemInfo.stateCategory === StateCategory.Completed,
-        workItemStateColor
+        workItemStateColor,
+        childrenWithNoEfforts: children.filter(c => c.efforts === 0).length
     };
 
     return workItemDetails;

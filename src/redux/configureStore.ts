@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, Store, compose } from 'redux';
-import { reducers, IFeatureTimelineRawState } from './store/index';
+import { reducers, IFeatureTimelineRawState } from './store/types';
 import createSagaMiddleware from 'redux-saga'
 import { trackActions } from './sagas/trackActions';
 import { watchSagaActions } from './sagas';

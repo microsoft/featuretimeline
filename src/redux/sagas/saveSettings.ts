@@ -1,7 +1,7 @@
 import { call, select, put } from 'redux-saga/effects';
 import { getTeamId, settingsStateSelector } from '../selectors';
-import { ISettingsState } from '../store';
-import { toggleShowWorkItemDetails } from '../store/common/actioncreators';
+import { ISettingsState, ProgressTrackingCriteria } from '../store/types';
+import { toggleShowWorkItemDetails, changeProgressTrackingCriteria } from '../store/common/actioncreators';
 
 export function* saveSettings() {
     let teamId = yield select(getTeamId);
@@ -20,5 +20,6 @@ export function* restoreSettings() {
     if (stateString) {
         const state = JSON.parse(stateString) as ISettingsState;
         yield put(toggleShowWorkItemDetails(state.showWorkItemDetails));
+        yield put(changeProgressTrackingCriteria(state.progressTrackingCriteria || ProgressTrackingCriteria.ChildWorkItems));
     }
 }

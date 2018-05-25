@@ -36,6 +36,16 @@ export enum IterationDurationKind {
     UserOverridden
 }
 
+export enum ProgressTrackingCriteria {
+    ChildWorkItems,
+    EffortsField
+}
+
+export interface ISettingsState {
+    showWorkItemDetails: boolean;
+    progressTrackingCriteria: ProgressTrackingCriteria;
+}
+
 export interface IOverriddenIterationDuration {
     startIterationId: string;
     endIterationId: string;
@@ -117,8 +127,4 @@ export const reducers: Reducer<IFeatureTimelineRawState> = (state: IFeatureTimel
     const intermediateState = intermediateReducer(state, action);
     const finalState = crossSliceReducer(intermediateState, action);
     return finalState;
-}
-
-export interface ISettingsState {
-    showWorkItemDetails: boolean;
 }

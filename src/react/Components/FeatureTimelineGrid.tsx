@@ -17,7 +17,8 @@ import {
     showDetails,
     togglePlanFeaturesPane,
     changePlanFeaturesWidth,
-    toggleShowWorkItemDetails
+    toggleShowWorkItemDetails,
+    changeProgressTrackingCriteria
 } from '../../redux/store/common/actioncreators';
 import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import { connect, Provider } from 'react-redux';
@@ -34,7 +35,7 @@ import {
     settingsStateSelector
 } from '../../redux/selectors';
 import { getRowColumnStyle, getTemplateColumns } from './gridhelper';
-import { IFeatureTimelineRawState, IWorkItemOverrideIteration, IPlanFeaturesState, ISettingsState } from '../../redux/store';
+import { IFeatureTimelineRawState, IWorkItemOverrideIteration, IPlanFeaturesState, ISettingsState, ProgressTrackingCriteria } from '../../redux/store/types';
 import { IGridView } from '../../redux/selectors/gridViewSelector';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { IterationDropTarget } from './DroppableIterationShadow';
@@ -78,6 +79,7 @@ export interface IFeatureTimelineGridProps {
     resizePlanFeaturesPane: (width: number) => void;
     markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
     toggleShowWorkItemDetails: (show: boolean) => void;
+    changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => void;
 }
 
 const makeMapStateToProps = () => {
@@ -147,6 +149,9 @@ const mapDispatchToProps = (dispatch) => {
         toggleShowWorkItemDetails: (show: boolean) => {
             dispatch(toggleShowWorkItemDetails(show));
         },
+        changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => {
+            dispatch(changeProgressTrackingCriteria(criteria));
+        },
         resizePlanFeaturesPane: (width: number) => {
             dispatch(changePlanFeaturesWidth(width));
         }
@@ -169,7 +174,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         const {
             uiState,
-            rawState
+            rawState,
+            settingsState
         } = this.props;
         if (!rawState || uiState === UIStatus.Loading) {
             return (
@@ -247,7 +253,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         if (workItemShadow) {
             const workItem = workItems.filter(w => !w.isGap && w.workItem.id === workItemShadow)[0];
             workItemShadowCell = (
-                <WorkItemShadow dimension={workItem.dimension} twoRows={workItem.showWorkItemDetails} />
+                <WorkItemShadow dimension={workItem.dimension} twoRows={workItem.settingsState.showWorkItemDetails} />
             );
         }
 
@@ -269,10 +275,12 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     progressIndicator={w.progressIndicator}
                     crop={w.crop}
                     workItemStateColor={w.workItem.workItemStateColor}
-                    showWorkItemDetails={w.showWorkItemDetails}
-                    />
+                    settingsState={w.settingsState}
+                    efforts={w.workItem.efforts}
+                    childrernWithNoEfforts={w.workItem.childrenWithNoEfforts}
+                />
             );
-            });
+        });
 
         const workItemGaps = workItems.filter(w => w.isGap).map(w => {
             return (
@@ -395,6 +403,33 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                 commandHeading.push(lastHeaderColumnCommand);
             }
         }
+        let progressTrackingCriteriaElement = null;
+        const {
+            showWorkItemDetails,
+            progressTrackingCriteria
+        } = settingsState;
+        if (showWorkItemDetails) {
+            const selectedKey = progressTrackingCriteria === ProgressTrackingCriteria.ChildWorkItems ? "child" : "efforts";
+            progressTrackingCriteriaElement = (
+                <div className="progress-options">
+                    <div className="progress-options-label">Track Progress Using: </div>
+                    <ComboBox
+                        className="progress-options-dropdown"
+                        selectedKey={selectedKey}
+                        allowFreeform={false}
+                        autoComplete='off'
+                        options={
+                            [
+                                { key: 'child', text: 'Completed Stories' },
+                                { key: 'efforts', text: 'Completed Efforts' }
+                            ]
+                        }
+                        onChanged={this._onProgressTrackingCriteriaChanged}
+                    >
+                    </ComboBox>
+                </div>
+            );
+        }
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
@@ -410,6 +445,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     label={"Show Details"}
                     onChange={this._onShowWorkItemDetailsChanged}
                     checked={this.props.settingsState.showWorkItemDetails} />
+
+                {progressTrackingCriteriaElement}
 
             </div>
         );
@@ -431,7 +468,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         let contents = grid;
         if (!isSubGrid && this.props.planFeaturesState.show) {
             let paneWidth = this.props.planFeaturesState.paneWidth;
-            if(paneWidth > 25) {
+            if (paneWidth > 25) {
                 paneWidth = 25;
             }
             contents = (
@@ -485,6 +522,20 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                 break;
             case "five":
                 this.props.showFiveIterations(projectId, teamId);
+                break;
+        }
+    }
+
+    private _onProgressTrackingCriteriaChanged = (item: { key: string, text: string }) => {
+        const {
+            changeProgressTrackingCriteria
+        } = this.props;
+        switch (item.key) {
+            case "child":
+                changeProgressTrackingCriteria(ProgressTrackingCriteria.ChildWorkItems);
+                break;
+            case "efforts":
+                changeProgressTrackingCriteria(ProgressTrackingCriteria.EffortsField);
                 break;
         }
     }
