@@ -266,7 +266,7 @@ export function getGridWorkItems(
         lastColumn++;
     }
 
-    workItems.forEach((parent, index) => {
+    workItems.forEach((parent, parentIndex) => {
         const parentStartRow = startRow;
         const parentStartColumn = startColumn;
         let parentEndColumn = parentStartColumn;
@@ -284,19 +284,19 @@ export function getGridWorkItems(
             };
 
             const gridItem: IGridWorkItem =
-                {
-                    workItem: parent,
-                    dimension,
-                    crop: CropWorkItem.None,
-                    progressIndicator: getProgress(children, progressTrackingCriteria),                    
-                    settingsState
-                };
-            output.push(gridItem);
+            {
+                workItem: parent,
+                dimension,
+                crop: CropWorkItem.None,
+                progressIndicator: getProgress(children, progressTrackingCriteria),
+                settingsState
+            };
+            output.push(gridItem); //This can be popped later in this function
         }
 
         let childStartRow = parentStartRow;
         const allIterations = iterationDisplayOptions ? teamIterations : displayIterations;
-
+        let noChildren = true;
         children.forEach(child => {
             const childEndRow = childStartRow + 1;
             let startIterationIndex = -1;
@@ -348,40 +348,47 @@ export function getGridWorkItems(
                 };
 
                 const gridItem: IGridWorkItem = {
-                    workItem: child, dimension, crop, 
+                    workItem: child, dimension, crop,
                     progressIndicator: getProgress(child.children, progressTrackingCriteria),
                     settingsState
                 };
                 output.push(gridItem);
+                noChildren = false;
 
                 childStartRow++;
             }
         });
 
-        // Insert Gap
-        if (children.length > 0 && index < (workItems.length - 1)) {
-            output.push({
-                workItem: <IWorkItemHierarchy>{
-                    id: -1,
-                    title: "",
-                    children: [],
-                    showInfoIcon: false
-                },
-                dimension: {
-                    startRow: parentEndRow - 1,
-                    endRow: parentEndRow,
-                    startCol: hideParents ? 1 : 2,
-                    endCol: lastColumn
-                },
-                isGap: true,
-                gapColor: parent.color,
-                crop: CropWorkItem.None,
-                progressIndicator: null,
-                settingsState
-            });
+        if (noChildren && !hideParents) {
+            //If there are no child elements than pop the parent added
+            output.pop();
         }
+        else {
+            // Insert Gap
+            if (children.length > 0 && parentIndex < (workItems.length - 1)) {
+                output.push({
+                    workItem: <IWorkItemHierarchy>{
+                        id: -1,
+                        title: "",
+                        children: [],
+                        showInfoIcon: false
+                    },
+                    dimension: {
+                        startRow: parentEndRow - 1,
+                        endRow: parentEndRow,
+                        startCol: hideParents ? 1 : 2,
+                        endCol: lastColumn
+                    },
+                    isGap: true,
+                    gapColor: parent.color,
+                    crop: CropWorkItem.None,
+                    progressIndicator: null,
+                    settingsState
+                });
+            }
 
-        startRow = parentEndRow;
+            startRow = parentEndRow;
+        }
     });
 
     return output;
