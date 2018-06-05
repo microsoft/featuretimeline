@@ -44,7 +44,7 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
         const workItems = this._filteredItems(this.props.workItems);
         let message = null;
         if (workItems.length === 0) {
-            message = <MessageBar>Only top 200 Proposed features are available.</MessageBar>;
+            message = <MessageBar>Only top 100 Proposed features are available.</MessageBar>;
         }
         return (
             <div className="work-item-list-container">
