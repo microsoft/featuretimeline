@@ -18,7 +18,8 @@ import {
     togglePlanFeaturesPane,
     changePlanFeaturesWidth,
     toggleShowWorkItemDetails,
-    changeProgressTrackingCriteria
+    changeProgressTrackingCriteria,
+    changeShowClosedSinceDays
 } from '../../redux/store/common/actioncreators';
 import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import { connect, Provider } from 'react-redux';
@@ -80,6 +81,7 @@ export interface IFeatureTimelineGridProps {
     markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
     toggleShowWorkItemDetails: (show: boolean) => void;
     changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => void;
+    changeShowClosedSinceDays: (days: number) => void;
 }
 
 const makeMapStateToProps = () => {
@@ -151,6 +153,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => {
             dispatch(changeProgressTrackingCriteria(criteria));
+        },
+        changeShowClosedSinceDays: (days: number) => {
+            dispatch(changeShowClosedSinceDays(days));
         },
         resizePlanFeaturesPane: (width: number) => {
             dispatch(changePlanFeaturesWidth(width));
@@ -407,7 +412,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         let progressTrackingCriteriaElement = null;
         const {
             showWorkItemDetails,
-            progressTrackingCriteria
+            progressTrackingCriteria,
+            showClosedSinceDays
         } = settingsState;
         if (showWorkItemDetails) {
             const selectedKey = progressTrackingCriteria === ProgressTrackingCriteria.ChildWorkItems ? "child" : "efforts";
@@ -431,6 +437,32 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                 </div>
             );
         }
+
+        const selectedKey = (showClosedSinceDays || '0').toString();
+
+        const showClosedSinceDaysElement = (
+            <div className="closed-since-options">
+                <div className="show-closed-since-label">Closed Features: </div>
+                <ComboBox
+                    className="show-closed-since-dropdown"
+                    selectedKey={selectedKey}
+                    allowFreeform={false}
+                    autoComplete='off'
+                    options={
+                        [
+                            { key: '0', text: 'Do not show' },
+                            { key: '30', text: 'Last 30 days' },
+                            { key: '60', text: 'Last 60 days' },
+                            { key: '90', text: 'Last 90 days' },
+                            { key: '120', text: 'Last 120 days' },
+                            { key: '180', text: 'Last 180 days' },
+                        ]
+                    }
+                    onChanged={this._onShowClosedSinceChanged}
+                >
+                </ComboBox>
+            </div>
+        );
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
@@ -448,6 +480,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     checked={this.props.settingsState.showWorkItemDetails} />
 
                 {progressTrackingCriteriaElement}
+                {showClosedSinceDaysElement}
 
             </div>
         );
@@ -539,6 +572,13 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                 changeProgressTrackingCriteria(ProgressTrackingCriteria.EffortsField);
                 break;
         }
+    }
+
+    private _onShowClosedSinceChanged = (item: { key: string, text: string }) => {
+        const {
+            changeShowClosedSinceDays
+        } = this.props;
+        changeShowClosedSinceDays(Number(item.key));
     }
 }
 

@@ -108,16 +108,19 @@
 }
 
 
-.progress-options {
+.progress-options,
+.closed-since-options {
     display: flex;
 }
 
-.progress-options-label {
+.progress-options-label,
+.show-closed-since-label {
     margin: 5px;
     margin-left: 15px;
     font-size: 16px;
 }
 
-.progress-options-dropdown {
+.progress-options-dropdown,
+.show-closed-since-dropdown {
     width: 170px;
 }

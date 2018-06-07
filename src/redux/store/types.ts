@@ -44,6 +44,7 @@ export enum ProgressTrackingCriteria {
 export interface ISettingsState {
     showWorkItemDetails: boolean;
     progressTrackingCriteria: ProgressTrackingCriteria;
+    showClosedSinceDays: number;
 }
 
 export interface IOverriddenIterationDuration {

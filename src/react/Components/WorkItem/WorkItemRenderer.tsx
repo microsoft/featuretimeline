@@ -222,7 +222,6 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
             }
             let progressDetails = null;
-            debugger;
             if (progressIndicator && !isRoot) {
                 progressDetails = (
                     <ProgressDetails

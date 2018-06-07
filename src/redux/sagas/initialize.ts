@@ -1,10 +1,10 @@
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
-import { all, call, put } from 'redux-saga/effects';
+import { all, call, put, select } from 'redux-saga/effects';
 import { WorkItemMetadataService } from '../../Services/WorkItemMetadataService';
 import { PageWorkItemHelper } from '../helpers/PageWorkItemHelper';
-import { IOverriddenIterationDuration } from '../store/types';
+import { IOverriddenIterationDuration, ISettingsState } from '../store/types';
 import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';
 import { InitializeAction } from '../store/common/actions';
 import { genericError } from '../store/error/actionCreators';
@@ -16,9 +16,20 @@ import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
+import { restoreSettings } from './saveSettings';
+import { createInitialize } from '../store/common/actioncreators';
+import { getBacklogLevel, getTeamId, getProjectId } from '../selectors';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
+
+export function* launchInitialize() {
+    const projectId = yield select(getProjectId);
+    const teamId = yield select(getTeamId);
+    const backlogLevelName = yield select(getBacklogLevel);
+    const initializeAction = yield call(createInitialize, projectId, teamId, backlogLevelName);
+    yield put(initializeAction)
+}
 
 // Setup to call initialize saga for every initialize action
 export function* callInitialize(action: InitializeAction) {
@@ -82,11 +93,27 @@ export function* handleInitialize(action: InitializeAction) {
 
         const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "InProgress");
         const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
-
+       
         const queryResultWits = [];
         if (queryResults && queryResults.workItems) {
             queryResultWits.push(...queryResults.workItems);
         }
+
+        // query closed work items
+        let settings: ISettingsState = yield call(restoreSettings);
+        debugger;
+        if (settings && settings.showClosedSinceDays && settings.showClosedSinceDays > 0) {
+            const extraCondition =  ` AND [Microsoft.VSTS.Common.ClosedDate] >= @Today -${settings.showClosedSinceDays}`
+
+            const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Completed", extraCondition);
+
+            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId, /** team**/ null, /* teamPrecision */ null, /*top*/ 100);
+            if (queryResults && queryResults.workItems) {
+                // Page only first 100 proposed items for optimization
+                queryResultWits.push(...queryResults.workItems);
+            }
+        }
+
         // query for Proposed work items
         {
             const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Proposed");
@@ -181,7 +208,8 @@ function getBacklogLevelQueryWiql(
     backlogConfig: Contracts.BacklogConfiguration,
     teamSettings: Contracts.TeamSetting,
     teamFieldValues: Contracts.TeamFieldValues,
-    stateCategory: string) {
+    stateCategory: string,
+    extraCondition: string = null) {
 
     const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
     const orderField = backlogConfig.backlogFields.typeFields["Order"];
@@ -223,6 +251,7 @@ function getBacklogLevelQueryWiql(
                         AND      [System.IterationPath] UNDER '${backlogIteration}'
                         AND      (${workItemTypeAndStatesClause})
                         AND      (${teamFieldClause})
+                        ${extraCondition || ""}
                         ORDER BY [${orderField}] ASC,[System.Id] ASC`;
     return wiql;
 }

@@ -1,12 +1,13 @@
 import { Reducer } from 'redux';
 import { ISettingsState, ProgressTrackingCriteria } from '../types';
-import { SettingsActions, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, RestoreSettingsType } from './actions';
+import { SettingsActions, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, RestoreSettingsType, ChangeShowClosedSinceDaysType } from './actions';
 
 
 export const getDefaultSettingsState = (): ISettingsState => {
     return {
         showWorkItemDetails: false,
-        progressTrackingCriteria: 0
+        progressTrackingCriteria: 0,
+        showClosedSinceDays: 0
     };
 }
 const reducer: Reducer<ISettingsState> = (state: ISettingsState = getDefaultSettingsState(), action: SettingsActions) => {
@@ -21,6 +22,9 @@ const reducer: Reducer<ISettingsState> = (state: ISettingsState = getDefaultSett
             return newState;
         case ChangeProgressTrackingCriteriaType:
             newState.progressTrackingCriteria = payload as ProgressTrackingCriteria;
+            return newState;
+        case ChangeShowClosedSinceDaysType:
+            newState.showClosedSinceDays = payload as number; 
             return newState;
         case RestoreSettingsType:
             return payload as ISettingsState;

@@ -3,7 +3,7 @@ import {
     InitializeAction, InitializeType, ShowDetailsAction,
     ShowDetailsType, CloseDetailsAction, CloseDetailsType,
     ResetAction, ResetType,
-    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaAction, ChangeProgressTrackingCriteriaType, RestoreSettingsAction, RestoreSettingsType
+    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaAction, ChangeProgressTrackingCriteriaType, RestoreSettingsAction, RestoreSettingsType, ChangeShowClosedSinceDaysAction, ChangeShowClosedSinceDaysType
 } from './actions';
 import { ProgressTrackingCriteria, ISettingsState } from '../types';
 
@@ -68,6 +68,11 @@ export const toggleShowWorkItemDetails: ActionCreator<ToggleShowWorkItemDetailsA
 export const changeProgressTrackingCriteria: ActionCreator<ChangeProgressTrackingCriteriaAction> = (criteria: ProgressTrackingCriteria) => ({
     type: ChangeProgressTrackingCriteriaType,
     payload: criteria
+});
+
+export const changeShowClosedSinceDays: ActionCreator<ChangeShowClosedSinceDaysAction> = (days: number) => ({
+    type: ChangeShowClosedSinceDaysType,
+    payload: days
 });
 
 export const restoreSettingsState: ActionCreator<RestoreSettingsAction> = (state: ISettingsState) => ({
