@@ -30,6 +30,7 @@ export interface IWorkItemRendererProps {
     settingsState: ISettingsState;
     efforts: number;
     childrernWithNoEfforts: number;
+    isComplete: number;
 
     onClick: (id: number) => void;
     showDetails: (id: number) => void;
@@ -78,7 +79,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             settingsState,
             childrernWithNoEfforts,
             efforts,
-            isSubGrid
+            isSubGrid,
+            isComplete
         } = this.props;
 
         const {
@@ -103,7 +105,10 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
         if (isDragging) {
             style['border-color'] = hexToRgb(this.props.color, 0.1);
-        } else {
+        } else if(isComplete){
+            style['border-color'] = hexToRgb(this.props.color, 0.3);
+        }
+        else {
             style['border-color'] = hexToRgb(this.props.color, 0.7);
         }
 

@@ -284,6 +284,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     settingsState={w.settingsState}
                     efforts={w.workItem.efforts}
                     childrernWithNoEfforts={w.workItem.childrenWithNoEfforts}
+                    isComplete={w.workItem.isComplete}
                 />
             );
         });
