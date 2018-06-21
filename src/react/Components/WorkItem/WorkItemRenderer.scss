@@ -28,13 +28,14 @@
     margin-top: 0px;
     min-height: 46px;
     height: calc(100% - 5px);
+    position: sticky;
+    left: 0;
 }
 
 .work-item-detail-rows {
     flex: 1;
     display: flex;
     flex-direction: column;
-
     @include textOverflow();
 }
 
@@ -42,7 +43,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-
     @include textOverflow();
 }
 
@@ -56,7 +56,6 @@
     align-items: center;
     flex-direction: row;
     width: 100%;
-
     @include textOverflow();
 }
 
