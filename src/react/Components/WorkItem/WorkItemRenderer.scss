@@ -110,6 +110,12 @@
     @include textOverflow();
 }
 
+.root-work-item-renderer {
+    .title-contents {
+        white-space: normal;
+    }
+}
+
 .work-item-shadow {
     @include rootContainer;
     border: transparent;
