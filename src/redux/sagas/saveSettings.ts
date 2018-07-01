@@ -13,7 +13,6 @@ export function* saveSettings(action: SettingsActions) {
     value = value ? JSON.stringify(value) : null;
     yield call([dataService, dataService.setValue], `${teamId}_settings`, value, { scopeType: 'User' });
 
-    debugger;
     if (action && action.type === ChangeShowClosedSinceDaysType) {
         yield call(launchInitialize);
     }

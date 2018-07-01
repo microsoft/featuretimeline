@@ -1,56 +1,35 @@
-import * as React from 'react';
-import configureStore from '../../redux/configureStore';
-import DraggableWorkItemRenderer from './WorkItem/DraggableWorkItemRenderer';
-import HTML5Backend from 'react-dnd-html5-backend';
-import SplitterLayout from 'react-splitter-layout';
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
-import {
-    changeDisplayIterationCount,
-    displayAllIterations,
-    shiftDisplayIterationLeft,
-    shiftDisplayIterationRight
-} from '../../redux/store/teamiterations/actionCreators';
-import { clearOverrideIteration, launchWorkItemForm, startUpdateWorkItemIteration, startMarkInProgress } from '../../redux/store/workitems/actionCreators';
-import {
-    closeDetails,
-    createInitialize,
-    showDetails,
-    togglePlanFeaturesPane,
-    changePlanFeaturesWidth,
-    toggleShowWorkItemDetails,
-    changeProgressTrackingCriteria,
-    changeShowClosedSinceDays
-} from '../../redux/store/common/actioncreators';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
-import { connect, Provider } from 'react-redux';
-import { DragDropContext } from 'react-dnd';
-import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../redux/store/overrideIterationProgress/actionCreators';
-import {
-    getBacklogLevel,
-    getProjectId,
-    getRawState,
-    getTeamId,
-    primaryGridViewSelector,
-    uiStatusSelector,
-    planFeatureStateSelector,
-    settingsStateSelector
-} from '../../redux/selectors';
-import { getRowColumnStyle, getTemplateColumns } from './gridhelper';
-import { IFeatureTimelineRawState, IWorkItemOverrideIteration, IPlanFeaturesState, ISettingsState, ProgressTrackingCriteria } from '../../redux/store/types';
-import { IGridView } from '../../redux/selectors/gridViewSelector';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
-import { IterationDropTarget } from './DroppableIterationShadow';
-import { IterationRenderer } from './IterationRenderer';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import * as React from 'react';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import { connect, Provider } from 'react-redux';
+import SplitterLayout from 'react-splitter-layout';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { TimelineDialog } from './TimelineDialog';
+import configureStore from '../../redux/configureStore';
+import { getBacklogLevel, getProjectId, getRawState, getTeamId, planFeatureStateSelector, primaryGridViewSelector, settingsStateSelector, uiStatusSelector } from '../../redux/selectors';
+import { IGridView } from '../../redux/selectors/gridViewSelector';
+import { changePlanFeaturesWidth, changeProgressTrackingCriteria, changeShowClosedSinceDays, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane, toggleShowWorkItemDetails } from '../../redux/store/common/actioncreators';
+import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../redux/store/overrideIterationProgress/actionCreators';
+import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../redux/store/teamiterations/actionCreators';
+import { IFeatureTimelineRawState, IPlanFeaturesState, ISettingsState, IWorkItemOverrideIteration, ProgressTrackingCriteria } from '../../redux/store/types';
+import { clearOverrideIteration, launchWorkItemForm, startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
 import { UIStatus } from '../../redux/types';
-import { WorkitemGap } from './WorkItem/WorkItemGap';
-import { ConnectedWorkItemsList } from './WorkItemList';
-import { WorkItemShadow } from './WorkItem/WorkItemShadow';
-import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
+import { IterationDropTarget } from './DroppableIterationShadow';
 import './FeatureTimelineGrid.scss';
+import { getRowColumnStyle, getTemplateColumns } from './gridhelper';
+import { IterationRenderer } from './IterationRenderer';
+import { TimelineDialog } from './TimelineDialog';
+import DraggableWorkItemRenderer from './WorkItem/DraggableWorkItemRenderer';
+import { WorkitemGap } from './WorkItem/WorkItemGap';
+import { WorkItemShadow } from './WorkItem/WorkItemShadow';
+import { ConnectedWorkItemsList } from './WorkItemList';
+import InputNum from "rc-input-number";
+
 
 initializeIcons(/* optional base url */);
 
@@ -71,8 +50,7 @@ export interface IFeatureTimelineGridProps {
     overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
     overrideIterationEnd: () => void;
     changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => void;
-    showThreeIterations: (projectId: string, teamId: string) => void;
-    showFiveIterations: (projectId: string, teamId: string) => void;
+    showNIterations: (projectId: string, teamId: string, count: Number) => void;
     shiftDisplayIterationLeft: () => void;
     shiftDisplayIterationRight: () => void;
     showAllIterations: () => void;
@@ -130,11 +108,8 @@ const mapDispatchToProps = (dispatch) => {
         markInProgress: (id: number, teamIteration: TeamSettingsIteration, state: string) => {
             dispatch(startMarkInProgress(id, teamIteration, state));
         },
-        showThreeIterations: (projectId: string, teamId: string) => {
-            dispatch(changeDisplayIterationCount(3, projectId, teamId));
-        },
-        showFiveIterations: (projectId: string, teamId: string) => {
-            dispatch(changeDisplayIterationCount(5, projectId, teamId));
+        showNIterations: (projectId: string, teamId: string, count: Number) => {
+            dispatch(changeDisplayIterationCount(count, projectId, teamId));
         },
         showAllIterations: () => {
             dispatch(displayAllIterations());
@@ -345,32 +320,21 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         let commandHeading = [];
 
         if (!isSubGrid && (iterationDisplayOptions || columnHeading.length > 3)) {
-            let selectedKey = "all";
+            let displayIterationCount = "0";
             if (iterationDisplayOptions) {
-                if (iterationDisplayOptions.count === 3) {
-                    selectedKey = "three";
-                } else if (iterationDisplayOptions.count === 5) {
-                    selectedKey = "five";
-                }
+                displayIterationCount = iterationDisplayOptions.count.toString();
             }
             displayOptions = (
                 <div className="iteration-options">
-                    <div className="iteration-options-label">View: </div>
-                    <ComboBox
-                        className="iteration-options-dropdown"
-                        selectedKey={selectedKey}
-                        allowFreeform={false}
-                        autoComplete='off'
-                        options={
-                            [
-                                { key: 'all', text: 'All Sprints' },
-                                { key: 'three', text: 'Three Sprints' },
-                                { key: 'five', text: 'Five Sprints' },
-                            ]
-                        }
-                        onChanged={this._onViewChanged}
+                    <div className="iteration-options-label">View Sprints: </div>
+                    <InputNum
+                        value={displayIterationCount}
+                        min={0}
+                        max={100}
+                        step={1}
+                        onChange={this._onViewChanged}
                     >
-                    </ComboBox>
+                    </InputNum>
                 </div>
             );
 
@@ -543,22 +507,20 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         this.props.resizePlanFeaturesPane(width);
     }
 
-    private _onViewChanged = (item: { key: string, text: string }) => {
+    private _onViewChanged = (text: string) => {
+        debugger;
         const {
             projectId,
             teamId
         } = this.props;
-        switch (item.key) {
-            case "all":
-                this.props.showAllIterations();
-                break;
-            case "three":
-                this.props.showThreeIterations(projectId, teamId);
-                break;
-            case "five":
-                this.props.showFiveIterations(projectId, teamId);
-                break;
+        const number = +text;
+        if (number === 0) {
+            this.props.showAllIterations();
+        } else {
+            this.props.showNIterations(projectId, teamId, number);
         }
+
+        return text;
     }
 
     private _onProgressTrackingCriteriaChanged = (item: { key: string, text: string }) => {

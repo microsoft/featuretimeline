@@ -101,7 +101,6 @@ export function* handleInitialize(action: InitializeAction) {
 
         // query closed work items
         let settings: ISettingsState = yield call(restoreSettings);
-        debugger;
         if (settings && settings.showClosedSinceDays && settings.showClosedSinceDays > 0) {
             const extraCondition =  ` AND [Microsoft.VSTS.Common.ClosedDate] >= @Today -${settings.showClosedSinceDays}`
 
