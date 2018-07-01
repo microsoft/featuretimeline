@@ -320,17 +320,19 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         let commandHeading = [];
 
         if (!isSubGrid && (iterationDisplayOptions || columnHeading.length > 3)) {
-            let displayIterationCount = "0";
+            let displayIterationCount = 0;
             if (iterationDisplayOptions) {
-                displayIterationCount = iterationDisplayOptions.count.toString();
+                displayIterationCount = iterationDisplayOptions.count;
+            } else {
+                displayIterationCount = teamIterations.length;
             }
             displayOptions = (
                 <div className="iteration-options">
                     <div className="iteration-options-label">View Sprints: </div>
                     <InputNum
                         value={displayIterationCount}
-                        min={0}
-                        max={100}
+                        min={1}
+                        max={teamIterations.length}
                         step={1}
                         onChange={this._onViewChanged}
                     >
