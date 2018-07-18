@@ -1,5 +1,6 @@
 import { Reducer } from 'redux';
 import { ErrorActions, GenericErrorType } from './actions';
+
 const reducer: Reducer<string> = (state: string = "", action: ErrorActions) => {
     switch (action.type) {
         case GenericErrorType:
