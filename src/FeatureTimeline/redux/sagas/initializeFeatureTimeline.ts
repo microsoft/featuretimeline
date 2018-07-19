@@ -2,7 +2,7 @@ import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { all, call, put, select } from 'redux-saga/effects';
-import { WorkItemMetadataService } from '../../Services/WorkItemMetadataService';
+import { WorkItemMetadataService } from '../../../Services/WorkItemMetadataService';
 import { PageWorkItemHelper } from '../helpers/PageWorkItemHelper';
 import { IOverriddenIterationDuration, ISettingsState } from '../store/types';
 import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';

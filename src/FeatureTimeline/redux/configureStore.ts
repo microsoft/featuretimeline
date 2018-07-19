@@ -15,7 +15,7 @@ export default function configureStore(
     // https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
     const composeEnhancers = window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] || compose;
     
-    const store = createStore<IFeatureTimelineRawState>(
+    const store = createStore(
         reducers,
         initialState, 
         composeEnhancers(middleware));
