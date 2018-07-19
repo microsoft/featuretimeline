@@ -40,7 +40,7 @@ const plugins = [
 			to: "react-dom.js"
 		},
 		{
-			from: "./src/index.html",
+			from: "./src/FeatureTimeline/featuretimeline.html",
 			to: "./"
 		},
 		{
@@ -63,9 +63,9 @@ if (mode !== "development") {
 	//plugins.unshift(new PrettierPlugin());
 }
 module.exports = {
-	entry: './src/FeatureTimeline.tsx',
+	entry: './src/FeatureTimeline/FeatureTimeline.tsx',
 	output: {
-		filename: 'bundle.js',
+		filename: 'featuretimelinebundle.js',
 		path: path.resolve(__dirname, 'dist'),
 		libraryTarget: 'umd',
 		library: "FeatureTimeline"

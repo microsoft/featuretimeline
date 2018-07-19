@@ -46,7 +46,7 @@
         "properties": {
             "name": "Feature Timeline",
             "order": 99,
-            "uri": "dist/index.html",
+            "uri": "dist/featuretimeline.html",
             "dynamic": true
         }
     }]

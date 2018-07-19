@@ -1,0 +1,28 @@
+.progress-indicator-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;   
+}
+
+.progress-indicator-tooltip {
+    flex: 1;
+}
+
+.progress-details-parts {
+    width: 70px;
+    display: flex;
+    height: 10px;
+    background: lightgrey;
+}
+
+.progress-completed {
+    background: limegreen;
+}
+
+.progress-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 5px;
+}
