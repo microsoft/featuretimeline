@@ -26,6 +26,7 @@ function handleBacklogConfigurationReceived(state: IBacklogConfigurationState, a
         backlogConfiguration
     } = action.payload;
 
+    backlogConfiguration.portfolioBacklogs.sort((b1, b2) => b1.rank - b2.rank);
     const projectData = state.backlogConfigurations[projectId] || {};
     projectData[teamId] = backlogConfiguration;
     state.backlogConfigurations[projectId] = projectData;

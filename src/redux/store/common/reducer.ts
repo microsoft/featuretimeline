@@ -7,8 +7,10 @@ const reducer: Reducer<number[]> = (state: number[] = [], action: CommonActions)
         switch (action.type) {
             case ShowDetailsType:
                 draft.push(action.payload.id);;
+                break;
             case CloseDetailsType:
                 return draft.filter(id => id !== action.payload.id);
+                break;
         }
     });
 };

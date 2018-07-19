@@ -67,12 +67,17 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
     }
 
     private _filteredItems = (arg0: IWorkItemListItem[]): IWorkItemListItem[] => {
+        debugger;
         const {
             filter
         } = this.props;
 
         if (!filter || !arg0) {
             return arg0;
+        }
+
+        if(typeof filter.toLowerCase !== "function") {
+            debugger;
         }
 
         return arg0.filter(w => w.title.toLowerCase().indexOf(filter.toLowerCase()) >= 0);

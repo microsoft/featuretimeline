@@ -20,10 +20,13 @@ const reducer: Reducer<IPlanFeaturesState> = (state: IPlanFeaturesState = getDef
         switch (type) {
             case TogglePlanFeaturesPaneType:
                 draft.show = payload as boolean;
+                break;
             case PlanFeaturesPaneFilterChangedType:
                 draft.filter = payload as string;
+                break;
             case PlanFeaturesPaneWidthChangedType:
                 draft.paneWidth = payload as number;
+                break;
         }
     });
 };

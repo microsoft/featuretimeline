@@ -77,7 +77,6 @@ export const planFeatureStateSelector = () => {
         if (!state || !state.planFeaturesState) {
             return getDefaultPlanFeaturesPaneState();
         }
-
         return state.planFeaturesState;
     })
 }

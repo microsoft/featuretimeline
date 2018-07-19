@@ -510,7 +510,6 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
     }
 
     private _onViewChanged = (text: string) => {
-        debugger;
         const {
             projectId,
             teamId
