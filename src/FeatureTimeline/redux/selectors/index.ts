@@ -1,4 +1,4 @@
-import { IContributionContext } from "../store/common/types";
+import { IContributionContext } from "../../../Common/types";
 import { createSelector } from "reselect";
 import { getWorkItemsForLevel } from "./workItemsForLevel";
 import { getUIStatus } from "./uistatus";
@@ -10,20 +10,9 @@ import { getTeamIterations, getBacklogIteration } from "./teamIterations";
 import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
 import { getDefaultSettingsState } from "../store/common/settingsReducer";
+import { getProjectId, getTeamId } from "../../../Common/CommonSelectors";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
-export const getProjectId = () => {
-    const webContext = VSS.getWebContext();
-    return webContext.project.id;
-}
-export const getTeamId = () => {
-    const contributionContext: IContributionContext = VSS.getConfiguration();
-    if (contributionContext.team) {
-        return contributionContext.team.id;
-    }
-    const webContext = VSS.getWebContext();
-    return webContext.team.id;
-};
 
 export const getBacklogLevel = () => {
     const contributionContext: IContributionContext = VSS.getConfiguration();

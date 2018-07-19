@@ -4,9 +4,19 @@ import { ProjectBacklogConfigurationActions, ProjectBacklogConfigurationReceived
 
 export function backlogConfigurationReducer(state: BacklogConfigurationMap, action: ProjectBacklogConfigurationActions): BacklogConfigurationMap {
     return produce(state, draft => {
+        const {
+            payload
+        } = action;
         switch (action.type) {
             case ProjectBacklogConfigurationReceivedType:
-                draft[action.payload.projectId] = action.payload.backlogConfiguration;
+                {
+                    const {
+                        projectId,
+                        backlogConfiguration
+                    } = payload;
+                    draft[projectId] = backlogConfiguration;
+                    draft[projectId].portfolioBacklogs.sort((pb1, pb2) => pb1.rank - pb2.rank);
+                }
         }
     });
 }
