@@ -2,6 +2,7 @@ import { Reducer } from 'redux';
 import { ITeamSettingsIterationState } from './types';
 import { TeamSettingsIterationActions, TeamSettingsIterationReceivedType, TeamSettingsIterationReceivedAction, DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType, ShiftDisplayIterationLeftAction, ShiftDisplayIterationRightAction, ChangeDisplayIterationCountAction, RestoreDisplayIterationCountActionType, RestoreDisplayIterationCountAction } from './actions';
 import { getCurrentIterationIndex } from '../../helpers/iterationComparer';
+import produce from "immer";
 
 // Type-safe initialState!
 export const getInitialState = (): ITeamSettingsIterationState => {
@@ -32,27 +33,26 @@ const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsItera
 };
 
 function handleRestoreDisplayIterationCountAction(state: ITeamSettingsIterationState, action: RestoreDisplayIterationCountAction) {
-    let newState = { ...state };
+    return produce(state, draft => {
 
-    try {
-        newState.iterationDisplayOptions = { ...action.payload };
-        let { count } = action.payload;
-        const iterations = state.teamSettingsIterations[action.payload.projectId][action.payload.teamId] || [];
-        newState.iterationDisplayOptions.totalIterations = iterations.length;
+        try {
+            draft.iterationDisplayOptions = { ...action.payload };
+            let { count } = action.payload;
+            const iterations = state.teamSettingsIterations[action.payload.projectId][action.payload.teamId] || [];
+            draft.iterationDisplayOptions.totalIterations = iterations.length;
 
-        // Handle incase if the team iterations changed before restore
+            // Handle incase if the team iterations changed before restore
 
 
-        if (iterations.length === 0 || !count || count > iterations.length || action.payload.endIndex >= iterations.length) {
-            console.log("Ignoring restore display options as iterations changed.");
-            newState.iterationDisplayOptions = null;
+            if (iterations.length === 0 || !count || count > iterations.length || action.payload.endIndex >= iterations.length) {
+                console.log("Ignoring restore display options as iterations changed.");
+                draft.iterationDisplayOptions = null;
+            }
         }
-    }
-    catch (error) {
-        newState = state;
-        console.log('Can not restore display options: ', error, action);
-    }
-    return newState;
+        catch (error) {
+            console.log('Can not restore display options: ', error, action);
+        }
+    });
 }
 
 function handleChangeDisplayIterationCountAction(state: ITeamSettingsIterationState, action: ChangeDisplayIterationCountAction) {
@@ -62,89 +62,88 @@ function handleChangeDisplayIterationCountAction(state: ITeamSettingsIterationSt
         projectId
     } = action.payload;
 
-    const originalCount = count;
+    return produce(state, draft => {
 
-    const iterations = state.teamSettingsIterations[projectId][teamId];
-    const currentIterationIndex = getCurrentIterationIndex(iterations);
+        const originalCount = count;
 
-    if (count > iterations.length) {
-        count = iterations.length;
-    }
+        const iterations = draft.teamSettingsIterations[projectId][teamId];
+        const currentIterationIndex = getCurrentIterationIndex(iterations);
 
-    const displayOptions = {
-        count,
-        originalCount,
-        teamId,
-        projectId,
-        startIndex: 0,
-        endIndex: 0,
-        totalIterations: iterations.length
-    };
+        if (count > iterations.length) {
+            count = iterations.length;
+        }
 
-    let startIndex = currentIterationIndex - Math.floor((count / 2));
-    if (startIndex < 0) {
-        startIndex = 0;
-    }
-    const endIndex = startIndex + (count - 1);
+        const displayOptions = {
+            count,
+            originalCount,
+            teamId,
+            projectId,
+            startIndex: 0,
+            endIndex: 0,
+            totalIterations: iterations.length
+        };
 
-    displayOptions.startIndex = startIndex;
-    displayOptions.endIndex = endIndex;
+        let startIndex = currentIterationIndex - Math.floor((count / 2));
+        if (startIndex < 0) {
+            startIndex = 0;
+        }
+        const endIndex = startIndex + (count - 1);
 
-    const newState = { ...state };
-    newState.iterationDisplayOptions = displayOptions;
-    return newState;
+        displayOptions.startIndex = startIndex;
+        displayOptions.endIndex = endIndex;
+
+        draft.iterationDisplayOptions = displayOptions;
+    });
 }
 
 
 function handleShiftDisplayIterationLeft(state: ITeamSettingsIterationState, action: ShiftDisplayIterationLeftAction) {
-    if (state.iterationDisplayOptions) {
-        const newState = { ...state };
-
-        const displayOptions = { ...newState.iterationDisplayOptions };
-        if ((displayOptions.startIndex - action.payload.count) >= 0) {
-            displayOptions.startIndex -= action.payload.count;
-            displayOptions.endIndex = displayOptions.startIndex + state.iterationDisplayOptions.count - 1;
+    return produce(state, draft => {
+        if (draft.iterationDisplayOptions) {
+            const displayOptions = draft.iterationDisplayOptions;
+            if ((displayOptions.startIndex - action.payload.count) >= 0) {
+                displayOptions.startIndex -= action.payload.count;
+                displayOptions.endIndex = displayOptions.startIndex + draft.iterationDisplayOptions.count - 1;
+            }
+            draft.iterationDisplayOptions = displayOptions
         }
-        newState.iterationDisplayOptions = displayOptions
-        return newState;
-    }
-    return state;
+    });
 }
 
 function handleShiftDisplayIterationRight(state: ITeamSettingsIterationState, action: ShiftDisplayIterationRightAction) {
-    if (state.iterationDisplayOptions) {
-        const newState = { ...state };
-        const iterationCount = state.teamSettingsIterations[state.iterationDisplayOptions.projectId][state.iterationDisplayOptions.teamId].length;
-        const displayOptions = { ...newState.iterationDisplayOptions };
-        if ((displayOptions.endIndex + action.payload.count) < iterationCount) {
-            displayOptions.endIndex += action.payload.count;
-            displayOptions.startIndex = displayOptions.endIndex - state.iterationDisplayOptions.count + 1;
+    return produce(state, draft => {
+
+        if (draft.iterationDisplayOptions) {
+            const iterationCount = draft.teamSettingsIterations[draft.iterationDisplayOptions.projectId][draft.iterationDisplayOptions.teamId].length;
+            const displayOptions = draft.iterationDisplayOptions;
+            if ((displayOptions.endIndex + action.payload.count) < iterationCount) {
+                displayOptions.endIndex += action.payload.count;
+                displayOptions.startIndex = displayOptions.endIndex - draft.iterationDisplayOptions.count + 1;
+            }
+            draft.iterationDisplayOptions = displayOptions;
         }
-        newState.iterationDisplayOptions = displayOptions;
-        return newState;
-    }
-    return state;
+    });
 }
 
 function handleDisplayAllIterations(state: ITeamSettingsIterationState) {
-    const newState = { ...state };
-    newState.iterationDisplayOptions = null;
-    return newState;
+    return produce(state, draft => {
+        draft.iterationDisplayOptions = null;
+    });
 }
 
 function handleTeamSettingsIterationReceived(state: ITeamSettingsIterationState, action: TeamSettingsIterationReceivedAction): ITeamSettingsIterationState {
-    let newState = { ...state };
-    const {
-        projectId,
-        teamId,
-        TeamSettingsIterations
-    } = action.payload;
+    return produce(state, draft => {
+        const {
+            projectId,
+            teamId,
+            TeamSettingsIterations
+        } = action.payload;
 
-    const projectData = newState.teamSettingsIterations[projectId] ? { ...newState.teamSettingsIterations[projectId] } : {};
-    projectData[teamId] = TeamSettingsIterations;
-    newState.teamSettingsIterations[projectId] = projectData;
+        const projectData = draft.teamSettingsIterations[projectId] || {};
+        projectData[teamId] = TeamSettingsIterations;
+        draft.teamSettingsIterations[projectId] = projectData;
 
-    return newState;
+    });
 }
 
 export default reducer;

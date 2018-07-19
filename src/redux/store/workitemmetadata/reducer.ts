@@ -35,16 +35,16 @@ function handleWorkItemTypesReceived(state: IWorkItemMetadataState, action: Work
 }
 
 function handleWorkItemStateColorsReceived(state: IWorkItemMetadataState, action: WorkItemStateColorsReceivedAction): IWorkItemMetadataState {
-    let newState = { ...state };
-    const {
-        projectId,
-        workItemTypeStateColors
-    } = action.payload;
+    return produce(state, draft => {
+        const {
+            projectId,
+            workItemTypeStateColors
+        } = action.payload;
 
-    const projectData: IWorkItemMetadata = newState.metadata[projectId] ? { ...newState.metadata[projectId] } : {} as IWorkItemMetadata;
-    projectData.workItemStateColors = workItemTypeStateColors;
-    newState.metadata[projectId] = projectData;
-    return newState;
+        const projectData: IWorkItemMetadata = draft.metadata[projectId] || {} as IWorkItemMetadata;
+        projectData.workItemStateColors = workItemTypeStateColors;
+        draft.metadata[projectId] = projectData;
+    });
 }
 
 export default reducer;
