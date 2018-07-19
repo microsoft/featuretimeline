@@ -55,14 +55,7 @@ const plugins = [
 ];
 
 if (mode !== "development") {
-	plugins.unshift(new UglifyJSPlugin({
-		compress: {
-			warnings: false
-		},
-		output: {
-			comments: false
-		}
-	}));
+	plugins.unshift(new UglifyJSPlugin());
 	plugins.unshift(new BundleAnalyzerPlugin({
 		analyzerMode: "static",
 		generateStatsFile: true

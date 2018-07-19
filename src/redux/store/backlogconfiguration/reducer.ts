@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import { IBacklogConfigurationState } from './types';
 import { BacklogConfigurationActions, BacklogConfigurationReceivedType, BacklogConfigurationReceivedAction } from './actions';
+import produce from "immer";
 
 // Type-safe initialState!
 const getInitialState = () => {
@@ -10,27 +11,27 @@ const getInitialState = () => {
 };
 
 const reducer: Reducer<IBacklogConfigurationState> = (state: IBacklogConfigurationState = getInitialState(), action: BacklogConfigurationActions) => {
-    switch (action.type) {
-        case BacklogConfigurationReceivedType:
-            return handleBacklogConfigurationReceived(state, action as BacklogConfigurationReceivedAction);
-        default:
-            return state;
-    }
+    return produce(state, draft => {
+        switch (action.type) {
+            case BacklogConfigurationReceivedType:
+                return handleBacklogConfigurationReceived(draft, action as BacklogConfigurationReceivedAction);
+        }
+    });
 };
 
 function handleBacklogConfigurationReceived(state: IBacklogConfigurationState, action: BacklogConfigurationReceivedAction): IBacklogConfigurationState {
-    let newState = { ...state };
     const {
         projectId,
         teamId,
         backlogConfiguration
     } = action.payload;
 
-    const projectData = newState.backlogConfigurations[projectId] ? { ...newState.backlogConfigurations[projectId] } : {};
+    backlogConfiguration.portfolioBacklogs.sort((b1, b2) => b1.rank - b2.rank);
+    const projectData = state.backlogConfigurations[projectId] || {};
     projectData[teamId] = backlogConfiguration;
-    newState.backlogConfigurations[projectId] = projectData;
+    state.backlogConfigurations[projectId] = projectData;
 
-    return newState;
+    return state;
 }
 
 export default reducer;

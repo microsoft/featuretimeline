@@ -79,7 +79,6 @@ export function* handleInitialize(action: InitializeAction) {
         const teamFieldValues: Contracts.TeamFieldValues = tfv;
 
         // For now show only lowest level of portfolio backlog
-        backlogConfig.portfolioBacklogs.sort((b1, b2) => b1.rank - b2.rank);
         const workItemTypeNames = [];
         backlogConfig.portfolioBacklogs.reduce((workItemTypeNames, backlog) => {
             workItemTypeNames.push(...backlog.workItemTypes.map(w => w.name));

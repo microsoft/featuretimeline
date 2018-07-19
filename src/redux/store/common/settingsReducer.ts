@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 import { ISettingsState, ProgressTrackingCriteria } from '../types';
 import { SettingsActions, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, RestoreSettingsType, ChangeShowClosedSinceDaysType } from './actions';
-
+import produce from "immer";
 
 export const getDefaultSettingsState = (): ISettingsState => {
     return {
@@ -15,22 +15,22 @@ const reducer: Reducer<ISettingsState> = (state: ISettingsState = getDefaultSett
         type,
         payload
     } = action;
-    const newState = { ...state };
-    switch (type) {
-        case ToggleShowWorkitemDetailsType:
-            newState.showWorkItemDetails = payload as boolean;
-            return newState;
-        case ChangeProgressTrackingCriteriaType:
-            newState.progressTrackingCriteria = payload as ProgressTrackingCriteria;
-            return newState;
-        case ChangeShowClosedSinceDaysType:
-            newState.showClosedSinceDays = payload as number; 
-            return newState;
-        case RestoreSettingsType:
-            return payload as ISettingsState;
-        default:
-            return state;
+    if(type === RestoreSettingsType) {
+        return payload as ISettingsState;
     }
+    return produce(state, draft => {
+        switch (type) {
+            case ToggleShowWorkitemDetailsType:
+                draft.showWorkItemDetails = payload as boolean;
+                break;
+            case ChangeProgressTrackingCriteriaType:
+                draft.progressTrackingCriteria = payload as ProgressTrackingCriteria;
+                break;
+            case ChangeShowClosedSinceDaysType:
+                draft.showClosedSinceDays = payload as number;
+                break;
+        }
+    });
 };
 
 export default reducer;

@@ -14,6 +14,7 @@ import {
 import { IWorkItemsState, WorkItemLevel, StateCategory } from './types';
 import { Reducer } from 'redux';
 import { getWorkItemStateCategory } from '../../helpers/getWorkItemStateCategory';
+import produce from "immer";
 
 // Type-safe initialState!
 const getIntialState = () => {
@@ -45,13 +46,12 @@ function handleStartUpdateWorkItemIteration(state: IWorkItemsState, action: Star
         teamIteration
     } = action.payload;
 
-    const newState = { ...state };
-    const workItemObject = newState.workItemInfos[workItem];
-    if (workItemObject) {
-        workItemObject.workItem.fields = { ...workItemObject.workItem.fields };
-        workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
-    }
-    return newState;
+    return produce(state, draft => {
+        const workItemObject = draft.workItemInfos[workItem];
+        if (workItemObject) {
+            workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
+        }
+    });
 }
 
 function handleStartMarkInProgress(workItemState: IWorkItemsState, action: StartMarkInProgressAction): IWorkItemsState {
@@ -60,16 +60,13 @@ function handleStartMarkInProgress(workItemState: IWorkItemsState, action: Start
         teamIteration
     } = action.payload;
 
-    const newState = { ...workItemState };
-    let workItemObject = newState.workItemInfos[workItem];
-    if (workItemObject) {
-        workItemObject = { ...workItemObject };
-        workItemObject.workItem.fields = { ...workItemObject.workItem.fields };
-        workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
-        workItemObject.stateCategory = StateCategory.InProgress;
-        newState.workItemInfos[workItem]= workItemObject;
-    }
-    return newState;
+    return produce(workItemState, draft => {
+        let workItemObject = draft.workItemInfos[workItem];
+        if (workItemObject) {
+            workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
+            workItemObject.stateCategory = StateCategory.InProgress;
+        }
+    });
 }
 
 
@@ -79,51 +76,42 @@ function handleChangeParent(state: IWorkItemsState, action: ChangeParentAction):
         newParentId
     } = action.payload;
 
-    const newState = { ...state };
-    for (const childId of workItems) {
-        changeParent(newState, childId, newParentId);
-    }
-    return newState;
+    return produce(state, draft => {
+        for (const childId of workItems) {
+            changeParent(draft, childId, newParentId);
+        }
+    });
 }
 
-function changeParent(newState: IWorkItemsState, childId: number, parentId: number) {
-    const info = newState.workItemInfos[childId];
+function changeParent(draft: IWorkItemsState, childId: number, parentId: number) {
+    const info = draft.workItemInfos[childId];
     const oldParentId = info.parent;
     if (parentId === oldParentId) {
         return;
     }
 
-    const newParentInfo = newState.workItemInfos[parentId];
+    const newParentInfo = draft.workItemInfos[parentId];
 
     // Remove work item from old parent
     if (oldParentId) {
-        const oldParentInfo = newState[oldParentId];
-        newState.workItemInfos[oldParentId] = {
-            ...oldParentInfo
-        };
-        newState.workItemInfos[oldParentId].children = oldParentInfo.children.filter((id) => id !== childId);
+        const oldParentInfo = draft[oldParentId];
+        draft.workItemInfos[oldParentId] = oldParentInfo;
+        draft.workItemInfos[oldParentId].children = oldParentInfo.children.filter((id) => id !== childId);
     }
 
     if (parentId) {
         //Add workItem as child of new parent
-        newState.workItemInfos[parentId] = {
-            ...newParentInfo
-        };
-
-        newState.workItemInfos[parentId].children = [...newParentInfo.children, childId];
+        draft.workItemInfos[parentId] = newParentInfo;
+        draft.workItemInfos[parentId].children.push(childId);
     };
 
 
     //Set parent id
-    newState.workItemInfos[childId] = {
-        ...newState.workItemInfos[childId],
-        parent: parentId
-    };
+    draft.workItemInfos[childId].parent = parentId;
 
 }
 
 function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceivedAction): IWorkItemsState {
-    const newState = { ...state };
     const {
         workItems,
         parentWorkItemIds,
@@ -131,49 +119,49 @@ function handleWorkItemsReceived(state: IWorkItemsState, action: WorkItemsReceiv
         workItemTypeStateInfo
     } = action.payload;
 
-    for (const workItem of workItems) {
+    return produce(state, draft => {
+        for (const workItem of workItems) {
 
-        let level = WorkItemLevel.Child;
-        if (parentWorkItemIds.some(parentId => parentId === workItem.id)) {
-            level = WorkItemLevel.Parent;
-        } else if (currentLevelWorkItemIds.some(currentId => currentId === workItem.id)) {
-            level = WorkItemLevel.Current;
+            let level = WorkItemLevel.Child;
+            if (parentWorkItemIds.some(parentId => parentId === workItem.id)) {
+                level = WorkItemLevel.Parent;
+            } else if (currentLevelWorkItemIds.some(currentId => currentId === workItem.id)) {
+                level = WorkItemLevel.Current;
+            }
+
+            const stateCategory = getWorkItemStateCategory(workItem.fields["System.WorkItemType"], workItem.fields["System.State"], workItemTypeStateInfo);
+
+            draft.workItemInfos[workItem.id] = {
+                workItem,
+                children: [],
+                parent: 0,
+                level,
+                stateCategory
+            };
         }
 
-        const stateCategory = getWorkItemStateCategory(workItem.fields["System.WorkItemType"], workItem.fields["System.State"], workItemTypeStateInfo);
-
-        newState.workItemInfos[workItem.id] = {
-            workItem,
-            children: [],
-            parent: 0,
-            level,
-            stateCategory
-        };
-    }
-
-    return newState;
+    });
 }
 
 function handleWorkItemLinksReceived(state: IWorkItemsState, action: WorkItemLinksReceivedAction): IWorkItemsState {
-    let newState = state;
-    const children = action.payload.workItemLinks.filter((link) => link.source);
-    for (const relation of children) {
-        let parentId = 0;
-        let childId = 0;
-        if (relation.rel === "System.LinkTypes.Hierarchy-Forward") {
-            parentId = relation.source.id;
-            childId = relation.target.id;
-        } else if (!relation.rel || relation.rel === "System.LinkTypes.Hierarchy-Reverse") {
-            parentId = relation.target.id;
-            childId = relation.source.id;
-        }
+    return produce(state, draft => {
+        const children = action.payload.workItemLinks.filter((link) => link.source);
+        for (const relation of children) {
+            let parentId = 0;
+            let childId = 0;
+            if (relation.rel === "System.LinkTypes.Hierarchy-Forward") {
+                parentId = relation.source.id;
+                childId = relation.target.id;
+            } else if (!relation.rel || relation.rel === "System.LinkTypes.Hierarchy-Reverse") {
+                parentId = relation.target.id;
+                childId = relation.source.id;
+            }
 
-        if (childId > 0) {
-            newState = { ...state };
-            changeParent(newState, childId, parentId);
+            if (childId > 0) {
+                changeParent(draft, childId, parentId);
+            }
         }
-    }
-    return newState;
+    });
 }
 
 export default reducer;

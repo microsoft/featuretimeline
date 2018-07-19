@@ -5,6 +5,7 @@
         "noUnusedLocals": true,
         "jsx": "react",
         "experimentalDecorators": true,
+        "noFallthroughCasesInSwitch": true,
         "lib": [
             "es2015",
             "es2015.promise",
