@@ -1,5 +1,6 @@
 import { call, select } from 'redux-saga/effects';
-import { iterationDisplayOptionsSelector, getTeamId } from '../selectors';
+import { iterationDisplayOptionsSelector } from '../selectors';
+import { getTeamId } from '../../../Common/CommonSelectors';
 
 export function* saveDisplayOptions() {
     const displayOptions = yield select(iterationDisplayOptionsSelector());

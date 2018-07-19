@@ -1,9 +1,10 @@
 import { call, select, put } from 'redux-saga/effects';
-import { getTeamId, settingsStateSelector } from '../selectors';
+import { settingsStateSelector } from '../selectors';
 import { ISettingsState } from '../store/types';
 import { restoreSettingsState } from '../store/common/actioncreators';
 import { SettingsActions, ChangeShowClosedSinceDaysType } from '../store/common/actions';
 import { launchInitialize } from './initializeFeatureTimeline';
+import { getTeamId } from '../../../Common/CommonSelectors';
 
 export function* saveSettings(action: SettingsActions) {
     let teamId = yield select(getTeamId);

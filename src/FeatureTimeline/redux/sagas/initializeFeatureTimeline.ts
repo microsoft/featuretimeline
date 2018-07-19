@@ -18,7 +18,8 @@ import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
 import { restoreSettings } from './saveSettings';
 import { createInitialize } from '../store/common/actioncreators';
-import { getBacklogLevel, getTeamId, getProjectId } from '../selectors';
+import { getBacklogLevel } from '../selectors';
+import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html

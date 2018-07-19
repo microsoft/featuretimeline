@@ -1,7 +1,8 @@
 import { call, select, put } from 'redux-saga/effects';
-import { getTeamId, planFeatureStateSelector } from '../selectors';
+import { planFeatureStateSelector } from '../selectors';
 import { IPlanFeaturesState } from '../store/types';
 import { changePlanFeaturesFilter, changePlanFeaturesWidth, togglePlanFeaturesPane } from '../store/common/actioncreators';
+import { getTeamId } from '../../../Common/CommonSelectors';
 
 export function* savePlanFeaturesDisplayOptions() {
     let teamId = yield select(getTeamId);

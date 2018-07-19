@@ -11,7 +11,7 @@ import { connect, Provider } from 'react-redux';
 import SplitterLayout from 'react-splitter-layout';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import configureStore from '../../redux/configureStore';
-import { getBacklogLevel, getProjectId, getRawState, getTeamId, planFeatureStateSelector, primaryGridViewSelector, settingsStateSelector, uiStatusSelector } from '../../redux/selectors';
+import { getBacklogLevel, getRawState, planFeatureStateSelector, primaryGridViewSelector, settingsStateSelector, uiStatusSelector } from '../../redux/selectors';
 import { IGridView } from '../../redux/selectors/gridViewSelector';
 import { changePlanFeaturesWidth, changeProgressTrackingCriteria, changeShowClosedSinceDays, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane, toggleShowWorkItemDetails } from '../../redux/store/common/actioncreators';
 import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../redux/store/overrideIterationProgress/actionCreators';
@@ -29,6 +29,7 @@ import { WorkitemGap } from './WorkItem/WorkItemGap';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
 import { ConnectedWorkItemsList } from './WorkItemList';
 import InputNum from "rc-input-number";
+import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
 
 
 initializeIcons(/* optional base url */);

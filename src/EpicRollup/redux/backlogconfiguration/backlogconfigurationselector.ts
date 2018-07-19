@@ -1,4 +1,4 @@
-import { IProjectBacklogConfigurationAwareState, BacklogConfigurationMap } from "./backlogconfigurationcontracts";
+import { IProjectBacklogConfigurationAwareState } from "./backlogconfigurationcontracts";
 import { createSelector } from "reselect";
 import { getProjectId } from "../../../Common/CommonSelectors";
 
