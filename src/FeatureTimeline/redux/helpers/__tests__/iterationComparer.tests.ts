@@ -1,4 +1,4 @@
-import { getCurrentIterationIndex } from "../../../../Common/iterationComparer";
+import { getCurrentIterationIndex } from "../../../../Common/Helpers/iterationComparer";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 declare var it, expect;
 

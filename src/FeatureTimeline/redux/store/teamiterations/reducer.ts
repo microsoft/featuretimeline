@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 import { ITeamSettingsIterationState } from './types';
 import { TeamSettingsIterationActions, TeamSettingsIterationReceivedType, TeamSettingsIterationReceivedAction, DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType, ShiftDisplayIterationLeftAction, ShiftDisplayIterationRightAction, ChangeDisplayIterationCountAction, RestoreDisplayIterationCountActionType, RestoreDisplayIterationCountAction } from './actions';
-import { getCurrentIterationIndex } from '../../../../Common/iterationComparer';
+import { getCurrentIterationIndex } from '../../../../Common/Helpers/iterationComparer';
 import produce from "immer";
 
 // Type-safe initialState!

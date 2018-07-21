@@ -3,14 +3,14 @@ import { BacklogConfiguration, TeamSettingsIteration } from 'TFS/Work/Contracts'
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { getProjectId } from '../../../Common/CommonSelectors';
-import { PageWorkItemHelper } from '../../../Common/PageWorkItemHelper';
-import { backlogConfigurationForProjectSelector } from "../backlogconfiguration/backlogconfigurationselector";
-import { teamIterationsSelector } from '../teamIterations/teamIterationSelector';
+import { PageWorkItemHelper } from '../../../Common/Helpers/PageWorkItemHelper';
 import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
 import { fetchTeamIterations } from './fetchTeamSettingsSaga';
-import { WorkItemsActionCreator } from '../workItems/workItemActions';
-import { restoreOverriddenIterations } from '../../../Common/OverrideIterations/overriddenIterationsSaga';
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
+import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
+import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
+import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
+import { restoreOverriddenIterations } from '../../../Common/modules/OverrideIterations/overriddenIterationsSaga';
 
 export function* fetchEpicRollup(epicId: number) {
     const projectId = getProjectId();
@@ -26,6 +26,7 @@ export function* fetchEpicRollup(epicId: number) {
     // const storyTypes = requiermentBacklog.workItemTypes;
     const stackRankFieldRefName = backlogConfiguration.backlogFields.typeFields["Order"];
     const effortsFieldRefName = backlogConfiguration.backlogFields.typeFields["Effort"];
+    const teamFieldRefName = backlogConfiguration.backlogFields.typeFields["Team"];
 
     // get all children including grand children
     // Target is child and source is parent
@@ -59,12 +60,14 @@ export function* fetchEpicRollup(epicId: number) {
     const fields = ["System.Id",
         "System.Title",
         "System.AssignedTo",
-        stackRankFieldRefName,
-        effortsFieldRefName,
         "System.State",
         "System.IterationId",
         "System.IterationPath",
-        "System.WorkItemType"];
+        "System.WorkItemType",
+        stackRankFieldRefName,
+        effortsFieldRefName,
+        teamFieldRefName];
+
     const pagedWorkItems: WitContracts.WorkItem[] = yield call(PageWorkItemHelper.pageWorkItems, workItemIds.concat(predecessorWorkItemIds), projectId, fields);
     yield put(WorkItemsActionCreator.pagedWorkItemsReceived(pagedWorkItems));
 

@@ -1,7 +1,7 @@
 import { TeamIterationsMap } from './teamIterationsContracts';
 import produce from "immer";
 import { TeamIterationsActions, TeamIterationsReceivedType } from './teamIterationsActions';
-import { compareIteration } from '../../../Common/iterationComparer';
+import { compareIteration } from '../../../../Common/Helpers/iterationComparer';
 
 export function teamIterationsReducer(state: TeamIterationsMap, action: TeamIterationsActions): TeamIterationsMap {
     return produce(state, draft => {

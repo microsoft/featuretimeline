@@ -1,7 +1,7 @@
-import { IOverriddenIterationDuration, IOverriddenIterationsAwareState } from '../../../Common/OverrideIterations/overriddenIterationContracts';
-
+import { Action, combineReducers, Reducer } from 'redux';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { Action, Reducer, combineReducers } from 'redux';
+import { IOverriddenIterationDuration, IOverriddenIterationsAwareState } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import savedOverrideIterationsReducer from '../../../Common/modules/OverrideIterations/overrideWorkItemIterationReducer';
 import backlogConfigurationReducer from './backlogconfiguration/reducer';
 import { IBacklogConfigurationState } from './backlogconfiguration/types';
 import { ResetType } from './common/actions';
@@ -12,16 +12,14 @@ import togglePaneReducer from './common/togglePaneReducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
 import overrideIterationReducer from "./overrideIterationProgress/reducer";
-import teamSettingReducer from './teamSettings/reducer';
-import { ITeamSettingState } from './teamSettings/types';
 import teamIterationsReducer from './teamiterations/reducer';
 import { ITeamSettingsIterationState } from './teamiterations/types';
+import teamSettingReducer from './teamSettings/reducer';
+import { ITeamSettingState } from './teamSettings/types';
 import metadataReducer from './workitemmetadata/reducer';
 import { IWorkItemMetadataState } from './workitemmetadata/types';
 import workItemReducer from './workitems/reducer';
 import { IWorkItemsState } from './workitems/types';
-import savedOverrideIterationsReducer from '../../../Common/OverrideIterations/overrideWorkItemIterationReducer';
-
 
 export interface IIterationDuration {
     startIteration: TeamSettingsIteration;
@@ -61,7 +59,8 @@ export interface IPlanFeaturesState {
     filter: string;
 }
 
-export interface IFeatureTimelineRawState extends IOverriddenIterationsAwareState {
+export interface IFeatureTimelineRawState extends
+    IOverriddenIterationsAwareState {
     workItemsState: IWorkItemsState;
     workItemMetadata: IWorkItemMetadataState;
     iterationState: ITeamSettingsIterationState;
