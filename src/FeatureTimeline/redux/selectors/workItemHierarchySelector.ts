@@ -170,11 +170,11 @@ function getWorkItemIterationDuration(
     const teamSettings = input.teamSetting.teamSetting[projectId][teamId];
 
     // if the start/end iteration is overridden use that value
-    if (input.savedOverriddenWorkItemIterations &&
-        input.savedOverriddenWorkItemIterations[id]) {
-        const si = input.savedOverriddenWorkItemIterations[id].startIterationId;
-        const ei = input.savedOverriddenWorkItemIterations[id].endIterationId;
-        const overridedBy = input.savedOverriddenWorkItemIterations[id].user;
+    if (input.savedOverriddenIterations &&
+        input.savedOverriddenIterations[id]) {
+        const si = input.savedOverriddenIterations[id].startIterationId;
+        const ei = input.savedOverriddenIterations[id].endIterationId;
+        const overridedBy = input.savedOverriddenIterations[id].user;
         const startIteration = allIterations.find(i => i.id === si);
         const endIteration = allIterations.find(i => i.id === ei);
 
@@ -254,9 +254,9 @@ function getChildrenIds(
 }
 
 function areChildrenOutOfBounds(
-    start: TeamSettingsIteration, 
-    end: TeamSettingsIteration, 
-    iterationDuration: IIterationDuration, 
+    start: TeamSettingsIteration,
+    end: TeamSettingsIteration,
+    iterationDuration: IIterationDuration,
     allIterations: TeamSettingsIteration[]): boolean {
     if (iterationDuration.kind === IterationDurationKind.BacklogIteration || !start || !end) {
         return false;

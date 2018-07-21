@@ -1,25 +1,26 @@
+import { all, call, put, select } from 'redux-saga/effects';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
-import Contracts = require('TFS/Work/Contracts');
-import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import * as VSS_Service from 'VSS/Service';
-import { all, call, put, select } from 'redux-saga/effects';
-import { WorkItemMetadataService } from '../../../Services/WorkItemMetadataService';
+import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
+import { restoreOverriddenIterations } from '../../../Common/OverrideIterations/overriddenIterationsSaga';
 import { PageWorkItemHelper } from '../../../Common/PageWorkItemHelper';
-import { IOverriddenIterationDuration, ISettingsState } from '../store/types';
+import { WorkItemMetadataService } from '../../../Services/WorkItemMetadataService';
+import { getBacklogLevel } from '../selectors';
 import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';
+import { createInitialize } from '../store/common/actioncreators';
 import { InitializeAction } from '../store/common/actions';
 import { genericError } from '../store/error/actionCreators';
 import { loading } from '../store/loading/actionCreators';
 import { restoreDisplayIterationCount, teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
-import { workItemTypesReceived, workItemStateColorsReceived } from '../store/workitemmetadata/actionCreators';
-import { setOverrideIteration, workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
-import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
+import { ISettingsState } from '../store/types';
+import { workItemStateColorsReceived, workItemTypesReceived } from '../store/workitemmetadata/actionCreators';
+import { workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
 import { restoreSettings } from './saveSettings';
-import { createInitialize } from '../store/common/actioncreators';
-import { getBacklogLevel } from '../selectors';
-import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
+import Contracts = require('TFS/Work/Contracts');
+import WitContracts = require('TFS/WorkItemTracking/Contracts');
+import TFS_Core_Contracts = require('TFS/Core/Contracts');
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
@@ -50,7 +51,7 @@ export function* handleInitialize(action: InitializeAction) {
     } as TFS_Core_Contracts.TeamContext;
 
     const workHttpClient = VSS_Service.getClient(WorkHttpClient);
-    const metadatService = WorkItemMetadataService.getInstance();
+    const metadataService = WorkItemMetadataService.getInstance();
     const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
     const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
     if (!workHttpClient.getBacklogConfigurations) {
@@ -60,16 +61,16 @@ export function* handleInitialize(action: InitializeAction) {
 
     try {
         // Fetch backlog config, team iterations, workItem types and state metadata in parallel
-        const [bc, tis, wits, overriddenWorkItemIterations, iterationDisplayOptions, ts, tfv] = yield all([
+        const [bc, tis, wits, iterationDisplayOptions, ts, tfv] = yield all([
             call(workHttpClient.getBacklogConfigurations.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamIterations.bind(workHttpClient), teamContext),
-            call(metadatService.getWorkItemTypes.bind(metadatService), projectId),
-            call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations"),
+            call(metadataService.getWorkItemTypes.bind(metadataService), projectId),
             call(dataService.getValue.bind(dataService), `${teamId}_iterationDisplayOptions`, { scopeType: 'User' }),
             call(workHttpClient.getTeamSettings.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext)
         ]);
 
+        yield call(restoreOverriddenIterations);
         yield put(backlogConfigurationReceived(projectId, teamId, bc));
         yield put(teamSettingsReceived(projectId, teamId, ts));
         yield put(teamSettingsIterationReceived(projectId, teamId, tis));
@@ -88,12 +89,12 @@ export function* handleInitialize(action: InitializeAction) {
 
         workItemTypeNames.push(...backlogConfig.requirementBacklog.workItemTypes.map(w => w.name));
 
-        const stateColors = yield call([metadatService, metadatService.getStates], projectId, workItemTypeNames);
+        const stateColors = yield call([metadataService, metadataService.getStates], projectId, workItemTypeNames);
         yield put(workItemStateColorsReceived(projectId, stateColors));
 
         const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "InProgress");
         const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
-       
+
         const queryResultWits = [];
         if (queryResults && queryResults.workItems) {
             queryResultWits.push(...queryResults.workItems);
@@ -102,7 +103,7 @@ export function* handleInitialize(action: InitializeAction) {
         // query closed work items
         let settings: ISettingsState = yield call(restoreSettings);
         if (settings && settings.showClosedSinceDays && settings.showClosedSinceDays > 0) {
-            const extraCondition =  ` AND [Microsoft.VSTS.Common.ClosedDate] >= @Today -${settings.showClosedSinceDays}`
+            const extraCondition = ` AND [Microsoft.VSTS.Common.ClosedDate] >= @Today -${settings.showClosedSinceDays}`
 
             const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Completed", extraCondition);
 
@@ -177,20 +178,7 @@ export function* handleInitialize(action: InitializeAction) {
             linksReceived.push(...parentLinks);
             yield put(workItemLinksReceived(linksReceived));
 
-            if (overriddenWorkItemIterations) {
-                const currentValueTypes: IDictionaryNumberTo<IOverriddenIterationDuration> = JSON.parse(overriddenWorkItemIterations);
 
-                for (const key in currentValueTypes) {
-                    if (currentValueTypes.hasOwnProperty(key)) {
-                        const workItemId = Number(key);
-                        yield put(setOverrideIteration(
-                            workItemId,
-                            currentValueTypes[workItemId].startIterationId,
-                            currentValueTypes[workItemId].endIterationId,
-                            currentValueTypes[workItemId].user));
-                    }
-                }
-            }
         }
 
         if (iterationDisplayOptions && iterationDisplayOptions !== "null") {

@@ -1,3 +1,5 @@
+import { IOverriddenIterationDuration, IOverriddenIterationsAwareState } from '../../../Common/OverrideIterations/overriddenIterationContracts';
+
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { Action, Reducer, combineReducers } from 'redux';
 import backlogConfigurationReducer from './backlogconfiguration/reducer';
@@ -16,9 +18,9 @@ import teamIterationsReducer from './teamiterations/reducer';
 import { ITeamSettingsIterationState } from './teamiterations/types';
 import metadataReducer from './workitemmetadata/reducer';
 import { IWorkItemMetadataState } from './workitemmetadata/types';
-import savedOverriddenWorkItemIterationsReducer from "./workitems/overrideWorkItemIterationReducer";
 import workItemReducer from './workitems/reducer';
 import { IWorkItemsState } from './workitems/types';
+import savedOverrideIterationsReducer from '../../../Common/OverrideIterations/overrideWorkItemIterationReducer';
 
 
 export interface IIterationDuration {
@@ -47,13 +49,6 @@ export interface ISettingsState {
     showClosedSinceDays: number;
 }
 
-export interface IOverriddenIterationDuration {
-    startIterationId: string;
-    endIterationId: string;
-    user: string;
-}
-
-
 export interface IWorkItemOverrideIteration {
     workItemId: number;
     iterationDuration: IOverriddenIterationDuration;
@@ -66,7 +61,7 @@ export interface IPlanFeaturesState {
     filter: string;
 }
 
-export interface IFeatureTimelineRawState {
+export interface IFeatureTimelineRawState extends IOverriddenIterationsAwareState {
     workItemsState: IWorkItemsState;
     workItemMetadata: IWorkItemMetadataState;
     iterationState: ITeamSettingsIterationState;
@@ -74,8 +69,6 @@ export interface IFeatureTimelineRawState {
     backlogConfiguration: IBacklogConfigurationState;
     teamSetting: ITeamSettingState;
     loading: boolean;
-    // This will contain any overridden iterations by the UI in extension storage
-    savedOverriddenWorkItemIterations: IDictionaryNumberTo<IOverriddenIterationDuration>;
 
     // list of work item ids for which the details window is shown 
     workItemDetails: number[];
@@ -97,7 +90,7 @@ const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFe
                 loading: false,
                 backlogConfiguration: undefined,
                 teamSetting: undefined,
-                savedOverriddenWorkItemIterations: undefined,
+                savedOverriddenIterations: undefined,
                 workItemDetails: undefined,
                 workItemOverrideIteration: undefined
             } as IFeatureTimelineRawState;
@@ -117,7 +110,7 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     loading: loadingReducer,
     workItemDetails: showHideDetailsReducer,
     workItemOverrideIteration: overrideIterationReducer,
-    savedOverriddenWorkItemIterations: savedOverriddenWorkItemIterationsReducer,
+    savedOverriddenIterations: savedOverrideIterationsReducer,
     planFeaturesState: togglePaneReducer,
     featureState: featureStateReducer,
     settingsState: settingsReducer

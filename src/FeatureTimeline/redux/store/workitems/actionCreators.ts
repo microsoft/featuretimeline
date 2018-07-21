@@ -1,15 +1,8 @@
 import { ActionCreator } from 'redux';
-import {
-    StartUpdateWorkitemIterationAction, WorkItemLinksReceivedActionType,
-    StartUpdateWorkitemIterationActionType, ChangeParentAction,
-    ChangeParentActionType, WorkItemsReceivedAction,
-    WorkItemsReceivedActionType, WorkItemLinksReceivedAction,
-    LaunchWorkItemFormAction,
-    LaunchWorkItemFormActionType, SetOverrideIterationAction, SetOverrideIterationType, ClearOverrideIterationAction, ClearOverrideIterationType, WorkItemSavedAction, WorkItemSavedActionType, WorkItemSaveFailedActionType, WorkItemSaveFailedAction, StartMarkInProgressActionType, StartMarkInProgressAction
-} from './actions';
-
-import { WorkItem, WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
 import { TeamSettingsIteration, WorkItemTypeStateInfo } from 'TFS/Work/Contracts';
+import { WorkItem, WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
+import { ChangeParentAction, ChangeParentActionType, LaunchWorkItemFormAction, LaunchWorkItemFormActionType, StartMarkInProgressAction, StartMarkInProgressActionType, StartUpdateWorkitemIterationAction, StartUpdateWorkitemIterationActionType, WorkItemLinksReceivedAction, WorkItemLinksReceivedActionType, WorkItemSavedAction, WorkItemSavedActionType, WorkItemSaveFailedAction, WorkItemSaveFailedActionType, WorkItemsReceivedAction, WorkItemsReceivedActionType } from './actions';
+
 
 export const startUpdateWorkItemIteration: ActionCreator<StartUpdateWorkitemIterationAction> =
     (workItem: number, teamIteration: TeamSettingsIteration, override: boolean) => ({
@@ -92,21 +85,4 @@ export const launchWorkItemForm: ActionCreator<LaunchWorkItemFormAction> =
         payload: {
             workItemId
         }
-    });
-
-export const setOverrideIteration: ActionCreator<SetOverrideIterationAction> =
-    (workItemId: number, startIterationId: string, endIterationId: string, user: string) => ({
-        type: SetOverrideIterationType,
-        track: true,
-        payload: {
-            workItemId,
-            startIterationId,
-            endIterationId,
-            user
-        }
-    });
-export const clearOverrideIteration: ActionCreator<ClearOverrideIterationAction> =
-    (id: number) => ({
-        type: ClearOverrideIterationType,
-        payload: id
     });

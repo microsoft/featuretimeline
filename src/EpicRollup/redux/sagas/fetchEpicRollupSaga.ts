@@ -9,6 +9,7 @@ import { teamIterationsSelector } from '../teamIterations/teamIterationSelector'
 import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
 import { fetchTeamIterations } from './fetchTeamSettingsSaga';
 import { WorkItemsActionCreator } from '../workItems/workItemActions';
+import { restoreOverriddenIterations } from '../../../Common/OverrideIterations/overriddenIterationsSaga';
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 
 export function* fetchEpicRollup(epicId: number) {
@@ -73,7 +74,7 @@ export function* fetchEpicRollup(epicId: number) {
     // build dependency tree
 
     // Fetch overridden iteration start/end dates
-
+    yield call(restoreOverriddenIterations);
     // find the earliest iteration as per the work items above
     // find the latest iteration as per the work items above
     // filter out all iterations expect -1 and +1 of above range

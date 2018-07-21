@@ -10,8 +10,6 @@ export const ChangeParentActionType = "@@workitems/ChangeParentAction";
 export const WorkItemsReceivedActionType = "@@workitems/WorkItemsReceived";
 export const WorkItemLinksReceivedActionType = "@@workitems/WorkItemLinksReceived"
 export const LaunchWorkItemFormActionType = "@@workitems/LaunchWorkItemForm";
-export const SetOverrideIterationType = "@@workitems/setoverrideiteration";
-export const ClearOverrideIterationType = "@@overrideIteration/cleareoverrideiteration";
 
 export interface StartUpdateWorkitemIterationAction extends Action {
     type: "@@workitems/StartUpdateWorkitemIterationAction";
@@ -79,22 +77,4 @@ export interface LaunchWorkItemFormAction extends TrackableAction {
     }
 }
 
-
-export interface SetOverrideIterationAction extends TrackableAction {
-    type: "@@workitems/setoverrideiteration";
-    payload: {
-        workItemId: number;
-        startIterationId: string;
-        endIterationId: string;
-        user: string;
-    }
-}
-
-export interface ClearOverrideIterationAction extends Action {
-    type: "@@overrideIteration/cleareoverrideiteration",
-    payload: number
-}
-
-
 export type WorkItemActions = StartMarkInProgressAction | StartUpdateWorkitemIterationAction | ChangeParentAction | WorkItemsReceivedAction | WorkItemLinksReceivedAction | LaunchWorkItemFormAction;
-export type OverrideIterationActions = SetOverrideIterationAction | ClearOverrideIterationAction;
