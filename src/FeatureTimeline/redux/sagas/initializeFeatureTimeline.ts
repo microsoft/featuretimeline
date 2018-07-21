@@ -1,9 +1,11 @@
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
+import Contracts = require('TFS/Work/Contracts');
+import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import * as VSS_Service from 'VSS/Service';
 import { all, call, put, select } from 'redux-saga/effects';
 import { WorkItemMetadataService } from '../../../Services/WorkItemMetadataService';
-import { PageWorkItemHelper } from '../helpers/PageWorkItemHelper';
+import { PageWorkItemHelper } from '../../../Common/PageWorkItemHelper';
 import { IOverriddenIterationDuration, ISettingsState } from '../store/types';
 import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';
 import { InitializeAction } from '../store/common/actions';
@@ -13,8 +15,6 @@ import { restoreDisplayIterationCount, teamSettingsIterationReceived } from '../
 import { workItemTypesReceived, workItemStateColorsReceived } from '../store/workitemmetadata/actionCreators';
 import { setOverrideIteration, workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
-import Contracts = require('TFS/Work/Contracts');
-import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
 import { restoreSettings } from './saveSettings';
 import { createInitialize } from '../store/common/actioncreators';
