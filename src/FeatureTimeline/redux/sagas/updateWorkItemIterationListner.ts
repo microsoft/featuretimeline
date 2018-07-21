@@ -3,9 +3,10 @@ import { StartUpdateWorkitemIterationAction } from "../store/workitems/actions";
 import { put, call } from "redux-saga/effects";
 import { WorkItemTrackingHttpClient3_2 } from 'TFS/WorkItemTracking/RestClient';
 import { JsonPatchDocument } from 'VSS/WebApi/Contracts';
-import { workItemSaved, workItemSaveFailed, clearOverrideIteration } from '../store/workitems/actionCreators';
+import { workItemSaved, workItemSaveFailed } from '../store/workitems/actionCreators';
 import { saveOverrideIteration } from '../store/overrideIterationProgress/actionCreators';
 import { IWorkItemOverrideIteration } from '../store/types';
+import { OverriddenIterationsActionCreator } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
 
 
 export function* updateWorkItemIteration(action: StartUpdateWorkitemIterationAction) {
@@ -33,7 +34,7 @@ export function* updateWorkItemIteration(action: StartUpdateWorkitemIterationAct
             yield put(saveOverrideIteration(overridePayload));
         } else {
             // Clear override iteration if any
-            yield put(clearOverrideIteration(payload.workItem));
+            yield put(OverriddenIterationsActionCreator.clear(payload.workItem));
         }
 
         // Update work item Iteration path        

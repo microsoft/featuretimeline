@@ -1,10 +1,10 @@
-import { ClearOverrideIterationAction } from "../store/workitems/actions";
 import { put, call, select } from "redux-saga/effects";
 import { workItemOverrideIterationSelector } from "../selectors";
 import { IWorkItemOverrideIteration } from "../store/types";
-import { setOverrideIteration } from "../store/workitems/actionCreators";
 import { cleanupOverrideIteration, saveOverrideIteration } from "../store/overrideIterationProgress/actionCreators";
 import { OverrideIterationEndAction, SaveOverrideIterationAction } from "../store/overrideIterationProgress/actions";
+import { OverriddenIterationsActionCreator } from "../../../Common/modules/OverrideIterations/overrideIterationsActions";
+import { AnyAction } from 'redux';
 
 
 export function* launchOverrideWorkItemIteration(action: OverrideIterationEndAction) {
@@ -22,7 +22,7 @@ export function* launchSaveOverrideIteration(action: SaveOverrideIterationAction
 
     const overrideIterationState = action.payload;
 
-    yield put(setOverrideIteration(overrideIterationState.workItemId, overrideIterationState.iterationDuration.startIterationId, overrideIterationState.iterationDuration.endIterationId, overrideIterationState.iterationDuration.user));
+    yield put(OverriddenIterationsActionCreator.set(overrideIterationState.workItemId, overrideIterationState.iterationDuration));
     const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
     let currentValues = yield call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations");
     if (currentValues) {
@@ -39,7 +39,7 @@ export function* launchSaveOverrideIteration(action: SaveOverrideIterationAction
     yield call(dataService.setValue.bind(dataService), "overriddenWorkItemIterations", JSON.stringify(currentValues));
 }
 
-export function* launchClearOverrideIteration(action: ClearOverrideIterationAction) {
+export function* launchClearOverrideIteration(action: AnyAction) {
     const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
     let currentValues = yield call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations");
     if (currentValues) {

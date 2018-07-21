@@ -1,5 +1,5 @@
 import { IOverriddenIterationDuration } from "./overriddenIterationContracts";
-import { createAction, ActionsUnion } from "../ActionHelper";
+import { createAction, ActionsUnion } from "../../Helpers/ActionHelper";
 
 export const SetOverrideIterationType = "@@workitems/setoverrideiteration";
 export const ClearOverrideIterationType = "@@overrideIteration/cleareoverrideiteration";

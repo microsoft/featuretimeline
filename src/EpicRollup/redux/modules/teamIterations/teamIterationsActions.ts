@@ -1,4 +1,4 @@
-import { ActionsUnion, createAction } from "../../../Common/ActionHelper";
+import { ActionsUnion, createAction } from "../../../../Common/Helpers/ActionHelper";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 
 export const TeamIterationsReceivedType = "@@teamiterations/TeamIterationsReceived";

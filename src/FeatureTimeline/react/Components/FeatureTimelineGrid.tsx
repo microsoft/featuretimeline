@@ -17,7 +17,7 @@ import { changePlanFeaturesWidth, changeProgressTrackingCriteria, changeShowClos
 import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../redux/store/overrideIterationProgress/actionCreators';
 import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../redux/store/teamiterations/actionCreators';
 import { IFeatureTimelineRawState, IPlanFeaturesState, ISettingsState, IWorkItemOverrideIteration, ProgressTrackingCriteria } from '../../redux/store/types';
-import { clearOverrideIteration, launchWorkItemForm, startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
+import { launchWorkItemForm, startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
 import { UIStatus } from '../../redux/types';
 import { IterationDropTarget } from './DroppableIterationShadow';
 import './FeatureTimelineGrid.scss';
@@ -30,6 +30,7 @@ import { WorkItemShadow } from './WorkItem/WorkItemShadow';
 import { ConnectedWorkItemsList } from './WorkItemList';
 import InputNum from "rc-input-number";
 import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
+import { OverriddenIterationsActionCreator } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
 
 
 initializeIcons(/* optional base url */);
@@ -101,7 +102,7 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(endOverrideIteration());
         },
         clearOverrideIteration: (id: number) => {
-            dispatch(clearOverrideIteration(id));
+            dispatch(OverriddenIterationsActionCreator.clear(id));
         },
         changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => {
             dispatch(startUpdateWorkItemIteration([id], teamIteration, override));

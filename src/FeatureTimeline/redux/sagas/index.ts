@@ -1,5 +1,5 @@
 import { takeEvery, takeLatest } from "redux-saga/effects";
-import { ClearOverrideIterationType, LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType, StartMarkInProgressActionType } from "../store/workitems/actions";
+import { LaunchWorkItemFormActionType, StartUpdateWorkitemIterationActionType, StartMarkInProgressActionType } from "../store/workitems/actions";
 import { launchWorkItemFormSaga } from "./launchWorkItemFormSaga";
 import { InitializeType, TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType } from "../store/common/actions";
 import { callInitialize } from "./initializeFeatureTimeline";
@@ -12,6 +12,7 @@ import { markWorkItemInProgressListner } from "./markWorkItemInProgressListner";
 import { savePlanFeaturesDisplayOptions, restorePlanFeaturesDisplayOptions } from "./planFeaturesDisplayOptions";
 import { initializeFeatureState } from "./featureStateReader";
 import { saveSettings } from "./saveSettings";
+import { ClearOverrideIterationType } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
 
 export function* watchSagaActions() {
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
@@ -36,5 +37,5 @@ export function* watchSagaActions() {
     yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings);
     yield takeLatest(ChangeShowClosedSinceDaysType, saveSettings);
 
-    yield takeLatest(InitializeType, restorePlanFeaturesDisplayOptions);    
+    yield takeLatest(InitializeType, restorePlanFeaturesDisplayOptions);
 }
