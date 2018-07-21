@@ -22,6 +22,13 @@
 			"**/*code-workspace*": true,
 			"**/package-lock*": true,
 			"**/LICENSE": true,
+			"**/docs": true,
+			"**/images": true,
+			"**/configs": true,
+			"**/scripts": true,
+			"**/*.md": true,
+			"**/*.json": true,
+			"**/*config.js": true,
 		}
 	}
 }
