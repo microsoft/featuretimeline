@@ -1,6 +1,6 @@
-import { IEpicRollupWorkItemAwareState } from './workItemContracts';
-import { WorkItemsActions, EpicHierarchyReceivedType, DependenciesReceivedType, PagedWorkItemsReceivedType } from './workItemActions';
 import produce from 'immer';
+import { DependenciesReceivedType, EpicHierarchyReceivedType, PagedWorkItemsReceivedType, WorkItemsActions } from './workItemActions';
+import { IEpicRollupWorkItemAwareState } from './workItemContracts';
 export function workItemsReducer(state: IEpicRollupWorkItemAwareState, action: WorkItemsActions): IEpicRollupWorkItemAwareState {
     if (!state) {
         state = {
