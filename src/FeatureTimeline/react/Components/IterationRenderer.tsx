@@ -1,7 +1,7 @@
 import "./IterationRenderer.scss";
 import * as React from "react";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { isCurrentIteration } from "../../redux/helpers/iterationComparer";
+import { isCurrentIteration } from "../../../Common/iterationComparer";
 
 export interface IIterationRendererProps {
     iteration: TeamSettingsIteration;

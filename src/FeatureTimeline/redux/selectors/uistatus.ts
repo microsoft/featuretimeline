@@ -1,6 +1,6 @@
 import { IFeatureTimelineRawState } from "../store/types";
 import { UIStatus } from "../types";
-import { compareIteration } from "../helpers/iterationComparer";
+import { compareIteration } from "../../../Common/iterationComparer";
 
 export function getUIStatus(
     projectId: string,

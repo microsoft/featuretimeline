@@ -3,7 +3,7 @@ import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } f
 import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
 import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { UIStatus } from '../types';
-import { compareIteration } from '../helpers/iterationComparer';
+import { compareIteration } from '../../../Common/iterationComparer';
 import { getTeamIterations } from './teamIterations';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 
