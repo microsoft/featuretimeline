@@ -17,7 +17,6 @@ export function* fetchEpicRollup(epicId: number) {
     // get backlog configuration for the project
     yield all([fetchBacklogConfiguration(), fetchTeamIterations()]);
     const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
-    const teamIterations: TeamSettingsIteration[] = yield select(teamIterationsSelector);
 
     // const portfolioBacklogs = backlogconfiguration.portfolioBacklogs;
     // const requiermentBacklog = backlogconfiguration.requirementBacklog;
