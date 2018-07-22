@@ -120,8 +120,8 @@ export function createNormalizedEpicTree(
     return result;
 }
 
-const rawDependencyTreeSelector = createSelector(getEpicDependenciesLinks, getRawDependencyTree);
-export function getRawDependencyTree(links: WorkItemLink[]) {
+const rawDependencyTreeSelector = createSelector(getEpicDependenciesLinks, createRawDependencyTree);
+export function createRawDependencyTree(links: WorkItemLink[]) {
     const result: IDependenciesTree = {
         ptos: {},
         stop: {}
