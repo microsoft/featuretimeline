@@ -1,19 +1,6 @@
-import { createRawEpicTree, createNormalizedEpicTree } from '../workItemSelector';
-import { WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
+import { createNormalizedEpicTree } from '../workItemSelector';
 import { BacklogConfiguration } from 'TFS/Work/Contracts';
-declare var test, it, expect;
-function wit(id: number) {
-    return {
-        id,
-        url: ""
-    }
-}
-
-function parentChild(source: number, target: number) {
-    return {
-        rel: "", source: wit(source), target: wit(target)
-    }
-}
+declare var test, expect;
 
 const backlogConfiguration: BacklogConfiguration = {
     portfolioBacklogs: [

@@ -16,11 +16,14 @@ function getPagedWorkItems(state: IEpicRollupState) {
     return state.pagedWorkItems;
 }
 
-const getWorkItemsMap = createSelector(getPagedWorkItems, (workItems: WorkItem[]) => {
-    const map = {};
-    workItems.forEach(wit => map[wit.id] = wit);
-    return map;
-})
+export const pagedWorkItemsMapSelector =
+    createSelector(
+        getPagedWorkItems,
+        (workItems: WorkItem[]) => {
+            const map = {};
+            workItems.forEach(wit => map[wit.id] = wit);
+            return map;
+        });
 
 export interface IEpicTree {
     parentToChildrenMap: IDictionaryNumberTo<number[]>;
@@ -53,7 +56,7 @@ export function createRawEpicTree(links: WorkItemLink[]) {
 export const normalizedEpicTreeSelector =
     createSelector(
         backlogConfigurationForProjectSelector,
-        getWorkItemsMap,
+        pagedWorkItemsMapSelector,
         rawEpicTreeSelector,
         createNormalizedEpicTree);
 
@@ -157,9 +160,7 @@ export function createNormalizedDependencyTree(
         // visit bottom up
         const children = epicTree.parentToChildrenMap[workItemId] || [];
         children.forEach(process);
-        if (workItemId === 2 || workItemId === 3) {
-            debugger;
-        }
+
         // get direct dependencies
         const predecessorsSet = new Set();
         const immediatePredecessors = dependencyTree.stop[workItemId] || [];

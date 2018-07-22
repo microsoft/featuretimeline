@@ -1,6 +1,6 @@
 import { createRawEpicTree } from '../workItemSelector';
 import { WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
-declare var test, it, expect;
+declare var test, expect;
 function wit(id: number) {
     return {
         id,

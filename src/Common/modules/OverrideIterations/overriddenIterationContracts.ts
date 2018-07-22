@@ -1,5 +1,6 @@
+export type SavedOverriddenIteration = IDictionaryNumberTo<IOverriddenIterationDuration>;
 export interface IOverriddenIterationsAwareState {
-    savedOverriddenIterations: IDictionaryNumberTo<IOverriddenIterationDuration>;
+    savedOverriddenIterations: SavedOverriddenIteration;
 }
 
 export interface IOverriddenIterationDuration {

@@ -1,5 +1,5 @@
 import { all, call, select, put } from "redux-saga/effects";
-import { BacklogConfiguration, TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { BacklogConfiguration } from 'TFS/Work/Contracts';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { getProjectId } from '../../../Common/CommonSelectors';
@@ -8,7 +8,6 @@ import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
 import { fetchTeamIterations } from './fetchTeamSettingsSaga';
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
-import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
 import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
 import { restoreOverriddenIterations } from '../../../Common/modules/OverrideIterations/overriddenIterationsSaga';
 
@@ -54,7 +53,7 @@ export function* fetchEpicRollup(epicId: number) {
     const predecessorWorkItemIds = dependenciesQueryResult.workItemRelations.map(rel => rel.target.id);
 
     // check if there are any dependencies that are cross epic, if any filter them out and show message
-    const crossEpicDependencies = predecessorWorkItemIds.filter(pwit => !workItemIds.some(w => w === pwit));
+    // const crossEpicDependencies = predecessorWorkItemIds.filter(pwit => !workItemIds.some(w => w === pwit));
 
     const fields = ["System.Id",
         "System.Title",
