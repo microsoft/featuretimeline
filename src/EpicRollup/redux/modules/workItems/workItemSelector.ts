@@ -55,7 +55,7 @@ export const normalizedEpicTreeSelector =
         backlogConfigurationForProjectSelector,
         getWorkItemsMap,
         rawEpicTreeSelector,
-        getNormalizedEpicTree);
+        createNormalizedEpicTree);
 
 /**
  * Gets a map of WorkItemTypeName to its rank in backlog configuration
@@ -76,13 +76,13 @@ export function getWorkItemTypeRankMap(backlogConfiguration: BacklogConfiguratio
  * Normalizes the epic tree where it removes Story/Story hierarchy, 
  * also removes any children not part of backlog level hierarchy
  */
-export function getNormalizedEpicTree(
+export function createNormalizedEpicTree(
     backlogConfiguration: BacklogConfiguration,
     workItemsMap: IDictionaryNumberTo<WorkItem>,
     epicTree: IEpicTree): IEpicTree {
 
     const {
-        parentToChildrenMap
+        parentToChildrenMap = {}
     } = epicTree;
 
     const result: IEpicTree = {
@@ -94,7 +94,7 @@ export function getNormalizedEpicTree(
 
     const normalizeChild = (grandParentId: number, parentId: number, parentWitRank: number) => {
         let children: number[] = parentToChildrenMap[parentId];
-        while (children && children.length > 0) {
+        if (children && children.length > 0) {
             children.forEach(childId => {
                 const childWitRank = witRankMap[workItemsMap[childId].fields["System.WorkItemType"]];
                 // exclude if child work item type is not part of backlog level hierarchy

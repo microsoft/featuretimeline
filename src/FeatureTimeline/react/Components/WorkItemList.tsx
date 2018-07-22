@@ -47,7 +47,6 @@ class WorkItemList extends React.Component<IWorkItemListProps, IWorkItemListStat
             message = <MessageBar>Only top 100 Proposed features are available.</MessageBar>;
         }
 
-        debugger;
         return (
             <div className="work-item-list-container">
                 <TextField
