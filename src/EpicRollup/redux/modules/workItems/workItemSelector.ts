@@ -97,7 +97,8 @@ function getNormalizedEpicTree(
                 // exclude if child work item type is not part of backlog level hierarchy
                 if (childWitRank) {
                     result.parentToChildrenMap[childId] = [];
-                    // if child and parent are of same type then make child the sibling of parent
+                    // if child and parent are of same rank then make child the sibling of parent
+                    // note we deliberately don't handle story => feature/epic hierarchy where feature/epic is child of story
                     if (childWitRank === parentWitRank) {
                         result.parentToChildrenMap[grandParentId].push(childId);
                         result.childToParentMap[childId] = grandParentId;
@@ -129,12 +130,64 @@ export interface IDependenciesTree {
     stop: IDictionaryNumberTo<number[]>;
 }
 
-// export const dependencyTreeSelector = createSelector(
-//     normalizedEpicTreeSelector, getEpicDependenciesLinks,
-//     (epicTree: IEpicTree, dependencyLinks: WorkItemLink[]) => {
-//         // Visit bottom up
-//         // Get direct dependencies
-//         // Get dependencies of children and then merge
+const rawDependencyTreeSelector = createSelector(
+    getEpicDependenciesLinks,
+    (links: WorkItemLink[]) => {
+        const result: IDependenciesTree = {
+            ptos: {},
+            stop: {}
+        };
 
-//         return null;
-//     });
+        // Source is successor target is predecessor
+        links.forEach(link => {
+            const successor = link.source.id;
+            const predecessor = link.target.id;
+            if (!result.ptos[predecessor]) {
+                result.ptos[predecessor] = [];
+            }
+            if (!result.stop[successor]) {
+                result.stop[successor] = [];
+            }
+            result.ptos[predecessor].push(successor);
+            result.stop[successor].push(predecessor);
+        });
+
+        return result;
+    });
+
+
+export const normalizedDependencyTreeSelector = createSelector(
+    normalizedEpicTreeSelector, rawDependencyTreeSelector,
+    (epicTree: IEpicTree, dependencyTree: IDependenciesTree) => {
+        const result: IDependenciesTree = { ptos: {}, stop: {} };
+
+        const process = (workItemId: number) => {
+            // visit bottom up
+            const children = epicTree.parentToChildrenMap[workItemId];
+            children.forEach(process);
+
+            // get direct dependencies
+            const predecessorsSet = new Set();
+            const immediatePredecessors = dependencyTree.stop[workItemId];
+            immediatePredecessors.forEach(predecessorsSet.add);
+
+            // get dependencies of children find their parents and merge
+            children.forEach(child => {
+                const predecessorsOfChildren = dependencyTree.stop[child];
+                const parentOfChildPredecessors = predecessorsOfChildren.map(poc => epicTree.childToParentMap[poc]);
+                parentOfChildPredecessors.forEach(predecessorsSet.add);
+            });
+            const predecessors = Array.from(immediatePredecessors);
+            result.stop[workItemId] = predecessors;
+            predecessors.forEach(p => {
+                if (!result.ptos[p]) {
+                    result.ptos[p] = [];
+                }
+                result.ptos[p].push(workItemId);
+            });
+        };
+        // start the process with the root which is 0
+        process(0);
+
+        return result;
+    });
