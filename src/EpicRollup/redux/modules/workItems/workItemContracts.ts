@@ -8,3 +8,17 @@ export interface IEpicRollupWorkItemAwareState {
     dependencies: WorkItemLink[];
     pagedWorkItems: WorkItem[];
 }
+
+
+export interface IDependenciesTree {
+
+    /**
+     * Predecessor to Successor
+     */
+    ptos: IDictionaryNumberTo<number[]>;
+
+    /**
+     * Successor to Predecessor
+     */
+    stop: IDictionaryNumberTo<number[]>;
+}
