@@ -144,28 +144,34 @@ export function createRawDependencyTree(links: WorkItemLink[]) {
     return result;
 }
 
-
-export const normalizedDependencyTreeSelector = createSelector(normalizedEpicTreeSelector, rawDependencyTreeSelector, getNormalizedDependencyTree);
-export function getNormalizedDependencyTree(epicTree: IEpicTree, dependencyTree: IDependenciesTree) {
+/**
+ * Normalizes the dependency tree where the parents relation ships are created due to children
+ */
+export const normalizedDependencyTreeSelector = createSelector(normalizedEpicTreeSelector, rawDependencyTreeSelector, createNormalizedDependencyTree);
+export function createNormalizedDependencyTree(
+    epicTree: IEpicTree,
+    dependencyTree: IDependenciesTree) {
     const result: IDependenciesTree = { ptos: {}, stop: {} };
 
     const process = (workItemId: number) => {
         // visit bottom up
-        const children = epicTree.parentToChildrenMap[workItemId];
+        const children = epicTree.parentToChildrenMap[workItemId] || [];
         children.forEach(process);
-
+        if (workItemId === 2 || workItemId === 3) {
+            debugger;
+        }
         // get direct dependencies
         const predecessorsSet = new Set();
-        const immediatePredecessors = dependencyTree.stop[workItemId];
-        immediatePredecessors.forEach(predecessorsSet.add);
+        const immediatePredecessors = dependencyTree.stop[workItemId] || [];
+        immediatePredecessors.forEach(x => predecessorsSet.add(x));
 
         // get dependencies of children find their parents and merge
         children.forEach(child => {
-            const predecessorsOfChildren = dependencyTree.stop[child];
+            const predecessorsOfChildren = dependencyTree.stop[child] || [];
             const parentOfChildPredecessors = predecessorsOfChildren.map(poc => epicTree.childToParentMap[poc]);
-            parentOfChildPredecessors.forEach(predecessorsSet.add);
+            parentOfChildPredecessors.forEach(x => predecessorsSet.add(x));
         });
-        const predecessors = Array.from(immediatePredecessors);
+        const predecessors = Array.from(predecessorsSet);
         result.stop[workItemId] = predecessors;
         predecessors.forEach(p => {
             if (!result.ptos[p]) {
