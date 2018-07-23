@@ -2,8 +2,8 @@ import { BacklogConfiguration } from "TFS/Work/Contracts";
 import { IWorkItemListItem } from "../../react/Components/WorkItemList";
 import { getDefaultInProgressState } from "../helpers/getWorkItemStateCategory";
 import { IFeatureTimelineRawState, IterationDurationKind } from "../store/types";
-import { UIStatus } from "../types";
 import { FeatureFilter, getEpicHierarchy } from "./workItemHierarchySelector";
+import { UIStatus } from "../../../Common/types";
 
 
 

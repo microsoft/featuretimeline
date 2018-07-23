@@ -18,10 +18,9 @@ import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteratio
 import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../redux/store/teamiterations/actionCreators';
 import { IFeatureTimelineRawState, IPlanFeaturesState, ISettingsState, IWorkItemOverrideIteration, ProgressTrackingCriteria } from '../../redux/store/types';
 import { launchWorkItemForm, startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
-import { UIStatus } from '../../redux/types';
 import { IterationDropTarget } from './DroppableIterationShadow';
 import './FeatureTimelineGrid.scss';
-import { getRowColumnStyle, getTemplateColumns } from './gridhelper';
+import { getRowColumnStyle, getTemplateColumns } from '../../../Common/Helpers/gridhelper';
 import { IterationRenderer } from './IterationRenderer';
 import { TimelineDialog } from './TimelineDialog';
 import DraggableWorkItemRenderer from './WorkItem/DraggableWorkItemRenderer';
@@ -31,6 +30,7 @@ import { ConnectedWorkItemsList } from './WorkItemList';
 import InputNum from "rc-input-number";
 import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
 import { OverriddenIterationsActionCreator } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
+import { UIStatus } from '../../../Common/types';
 
 
 initializeIcons(/* optional base url */);

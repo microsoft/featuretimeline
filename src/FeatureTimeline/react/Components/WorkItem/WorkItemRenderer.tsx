@@ -1,8 +1,7 @@
 import './WorkItemRenderer.scss';
 import * as React from 'react';
 import { InfoIcon } from '../InfoIcon/InfoIcon';
-import { IDimension, CropWorkItem } from '../../../redux/types';
-import { getRowColumnStyle } from '../gridhelper';
+import { getRowColumnStyle } from '../../../../Common/Helpers/gridhelper';
 import {
     TooltipHost, TooltipOverflowMode
 } from 'office-ui-fabric-react/lib/Tooltip';
@@ -14,6 +13,7 @@ import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { State } from '../State/State';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { ISettingsState, ProgressTrackingCriteria, IIterationDuration, IWorkItemOverrideIteration } from '../../../redux/store/types';
+import { IDimension, CropWorkItem } from '../../../../Common/types';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;

@@ -3,7 +3,7 @@ import './IterationShadow.scss';
 import * as React from 'react';
 import { IGridIteration } from '../../redux/selectors/gridViewSelector';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { getRowColumnStyle } from './gridhelper';
+import { getRowColumnStyle } from '../../../Common/Helpers/gridhelper';
 
 export interface IIterationSahdowProps extends IGridIteration {
     isOverrideIterationInProgress: boolean;

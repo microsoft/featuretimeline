@@ -2,10 +2,10 @@ import { getWorkItemsForLevel } from './workItemsForLevel';
 import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } from '../store/types';
 import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
 import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
-import { UIStatus } from '../types';
 import { compareIteration } from '../../../Common/Helpers/iterationComparer';
 import { getTeamIterations } from './teamIterations';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { UIStatus } from '../../../Common/types';
 
 
 export interface IWorkItemHierarchy {

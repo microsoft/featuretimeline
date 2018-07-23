@@ -1,4 +1,4 @@
-import { IDimension } from "../../redux/types";
+import { IDimension } from "../types";
 
 export function getRowColumnStyle(dimension: IDimension) {
     if (!dimension) {

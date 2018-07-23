@@ -1,8 +1,8 @@
 import "./WorkItemRenderer.scss";
 
 import * as React from 'react';
-import { IDimension } from '../../../redux/types';
-import { getRowColumnStyle } from '../gridhelper';
+import { getRowColumnStyle } from '../../../../Common/Helpers/gridhelper';
+import { IDimension } from "../../../../Common/types";
 
 export interface IWorkItemShadowProps {
     dimension: IDimension;

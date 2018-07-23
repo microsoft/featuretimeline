@@ -1,9 +1,9 @@
 import { IWorkItemOverrideIteration, ISettingsState, IterationDurationKind, ProgressTrackingCriteria } from "../store/types";
 import { IWorkItemHierarchy } from "./workItemHierarchySelector";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { UIStatus, IDimension, CropWorkItem } from "../types";
 import { compareIteration } from "../../../Common/Helpers/iterationComparer";
 import { IIterationDisplayOptions } from "../store/teamiterations/types";
+import { IDimension, CropWorkItem, UIStatus } from "../../../Common/types";
 
 export interface IGridIteration {
     teamIteration: TeamSettingsIteration;
