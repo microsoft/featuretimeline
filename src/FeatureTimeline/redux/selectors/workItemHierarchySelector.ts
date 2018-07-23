@@ -18,17 +18,17 @@ export enum FeatureFilter {
 export function getEpicHierarchy(projectId: string,
     teamId: string,
     uiStatus: UIStatus,
-    input: IFeatureTimelineRawState,
+    rawState: IFeatureTimelineRawState,
     featureFilter: FeatureFilter): IWorkItemDisplayDetails[] {
 
     if (uiStatus !== UIStatus.Default) {
         return [];
     }
 
-    const epics = getEpicHierarchyInternal(projectId, teamId, uiStatus, input)
+    const epics = getEpicHierarchyInternal(projectId, teamId, uiStatus, rawState)
     const {
         workItemsState
-    } = input;
+    } = rawState;
     const {
         workItemInfos
     } = workItemsState;

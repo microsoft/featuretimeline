@@ -1,5 +1,5 @@
 import { ActionCreator } from 'redux';
-import { WorkItemTypesReceivedAction, WorkItemTypesReceivedActionType, WorkItemStateColorsReceivedAction, WorkItemStateColorsReceivedActionType } from './actions';
+import { WorkItemTypesReceivedAction, WorkItemTypesReceivedActionType, WorkItemStateColorsReceivedAction, WorkItemStateColorsReceivedActionType } from './workItemMetadataActions';
 import { WorkItemType, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 
 export const workItemTypesReceived: ActionCreator<WorkItemTypesReceivedAction> =

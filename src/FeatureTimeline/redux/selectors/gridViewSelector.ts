@@ -11,7 +11,7 @@ export function getGridView(
     uiStatus: UIStatus,
     backlogIteration: TeamSettingsIteration,
     teamIterations: TeamSettingsIteration[],
-    workItems: IWorkItemDisplayDetails[],
+    workItemDisplayDetails: IWorkItemDisplayDetails[],
     workItemOverrideIteration: IWorkItemOverrideIteration,
     settingState: ISettingsState,
     iterationDisplayOptions: IIterationDisplayOptions = null,
@@ -37,11 +37,11 @@ export function getGridView(
         debugger;
     }
 
-    const hideParents = isSubGrid || (workItems.length === 1 && workItems[0].id === 0);
+    const hideParents = isSubGrid || (workItemDisplayDetails.length === 1 && workItemDisplayDetails[0].id === 0);
     const displayIterations = getDisplayIterations(
         backlogIteration,
         teamIterations,
-        workItems,
+        workItemDisplayDetails,
         isSubGrid,
         iterationDisplayOptions);
 
@@ -50,7 +50,7 @@ export function getGridView(
         teamIterations,
         displayIterations,
         iterationDisplayOptions,
-        workItems,
+        workItemDisplayDetails,
         /* startRow */ 3,
         /* startCol */ 1,
         hideParents,

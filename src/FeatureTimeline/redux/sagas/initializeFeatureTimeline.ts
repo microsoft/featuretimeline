@@ -16,7 +16,7 @@ import { genericError } from '../store/error/actionCreators';
 import { loading } from '../store/loading/actionCreators';
 import { teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
-import { workItemStateColorsReceived, workItemTypesReceived } from '../store/workitemmetadata/actionCreators';
+import { workItemStateColorsReceived, workItemTypesReceived } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataActionCreators';
 import { workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
 import { restoreSettings } from './saveSettings';
 import Contracts = require('TFS/Work/Contracts');

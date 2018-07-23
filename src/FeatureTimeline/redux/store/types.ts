@@ -16,11 +16,11 @@ import teamIterationsReducer from './teamiterations/reducer';
 import { ITeamSettingsIterationState } from './teamiterations/types';
 import teamSettingReducer from './teamSettings/reducer';
 import { ITeamSettingState } from './teamSettings/types';
-import metadataReducer from './workitemmetadata/reducer';
-import { IWorkItemMetadataState } from './workitemmetadata/types';
 import workItemReducer from './workitems/reducer';
 import { IWorkItemsState } from './workitems/types';
 import { ISettingsState } from '../../../Common/Contracts/OptionsInterfaces';
+import { IWorkItemMetadataAwareState } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataContracts';
+import { workItemMetadataReducer } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataReducer';
 
 
 export interface IIterationDuration {
@@ -45,9 +45,8 @@ export interface IPlanFeaturesState {
 }
 
 export interface IFeatureTimelineRawState extends
-    IOverriddenIterationsAwareState {
+    IOverriddenIterationsAwareState, IWorkItemMetadataAwareState {
     workItemsState: IWorkItemsState;
-    workItemMetadata: IWorkItemMetadataState;
     iterationState: ITeamSettingsIterationState;
     error: string;
     backlogConfiguration: IBacklogConfigurationState;
@@ -86,7 +85,7 @@ const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFe
 
 const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     workItemsState: workItemReducer,
-    workItemMetadata: metadataReducer,
+    workItemMetadata: workItemMetadataReducer,
     iterationState: teamIterationsReducer,
     error: errorReducer,
     backlogConfiguration: backlogConfigurationReducer,
