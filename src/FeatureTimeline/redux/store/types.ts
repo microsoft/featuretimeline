@@ -1,7 +1,6 @@
-import { ISettingsState } from '../../../Common/OptionsInterfaces';
-
 import { Action, combineReducers, Reducer } from 'redux';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { overrideIterationProgressReducer } from '../../../Common/modules/overrideIterationProgress/reducer';
 import { IOverriddenIterationsAwareState, IWorkItemOverrideIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
 import savedOverrideIterationsReducer from '../../../Common/modules/OverrideIterations/overrideWorkItemIterationReducer';
 import backlogConfigurationReducer from './backlogconfiguration/reducer';
@@ -13,7 +12,6 @@ import settingsReducer from "./common/settingsReducer";
 import togglePaneReducer from './common/togglePaneReducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
-import overrideIterationReducer from "../../../Common/overrideIterationProgress/reducer";
 import teamIterationsReducer from './teamiterations/reducer';
 import { ITeamSettingsIterationState } from './teamiterations/types';
 import teamSettingReducer from './teamSettings/reducer';
@@ -22,6 +20,8 @@ import metadataReducer from './workitemmetadata/reducer';
 import { IWorkItemMetadataState } from './workitemmetadata/types';
 import workItemReducer from './workitems/reducer';
 import { IWorkItemsState } from './workitems/types';
+import { ISettingsState } from '../../../Common/Contracts/OptionsInterfaces';
+
 
 export interface IIterationDuration {
     startIteration: TeamSettingsIteration;
@@ -93,7 +93,7 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     teamSetting: teamSettingReducer,
     loading: loadingReducer,
     workItemDetails: showHideDetailsReducer,
-    workItemOverrideIteration: overrideIterationReducer,
+    workItemOverrideIteration: overrideIterationProgressReducer,
     savedOverriddenIterations: savedOverrideIterationsReducer,
     planFeaturesState: togglePaneReducer,
     featureState: featureStateReducer,

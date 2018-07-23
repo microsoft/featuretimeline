@@ -5,24 +5,9 @@ import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { compareIteration } from '../../../Common/Helpers/iterationComparer';
 import { getTeamIterations } from './teamIterations';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { UIStatus } from '../../../Common/types';
+import { UIStatus } from '../../../Common/Contracts/types';
+import { IWorkItemDisplayDetails } from '../../../Common/Contracts/GridViewContracts';
 
-
-export interface IWorkItemHierarchy {
-    id: number;
-    title: string;
-    color: string;
-    workItemStateColor: WorkItemStateColor;
-    isRoot: boolean;
-    workItem: WorkItem;
-    order: number;
-    iterationDuration: IIterationDuration;
-    children: IWorkItemHierarchy[];
-    showInfoIcon: boolean;
-    isComplete: boolean;
-    efforts: number;
-    childrenWithNoEfforts: number;
-}
 
 export enum FeatureFilter {
     None,
@@ -34,7 +19,7 @@ export function getEpicHierarchy(projectId: string,
     teamId: string,
     uiStatus: UIStatus,
     input: IFeatureTimelineRawState,
-    featureFilter: FeatureFilter): IWorkItemHierarchy[] {
+    featureFilter: FeatureFilter): IWorkItemDisplayDetails[] {
 
     if (uiStatus !== UIStatus.Default) {
         return [];
@@ -49,12 +34,12 @@ export function getEpicHierarchy(projectId: string,
     } = workItemsState;
 
     // include only InProgress work items
-    const inProgressFilter = (feature: IWorkItemHierarchy) => workItemInfos[feature.id].stateCategory === StateCategory.InProgress;
+    const inProgressFilter = (feature: IWorkItemDisplayDetails) => workItemInfos[feature.id].stateCategory === StateCategory.InProgress;
 
     // include only features that have explicit iteration
-    const explicitIterationFilter = (feature: IWorkItemHierarchy) => feature.iterationDuration.kind !== IterationDurationKind.BacklogIteration;
+    const explicitIterationFilter = (feature: IWorkItemDisplayDetails) => feature.iterationDuration.kind !== IterationDurationKind.BacklogIteration;
 
-    let filter = (feature: IWorkItemHierarchy) => true;
+    let filter = (feature: IWorkItemDisplayDetails) => true;
     if (featureFilter === FeatureFilter.InProgress) {
         filter = inProgressFilter;
     } else if (featureFilter === FeatureFilter.WithoutIteration) {
@@ -72,7 +57,7 @@ function getEpicHierarchyInternal(
     projectId: string,
     teamId: string,
     uiStatus: UIStatus,
-    input: IFeatureTimelineRawState): IWorkItemHierarchy[] {
+    input: IFeatureTimelineRawState): IWorkItemDisplayDetails[] {
 
     if (uiStatus !== UIStatus.Default) {
         return [];
@@ -96,7 +81,7 @@ function getWorkItemDetails(
     teamId: string,
     id: number,
     input: IFeatureTimelineRawState,
-    isRoot: boolean): IWorkItemHierarchy {
+    isRoot: boolean): IWorkItemDisplayDetails {
 
     const {
         workItemsState,
@@ -150,13 +135,13 @@ function getWorkItemsDetails(
     teamId: string,
     ids: number[],
     input: IFeatureTimelineRawState,
-    isEpic: boolean): IWorkItemHierarchy[] {
+    isEpic: boolean): IWorkItemDisplayDetails[] {
 
     return ids.map(id => getWorkItemDetails(projectId, teamId, id, input, isEpic));
 }
 
 function getWorkItemIterationDuration(
-    children: IWorkItemHierarchy[],
+    children: IWorkItemDisplayDetails[],
     projectId: string,
     teamId: string,
     input: IFeatureTimelineRawState,
@@ -203,7 +188,7 @@ function getWorkItemIterationDuration(
 }
 
 function getIterationDurationFromChildren(
-    children: IWorkItemHierarchy[]): IIterationDuration {
+    children: IWorkItemDisplayDetails[]): IIterationDuration {
 
     return children.reduce((prev, child) => {
         let {

@@ -1,49 +1,17 @@
 import { IterationDurationKind } from "../store/types";
-import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/OptionsInterfaces";
-import { IWorkItemHierarchy } from "./workItemHierarchySelector";
+import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 import { compareIteration } from "../../../Common/Helpers/iterationComparer";
-import { IIterationDisplayOptions } from "../store/teamiterations/types";
-import { IDimension, CropWorkItem, UIStatus } from "../../../Common/types";
+import { IDimension, CropWorkItem, UIStatus } from "../../../Common/Contracts/types";
 import { IWorkItemOverrideIteration } from "../../../Common/modules/OverrideIterations/overriddenIterationContracts";
+import { IGridView, IGridIteration, IGridWorkItem, IWorkItemDisplayDetails, IIterationDisplayOptions } from "../../../Common/Contracts/GridViewContracts";
 
-export interface IGridIteration {
-    teamIteration: TeamSettingsIteration;
-    dimension: IDimension;
-}
-export interface IProgressIndicator {
-    total: number;
-    completed: number;
-}
-
-export interface IGridWorkItem {
-    dimension: IDimension;
-    workItem: IWorkItemHierarchy;
-    progressIndicator: IProgressIndicator;
-    crop: CropWorkItem;
-    settingsState: ISettingsState;
-    gapColor?: string;
-    isGap?: boolean;
-}
-
-export interface IGridView {
-    emptyHeaderRow: IDimension[]; //Set of empty elements to place items on top of iteration header
-    iterationHeader: IGridIteration[];
-    iterationShadow: IGridIteration[];
-    workItems: IGridWorkItem[];
-    isSubGrid: boolean;
-    workItemShadow: number;
-    hideParents: boolean;
-    iterationDisplayOptions: IIterationDisplayOptions;
-    teamIterations: TeamSettingsIteration[];
-    backlogIteration: TeamSettingsIteration,
-}
 
 export function getGridView(
     uiStatus: UIStatus,
     backlogIteration: TeamSettingsIteration,
     teamIterations: TeamSettingsIteration[],
-    workItems: IWorkItemHierarchy[],
+    workItems: IWorkItemDisplayDetails[],
     workItemOverrideIteration: IWorkItemOverrideIteration,
     settingState: ISettingsState,
     iterationDisplayOptions: IIterationDisplayOptions = null,
@@ -156,7 +124,7 @@ export function getGridView(
 export function getDisplayIterations(
     backlogIteration: TeamSettingsIteration,
     teamIterations: TeamSettingsIteration[],
-    workItems: IWorkItemHierarchy[],
+    workItems: IWorkItemDisplayDetails[],
     isSubGrid: boolean,
     iterationDisplayOptions?: IIterationDisplayOptions): TeamSettingsIteration[] {
 
@@ -168,7 +136,7 @@ export function getDisplayIterations(
     }
 
 
-    const hasBacklogIteration = (workItem: IWorkItemHierarchy) => {
+    const hasBacklogIteration = (workItem: IWorkItemDisplayDetails) => {
         if (!isSubGrid) {
             return false;
         }
@@ -186,7 +154,7 @@ export function getDisplayIterations(
     let showBacklogIteration = false;
 
     // Get all iterations that come in the range of the workItems
-    const calcFirstLastIteration = (workItem: IWorkItemHierarchy) => {
+    const calcFirstLastIteration = (workItem: IWorkItemDisplayDetails) => {
 
         // If it is not sub grid and workItem iteration is backlog iteration than ignore it
         if (!isSubGrid && workItem.iterationDuration.kind === IterationDurationKind.BacklogIteration) {
@@ -238,7 +206,7 @@ export function getDisplayIterations(
     return displayIterations;
 }
 
-function workItemCompare(w1: IWorkItemHierarchy, w2: IWorkItemHierarchy) {
+function workItemCompare(w1: IWorkItemDisplayDetails, w2: IWorkItemDisplayDetails) {
     if (w1.order === w2.order) {
         return w1.id - w2.id;
     }
@@ -251,7 +219,7 @@ export function getGridWorkItems(
     teamIterations: TeamSettingsIteration[],
     displayIterations: TeamSettingsIteration[],
     iterationDisplayOptions: IIterationDisplayOptions,
-    workItems: IWorkItemHierarchy[],
+    workItems: IWorkItemDisplayDetails[],
     startRow: number,
     startColumn: number,
     hideParents: boolean,
@@ -369,7 +337,7 @@ export function getGridWorkItems(
             // Insert Gap
             if (children.length > 0 && parentIndex < (workItems.length - 1)) {
                 output.push({
-                    workItem: <IWorkItemHierarchy>{
+                    workItem: <IWorkItemDisplayDetails>{
                         id: -1,
                         title: "",
                         children: [],
@@ -397,7 +365,7 @@ export function getGridWorkItems(
 }
 
 
-function getProgress(children: IWorkItemHierarchy[], criteria: ProgressTrackingCriteria) {
+function getProgress(children: IWorkItemDisplayDetails[], criteria: ProgressTrackingCriteria) {
     const completedChildren = children.filter(c => c.isComplete);
     switch (criteria) {
         case ProgressTrackingCriteria.ChildWorkItems: {
@@ -420,6 +388,6 @@ function getProgress(children: IWorkItemHierarchy[], criteria: ProgressTrackingC
     }
 }
 
-function getEfforts(workItems: IWorkItemHierarchy[]): number {
+function getEfforts(workItems: IWorkItemDisplayDetails[]): number {
     return workItems.reduce((prev, w) => prev + w.efforts, 0);
 }

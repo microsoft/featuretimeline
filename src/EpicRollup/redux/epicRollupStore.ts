@@ -5,6 +5,7 @@ import { backlogConfigurationReducer } from './modules/backlogconfiguration/back
 import { teamIterationsReducer } from './modules/teamIterations/teamIterationReducer';
 import savedOverrideIterationsReducer from '../../Common/modules/OverrideIterations/overrideWorkItemIterationReducer';
 import { workItemsReducer } from './modules/workItems/workItemReducer';
+import { fetchEpicRollup } from './sagas/fetchEpicRollupSaga';
 
 export default function configureEpicRollupStore(
     initialState: IEpicRollupState
@@ -30,6 +31,9 @@ export default function configureEpicRollupStore(
         reducers,
         initialState,
         composeEnhancers(middleware));
+
+    //TODO: User MRU or select
+    sagaMiddleWare.run(fetchEpicRollup, 10);
 
     return store;
 }

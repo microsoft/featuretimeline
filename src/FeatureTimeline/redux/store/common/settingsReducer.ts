@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { ISettingsState, ProgressTrackingCriteria } from "../../../../Common/OptionsInterfaces";
+import { ISettingsState, ProgressTrackingCriteria } from "../../../../Common/Contracts/OptionsInterfaces";
 import { SettingsActions, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, RestoreSettingsType, ChangeShowClosedSinceDaysType } from './actions';
 import produce from "immer";
 

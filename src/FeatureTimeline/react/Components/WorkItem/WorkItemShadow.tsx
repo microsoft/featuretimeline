@@ -2,7 +2,7 @@ import "./WorkItemRenderer.scss";
 
 import * as React from 'react';
 import { getRowColumnStyle } from '../../../../Common/Helpers/gridhelper';
-import { IDimension } from "../../../../Common/types";
+import { IDimension } from "../../../../Common/Contracts/types";
 
 export interface IWorkItemShadowProps {
     dimension: IDimension;

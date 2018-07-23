@@ -1,7 +1,7 @@
 import './ProgressDetails.scss';
 import * as React from 'react';
-import { IProgressIndicator } from '../../../redux/selectors/gridViewSelector';
 import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
+import { IProgressIndicator } from '../../../../Common/Contracts/GridViewContracts';
 
 export interface IProgressIndicatorProps extends IProgressIndicator {
     onClick: () => void;

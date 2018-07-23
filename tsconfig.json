@@ -11,7 +11,7 @@
             "es2015.promise",
             "dom"
         ],
-        "target": "es5",
+        "target": "es6",
         "moduleResolution": "node",
         "types": [
             "requirejs",

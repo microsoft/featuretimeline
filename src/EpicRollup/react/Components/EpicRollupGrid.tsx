@@ -1,6 +1,6 @@
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import * as React from 'react';
-import { UIStatus } from '../../../Common/types';
+import { UIStatus } from '../../../Common/Contracts/types';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { IEpicRollupState } from '../../redux/contracts';

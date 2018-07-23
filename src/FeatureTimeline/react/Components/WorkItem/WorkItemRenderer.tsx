@@ -8,14 +8,14 @@ import {
 import { css } from '@uifabric/utilities/lib/css';
 import { hexToRgb } from '../colorhelper';
 import { ProgressDetails } from '../ProgressDetails/ProgressDetails';
-import { IProgressIndicator } from '../../../redux/selectors/gridViewSelector';
 import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { State } from '../State/State';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { IIterationDuration } from '../../../redux/store/types';
-import { ISettingsState, ProgressTrackingCriteria } from "../../../../Common/OptionsInterfaces";
-import { IDimension, CropWorkItem } from '../../../../Common/types';
+import { ISettingsState, ProgressTrackingCriteria } from "../../../../Common/Contracts/OptionsInterfaces";
+import { IDimension, CropWorkItem } from '../../../../Common/Contracts/types';
 import { IWorkItemOverrideIteration } from '../../../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import { IProgressIndicator } from '../../../../Common/Contracts/GridViewContracts';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;

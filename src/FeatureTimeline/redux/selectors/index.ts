@@ -1,4 +1,4 @@
-import { IContributionContext } from "../../../Common/types";
+import { IContributionContext } from "../../../Common/Contracts/types";
 import { createSelector } from "reselect";
 import { getWorkItemsForLevel } from "./workItemsForLevel";
 import { getUIStatus } from "./uistatus";

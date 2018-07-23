@@ -6,7 +6,7 @@ import { JsonPatchDocument } from 'VSS/WebApi/Contracts';
 import { workItemSaved, workItemSaveFailed } from '../../FeatureTimeline/redux/store/workitems/actionCreators';
 import { OverriddenIterationsActionCreator } from '../modules/OverrideIterations/overrideIterationsActions';
 import { IWorkItemOverrideIteration } from '../modules/OverrideIterations/overriddenIterationContracts';
-import { saveOverrideIteration } from '../overrideIterationProgress/actionCreators';
+import { saveOverrideIteration } from '../modules/overrideIterationProgress/actionCreators';
 
 
 export function* updateWorkItemIteration(action: StartUpdateWorkitemIterationAction) {

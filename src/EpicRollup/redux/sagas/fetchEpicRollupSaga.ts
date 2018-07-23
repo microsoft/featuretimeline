@@ -12,6 +12,7 @@ import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
 import { restoreOverriddenIterations } from '../../../Common/modules/OverrideIterations/overriddenIterationsSaga';
 
 export function* fetchEpicRollup(epicId: number) {
+    debugger;
     const projectId = getProjectId();
     // get backlog configuration for the project
     yield all([fetchBacklogConfiguration(), fetchTeamIterations()]);

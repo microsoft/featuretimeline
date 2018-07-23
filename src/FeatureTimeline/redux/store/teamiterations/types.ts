@@ -1,17 +1,7 @@
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { IIterationDisplayOptionsAwareState } from "../../../../Common/modules/IterationDisplayOptions/IterationDisplayActionsContracts";
 
-export interface IIterationDisplayOptions {
-    totalIterations: number
-    originalCount: number;
-    count: number;
-    startIndex: number;
-    endIndex: number;
-    teamId: string;
-    projectId: string;
-}
-
-export interface ITeamSettingsIterationState {
+export interface ITeamSettingsIterationState extends IIterationDisplayOptionsAwareState {
     // project -> team -> Backlog Configuration
     teamSettingsIterations: IDictionaryStringTo<IDictionaryStringTo<TeamSettingsIteration[]>>;
-    iterationDisplayOptions: IIterationDisplayOptions;
 }

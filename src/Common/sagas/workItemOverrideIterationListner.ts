@@ -3,8 +3,8 @@ import { workItemOverrideIterationSelector } from "../../FeatureTimeline/redux/s
 import { OverriddenIterationsActionCreator } from "../modules/OverrideIterations/overrideIterationsActions";
 import { AnyAction } from 'redux';
 import { IWorkItemOverrideIteration } from "../modules/OverrideIterations/overriddenIterationContracts";
-import { SaveOverrideIterationAction, OverrideIterationEndAction } from "../overrideIterationProgress/actions";
-import { cleanupOverrideIteration, saveOverrideIteration } from "../overrideIterationProgress/actionCreators";
+import { OverrideIterationEndAction, SaveOverrideIterationAction } from "../modules/overrideIterationProgress/actions";
+import { cleanupOverrideIteration, saveOverrideIteration } from "../modules/overrideIterationProgress/actionCreators";
 
 
 export function* launchOverrideWorkItemIteration(action: OverrideIterationEndAction) {

@@ -1,6 +1,6 @@
 import { call, select, put } from 'redux-saga/effects';
 import { settingsStateSelector } from '../selectors';
-import { ISettingsState } from "../../../Common/OptionsInterfaces";
+import { ISettingsState } from "../../../Common/Contracts/OptionsInterfaces";
 import { restoreSettingsState } from '../store/common/actioncreators';
 import { SettingsActions, ChangeShowClosedSinceDaysType } from '../store/common/actions';
 import { launchInitialize } from './initializeFeatureTimeline';

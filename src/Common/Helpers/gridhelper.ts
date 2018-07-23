@@ -1,4 +1,4 @@
-import { IDimension } from "../types";
+import { IDimension } from "../Contracts/types";
 
 export function getRowColumnStyle(dimension: IDimension) {
     if (!dimension) {

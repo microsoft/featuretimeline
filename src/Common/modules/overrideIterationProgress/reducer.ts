@@ -1,9 +1,9 @@
 import { Reducer } from 'redux';
 import { OverrideIterationActions, OverrideIterationHoverOverIterationType, OverrideIterationStartType, OverrideIterationCleanupType } from './actions';
 import produce from "immer";
-import { IWorkItemOverrideIteration } from '../modules/OverrideIterations/overriddenIterationContracts';
+import { IWorkItemOverrideIteration } from '../OverrideIterations/overriddenIterationContracts';
 
-const reducer: Reducer<IWorkItemOverrideIteration> = (state: IWorkItemOverrideIteration = null, action: OverrideIterationActions) => {
+export const overrideIterationProgressReducer: Reducer<IWorkItemOverrideIteration> = (state: IWorkItemOverrideIteration = null, action: OverrideIterationActions) => {
 
     return produce(state, draft => {
         switch (action.type) {
@@ -25,5 +25,3 @@ const reducer: Reducer<IWorkItemOverrideIteration> = (state: IWorkItemOverrideIt
         }
     });
 };
-
-export default reducer;

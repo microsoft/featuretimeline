@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { ProgressTrackingCriteria, ISettingsState } from "../../../../Common/OptionsInterfaces";
+import { ProgressTrackingCriteria, ISettingsState } from "../../../../Common/Contracts/OptionsInterfaces";
 
 export const ResetType = "@@common/reset";
 export const InitializeType = "@@common/initialize";

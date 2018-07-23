@@ -1,6 +1,6 @@
 import { IFeatureTimelineRawState } from "../store/types";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { UIStatus } from "../../../Common/types";
+import { UIStatus } from "../../../Common/Contracts/types";
 
 export function getTeamIterations(
     projectId: string,

@@ -3,7 +3,7 @@ import { IWorkItemListItem } from "../../react/Components/WorkItemList";
 import { getDefaultInProgressState } from "../helpers/getWorkItemStateCategory";
 import { IFeatureTimelineRawState, IterationDurationKind } from "../store/types";
 import { FeatureFilter, getEpicHierarchy } from "./workItemHierarchySelector";
-import { UIStatus } from "../../../Common/types";
+import { UIStatus } from "../../../Common/Contracts/types";
 
 
 

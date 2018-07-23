@@ -1,4 +1,4 @@
-import { IContributionContext } from "./types";
+import { IContributionContext } from "./Contracts/types";
 
 export const getProjectId = () => {
     const webContext = VSS.getWebContext();

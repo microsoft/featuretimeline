@@ -6,18 +6,16 @@ import { callInitialize } from "./initializeFeatureTimeline";
 import { launchOverrideWorkItemIteration, launchClearOverrideIteration, launchSaveOverrideIteration } from "../../../Common/sagas/workItemOverrideIterationListner";
 import { updateWorkItemIteration } from "../../../Common/sagas/updateWorkItemIterationListner";
 import { saveDisplayOptions } from './displayOptions';
-import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType } from "../store/teamiterations/actions";
 import { markWorkItemInProgressListner } from "./markWorkItemInProgressListner";
 import { savePlanFeaturesDisplayOptions, restorePlanFeaturesDisplayOptions } from "./planFeaturesDisplayOptions";
 import { initializeFeatureState } from "./featureStateReader";
 import { saveSettings } from "./saveSettings";
 import { ClearOverrideIterationType } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
-import { SaveOverrideIterationActionType, OverrideIterationEndType } from "../../../Common/overrideIterationProgress/actions";
 import { LaunchWorkItemFormActionType } from "../../../Common/actions/launchWorkItemForm";
+import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../../../Common/modules/overrideIterationProgress/actions";
+import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType } from "../../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsActions";
 
 export function* watchSagaActions() {
-    yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
-    yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);
     yield takeEvery(ClearOverrideIterationType, launchClearOverrideIteration);
     yield takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga);
     yield takeEvery(InitializeType, callInitialize);
@@ -25,6 +23,8 @@ export function* watchSagaActions() {
     yield takeEvery(StartUpdateWorkitemIterationActionType, updateWorkItemIteration);
     yield takeEvery(StartMarkInProgressActionType, markWorkItemInProgressListner);
 
+    yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
+    yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);
     yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions);
     yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions);
     yield takeLatest(ShiftDisplayIterationRightActionType, saveDisplayOptions);

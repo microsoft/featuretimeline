@@ -1,6 +1,8 @@
 import { ActionCreator } from 'redux';
-import { OverrideIterationStartAction, OverrideIterationStartType, OverrideIterationEndAction, OverrideIterationEndType, OverrideIterationHoverOverIterationAction, OverrideIterationHoverOverIterationType, OverrideIterationCleanupAction, OverrideIterationCleanupType, SaveOverrideIterationAction, SaveOverrideIterationActionType } from './actions';
-import { IWorkItemOverrideIteration } from '../modules/OverrideIterations/overriddenIterationContracts';
+import { OverrideIterationStartAction, OverrideIterationStartType, OverrideIterationEndAction, OverrideIterationEndType, 
+    OverrideIterationHoverOverIterationAction, OverrideIterationHoverOverIterationType, OverrideIterationCleanupAction, 
+    OverrideIterationCleanupType, SaveOverrideIterationAction, SaveOverrideIterationActionType } from './actions';
+import { IWorkItemOverrideIteration } from '../OverrideIterations/overriddenIterationContracts';
 
 export const startOverrideIteration: ActionCreator<OverrideIterationStartAction> =
     (payload: IWorkItemOverrideIteration) => ({
