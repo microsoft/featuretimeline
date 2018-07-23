@@ -1,4 +1,4 @@
-import { createNormalizedEpicTree } from '../workItemSelector';
+import { createNormalizedEpicTree } from "../selectors/epicTreeSelector";
 import { BacklogConfiguration } from 'TFS/Work/Contracts';
 declare var test, expect;
 

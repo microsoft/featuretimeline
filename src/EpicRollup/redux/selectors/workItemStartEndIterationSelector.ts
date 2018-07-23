@@ -1,11 +1,14 @@
-import { IEpicTree, normalizedEpicTreeSelector, normalizedDependencyTreeSelector, pagedWorkItemsMapSelector } from '../modules/workItems/workItemSelector';
-import { IDependenciesTree } from '../modules/workItems/workItemContracts';
-import { SavedOverriddenIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import { createSelector } from 'reselect';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
-import { createSelector } from 'reselect';
+import { SavedOverriddenIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
 import { OverriddenIterationSelector } from '../../../Common/modules/OverrideIterations/overriddenIterationsSelector';
 import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
+import { normalizedDependencyTreeSelector } from '../modules/workItems/selectors/dependencyTreeSelector';
+import { IEpicTree, normalizedEpicTreeSelector } from "../modules/workItems/selectors/epicTreeSelector";
+import { pagedWorkItemsMapSelector } from '../modules/workItems/selectors/workItemSelector';
+import { IDependenciesTree } from '../modules/workItems/workItemContracts';
+
 export enum IterationDurationCriteria {
     Overridden = 1,
     Dependencies = 2,
