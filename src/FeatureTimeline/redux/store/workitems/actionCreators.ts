@@ -1,7 +1,7 @@
 import { ActionCreator } from 'redux';
 import { TeamSettingsIteration, WorkItemTypeStateInfo } from 'TFS/Work/Contracts';
 import { WorkItem, WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
-import { ChangeParentAction, ChangeParentActionType, LaunchWorkItemFormAction, LaunchWorkItemFormActionType, StartMarkInProgressAction, StartMarkInProgressActionType, StartUpdateWorkitemIterationAction, StartUpdateWorkitemIterationActionType, WorkItemLinksReceivedAction, WorkItemLinksReceivedActionType, WorkItemSavedAction, WorkItemSavedActionType, WorkItemSaveFailedAction, WorkItemSaveFailedActionType, WorkItemsReceivedAction, WorkItemsReceivedActionType } from './actions';
+import { ChangeParentAction, ChangeParentActionType, StartMarkInProgressAction, StartMarkInProgressActionType, StartUpdateWorkitemIterationAction, StartUpdateWorkitemIterationActionType, WorkItemLinksReceivedAction, WorkItemLinksReceivedActionType, WorkItemSavedAction, WorkItemSavedActionType, WorkItemSaveFailedAction, WorkItemSaveFailedActionType, WorkItemsReceivedAction, WorkItemsReceivedActionType } from './actions';
 
 
 export const startUpdateWorkItemIteration: ActionCreator<StartUpdateWorkitemIterationAction> =
@@ -78,11 +78,3 @@ export const workItemLinksReceived: ActionCreator<WorkItemLinksReceivedAction> =
     });
 
 
-export const launchWorkItemForm: ActionCreator<LaunchWorkItemFormAction> =
-    (workItemId: number) => ({
-        type: LaunchWorkItemFormActionType,
-        track: true,
-        payload: {
-            workItemId
-        }
-    });

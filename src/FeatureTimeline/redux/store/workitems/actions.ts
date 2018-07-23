@@ -1,6 +1,5 @@
 import { Action } from "redux";
 import { WorkItem, WorkItemLink } from "TFS/WorkItemTracking/Contracts";
-import { TrackableAction } from "./types";
 import { TeamSettingsIteration, WorkItemTypeStateInfo } from "TFS/Work/Contracts";
 export const StartUpdateWorkitemIterationActionType = "@@workitems/StartUpdateWorkitemIterationAction";
 export const StartMarkInProgressActionType = "@@workitems/StartMarkInProgressAction";
@@ -9,7 +8,6 @@ export const WorkItemSaveFailedActionType = "@@workitems/WorkItemSaveFailedActio
 export const ChangeParentActionType = "@@workitems/ChangeParentAction";
 export const WorkItemsReceivedActionType = "@@workitems/WorkItemsReceived";
 export const WorkItemLinksReceivedActionType = "@@workitems/WorkItemLinksReceived"
-export const LaunchWorkItemFormActionType = "@@workitems/LaunchWorkItemForm";
 
 export interface StartUpdateWorkitemIterationAction extends Action {
     type: "@@workitems/StartUpdateWorkitemIterationAction";
@@ -70,11 +68,5 @@ export interface WorkItemLinksReceivedAction extends Action {
     }
 }
 
-export interface LaunchWorkItemFormAction extends TrackableAction {
-    type: "@@workitems/LaunchWorkItemForm";
-    payload: {
-        workItemId: number;
-    }
-}
 
-export type WorkItemActions = StartMarkInProgressAction | StartUpdateWorkitemIterationAction | ChangeParentAction | WorkItemsReceivedAction | WorkItemLinksReceivedAction | LaunchWorkItemFormAction;
+export type WorkItemActions = StartMarkInProgressAction | StartUpdateWorkitemIterationAction | ChangeParentAction | WorkItemsReceivedAction | WorkItemLinksReceivedAction;

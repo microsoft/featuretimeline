@@ -3,6 +3,9 @@ import produce from "immer";
 import { ProjectBacklogConfigurationActions, ProjectBacklogConfigurationReceivedType } from "./backlogconfigurationactions";
 
 export function backlogConfigurationReducer(state: BacklogConfigurationMap, action: ProjectBacklogConfigurationActions): BacklogConfigurationMap {
+    if(!state) {
+        state = {};
+    }
     return produce(state, draft => {
         const {
             payload

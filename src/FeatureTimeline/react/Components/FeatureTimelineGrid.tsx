@@ -10,14 +10,15 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { connect, Provider } from 'react-redux';
 import SplitterLayout from 'react-splitter-layout';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import configureStore from '../../redux/configureStore';
+import configureFeatureTimelineStore from '../../redux/configureStore';
 import { getBacklogLevel, getRawState, planFeatureStateSelector, primaryGridViewSelector, settingsStateSelector, uiStatusSelector } from '../../redux/selectors';
 import { IGridView } from '../../redux/selectors/gridViewSelector';
 import { changePlanFeaturesWidth, changeProgressTrackingCriteria, changeShowClosedSinceDays, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane, toggleShowWorkItemDetails } from '../../redux/store/common/actioncreators';
 import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../redux/store/teamiterations/actionCreators';
 import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/types';
 import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/OptionsInterfaces";
-import { launchWorkItemForm, startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
+import { startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
+import { launchWorkItemForm } from "../../../Common/actions/launchWorkItemForm";
 import { IterationDropTarget } from './DroppableIterationShadow';
 import './FeatureTimelineGrid.scss';
 import { getRowColumnStyle, getTemplateColumns } from '../../../Common/Helpers/gridhelper';
@@ -143,14 +144,14 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 interface IFeatureTimelineGridState {
-    collapsedGroups: IDictionaryNumberTo<boolean>;
+    
 }
 
 export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridProps, IFeatureTimelineGridState> {
     constructor() {
         super();
         this.state = {
-            collapsedGroups: {}
+            
         };
     }
 
@@ -559,7 +560,7 @@ export const PrimaryGrid = () => {
     const initialState: IFeatureTimelineRawState = {
         loading: true
     } as IFeatureTimelineRawState;
-    const store = configureStore(initialState);
+    const store = configureFeatureTimelineStore(initialState);
 
     const projectId = getProjectId();
     const teamId = getTeamId();

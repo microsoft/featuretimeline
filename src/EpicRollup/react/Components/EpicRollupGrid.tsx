@@ -1,9 +1,12 @@
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import * as React from 'react';
 import { UIStatus } from '../../../Common/types';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { ProgressTrackingCriteria } from '../../../Common/OptionsInterfaces';
-import { IWorkItemOverrideIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
+import { IEpicRollupState } from '../../redux/contracts';
+import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
+import { connect, Provider } from 'react-redux';
+import configureEpicRollupStore from '../../redux/epicRollupStore';
 
 initializeIcons(/* optional base url */);
 
@@ -12,33 +15,75 @@ export interface IEpicRollupGridProps {
     teamId: string;
     uiState: UIStatus;
     //gridView: IGridView,
-    childItems: number[];
+    //childItems: number[];
     //settingsState: ISettingsState;
-    launchWorkItemForm: (id: number) => void;
-    showDetails: (id: number) => void;
-    closeDetails: (id: number) => void;
-    clearOverrideIteration: (id: number) => void;
-    dragHoverOverIteration: (iteration: string) => void;
-    overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
-    overrideIterationEnd: () => void;
-    changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => void;
-    showNIterations: (projectId: string, teamId: string, count: Number) => void;
-    shiftDisplayIterationLeft: () => void;
-    shiftDisplayIterationRight: () => void;
-    showAllIterations: () => void;
-    markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
-    toggleShowWorkItemDetails: (show: boolean) => void;
-    changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => void;
 }
 
 
-export class EpicRollupGrid extends React.Component<{}, {}> {
+class Grid extends React.Component<IEpicRollupGridProps, {}> {
     constructor() {
         super();
     }
 
     public render(): JSX.Element {
+        const {
+            uiState,
+        } = this.props;
+
+        if (uiState === UIStatus.Loading) {
+            return (
+                <Spinner size={SpinnerSize.large} label="Loading..." />
+            );
+        }
+
+        if (uiState === UIStatus.NoTeamIterations) {
+            return (
+                <MessageBar
+                    messageBarType={MessageBarType.error}
+                    isMultiline={false}
+                >
+                    {"The team does not have any iteration selected, please visit team admin page and select team iterations."}
+                </MessageBar>
+            );
+        }
+
+        if (uiState === UIStatus.NoWorkItems) {
+            return (<MessageBar
+                messageBarType={MessageBarType.info}
+                isMultiline={false}
+            >
+                {"No in-progress Features for the timeline."}
+            </MessageBar>);
+        }
         return (<div>{"Epic Rollup is great"}</div>)
     }
 }
+
+
+const makeMapStateToProps = () => {
+    return (state: IEpicRollupState) => {
+        return {
+            projectId: getProjectId(),
+            teamId: getTeamId(),
+            uiState: UIStatus.Default,
+        }
+    }
+}
+
+export const ConnectedEpicRollupGrid = connect(makeMapStateToProps)(Grid);
+
+export const EpicRollupGrid = () => {
+    const initialState: IEpicRollupState = {        
+    } as IEpicRollupState;
+    const store = configureEpicRollupStore(initialState);
+
+    // const projectId = getProjectId();
+    // const teamId = getTeamId();
+
+    return (
+        <Provider store={store}>
+            <ConnectedEpicRollupGrid />
+        </Provider>);
+}
+
 

@@ -4,6 +4,9 @@ import { TeamIterationsActions, TeamIterationsReceivedType } from './teamIterati
 import { compareIteration } from '../../../../Common/Helpers/iterationComparer';
 
 export function teamIterationsReducer(state: TeamIterationsMap, action: TeamIterationsActions): TeamIterationsMap {
+    if(!state) {
+        state = {};
+    }
     return produce(state, draft => {
         const {
             payload

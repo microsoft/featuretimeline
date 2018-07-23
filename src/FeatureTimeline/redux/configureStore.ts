@@ -4,7 +4,7 @@ import createSagaMiddleware from 'redux-saga'
 import { trackActions } from './sagas/trackActions';
 import { watchSagaActions } from './sagas';
 
-export default function configureStore(
+export default function configureFeatureTimelineStore(
     initialState: IFeatureTimelineRawState
 ): Store<IFeatureTimelineRawState> {
 

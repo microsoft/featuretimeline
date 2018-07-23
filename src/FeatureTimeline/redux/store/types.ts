@@ -13,7 +13,7 @@ import settingsReducer from "./common/settingsReducer";
 import togglePaneReducer from './common/togglePaneReducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
-import overrideIterationReducer from "../../../Common//overrideIterationProgress/reducer";
+import overrideIterationReducer from "../../../Common/overrideIterationProgress/reducer";
 import teamIterationsReducer from './teamiterations/reducer';
 import { ITeamSettingsIterationState } from './teamiterations/types';
 import teamSettingReducer from './teamSettings/reducer';

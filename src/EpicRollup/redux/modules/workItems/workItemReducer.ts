@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { DependenciesReceivedType, EpicHierarchyReceivedType, PagedWorkItemsReceivedType, WorkItemsActions } from './workItemActions';
-import { IEpicRollupWorkItemAwareState } from './workItemContracts';
-export function workItemsReducer(state: IEpicRollupWorkItemAwareState, action: WorkItemsActions): IEpicRollupWorkItemAwareState {
+import { IWorkItemsState } from './workItemContracts';
+export function workItemsReducer(state: IWorkItemsState, action: WorkItemsActions): IWorkItemsState {
     if (!state) {
         state = {
             epicHierarchy: [],

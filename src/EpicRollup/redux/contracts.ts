@@ -8,5 +8,4 @@ export interface IEpicRollupState extends
     ITeamIterationsAwareState,
     IOverriddenIterationsAwareState,
     IEpicRollupWorkItemAwareState {
-
 }
