@@ -44,6 +44,10 @@ const plugins = [
 			to: "./"
 		},
 		{
+			from: "./src/EpicRollup/epicrollup.html",
+			to: "./"
+		},
+		{
 			from: "./images",
 			to: "./images"
 		},
@@ -63,12 +67,15 @@ if (mode !== "development") {
 	//plugins.unshift(new PrettierPlugin());
 }
 module.exports = {
-	entry: './src/FeatureTimeline/FeatureTimeline.tsx',
+	entry: {
+		featureTimeLIne: './src/FeatureTimeline/FeatureTimeline.tsx',
+		epicRollup: './src/EpicRollup/EpicRollup.tsx',
+	},
 	output: {
-		filename: 'featuretimelinebundle.js',
+		filename: '[name].js',
 		path: path.resolve(__dirname, 'dist'),
 		libraryTarget: 'umd',
-		library: "FeatureTimeline"
+		library: "[name]"
 	},
 	devtool: "source-map",
 	mode: mode,

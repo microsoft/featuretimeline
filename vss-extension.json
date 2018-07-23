@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
     "version": "0.0.262",
-    "name": "Feature timeline",
+    "name": "Feature timeline and Epic Rollup",
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",
     "targets": [{
@@ -15,7 +15,7 @@
     "icons": {
         "default": "dist/images/icon.png"
     },
-    "tags": ["work item", "timeline", "feature"],
+    "tags": ["work item", "timeline", "feature", "epic", "rollup"],
     "content": {
         "details": {
             "path": "dist/details.md"
@@ -47,6 +47,20 @@
             "name": "Feature Timeline",
             "order": 99,
             "uri": "dist/featuretimeline.html",
+            "dynamic": true
+        }
+    },
+    {
+        "id": "workitem-epic-rollup",
+        "type": "ms.vss-web.tab",
+        "description": "Epic Rollup.",
+        "targets": [
+            "ms.vss-work-web.product-backlog-tabs"
+        ],
+        "properties": {
+            "name": "Epic Rollup",
+            "order": 100,
+            "uri": "dist/epicrollup.html",
             "dynamic": true
         }
     }]

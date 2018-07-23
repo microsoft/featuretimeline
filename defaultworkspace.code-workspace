@@ -27,8 +27,8 @@
 			"**/configs": true,
 			"**/scripts": true,
 			"**/*.md": true,
-			"**/*.json": true,
-			"**/*config.js": true,
+			//"**/*.json": true,
+			//"**/*config.js": true,
 		}
 	}
 }
