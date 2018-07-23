@@ -5,7 +5,7 @@ import {
     ResetAction, ResetType,
     TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaAction, ChangeProgressTrackingCriteriaType, RestoreSettingsAction, RestoreSettingsType, ChangeShowClosedSinceDaysAction, ChangeShowClosedSinceDaysType
 } from './actions';
-import { ProgressTrackingCriteria, ISettingsState } from '../types';
+import { ProgressTrackingCriteria, ISettingsState } from "../../../../Common/OptionsInterfaces";
 
 export const resetAllData: ActionCreator<ResetAction> = () => ({
     type: ResetType,

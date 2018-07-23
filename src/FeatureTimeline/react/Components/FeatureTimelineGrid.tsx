@@ -14,9 +14,9 @@ import configureStore from '../../redux/configureStore';
 import { getBacklogLevel, getRawState, planFeatureStateSelector, primaryGridViewSelector, settingsStateSelector, uiStatusSelector } from '../../redux/selectors';
 import { IGridView } from '../../redux/selectors/gridViewSelector';
 import { changePlanFeaturesWidth, changeProgressTrackingCriteria, changeShowClosedSinceDays, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane, toggleShowWorkItemDetails } from '../../redux/store/common/actioncreators';
-import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../redux/store/overrideIterationProgress/actionCreators';
 import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../redux/store/teamiterations/actionCreators';
-import { IFeatureTimelineRawState, IPlanFeaturesState, ISettingsState, IWorkItemOverrideIteration, ProgressTrackingCriteria } from '../../redux/store/types';
+import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/types';
+import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/OptionsInterfaces";
 import { launchWorkItemForm, startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
 import { IterationDropTarget } from './DroppableIterationShadow';
 import './FeatureTimelineGrid.scss';
@@ -31,6 +31,8 @@ import InputNum from "rc-input-number";
 import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
 import { OverriddenIterationsActionCreator } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
 import { UIStatus } from '../../../Common/types';
+import { IWorkItemOverrideIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import { overrideHoverOverIteration, startOverrideIteration, endOverrideIteration } from '../../../Common/overrideIterationProgress/actionCreators';
 
 
 initializeIcons(/* optional base url */);

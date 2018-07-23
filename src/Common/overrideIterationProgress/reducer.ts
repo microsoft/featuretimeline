@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 import { OverrideIterationActions, OverrideIterationHoverOverIterationType, OverrideIterationStartType, OverrideIterationCleanupType } from './actions';
-import { IWorkItemOverrideIteration } from '../types';
 import produce from "immer";
+import { IWorkItemOverrideIteration } from '../modules/OverrideIterations/overriddenIterationContracts';
 
 const reducer: Reducer<IWorkItemOverrideIteration> = (state: IWorkItemOverrideIteration = null, action: OverrideIterationActions) => {
 

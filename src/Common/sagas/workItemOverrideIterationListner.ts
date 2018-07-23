@@ -1,10 +1,10 @@
 import { put, call, select } from "redux-saga/effects";
-import { workItemOverrideIterationSelector } from "../selectors";
-import { IWorkItemOverrideIteration } from "../store/types";
-import { cleanupOverrideIteration, saveOverrideIteration } from "../store/overrideIterationProgress/actionCreators";
-import { OverrideIterationEndAction, SaveOverrideIterationAction } from "../store/overrideIterationProgress/actions";
-import { OverriddenIterationsActionCreator } from "../../../Common/modules/OverrideIterations/overrideIterationsActions";
+import { workItemOverrideIterationSelector } from "../../FeatureTimeline/redux/selectors";
+import { OverriddenIterationsActionCreator } from "../modules/OverrideIterations/overrideIterationsActions";
 import { AnyAction } from 'redux';
+import { IWorkItemOverrideIteration } from "../modules/OverrideIterations/overriddenIterationContracts";
+import { SaveOverrideIterationAction, OverrideIterationEndAction } from "../overrideIterationProgress/actions";
+import { cleanupOverrideIteration, saveOverrideIteration } from "../overrideIterationProgress/actionCreators";
 
 
 export function* launchOverrideWorkItemIteration(action: OverrideIterationEndAction) {

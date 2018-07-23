@@ -12,8 +12,10 @@ import { IProgressIndicator } from '../../../redux/selectors/gridViewSelector';
 import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { State } from '../State/State';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
-import { ISettingsState, ProgressTrackingCriteria, IIterationDuration, IWorkItemOverrideIteration } from '../../../redux/store/types';
+import { IIterationDuration } from '../../../redux/store/types';
+import { ISettingsState, ProgressTrackingCriteria } from "../../../../Common/OptionsInterfaces";
 import { IDimension, CropWorkItem } from '../../../../Common/types';
+import { IWorkItemOverrideIteration } from '../../../../Common/modules/OverrideIterations/overriddenIterationContracts';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;

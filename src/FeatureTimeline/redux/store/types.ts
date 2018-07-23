@@ -1,6 +1,8 @@
+import { ISettingsState } from '../../../Common/OptionsInterfaces';
+
 import { Action, combineReducers, Reducer } from 'redux';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { IOverriddenIterationDuration, IOverriddenIterationsAwareState } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import { IOverriddenIterationsAwareState, IWorkItemOverrideIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
 import savedOverrideIterationsReducer from '../../../Common/modules/OverrideIterations/overrideWorkItemIterationReducer';
 import backlogConfigurationReducer from './backlogconfiguration/reducer';
 import { IBacklogConfigurationState } from './backlogconfiguration/types';
@@ -11,7 +13,7 @@ import settingsReducer from "./common/settingsReducer";
 import togglePaneReducer from './common/togglePaneReducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
-import overrideIterationReducer from "./overrideIterationProgress/reducer";
+import overrideIterationReducer from "../../../Common//overrideIterationProgress/reducer";
 import teamIterationsReducer from './teamiterations/reducer';
 import { ITeamSettingsIterationState } from './teamiterations/types';
 import teamSettingReducer from './teamSettings/reducer';
@@ -34,23 +36,6 @@ export enum IterationDurationKind {
     Self,
     ChildRollup,
     UserOverridden
-}
-
-export enum ProgressTrackingCriteria {
-    ChildWorkItems,
-    EffortsField
-}
-
-export interface ISettingsState {
-    showWorkItemDetails: boolean;
-    progressTrackingCriteria: ProgressTrackingCriteria;
-    showClosedSinceDays: number;
-}
-
-export interface IWorkItemOverrideIteration {
-    workItemId: number;
-    iterationDuration: IOverriddenIterationDuration;
-    changingStart: boolean; // Weather we are changing start iteration or end iteration
 }
 
 export interface IPlanFeaturesState {

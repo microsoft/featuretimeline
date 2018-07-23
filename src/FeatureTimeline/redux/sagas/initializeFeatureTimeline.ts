@@ -14,7 +14,7 @@ import { genericError } from '../store/error/actionCreators';
 import { loading } from '../store/loading/actionCreators';
 import { restoreDisplayIterationCount, teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
-import { ISettingsState } from '../store/types';
+import { ISettingsState } from "../../../Common/OptionsInterfaces";
 import { workItemStateColorsReceived, workItemTypesReceived } from '../store/workitemmetadata/actionCreators';
 import { workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
 import { restoreSettings } from './saveSettings';
