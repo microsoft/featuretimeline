@@ -4,9 +4,9 @@ import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { SavedOverriddenIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
 import { OverriddenIterationSelector } from '../../../Common/modules/OverrideIterations/overriddenIterationsSelector';
 import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
-import { normalizedDependencyTreeSelector } from '../modules/workItems/selectors/dependencyTreeSelector';
-import { IEpicTree, normalizedEpicTreeSelector } from "../modules/workItems/selectors/epicTreeSelector";
-import { pagedWorkItemsMapSelector } from '../modules/workItems/selectors/workItemSelector';
+import { normalizedDependencyTreeSelector } from './dependencyTreeSelector';
+import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
+import { pagedWorkItemsMapSelector } from './workItemSelector';
 import { IDependenciesTree } from '../modules/workItems/workItemContracts';
 
 export enum IterationDurationCriteria {
@@ -22,6 +22,10 @@ export type WorkItemStartEndIteration = IDictionaryNumberTo<{
     user?: string
 }>;
 
+/**
+ * Returns start/end iteration for work items based on 
+ * dependency tree, overridden iterations and child iterations
+ */
 export const workItemStartEndIterationSelector = createSelector(
     normalizedEpicTreeSelector,
     normalizedDependencyTreeSelector,

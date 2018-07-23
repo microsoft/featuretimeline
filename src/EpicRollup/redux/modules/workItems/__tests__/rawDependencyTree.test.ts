@@ -1,4 +1,4 @@
-import { createRawDependencyTree } from '../selectors/dependencyTreeSelector';
+import { createRawDependencyTree } from '../../../selectors/dependencyTreeSelector';
 import { WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
 declare var test, expect;
 function wit(id: number) {

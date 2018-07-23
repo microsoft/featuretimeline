@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
-import { backlogConfigurationForProjectSelector } from '../../backlogconfiguration/backlogconfigurationselector';
+import { backlogConfigurationForProjectSelector } from '../modules/backlogconfiguration/backlogconfigurationselector';
 import { BacklogConfiguration, BacklogLevelConfiguration } from 'TFS/Work/Contracts';
 import { getEpicHierarchyLinks, pagedWorkItemsMapSelector } from './workItemSelector';
 export interface IEpicTree {

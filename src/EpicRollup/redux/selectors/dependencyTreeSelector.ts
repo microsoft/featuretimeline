@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { IDependenciesTree } from '../workItemContracts';
+import { IDependenciesTree } from '../modules/workItems/workItemContracts';
 import { WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
 import { getEpicDependenciesLinks } from './workItemSelector';
 import { normalizedEpicTreeSelector, IEpicTree } from './epicTreeSelector';

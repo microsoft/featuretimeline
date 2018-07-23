@@ -1,4 +1,4 @@
-import { createRawEpicTree } from "../selectors/epicTreeSelector";
+import { createRawEpicTree } from "../../../selectors/epicTreeSelector";
 import { WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
 declare var test, expect;
 function wit(id: number) {

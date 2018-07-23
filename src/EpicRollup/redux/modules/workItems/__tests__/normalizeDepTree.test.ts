@@ -1,5 +1,5 @@
-import { createNormalizedDependencyTree } from '../selectors/dependencyTreeSelector';
-import { IEpicTree } from "../selectors/epicTreeSelector";
+import { createNormalizedDependencyTree } from '../../../selectors/dependencyTreeSelector';
+import { IEpicTree } from "../../../selectors/epicTreeSelector";
 import { IDependenciesTree } from '../workItemContracts';
 declare var test, expect;
 
