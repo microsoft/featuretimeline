@@ -5,7 +5,7 @@ import { getUIStatus } from "./uistatus";
 import { IFeatureTimelineRawState } from "../store/types";
 import { WorkItemLevel, StateCategory } from "../store/workitems/types";
 import { getEpicHierarchy, FeatureFilter } from "./workItemHierarchySelector";
-import { getGridView } from "./gridViewSelector";
+import { getGridView } from "./FeatureTimelineGridViewSelector";
 import { getTeamIterations, getBacklogIteration } from "./teamIterations";
 import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";

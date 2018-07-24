@@ -2,7 +2,7 @@ import './TimelineDialog.scss'
 import * as React from 'react';
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { FeatureTimelineGrid, IFeatureTimelineGridProps } from './FeatureTimelineGrid';
-import { getGridView } from '../../redux/selectors/gridViewSelector';
+import { getGridView } from '../../redux/selectors/FeatureTimelineGridViewSelector';
 import { getTeamIterations } from '../../redux/selectors/teamIterations';
 import { IterationDurationKind } from '../../redux/store/types';
 import { IterationRenderer } from './IterationRenderer';
