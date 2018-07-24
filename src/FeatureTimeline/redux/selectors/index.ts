@@ -10,7 +10,7 @@ import { getTeamIterations, getBacklogIteration } from "./teamIterations";
 import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
 import { getDefaultSettingsState } from "../store/common/settingsReducer";
-import { getProjectId, getTeamId } from "../../../Common/CommonSelectors";
+import { getProjectId, getTeamId } from "../../../Common/Selectors/CommonSelectors";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
 

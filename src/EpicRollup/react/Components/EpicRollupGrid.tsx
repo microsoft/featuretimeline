@@ -1,11 +1,11 @@
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
-import * as React from 'react';
-import { UIStatus } from '../../../Common/Contracts/types';
-import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
-import { IEpicRollupState } from '../../redux/contracts';
-import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
+import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import * as React from 'react';
 import { connect, Provider } from 'react-redux';
+import { UIStatus } from '../../../Common/Contracts/types';
+import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
+import { IEpicRollupState } from '../../redux/contracts';
 import configureEpicRollupStore from '../../redux/epicRollupStore';
 
 initializeIcons(/* optional base url */);

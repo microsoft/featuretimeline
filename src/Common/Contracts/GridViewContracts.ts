@@ -1,8 +1,8 @@
-import { WorkItemStateColor, WorkItem } from "TFS/WorkItemTracking/Contracts";
-import { IIterationDuration } from "../../FeatureTimeline/redux/store/types";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { IDimension, CropWorkItem } from "./types";
+import { WorkItem, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
+import { IIterationDuration } from "../../FeatureTimeline/redux/store/types";
 import { ISettingsState } from "./OptionsInterfaces";
+import { CropWorkItem, IDimension } from "./types";
 
 export interface IWorkItemDisplayDetails {
     id: number;
@@ -42,13 +42,16 @@ export interface IGridWorkItem {
     isGap?: boolean;
 }
 
-export interface IGridView {
+export interface IGridIterationDisplayDetails {
     emptyHeaderRow: IDimension[]; //Set of empty elements to place items on top of iteration header
     iterationHeader: IGridIteration[];
     iterationShadow: IGridIteration[];
+}
+
+export interface IGridView extends IGridIterationDisplayDetails {    
     workItems: IGridWorkItem[];
     isSubGrid: boolean;
-    workItemShadow: number;
+    shadowForWorkItemId: number;
     hideParents: boolean;
     iterationDisplayOptions: IIterationDisplayOptions;
     teamIterations: TeamSettingsIteration[];

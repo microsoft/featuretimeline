@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { getProjectId } from "../../../../Common/CommonSelectors";
+import { getProjectId } from "../../../../Common/Selectors/CommonSelectors";
 import { IEpicRollupState } from "../../contracts";
 import { ProjectWorkItemMetadataMap } from "./workItemMetadataContracts";
 

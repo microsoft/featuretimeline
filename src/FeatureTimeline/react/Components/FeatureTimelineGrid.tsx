@@ -4,36 +4,36 @@ import { ComboBox } from 'office-ui-fabric-react/lib/ComboBox';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import InputNum from "rc-input-number";
 import * as React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { connect, Provider } from 'react-redux';
 import SplitterLayout from 'react-splitter-layout';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { launchWorkItemForm } from "../../../Common/actions/launchWorkItemForm";
+import { IGridView } from '../../../Common/Contracts/GridViewContracts';
+import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
+import { UIStatus } from '../../../Common/Contracts/types';
+import { getRowColumnStyle, getTemplateColumns } from '../../../Common/Helpers/gridhelper';
+import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
+import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../../Common/modules/overrideIterationProgress/actionCreators';
+import { IWorkItemOverrideIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import { OverriddenIterationsActionCreator } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
+import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
 import configureFeatureTimelineStore from '../../redux/configureStore';
 import { getBacklogLevel, getRawState, planFeatureStateSelector, primaryGridViewSelector, settingsStateSelector, uiStatusSelector } from '../../redux/selectors';
 import { changePlanFeaturesWidth, changeProgressTrackingCriteria, changeShowClosedSinceDays, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane, toggleShowWorkItemDetails } from '../../redux/store/common/actioncreators';
 import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/types';
-import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
 import { startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
-import { launchWorkItemForm } from "../../../Common/actions/launchWorkItemForm";
 import { IterationDropTarget } from './DroppableIterationShadow';
 import './FeatureTimelineGrid.scss';
-import { getRowColumnStyle, getTemplateColumns } from '../../../Common/Helpers/gridhelper';
 import { IterationRenderer } from './IterationRenderer';
 import { TimelineDialog } from './TimelineDialog';
 import DraggableWorkItemRenderer from './WorkItem/DraggableWorkItemRenderer';
 import { WorkitemGap } from './WorkItem/WorkItemGap';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
 import { ConnectedWorkItemsList } from './WorkItemList';
-import InputNum from "rc-input-number";
-import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
-import { OverriddenIterationsActionCreator } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
-import { UIStatus } from '../../../Common/Contracts/types';
-import { IWorkItemOverrideIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
-import { IGridView } from '../../../Common/Contracts/GridViewContracts';
-import { overrideHoverOverIteration, startOverrideIteration, endOverrideIteration } from '../../../Common/modules/overrideIterationProgress/actionCreators';
-import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
 
 
 initializeIcons(/* optional base url */);
@@ -204,7 +204,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             iterationHeader,
             iterationShadow,
             workItems,
-            workItemShadow,
+            shadowForWorkItemId,
             iterationDisplayOptions,
             isSubGrid,
             teamIterations
@@ -235,8 +235,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         });
 
         let workItemShadowCell = null;
-        if (workItemShadow) {
-            const workItem = workItems.filter(w => !w.isGap && w.workItem.id === workItemShadow)[0];
+        if (shadowForWorkItemId) {
+            const workItem = workItems.filter(w => !w.isGap && w.workItem.id === shadowForWorkItemId)[0];
             workItemShadowCell = (
                 <WorkItemShadow dimension={workItem.dimension} twoRows={workItem.settingsState.showWorkItemDetails} />
             );

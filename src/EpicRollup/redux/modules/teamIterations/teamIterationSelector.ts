@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { getTeamId } from '../../../../Common/CommonSelectors';
+import { getTeamId } from '../../../../Common/Selectors/CommonSelectors';
 import { IEpicRollupState } from '../../contracts';
 
 export const getTeamIterationsMap = (state: IEpicRollupState) => state.teamIterations;

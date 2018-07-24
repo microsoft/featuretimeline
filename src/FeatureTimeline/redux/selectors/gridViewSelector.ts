@@ -1,10 +1,11 @@
-import { IterationDurationKind } from "../store/types";
-import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { compareIteration } from "../../../Common/Helpers/iterationComparer";
-import { IDimension, CropWorkItem, UIStatus } from "../../../Common/Contracts/types";
+import { IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/Contracts/GridViewContracts";
+import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
+import { CropWorkItem, IDimension, UIStatus } from "../../../Common/Contracts/types";
+import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
 import { IWorkItemOverrideIteration } from "../../../Common/modules/OverrideIterations/overriddenIterationContracts";
-import { IGridView, IGridIteration, IGridWorkItem, IWorkItemDisplayDetails, IIterationDisplayOptions } from "../../../Common/Contracts/GridViewContracts";
+import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
+import { IterationDurationKind } from "../store/types";
 
 
 export function getGridView(
@@ -25,7 +26,7 @@ export function getGridView(
             iterationShadow: [],
             workItems: [],
             isSubGrid,
-            workItemShadow: 0,
+            shadowForWorkItemId: 0,
             hideParents: false,
             iterationDisplayOptions: null,
             teamIterations: [],
@@ -56,154 +57,30 @@ export function getGridView(
         hideParents,
         settingState);
 
-    let workItemShadow = 0;
+    let shadowForWorkItemId = 0;
     if (workItemOverrideIteration && workItemOverrideIteration.workItemId) {
-        workItemShadow = workItemOverrideIteration.workItemId;
+        shadowForWorkItemId = workItemOverrideIteration.workItemId;
     }
 
+    const {
+        emptyHeaderRow,
+        iterationHeader,
+        iterationShadow
+    } = getIterationDisplayDetails(gridWorkItems, displayIterations, hideParents);
+    
     const view: IGridView = {
-        emptyHeaderRow: [],
-        iterationHeader: [],
-        iterationShadow: [],
         workItems: gridWorkItems,
         isSubGrid,
-        workItemShadow,
+        shadowForWorkItemId,
         hideParents,
         iterationDisplayOptions,
         teamIterations,
-        backlogIteration
-    };
-
-    // Calculate shadow and header
-    const startRow = 1;
-    const endRow = 2;
-    const lastWorkItemRow = gridWorkItems.length > 0 ? gridWorkItems[gridWorkItems.length - 1].dimension.endRow + 1 : endRow + 1;
-    let startCol = hideParents ? 1 : 2; // First column is for the epic
-    displayIterations.forEach(teamIteration => {
-
-        const endCol = startCol + 1;
-        const emptyRowDimension: IDimension = {
-            startCol,
-            startRow,
-            endRow,
-            endCol
-        };
-
-        view.emptyHeaderRow.push(emptyRowDimension);
-
-        const dimension: IDimension = {
-            startCol,
-            startRow: startRow + 1,
-            endRow,
-            endCol
-        };
-
-        const gridIteration: IGridIteration = {
-            teamIteration,
-            dimension
-        };
-
-        view.iterationHeader.push(gridIteration);
-
-        const shadowDimension: IDimension = {
-            startRow: startRow + 2,
-            startCol,
-            endCol,
-            endRow: lastWorkItemRow
-        };
-        const shadowIteration: IGridIteration = {
-            teamIteration,
-            dimension: shadowDimension
-        }
-        view.iterationShadow.push(shadowIteration);
-        startCol++;
-    });
+        backlogIteration,
+        emptyHeaderRow,
+        iterationHeader,
+        iterationShadow
+    }
     return view;
-}
-
-export function getDisplayIterations(
-    backlogIteration: TeamSettingsIteration,
-    teamIterations: TeamSettingsIteration[],
-    workItems: IWorkItemDisplayDetails[],
-    isSubGrid: boolean,
-    iterationDisplayOptions?: IIterationDisplayOptions): TeamSettingsIteration[] {
-
-    // Sort the input iteration
-    teamIterations = teamIterations.slice().sort(compareIteration);
-
-    if (iterationDisplayOptions) {
-        return teamIterations.slice(iterationDisplayOptions.startIndex, iterationDisplayOptions.endIndex + 1);
-    }
-
-
-    const hasBacklogIteration = (workItem: IWorkItemDisplayDetails) => {
-        if (!isSubGrid) {
-            return false;
-        }
-
-        if (workItem.iterationDuration.kind === IterationDurationKind.BacklogIteration) {
-            return true;
-        }
-
-        return workItem.children.some(child => hasBacklogIteration(child));
-    }
-
-
-    let firstIteration: TeamSettingsIteration = null;
-    let lastIteration: TeamSettingsIteration = null;
-    let showBacklogIteration = false;
-
-    // Get all iterations that come in the range of the workItems
-    const calcFirstLastIteration = (workItem: IWorkItemDisplayDetails) => {
-
-        // If it is not sub grid and workItem iteration is backlog iteration than ignore it
-        if (!isSubGrid && workItem.iterationDuration.kind === IterationDurationKind.BacklogIteration) {
-            // Do nothing
-        } else {
-            if (firstIteration === null) {
-                firstIteration = workItem.iterationDuration.startIteration;
-                lastIteration = workItem.iterationDuration.endIteration;
-            } else {
-                if (compareIteration(workItem.iterationDuration.startIteration, firstIteration) < 0) {
-                    firstIteration = workItem.iterationDuration.startIteration;
-                }
-
-                if (compareIteration(workItem.iterationDuration.endIteration, lastIteration) > 0) {
-                    lastIteration = workItem.iterationDuration.endIteration;
-                }
-            }
-        }
-        showBacklogIteration = isSubGrid && (showBacklogIteration || (workItem.iterationDuration.kind === IterationDurationKind.BacklogIteration));
-
-        workItem.children.forEach(child => calcFirstLastIteration(child));
-    };
-
-    workItems.forEach(workItem => calcFirstLastIteration(workItem));
-
-
-    const candidateIterations = [...teamIterations];
-    if (showBacklogIteration) {
-        candidateIterations.push(backlogIteration);
-        candidateIterations.sort(compareIteration);
-    }
-
-    // If there are no planned workitems use first and last team iteration
-    if (!firstIteration || !lastIteration) {
-        firstIteration = candidateIterations[0];
-        lastIteration = candidateIterations[candidateIterations.length - 1];
-    }
-
-    const additionalIterations = isSubGrid ? 1 : 2;
-    // Get two to the left and two to the right iterations from candiateIterations
-    let startIndex = candidateIterations.findIndex(i => i.id === firstIteration.id) - additionalIterations;
-    let endIndex = candidateIterations.findIndex(i => i.id === lastIteration.id) + additionalIterations;
-
-    startIndex = startIndex < 0 ? 0 : startIndex;
-    endIndex = endIndex >= candidateIterations.length ? candidateIterations.length - 1 : endIndex;
-
-    const displayIterations = candidateIterations.slice(startIndex, endIndex + 1);
-
-    return displayIterations;
 }
 
 function workItemCompare(w1: IWorkItemDisplayDetails, w2: IWorkItemDisplayDetails) {

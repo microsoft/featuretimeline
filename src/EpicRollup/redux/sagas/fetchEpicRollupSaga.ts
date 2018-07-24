@@ -1,15 +1,15 @@
-import { all, call, select, put } from "redux-saga/effects";
+import { all, call, put, select } from "redux-saga/effects";
 import { BacklogConfiguration } from 'TFS/Work/Contracts';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
-import { getProjectId } from '../../../Common/CommonSelectors';
 import { PageWorkItemHelper } from '../../../Common/Helpers/PageWorkItemHelper';
+import { restoreOverriddenIterations } from '../../../Common/modules/OverrideIterations/overriddenIterationsSaga';
+import { getProjectId } from '../../../Common/Selectors/CommonSelectors';
+import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
+import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
 import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
 import { fetchTeamIterations } from './fetchTeamSettingsSaga';
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
-import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
-import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
-import { restoreOverriddenIterations } from '../../../Common/modules/OverrideIterations/overriddenIterationsSaga';
 
 export function* fetchEpicRollup(epicId: number) {
     debugger;

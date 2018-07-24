@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { getProjectId } from "../../../../Common/CommonSelectors";
+import { getProjectId } from "../../../../Common/Selectors/CommonSelectors";
 import { IProjectBacklogConfigurationAwareState } from "./backlogconfigurationcontracts";
 
 export const getBacklogConfigurationMap = (state: IProjectBacklogConfigurationAwareState) => state.backlogConfigurations;

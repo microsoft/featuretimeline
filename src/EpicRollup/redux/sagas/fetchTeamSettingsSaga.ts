@@ -1,8 +1,8 @@
 
+import { call, put } from 'redux-saga/effects';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import * as VSS_Service from 'VSS/Service';
-import { call, put } from 'redux-saga/effects';
-import { getProjectId, getTeamId } from '../../../Common/CommonSelectors';
+import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
 import { TeamIterationsActionCreator } from '../modules/teamIterations/teamIterationsActions';
 
 export function* fetchTeamIterations() {
