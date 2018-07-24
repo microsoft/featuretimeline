@@ -12,7 +12,7 @@ export interface IAreaPathDisplayItem extends IGridItem {
 }
 
 export interface IEpicRollupGridView extends IGridView {
-    areaPathDisplayItems: IAreaPathDisplayItem[];
+    areaPathDisplayItems: ITeamFieldDisplayItem[];
 }
 
 export function getEpicRollupGridView(
@@ -86,7 +86,7 @@ function getGridItems(
     const workItemsByTeamField = getWorkItemsByTeamField(workItemDisplayDetails, teamFieldName);
     const sortedTeamFields = Object.keys(workItemsByTeamField).sort();
     const gridWorkItems: IGridWorkItem[] = [];
-    const areaPathDisplayItems: IAreaPathDisplayItem[] = [];
+    const teamFieldPathDisplayItems: ITeamFieldDisplayItem[] = [];
     let teamGroupStartRow = 2;
     let teamGroupEndRow = -1;
     sortedTeamFields.forEach(teamField => {
