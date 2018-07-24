@@ -7,12 +7,12 @@ import { CropWorkItem } from "../../../Common/Contracts/types";
 import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
 import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
 
-export interface IAreaPathDisplayItem extends IGridItem {
+export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
 }
 
 export interface IEpicRollupGridView extends IGridView {
-    areaPathDisplayItems: ITeamFieldDisplayItem[];
+    teamFieldDisplayItems: ITeamFieldDisplayItem[];
 }
 
 export function getEpicRollupGridView(
@@ -43,7 +43,7 @@ export function getEpicRollupGridView(
         /* includeBacklogIteration */ true,
         iterationDisplayOptions) : teamIterations;
 
-    const { gridWorkItems, areaPathDisplayItems } =
+    const { gridWorkItems, teamFieldDisplayItems } =
         getGridItems(
             workItemDisplayDetails,
             teamFieldName,
@@ -61,7 +61,7 @@ export function getEpicRollupGridView(
 
     return {
         workItems: gridWorkItems,
-        areaPathDisplayItems,
+        teamFieldDisplayItems,
         isSubGrid: false,
         shadowForWorkItemId: -1,
         hideParents: false,
@@ -82,11 +82,11 @@ function getGridItems(
     iterationDisplayOptions: IIterationDisplayOptions,
     backlogIteration: TeamSettingsIteration,
     settingsState: ISettingsState,
-    progressTrackingCriteria: ProgressTrackingCriteria): { gridWorkItems: IGridWorkItem[]; areaPathDisplayItems: IAreaPathDisplayItem[]; } {
+    progressTrackingCriteria: ProgressTrackingCriteria): { gridWorkItems: IGridWorkItem[]; teamFieldDisplayItems: ITeamFieldDisplayItem[]; } {
     const workItemsByTeamField = getWorkItemsByTeamField(workItemDisplayDetails, teamFieldName);
     const sortedTeamFields = Object.keys(workItemsByTeamField).sort();
     const gridWorkItems: IGridWorkItem[] = [];
-    const teamFieldPathDisplayItems: ITeamFieldDisplayItem[] = [];
+    const teamFieldDisplayItems: ITeamFieldDisplayItem[] = [];
     let teamGroupStartRow = 2;
     let teamGroupEndRow = -1;
     sortedTeamFields.forEach(teamField => {
@@ -144,7 +144,7 @@ function getGridItems(
         if (childItems.length > 0) {
             gridWorkItems.push(...childItems);
             teamGroupEndRow = teamGroupStartRow + childItems.length;
-            areaPathDisplayItems.push({
+            teamFieldDisplayItems.push({
                 dimension: {
                     startRow: teamGroupStartRow,
                     startCol: 1,
@@ -156,7 +156,7 @@ function getGridItems(
             teamGroupStartRow = teamGroupEndRow;
         }
     });
-    return { gridWorkItems, areaPathDisplayItems };
+    return { gridWorkItems, teamFieldDisplayItems };
 }
 
 function getWorkItemsByTeamField(workItemDisplayDetails: IWorkItemDisplayDetails[], teamFieldName: string): IDictionaryStringTo<IWorkItemDisplayDetails[]> {
