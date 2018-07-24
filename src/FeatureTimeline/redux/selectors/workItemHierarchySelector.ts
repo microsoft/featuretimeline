@@ -96,7 +96,7 @@ function getWorkItemDetails(
     if (workItem) {
         const workItemTypeName = workItem.fields["System.WorkItemType"];
         const state = workItem.fields["System.State"].toLowerCase();
-        const metadata = workItemMetadata.metadata[projectId];
+        const metadata = workItemMetadata[projectId];
         workItemType = metadata.workItemTypes.filter((wit) => wit.name.toLowerCase() === workItemTypeName.toLowerCase())[0];
         if (metadata.workItemStateColors[workItemTypeName]) {
             workItemStateColor = metadata.workItemStateColors[workItemTypeName].filter(sc => sc.name.toLowerCase() === state)[0];
