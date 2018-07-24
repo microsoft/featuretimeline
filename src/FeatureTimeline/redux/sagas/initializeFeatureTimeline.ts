@@ -2,7 +2,6 @@ import { all, call, put, select } from 'redux-saga/effects';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
-import { ISettingsState } from "../../../Common/Contracts/OptionsInterfaces";
 import { PageWorkItemHelper } from '../../../Common/Helpers/PageWorkItemHelper';
 import { restoreDisplayIterationCount } from '../../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
 import { restoreOverriddenIterations } from '../../../Common/modules/OverrideIterations/overriddenIterationsSaga';
@@ -18,10 +17,12 @@ import { loading } from '../store/loading/actionCreators';
 import { teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
 import { workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
-import { restoreSettings } from './saveSettings';
+import { restoreSettings } from '../../../Common/modules/SettingsState/SettingsStateSagas';
 import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
+import { fetchIterationDisplayOptions } from '../../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsSaga';
+import { ISettingsState } from '../../../Common/modules/SettingsState/SettingsStateContracts';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html
@@ -54,7 +55,6 @@ export function* handleInitialize(action: InitializeAction) {
     const workHttpClient = VSS_Service.getClient(WorkHttpClient);
     const metadataService = WorkItemMetadataService.getInstance();
     const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
-    const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
     if (!workHttpClient.getBacklogConfigurations) {
         yield put(genericError("This extension is supported on Team Foundation Server 2018 or above."));
         return;
@@ -66,7 +66,7 @@ export function* handleInitialize(action: InitializeAction) {
             call(workHttpClient.getBacklogConfigurations.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamIterations.bind(workHttpClient), teamContext),
             call(metadataService.getWorkItemTypes.bind(metadataService), projectId),
-            call(dataService.getValue.bind(dataService), `${teamId}_iterationDisplayOptions`, { scopeType: 'User' }),
+            call(fetchIterationDisplayOptions, teamId),
             call(workHttpClient.getTeamSettings.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext)
         ]);

@@ -9,8 +9,8 @@ import { getGridView } from "./FeatureTimelineGridViewSelector";
 import { getTeamIterations, getBacklogIteration } from "./teamIterations";
 import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
-import { getDefaultSettingsState } from "../store/common/settingsReducer";
 import { getProjectId, getTeamId } from "../../../Common/Selectors/CommonSelectors";
+import { getSettingsState } from "../../../Common/modules/SettingsState/SettingsStateSelector";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
 
@@ -70,15 +70,6 @@ export const planFeatureStateSelector = () => {
     })
 }
 
-export const settingsStateSelector = () => {
-    return createSelector([getRawState], (state) => {
-        if (!state || !state.settingsState) {
-            return getDefaultSettingsState();
-        }
-        return state.settingsState;
-    })
-}
-
 
 export const epicsHierarchySelector = () => {
     return createSelector(
@@ -102,7 +93,7 @@ export const primaryGridViewSelector = () => {
         teamIterationsSelector(),
         epicsHierarchySelector(),
         workItemOverrideIterationSelector(),
-        settingsStateSelector(),
+        getSettingsState,
         iterationDisplayOptionsSelector()
     ],
         getGridView)

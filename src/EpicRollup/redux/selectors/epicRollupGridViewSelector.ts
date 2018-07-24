@@ -1,11 +1,18 @@
+import { backlogConfigurationForProjectSelector } from '../modules/backlogconfiguration/backlogconfigurationselector';
+import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
+import { workItemDisplayDetailsSelectors } from './workItemDisplayDetailsSelector';
 import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem, IGridWorkItem } from "../../../Common/Contracts/GridViewContracts";
 import { TeamSettingsIteration, BacklogConfiguration } from "TFS/Work/Contracts";
 import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
-import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
 import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
 import { CropWorkItem } from "../../../Common/Contracts/types";
 import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
 import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
+import { createSelector } from "reselect";
+import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsselector';
+import { getIterationDisplayOptionsState } from '../../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsSelector';
+import { getSettingsState } from '../../../Common/modules/SettingsState/SettingsStateSelector';
+import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/modules/SettingsState/SettingsStateContracts';
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
@@ -15,6 +22,15 @@ export interface IEpicRollupGridView extends IGridView {
     teamFieldDisplayItems: ITeamFieldDisplayItem[];
 }
 
+export const epicRollupGridViewSelector = createSelector(
+    workItemDisplayDetailsSelectors,
+    backogIterationsSelector as any,
+    teamIterationsSelector as any,
+    getIterationDisplayOptionsState as any,
+    backlogConfigurationForProjectSelector,
+    getSettingsState as any,
+    getEpicRollupGridView,
+);
 export function getEpicRollupGridView(
     workItemDisplayDetails: IWorkItemDisplayDetails[],
     backlogIteration: TeamSettingsIteration,

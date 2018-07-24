@@ -8,14 +8,14 @@ import { getProjectId } from '../../../Common/Selectors/CommonSelectors';
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
 import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
-import { fetchTeamIterations } from './fetchTeamSettingsSaga';
+import { fetchTeamIterations, fetchTeamSettings } from './fetchTeamSettingsSaga';
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 
 export function* fetchEpicRollup(epicId: number) {
     debugger;
     const projectId = getProjectId();
-    // get backlog configuration for the project
-    yield all([fetchBacklogConfiguration(), fetchTeamIterations()]);
+    // get backlog configuration/ team settings and backlog iteration for the project/current team
+    yield all([fetchBacklogConfiguration(), fetchTeamIterations(), fetchTeamSettings()]);
     const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
 
     // const portfolioBacklogs = backlogconfiguration.portfolioBacklogs;

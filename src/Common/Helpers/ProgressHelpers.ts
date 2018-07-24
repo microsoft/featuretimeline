@@ -1,5 +1,5 @@
 import { IWorkItemDisplayDetails } from "../Contracts/GridViewContracts";
-import { ProgressTrackingCriteria } from "../Contracts/OptionsInterfaces";
+import { ProgressTrackingCriteria } from "../modules/SettingsState/SettingsStateContracts";
 export function getProgress(children: IWorkItemDisplayDetails[], criteria: ProgressTrackingCriteria) {
     const completedChildren = children.filter(c => c.isComplete);
     switch (criteria) {

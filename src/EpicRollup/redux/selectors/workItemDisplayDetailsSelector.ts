@@ -21,7 +21,7 @@ export const workItemDisplayDetailsSelectors = createSelector(
     pagedWorkItemsMapSelector,
     workItemStartEndIterationSelector,
     backlogConfigurationForProjectSelector,
-    teamIterationsSelector,
+    teamIterationsSelector as any,
     workItemMetadataSelector,
     getWorkItemDisplayDetails
 );

@@ -1,7 +1,6 @@
-import { Reducer } from 'redux';
-import { ISettingsState, ProgressTrackingCriteria } from "../../../../Common/Contracts/OptionsInterfaces";
-import { SettingsActions, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, RestoreSettingsType, ChangeShowClosedSinceDaysType } from './actions';
 import produce from "immer";
+import { RestoreSettingsType, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType, SettingsActions } from "./SettingsStateActions";
+import { ISettingsState, ProgressTrackingCriteria } from "./SettingsStateContracts";
 
 export const getDefaultSettingsState = (): ISettingsState => {
     return {
@@ -10,12 +9,12 @@ export const getDefaultSettingsState = (): ISettingsState => {
         showClosedSinceDays: 0
     };
 }
-const reducer: Reducer<ISettingsState> = (state: ISettingsState = getDefaultSettingsState(), action: SettingsActions) => {
+export function settingsStateReducer(state: ISettingsState = getDefaultSettingsState(), action: SettingsActions): ISettingsState {
     const {
         type,
         payload
     } = action;
-    if(type === RestoreSettingsType) {
+    if (type === RestoreSettingsType) {
         return payload as ISettingsState;
     }
     return produce(state, draft => {
@@ -31,6 +30,4 @@ const reducer: Reducer<ISettingsState> = (state: ISettingsState = getDefaultSett
                 break;
         }
     });
-};
-
-export default reducer;
+}

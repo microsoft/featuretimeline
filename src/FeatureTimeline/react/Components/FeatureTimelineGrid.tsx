@@ -13,7 +13,7 @@ import SplitterLayout from 'react-splitter-layout';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { launchWorkItemForm } from "../../../Common/actions/launchWorkItemForm";
 import { IGridView } from '../../../Common/Contracts/GridViewContracts';
-import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
+import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/modules/SettingsState/SettingsStateContracts";
 import { UIStatus } from '../../../Common/Contracts/types';
 import { getRowColumnStyle, getTemplateColumns } from '../../../Common/Helpers/gridhelper';
 import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
@@ -22,8 +22,8 @@ import { IWorkItemOverrideIteration } from '../../../Common/modules/OverrideIter
 import { OverriddenIterationsActionCreator } from '../../../Common/modules/OverrideIterations/overrideIterationsActions';
 import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
 import configureFeatureTimelineStore from '../../redux/configureStore';
-import { getBacklogLevel, getRawState, planFeatureStateSelector, primaryGridViewSelector, settingsStateSelector, uiStatusSelector } from '../../redux/selectors';
-import { changePlanFeaturesWidth, changeProgressTrackingCriteria, changeShowClosedSinceDays, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane, toggleShowWorkItemDetails } from '../../redux/store/common/actioncreators';
+import { getBacklogLevel, getRawState, planFeatureStateSelector, primaryGridViewSelector, uiStatusSelector } from '../../redux/selectors';
+import { changePlanFeaturesWidth, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane } from '../../redux/store/common/actioncreators';
 import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/types';
 import { startMarkInProgress, startUpdateWorkItemIteration } from '../../redux/store/workitems/actionCreators';
 import { IterationDropTarget } from './DroppableIterationShadow';
@@ -34,6 +34,8 @@ import DraggableWorkItemRenderer from './WorkItem/DraggableWorkItemRenderer';
 import { WorkitemGap } from './WorkItem/WorkItemGap';
 import { WorkItemShadow } from './WorkItem/WorkItemShadow';
 import { ConnectedWorkItemsList } from './WorkItemList';
+import { getSettingsState } from '../../../Common/modules/SettingsState/SettingsStateSelector';
+import { toggleShowWorkItemDetails, changeProgressTrackingCriteria, changeShowClosedSinceDays } from '../../../Common/modules/SettingsState/SettingsStateActions';
 
 
 initializeIcons(/* optional base url */);
@@ -77,7 +79,7 @@ const makeMapStateToProps = () => {
             gridView: primaryGridViewSelector()(state),
             childItems: state.workItemDetails,
             planFeaturesState: planFeatureStateSelector()(state),
-            settingsState: settingsStateSelector()(state)
+            settingsState: getSettingsState(state)
         }
     }
 }

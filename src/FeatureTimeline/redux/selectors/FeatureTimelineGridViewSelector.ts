@@ -1,16 +1,13 @@
-import { workItemCompare } from "./workItemCompare";
-
-import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
-
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 import { IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/Contracts/GridViewContracts";
-import { ISettingsState } from "../../../Common/Contracts/OptionsInterfaces";
 import { CropWorkItem, IDimension, UIStatus } from "../../../Common/Contracts/types";
 import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
+import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
 import { IWorkItemOverrideIteration } from "../../../Common/modules/OverrideIterations/overriddenIterationContracts";
+import { ISettingsState } from "../../../Common/modules/SettingsState/SettingsStateContracts";
 import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
 import { IterationDurationKind } from "../store/types";
-
+import { workItemCompare } from "./workItemCompare";
 
 export function getGridView(
     uiStatus: UIStatus,

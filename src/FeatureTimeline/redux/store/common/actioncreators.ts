@@ -3,9 +3,10 @@ import {
     InitializeAction, InitializeType, ShowDetailsAction,
     ShowDetailsType, CloseDetailsAction, CloseDetailsType,
     ResetAction, ResetType,
-    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType, ToggleShowWorkItemDetailsAction, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaAction, ChangeProgressTrackingCriteriaType, RestoreSettingsAction, RestoreSettingsType, ChangeShowClosedSinceDaysAction, ChangeShowClosedSinceDaysType
+    TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, 
+    ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, 
+    PlanFeaturesPaneFilterChangedType, PlanFeaturesPaneWidthChangedType
 } from './actions';
-import { ProgressTrackingCriteria, ISettingsState } from "../../../../Common/Contracts/OptionsInterfaces";
 
 export const resetAllData: ActionCreator<ResetAction> = () => ({
     type: ResetType,
@@ -57,25 +58,4 @@ export const toggleFeatureState: ActionCreator<ToggleFeatureStateAction> = (feat
         featureName,
         isEnabled
     }
-});
-
-export const toggleShowWorkItemDetails: ActionCreator<ToggleShowWorkItemDetailsAction> = (show: boolean) => ({
-    type: ToggleShowWorkitemDetailsType,
-    payload: show
-});
-
-
-export const changeProgressTrackingCriteria: ActionCreator<ChangeProgressTrackingCriteriaAction> = (criteria: ProgressTrackingCriteria) => ({
-    type: ChangeProgressTrackingCriteriaType,
-    payload: criteria
-});
-
-export const changeShowClosedSinceDays: ActionCreator<ChangeShowClosedSinceDaysAction> = (days: number) => ({
-    type: ChangeShowClosedSinceDaysType,
-    payload: days
-});
-
-export const restoreSettingsState: ActionCreator<RestoreSettingsAction> = (state: ISettingsState) => ({
-    type: RestoreSettingsType,
-    payload: state
 });

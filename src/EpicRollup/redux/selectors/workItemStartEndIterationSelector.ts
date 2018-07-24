@@ -20,7 +20,7 @@ export const workItemStartEndIterationSelector = createSelector(
     normalizedEpicTreeSelector,
     normalizedDependencyTreeSelector,
     OverriddenIterationSelector,
-    teamIterationsSelector,
+    teamIterationsSelector as any,
     pagedWorkItemsMapSelector,
     getWorkItemIterationDuration
 );
