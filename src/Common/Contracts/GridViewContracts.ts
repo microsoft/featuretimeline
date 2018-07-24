@@ -13,11 +13,14 @@ export interface IWorkItemDisplayDetails {
     workItem: WorkItem;
     order: number;
     iterationDuration: IIterationDuration;
-    children: IWorkItemDisplayDetails[];
     showInfoIcon: boolean;
     isComplete: boolean;
     efforts: number;
     childrenWithNoEfforts: number;
+
+    children: IWorkItemDisplayDetails[];
+    predecessors?: number[];
+    successors?: number[];
 }
 
 export interface IGridIteration {

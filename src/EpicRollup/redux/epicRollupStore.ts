@@ -6,6 +6,7 @@ import { teamIterationsReducer } from './modules/teamIterations/teamIterationRed
 import savedOverrideIterationsReducer from '../../Common/modules/OverrideIterations/overrideWorkItemIterationReducer';
 import { workItemsReducer } from './modules/workItems/workItemReducer';
 import { fetchEpicRollup } from './sagas/fetchEpicRollupSaga';
+import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMetadataReducer';
 
 export default function configureEpicRollupStore(
     initialState: IEpicRollupState
@@ -23,7 +24,8 @@ export default function configureEpicRollupStore(
         backlogConfigurations: backlogConfigurationReducer,
         teamIterations: teamIterationsReducer,
         savedOverriddenIterations: savedOverrideIterationsReducer,
-        workItemsState: workItemsReducer
+        workItemsState: workItemsReducer,
+        workItemMetadata: workItemMetadataReducer
     });
 
 

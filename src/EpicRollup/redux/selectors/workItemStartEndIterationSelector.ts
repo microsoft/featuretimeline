@@ -8,19 +8,9 @@ import { normalizedDependencyTreeSelector } from './dependencyTreeSelector';
 import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from './workItemSelector';
 import { IDependenciesTree } from '../modules/workItems/workItemContracts';
+import { IIterationDuration, IterationDurationKind } from '../../../FeatureTimeline/redux/store/types';
 
-export enum IterationDurationCriteria {
-    Overridden = 1,
-    Dependencies = 2,
-    Children = 3,
-    Self = 4
-};
-export type WorkItemStartEndIteration = IDictionaryNumberTo<{
-    start: string,
-    end: string,
-    criteria: IterationDurationCriteria,
-    user?: string
-}>;
+export type WorkItemStartEndIteration = IDictionaryNumberTo<IIterationDuration>;
 
 /**
  * Returns start/end iteration for work items based on 
@@ -40,7 +30,7 @@ export function getWorkItemIterationDuration(
     depTree: IDependenciesTree,
     overriddenIterations: SavedOverriddenIteration,
     teamIterations: TeamSettingsIteration[],
-    pagedWorkItems: IDictionaryNumberTo<WorkItem>) {
+    pagedWorkItems: IDictionaryNumberTo<WorkItem>): WorkItemStartEndIteration {
 
     const result: WorkItemStartEndIteration = {};
 
@@ -58,11 +48,14 @@ export function getWorkItemIterationDuration(
         // 1. choose overriddenIteration if provided
         const overriddenIteration = overriddenIterations[workItemId];
         if (overriddenIteration) {
+            const startIteration = teamIterations.find(i => i.id === overriddenIteration.startIterationId);
+            const endIteration = teamIterations.find(i => i.id === overriddenIteration.endIterationId);
+
             result[workItemId] = {
-                start: overriddenIteration.startIterationId,
-                end: overriddenIteration.endIterationId,
-                criteria: IterationDurationCriteria.Overridden,
-                user: overriddenIteration.user
+                startIteration,
+                endIteration,
+                kind: IterationDurationKind.UserOverridden,
+                overridedBy: overriddenIteration.user
             };
         } else {
             // 2. If any predecessor choose start iteration = Max(predecessor end iteration) +1
@@ -72,16 +65,16 @@ export function getWorkItemIterationDuration(
             let endIndex = -1;
             predecessors.forEach(p => {
                 process(p);
-                startIndex = teamIterations.findIndex(i => i.id === result[p].end) + 1;
+                startIndex = teamIterations.findIndex(i => i.id === result[p].endIteration.id) + 1;
             });
 
             // 3. choose min start , max end date of children
             let minChildStart = teamIterations.length;
             let maxChildEnd = -1;
-            let criteria = IterationDurationCriteria.Dependencies;
+            let kind = IterationDurationKind.Predecessors;
             children.forEach(c => {
-                const childStart = teamIterations.findIndex(i => i.id === result[c].start);
-                const childEnd = teamIterations.findIndex(i => i.id === result[c].end);
+                const childStart = teamIterations.findIndex(i => i.id === result[c].startIteration.id);
+                const childEnd = teamIterations.findIndex(i => i.id === result[c].endIteration.id);
                 if (childStart < minChildStart) {
                     minChildStart = childStart;
                 }
@@ -94,7 +87,7 @@ export function getWorkItemIterationDuration(
             });
 
             if (minChildStart > startIndex) {
-                criteria = IterationDurationCriteria.Children;
+                kind = IterationDurationKind.ChildRollup;
                 startIndex = minChildStart;
             }
             if (endIndex < maxChildEnd) {
@@ -103,19 +96,21 @@ export function getWorkItemIterationDuration(
 
             // 4. choose self's iteration
             if (startIndex === -1) {
-                criteria = IterationDurationCriteria.Self;
+                kind = IterationDurationKind.Self;
                 const workItem = pagedWorkItems[workItemId];
                 const iterationPath = workItem.fields["System.IterationPath"];
                 startIndex = endIndex = teamIterations.findIndex(itr => itr.path === iterationPath);
             }
 
             result[workItemId] = {
-                start: startIndex >= 0 ? teamIterations[startIndex].id : null,
-                end: endIndex >= 0 ? teamIterations[endIndex].id : null,
-                criteria
+                startIteration: startIndex >= 0 ? teamIterations[startIndex] : null,
+                endIteration: endIndex >= 0 ? teamIterations[endIndex] : null,
+                kind
             }
         }
     };
 
     process(0);
+
+    return result;
 }

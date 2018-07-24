@@ -13,7 +13,7 @@ import {
 } from './actions';
 import { IWorkItemsState, WorkItemLevel, StateCategory } from './types';
 import { Reducer } from 'redux';
-import { getWorkItemStateCategory } from '../../helpers/getWorkItemStateCategory';
+import { getWorkItemStateCategory } from '../../../../Common/Helpers/getWorkItemStateCategory';
 import produce from "immer";
 
 // Type-safe initialState!

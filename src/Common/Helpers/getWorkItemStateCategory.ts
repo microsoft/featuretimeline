@@ -1,5 +1,5 @@
 import { WorkItemTypeStateInfo } from "TFS/Work/Contracts";
-import { StateCategory } from "../store/workitems/types";
+import { StateCategory } from "../../FeatureTimeline/redux/store/workitems/types";
 
 export function getWorkItemStateCategory(
     workItemType: string,

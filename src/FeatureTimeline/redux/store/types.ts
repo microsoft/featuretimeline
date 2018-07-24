@@ -35,7 +35,8 @@ export enum IterationDurationKind {
     BacklogIteration,
     Self,
     ChildRollup,
-    UserOverridden
+    UserOverridden,
+    Predecessors
 }
 
 export interface IPlanFeaturesState {
