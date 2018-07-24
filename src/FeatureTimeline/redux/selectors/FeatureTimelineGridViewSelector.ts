@@ -1,6 +1,10 @@
+import { workItemCompare } from "./workItemCompare";
+
+import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
+
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 import { IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/Contracts/GridViewContracts";
-import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/Contracts/OptionsInterfaces";
+import { ISettingsState } from "../../../Common/Contracts/OptionsInterfaces";
 import { CropWorkItem, IDimension, UIStatus } from "../../../Common/Contracts/types";
 import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
 import { IWorkItemOverrideIteration } from "../../../Common/modules/OverrideIterations/overriddenIterationContracts";
@@ -38,7 +42,6 @@ export function getGridView(
         debugger;
     }
 
-    const hideParents = isSubGrid || (workItemDisplayDetails.length === 1 && workItemDisplayDetails[0].id === 0);
     const displayIterations = getDisplayIterations(
         backlogIteration,
         teamIterations,
@@ -46,6 +49,7 @@ export function getGridView(
         isSubGrid,
         iterationDisplayOptions);
 
+    const hideParents = isSubGrid || (workItemDisplayDetails.length === 1 && workItemDisplayDetails[0].id === 0);
     const gridWorkItems = getGridWorkItems(
         backlogIteration,
         teamIterations,
@@ -67,7 +71,7 @@ export function getGridView(
         iterationHeader,
         iterationShadow
     } = getIterationDisplayDetails(gridWorkItems, displayIterations, hideParents);
-    
+
     const view: IGridView = {
         workItems: gridWorkItems,
         isSubGrid,
@@ -81,14 +85,6 @@ export function getGridView(
         iterationShadow
     }
     return view;
-}
-
-function workItemCompare(w1: IWorkItemDisplayDetails, w2: IWorkItemDisplayDetails) {
-    if (w1.order === w2.order) {
-        return w1.id - w2.id;
-    }
-
-    return w1.order - w2.order;
 }
 
 export function getGridWorkItems(
@@ -227,7 +223,6 @@ export function getGridWorkItems(
                         endCol: lastColumn
                     },
                     isGap: true,
-                    gapColor: parent.color,
                     crop: CropWorkItem.None,
                     progressIndicator: null,
                     settingsState
@@ -242,29 +237,3 @@ export function getGridWorkItems(
 }
 
 
-function getProgress(children: IWorkItemDisplayDetails[], criteria: ProgressTrackingCriteria) {
-    const completedChildren = children.filter(c => c.isComplete);
-    switch (criteria) {
-        case ProgressTrackingCriteria.ChildWorkItems: {
-            return {
-                total: children.length,
-                completed: completedChildren.length
-            }
-        }
-        case ProgressTrackingCriteria.EffortsField: {
-            return {
-                total: getEfforts(children),
-                completed: getEfforts(completedChildren)
-            }
-        }
-    }
-
-    return {
-        total: 0,
-        completed: 0
-    }
-}
-
-function getEfforts(workItems: IWorkItemDisplayDetails[]): number {
-    return workItems.reduce((prev, w) => prev + w.efforts, 0);
-}

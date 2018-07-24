@@ -32,13 +32,15 @@ export interface IProgressIndicator {
     completed: number;
 }
 
-export interface IGridWorkItem {
+export interface IGridItem {
     dimension: IDimension;
+}
+
+export interface IGridWorkItem extends IGridItem {    
     workItem: IWorkItemDisplayDetails;
     progressIndicator: IProgressIndicator;
     crop: CropWorkItem;
     settingsState: ISettingsState;
-    gapColor?: string;
     isGap?: boolean;
 }
 
