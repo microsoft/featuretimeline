@@ -1,13 +1,30 @@
 import { IWorkItemDisplayDetails } from "../../../Common/Contracts/GridViewContracts";
-import { IEpicTree } from "./epicTreeSelector";
+import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { IDependenciesTree } from "../modules/workItems/workItemContracts";
 import { IWorkItemMetadata } from "../modules/workItemMetadata/workItemMetadataContracts";
 import { WorkItem, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
-import { WorkItemStartEndIteration } from "./workItemStartEndIterationSelector";
+import { WorkItemStartEndIteration, workItemStartEndIterationSelector } from "./workItemStartEndIterationSelector";
 import { BacklogConfiguration, TeamSettingsIteration } from "TFS/Work/Contracts";
 import { getWorkItemStateCategory } from "../../../Common/Helpers/getWorkItemStateCategory";
 import { StateCategory } from "../../../FeatureTimeline/redux/store/workitems/types";
+import { createSelector } from "reselect";
+import { normalizedDependencyTreeSelector } from "./dependencyTreeSelector";
+import { pagedWorkItemsMapSelector } from "./workItemSelector";
+import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
+import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";
+import { workItemMetadataSelector } from "../modules/workItemMetadata/workItemMetadataSelector";
 
+export const workItemDisplayDetailsSelectors = createSelector(
+    () => 10, //TODO: This is hard coded for now
+    normalizedEpicTreeSelector,
+    normalizedDependencyTreeSelector,
+    pagedWorkItemsMapSelector,
+    workItemStartEndIterationSelector,
+    backlogConfigurationForProjectSelector,
+    teamIterationsSelector,
+    workItemMetadataSelector,
+    getWorkItemDisplayDetails
+);
 export function getWorkItemDisplayDetails(
     rootWorkItemId: number,
     epicTree: IEpicTree,
@@ -38,12 +55,12 @@ export function getWorkItemDisplayDetails(
         const efforts = workItem.fields[effortFieldName] || 0;
         const iterationDuration = workItemStartEndIterations[workItemId];
         const children = getWorkItemDisplayDetails(
-            workItemId, 
-            epicTree, 
-            dependencyTree, 
-            pagedWorkItems, 
-            workItemStartEndIterations, 
-            backlogConfiguration, 
+            workItemId,
+            epicTree,
+            dependencyTree,
+            pagedWorkItems,
+            workItemStartEndIterations,
+            backlogConfiguration,
             teamIterations,
             metadata);
         const childrenWithNoEfforts = children.filter(c => c.efforts === 0).length;
