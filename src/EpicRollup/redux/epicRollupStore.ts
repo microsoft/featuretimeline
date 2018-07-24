@@ -10,6 +10,7 @@ import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMeta
 import { settingsStateReducer } from '../../Common/modules/SettingsState/SettingsStateReducer';
 import { teamSettingsReducer } from './modules/teamsettings/teamsettingsreducer';
 import { iterationDisplayOptionsReducer } from '../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsReducer';
+import { progressAwareReducer } from '../../Common/modules/ProgressAwareState/ProgressAwareStateReducer';
 
 export default function configureEpicRollupStore(
     initialState: IEpicRollupState
@@ -31,7 +32,8 @@ export default function configureEpicRollupStore(
         workItemMetadata: workItemMetadataReducer,
         teamSettings: teamSettingsReducer,
         settingsState: settingsStateReducer,
-        iterationDisplayOptions: iterationDisplayOptionsReducer
+        iterationDisplayOptions: iterationDisplayOptionsReducer,
+        progress: progressAwareReducer
     });
 
 

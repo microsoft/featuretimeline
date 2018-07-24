@@ -7,6 +7,7 @@ import { UIStatus } from '../../../Common/Contracts/types';
 import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
 import { IEpicRollupState } from '../../redux/contracts';
 import configureEpicRollupStore from '../../redux/epicRollupStore';
+import { IEpicRollupGridView, epicRollupGridViewSelector } from '../../redux/selectors/epicRollupGridViewSelector';
 
 initializeIcons(/* optional base url */);
 
@@ -14,7 +15,7 @@ export interface IEpicRollupGridProps {
     projectId: string;
     teamId: string;
     uiState: UIStatus;
-    //gridView: IGridView,
+    gridView: IEpicRollupGridView,
     //childItems: number[];
     //settingsState: ISettingsState;
 }
@@ -66,6 +67,7 @@ const makeMapStateToProps = () => {
             projectId: getProjectId(),
             teamId: getTeamId(),
             uiState: UIStatus.Default,
+            gridView: epicRollupGridViewSelector(state)
         }
     }
 }
@@ -73,7 +75,16 @@ const makeMapStateToProps = () => {
 export const ConnectedEpicRollupGrid = connect(makeMapStateToProps)(Grid);
 
 export const EpicRollupGrid = () => {
-    const initialState: IEpicRollupState = {        
+    const initialState: IEpicRollupState = {
+        backlogConfigurations: {},
+        teamIterations: {},
+        savedOverriddenIterations: {},
+        workItemsState: {},
+        workItemMetadata: {},
+        teamSettings: {},
+        iterationDisplayOptions: {},
+        settingsState: {},
+        progress: {}
     } as IEpicRollupState;
     const store = configureEpicRollupStore(initialState);
 

@@ -36,7 +36,8 @@ export enum IterationDurationKind {
     Self,
     ChildRollup,
     UserOverridden,
-    Predecessors
+    Predecessors,
+    PredecessorsOutofScope //Usually happens if team does not subscribe to any iteration beyond last iteration of predessors
 }
 
 export interface IPlanFeaturesState {

@@ -5,7 +5,7 @@ import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem
 import { TeamSettingsIteration, BacklogConfiguration } from "TFS/Work/Contracts";
 import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
 import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
-import { CropWorkItem } from "../../../Common/Contracts/types";
+import { CropWorkItem, UIStatus } from "../../../Common/Contracts/types";
 import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
 import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
 import { createSelector } from "reselect";
@@ -13,6 +13,7 @@ import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsse
 import { getIterationDisplayOptionsState } from '../../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsSelector';
 import { getSettingsState } from '../../../Common/modules/SettingsState/SettingsStateSelector';
 import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/modules/SettingsState/SettingsStateContracts';
+import { uiStateSelector } from './uiStateSelector';
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
@@ -29,6 +30,7 @@ export const epicRollupGridViewSelector = createSelector(
     getIterationDisplayOptionsState as any,
     backlogConfigurationForProjectSelector,
     getSettingsState as any,
+    uiStateSelector as any,
     getEpicRollupGridView,
 );
 export function getEpicRollupGridView(
@@ -37,9 +39,24 @@ export function getEpicRollupGridView(
     teamIterations: TeamSettingsIteration[],
     iterationDisplayOptions: IIterationDisplayOptions,
     backlogConfiguration: BacklogConfiguration,
-    settingsState: ISettingsState
+    settingsState: ISettingsState,
+    uiStatus: UIStatus
 ): IEpicRollupGridView {
-
+    if (uiStatus !== UIStatus.Default) {
+        return {
+            teamFieldDisplayItems: [],
+            workItems: [],
+            isSubGrid: false,
+            shadowForWorkItemId: 0,
+            hideParents: false,
+            iterationDisplayOptions,
+            teamIterations: [],
+            backlogIteration: null,
+            emptyHeaderRow: [],
+            iterationHeader: [],
+            iterationShadow: []
+        };
+    }
     const {
         backlogFields: {
             typeFields

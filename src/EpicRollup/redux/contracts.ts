@@ -1,11 +1,12 @@
+import { IIterationDisplayOptionsAwareState } from "../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsContracts";
+import { IOverriddenIterationsAwareState } from '../../Common/modules/OverrideIterations/overriddenIterationContracts';
+import { IProgressAwareState } from "../../Common/modules/ProgressAwareState/ProgressAwareStateContracts";
+import { ISettingsAwareState } from "../../Common/modules/SettingsState/SettingsStateContracts";
 import { IProjectBacklogConfigurationAwareState } from "./modules/backlogconfiguration/backlogconfigurationcontracts";
 import { ITeamIterationsAwareState } from "./modules/teamIterations/teamIterationsContracts";
-import { IEpicRollupWorkItemAwareState } from './modules/workItems/workItemContracts';
-import { IOverriddenIterationsAwareState } from '../../Common/modules/OverrideIterations/overriddenIterationContracts';
-import { IWorkItemMetadataAwareState } from "./modules/workItemMetadata/workItemMetadataContracts";
 import { ITeamSettingsAwareState } from "./modules/teamsettings/teamsettingscontracts";
-import { IIterationDisplayOptionsAwareState } from "../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsContracts";
-import { ISettingsAwareState } from "../../Common/modules/SettingsState/SettingsStateContracts";
+import { IWorkItemMetadataAwareState } from "./modules/workItemMetadata/workItemMetadataContracts";
+import { IEpicRollupWorkItemAwareState } from './modules/workItems/workItemContracts';
 
 export interface IEpicRollupState extends
     IProjectBacklogConfigurationAwareState,
@@ -15,5 +16,6 @@ export interface IEpicRollupState extends
     IWorkItemMetadataAwareState,
     ITeamSettingsAwareState,
     IIterationDisplayOptionsAwareState,
-    ISettingsAwareState {
+    ISettingsAwareState,
+    IProgressAwareState {
 }

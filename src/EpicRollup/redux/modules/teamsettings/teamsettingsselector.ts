@@ -10,4 +10,4 @@ export const teamSettingsSelector =
         (map, teamId) => map[teamId]
     );
 
-export const backogIterationsSelector = createSelector(teamSettingsSelector, (teamSettings) => teamSettings.backlogIteration);
+export const backogIterationsSelector = createSelector(teamSettingsSelector, (teamSettings) => teamSettings && teamSettings.backlogIteration);

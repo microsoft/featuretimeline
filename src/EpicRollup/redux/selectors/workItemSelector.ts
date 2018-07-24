@@ -19,6 +19,9 @@ export const pagedWorkItemsMapSelector =
         getPagedWorkItems,
         (workItems: WorkItem[]) => {
             const map = {};
+            if (!workItems) {
+                return map;
+            }
             workItems.forEach(wit => map[wit.id] = wit);
             return map;
         });

@@ -9,6 +9,7 @@ import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from './workItemSelector';
 import { IDependenciesTree } from '../modules/workItems/workItemContracts';
 import { IIterationDuration, IterationDurationKind } from '../../../FeatureTimeline/redux/store/types';
+import { backlogIterationSelector } from '../../../FeatureTimeline/redux/selectors';
 
 export type WorkItemStartEndIteration = IDictionaryNumberTo<IIterationDuration>;
 
@@ -21,7 +22,8 @@ export const workItemStartEndIterationSelector = createSelector(
     normalizedDependencyTreeSelector,
     OverriddenIterationSelector,
     teamIterationsSelector as any,
-    pagedWorkItemsMapSelector,
+    backlogIterationSelector as any,
+    pagedWorkItemsMapSelector as any,
     getWorkItemIterationDuration
 );
 
@@ -30,9 +32,15 @@ export function getWorkItemIterationDuration(
     depTree: IDependenciesTree,
     overriddenIterations: SavedOverriddenIteration,
     teamIterations: TeamSettingsIteration[],
+    backlogIteration: TeamSettingsIteration,
     pagedWorkItems: IDictionaryNumberTo<WorkItem>): WorkItemStartEndIteration {
 
     const result: WorkItemStartEndIteration = {};
+    teamIterations = teamIterations || [];
+
+    if (teamIterations.length === 0 || Object.keys(pagedWorkItems).length === 0) {
+        return {};
+    }
 
     // build bottom up
     const process = (workItemId: number) => {
@@ -60,16 +68,17 @@ export function getWorkItemIterationDuration(
         } else {
             // 2. If any predecessor choose start iteration = Max(predecessor end iteration) +1
             // process predecessors to ensure we have them sorted out
-            const predecessors = depTree.stop[workItemId];
+            const predecessors = depTree.stop[workItemId] || [];
             let startIndex = -1;
             let endIndex = -1;
             predecessors.forEach(p => {
                 process(p);
-                startIndex = teamIterations.findIndex(i => i.id === result[p].endIteration.id) + 1;
+                const pIndex = teamIterations.findIndex(i => i.id === result[p].endIteration.id) + 1;
+                startIndex = pIndex > startIndex ? pIndex : startIndex;
             });
 
             // 3. choose min start , max end date of children
-            let minChildStart = teamIterations.length;
+            let minChildStart = children.length === 0 ? -1 : teamIterations.length;
             let maxChildEnd = -1;
             let kind = IterationDurationKind.Predecessors;
             children.forEach(c => {
@@ -86,12 +95,17 @@ export function getWorkItemIterationDuration(
                 }
             });
 
+
             if (minChildStart > startIndex) {
                 kind = IterationDurationKind.ChildRollup;
                 startIndex = minChildStart;
             }
             if (endIndex < maxChildEnd) {
                 endIndex = maxChildEnd;
+            }
+
+            if (endIndex === -1) {
+                endIndex = startIndex;
             }
 
             // 4. choose self's iteration
@@ -102,9 +116,19 @@ export function getWorkItemIterationDuration(
                 startIndex = endIndex = teamIterations.findIndex(itr => itr.path === iterationPath);
             }
 
+            let startIteration = startIndex >= 0 ? teamIterations[startIndex] : null;
+            let endIteration = endIndex >= 0 ? teamIterations[endIndex] : null;
+
+            if (kind == IterationDurationKind.Predecessors && (!startIteration || !endIteration)) {
+                kind = IterationDurationKind.PredecessorsOutofScope;
+            }
+            if (!startIteration || !endIteration) {
+                startIteration = endIteration = backlogIteration;
+            }
+
             result[workItemId] = {
-                startIteration: startIndex >= 0 ? teamIterations[startIndex] : null,
-                endIteration: endIndex >= 0 ? teamIterations[endIndex] : null,
+                startIteration,
+                endIteration,
                 kind
             }
         }

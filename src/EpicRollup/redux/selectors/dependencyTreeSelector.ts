@@ -5,6 +5,7 @@ import { getEpicDependenciesLinks } from './workItemSelector';
 import { normalizedEpicTreeSelector, IEpicTree } from './epicTreeSelector';
 const rawDependencyTreeSelector = createSelector(getEpicDependenciesLinks, createRawDependencyTree);
 export function createRawDependencyTree(links: WorkItemLink[]) {
+    links = links || [];
     const result: IDependenciesTree = {
         ptos: {},
         stop: {}
@@ -12,8 +13,8 @@ export function createRawDependencyTree(links: WorkItemLink[]) {
 
     // Source is successor target is predecessor
     links.forEach(link => {
-        const successor = link.source.id;
-        const predecessor = link.target.id;
+        const successor = link.source ? link.source.id : 0;
+        const predecessor = link.target ? link.target.id : 0;
         if (!result.ptos[predecessor]) {
             result.ptos[predecessor] = [];
         }
