@@ -4,12 +4,12 @@ import { getDisplayIterations } from "../../../Common/Selectors/displayIteration
 import { ISettingsState } from "../../../Common/Contracts/OptionsInterfaces";
 import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
 
-export interface IAreaPathDisplayItem extends IGridItem {
-    areaPath: string;
+export interface ITeamFieldDisplayItem extends IGridItem {
+    teamFieldValue: string;
 }
 
 export interface IEpicRollupGridView extends IGridView {
-    areaPathDisplayItems: IAreaPathDisplayItem[];
+    areaPathDisplayItems: ITeamFieldDisplayItem[];
 }
 
 export function getEpicRollupGridView(
@@ -44,10 +44,21 @@ export function getEpicRollupGridView(
 
     const sortedTeamFields = Object.keys(workItemsByTeamField).sort();
     const gridWorkItems: IGridWorkItem[] = [];
-    const areaPathDisplayItems: IAreaPathDisplayItem[] = [];
+    const teamFieldPathDisplayItems: ITeamFieldDisplayItem[] = [];
     let teamGroupStartRow = 2;
-    sortedTeamFields.forEach(teamField => {
-        const workItems = workItemsByTeamField[teamField].sort(workItemCompare);
+    sortedTeamFields.forEach(teamFieldValue => {
+        const workItems = workItemsByTeamField[teamFieldValue].sort(workItemCompare);
+        teamFieldPathDisplayItems.push({
+            teamFieldValue,
+            dimension: {
+                startRow: teamGroupStartRow,
+                startCol: 1,
+                endRow: teamGroupStartRow+1,
+                endCol: 2
+            }
+        });
+
+        
         
 
     });
