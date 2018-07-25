@@ -12,7 +12,7 @@ import { epicRollupGridViewSelector, IEpicRollupGridView } from '../../redux/sel
 import { uiStateSelector } from '../../redux/selectors/uiStateSelector';
 import { EpicContent } from './EpicContent';
 import { EpicSelector } from './EpicSelector';
-import './EpicView.scss';
+import './EpicRollupView.scss';
 
 initializeIcons(/* optional base url */);
 

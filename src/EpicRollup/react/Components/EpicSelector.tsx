@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 import './EpicSelector.scss';
 
 
 export interface IEpicSelectorProps {
     projectId: string;
-    teamId: string; 
+    teamId: string;
 }
 
 export class EpicSelector extends React.Component<IEpicSelectorProps, {}> {
@@ -14,7 +15,6 @@ export class EpicSelector extends React.Component<IEpicSelectorProps, {}> {
         return (<div className="epic-selector-container">
             <Dropdown
                 placeHolder="Select an Epic"
-                label="Epic:"
                 id="Epic"
                 ariaLabel="Select an Epic"
                 options={[
@@ -24,9 +24,9 @@ export class EpicSelector extends React.Component<IEpicSelectorProps, {}> {
                 ]}
                 onChanged={this._epicSelectionChanged}
             />
-            </div>)
+        </div>)
 
     }
 
-    private _epicSelectionChanged() {}
+    private _epicSelectionChanged() { }
 }

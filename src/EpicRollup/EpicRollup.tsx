@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { EpicRollupView } from "./react/Components/EpicView";
+import { EpicRollupView } from "./react/Components/EpicRollupView";
 import { iePollyfill } from "../polyfill";
 
 export function initialize(): void {

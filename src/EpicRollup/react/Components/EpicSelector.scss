@@ -1,13 +1,9 @@
 .epic-selector-container {
     display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-start;
-    align-items: center;
-    height: 75px;
-    margin: 10px; 
-
-    > div {
-     margin: 10px;
-    }
+    flex-flow: row;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    //justify-content: flex-start;
+    //align-items: center;
 }
 
