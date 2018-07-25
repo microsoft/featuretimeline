@@ -5,7 +5,7 @@ import * as VSS_Service from 'VSS/Service';
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
 import { restoreOverriddenIterations } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationsSaga';
 import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
-import { workItemStateColorsReceived, workItemTypesReceived } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataActionCreators';
+import { workItemStateColorsReceived, workItemTypesReceived } from '../../../EpicRoadmap/redux/modules/workItemMetadata/workItemMetadataActionCreators';
 import { WorkItemMetadataService } from '../../../Services/WorkItemMetadataService';
 import { getBacklogLevel } from '../selectors';
 import { backlogConfigurationReceived } from '../store/backlogconfiguration/actionCreators';

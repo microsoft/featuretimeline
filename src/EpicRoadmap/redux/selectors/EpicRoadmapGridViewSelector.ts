@@ -20,12 +20,12 @@ export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
 }
 
-export interface IEpicRollupGridView extends IGridView {
+export interface IEpicRoadmapGridView extends IGridView {
     teamFieldDisplayItems: ITeamFieldDisplayItem[];
     teamFieldHeaderItem: IDimension;
 }
 
-export const epicRollupGridViewSelector = createSelector(
+export const EpicRoadmapGridViewSelector = createSelector(
     workItemDisplayDetailsSelectors,
     backogIterationsSelector as any,
     teamIterationsSelector as any,
@@ -33,9 +33,9 @@ export const epicRollupGridViewSelector = createSelector(
     backlogConfigurationForProjectSelector,
     getSettingsState as any,
     uiStateSelector as any,
-    getEpicRollupGridView,
+    getEpicRoadmapGridView,
 );
-export function getEpicRollupGridView(
+export function getEpicRoadmapGridView(
     workItemDisplayDetails: IWorkItemDisplayDetails[],
     backlogIteration: TeamSettingsIteration,
     teamIterations: TeamSettingsIteration[],
@@ -43,7 +43,7 @@ export function getEpicRollupGridView(
     backlogConfiguration: BacklogConfiguration,
     settingsState: ISettingsState,
     uiStatus: UIStatus
-): IEpicRollupGridView {
+): IEpicRoadmapGridView {
     if (uiStatus !== UIStatus.Default) {
         return {
             teamFieldDisplayItems: [],
@@ -75,17 +75,19 @@ export function getEpicRollupGridView(
 
     const teamFieldName = typeFields["Team"];
 
+    debugger;
     const displayIterations: TeamSettingsIteration[] = getDisplayIterations(
         backlogIteration,
         teamIterations,
         workItemDisplayDetails,
-        /* includeBacklogIteration */ true,
+        /* includeBacklogIteration */ false,
         iterationDisplayOptions);
 
     const { gridWorkItems, teamFieldDisplayItems, separators } =
         getGridItems(
             workItemDisplayDetails,
             teamFieldName,
+            teamIterations,
             displayIterations,
             iterationDisplayOptions,
             backlogIteration,
@@ -126,6 +128,7 @@ export function getEpicRollupGridView(
 function getGridItems(
     workItemDisplayDetails: IWorkItemDisplayDetails[],
     teamFieldName: string,
+    teamIterations: TeamSettingsIteration[],
     displayIterations: TeamSettingsIteration[],
     iterationDisplayOptions: IIterationDisplayOptions,
     backlogIteration: TeamSettingsIteration,
@@ -145,8 +148,8 @@ function getGridItems(
         let workItemStartRow = teamGroupStartRow;
         const childItems = orderedWorkItems.map(workItem => {
             const { iterationDuration: { startIteration, endIteration } } = workItem;
-            let startIterationIndex = displayIterations.findIndex(di => di.id === startIteration.id);
-            let endIterationIndex = displayIterations.findIndex(di => di.id === endIteration.id);
+            let startIterationIndex = teamIterations.findIndex(di => di.id === startIteration.id);
+            let endIterationIndex = teamIterations.findIndex(di => di.id === endIteration.id);
             let crop: CropWorkItem = CropWorkItem.None;
             let outofScope = false;
             if (iterationDisplayOptions) {

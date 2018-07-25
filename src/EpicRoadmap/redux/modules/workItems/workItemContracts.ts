@@ -9,7 +9,7 @@ export interface IWorkItemsState {
     pagedWorkItems: WorkItem[];
 }
 
-export interface IEpicRollupWorkItemAwareState {
+export interface IEpicRoadmapWorkItemAwareState {
     workItemsState: IWorkItemsState;
 }
 

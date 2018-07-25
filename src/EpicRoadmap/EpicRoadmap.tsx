@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { EpicRollupView } from "./react/Components/EpicRollupView";
+import { EpicRoadmapView } from "./react/Components/EpicRoadmapView";
 import { iePollyfill } from "../polyfill";
 
 export function initialize(): void {
     if (!isBackground()) {
         iePollyfill();
         ReactDOM.render(
-            <EpicRollupView />, document.getElementById("root"));
+            <EpicRoadmapView />, document.getElementById("root"));
     }
 }
 

@@ -1,16 +1,16 @@
 import { createSelector } from 'reselect';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
-import { IEpicRollupState } from '../contracts';
+import { IEpicRoadmapState } from '../contracts';
 
-export function getEpicHierarchyLinks(state: IEpicRollupState) {
+export function getEpicHierarchyLinks(state: IEpicRoadmapState) {
     return state.workItemsState.epicHierarchy;
 }
 
-export function getEpicDependenciesLinks(state: IEpicRollupState) {
+export function getEpicDependenciesLinks(state: IEpicRoadmapState) {
     return state.workItemsState.dependencies;
 }
 
-function getPagedWorkItems(state: IEpicRollupState) {
+function getPagedWorkItems(state: IEpicRoadmapState) {
     return state.workItemsState.pagedWorkItems;
 }
 

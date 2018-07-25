@@ -44,7 +44,7 @@ const plugins = [
 			to: "./"
 		},
 		{
-			from: "./src/EpicRollup/epicrollup.html",
+			from: "./src/EpicRoadmap/EpicRoadmap.html",
 			to: "./"
 		},
 		{
@@ -69,7 +69,7 @@ if (mode !== "development") {
 module.exports = {
 	entry: {
 		featureTimeLIne: './src/FeatureTimeline/FeatureTimeline.tsx',
-		epicRollup: './src/EpicRollup/EpicRollup.tsx',
+		EpicRoadmap: './src/EpicRoadmap/EpicRoadmap.tsx',
 	},
 	output: {
 		filename: '[name].js',

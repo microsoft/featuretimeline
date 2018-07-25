@@ -15,12 +15,12 @@ import { workItemStateColorsReceived, workItemTypesReceived } from "../modules/w
 import { WorkItemMetadataService } from "../../../Services/WorkItemMetadataService";
 import { restoreSettings } from "../../../Common/redux/modules/SettingsState/SettingsStateSagas";
 
-export function* fetchEpicRollup(epicId: number) {
+export function* fetchEpicRoadmap(epicId: number) {
     try {
         yield put(ProgressAwareActionCreator.setLoading(true));
         const projectId = getProjectId();
         // get backlog configuration/ team settings and backlog iteration for the project/current team
-        yield all([fetchBacklogConfiguration(), fetchTeamIterations(), fetchTeamSettings(),  restoreSettings("EpicRollup")]);
+        yield all([fetchBacklogConfiguration(), fetchTeamIterations(), fetchTeamSettings(),  restoreSettings("EpicRoadmap")]);
         const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
 
         // const portfolioBacklogs = backlogconfiguration.portfolioBacklogs;

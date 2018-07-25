@@ -6,14 +6,14 @@ import { IProjectBacklogConfigurationAwareState } from "./modules/backlogconfigu
 import { ITeamIterationsAwareState } from "./modules/teamIterations/teamIterationsContracts";
 import { ITeamSettingsAwareState } from "./modules/teamsettings/teamsettingscontracts";
 import { IWorkItemMetadataAwareState } from "./modules/workItemMetadata/workItemMetadataContracts";
-import { IEpicRollupWorkItemAwareState } from './modules/workItems/workItemContracts';
+import { IEpicRoadmapWorkItemAwareState } from './modules/workItems/workItemContracts';
 import { IShowWorkItemInfoAwareState } from "../../Common/redux/modules/ShowHideDetails/ShowHideDetailsContracts";
 
-export interface IEpicRollupState extends
+export interface IEpicRoadmapState extends
     IProjectBacklogConfigurationAwareState,
     ITeamIterationsAwareState,
     IOverriddenIterationsAwareState,
-    IEpicRollupWorkItemAwareState,
+    IEpicRoadmapWorkItemAwareState,
     IWorkItemMetadataAwareState,
     ITeamSettingsAwareState,
     IIterationDisplayOptionsAwareState,

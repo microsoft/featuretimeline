@@ -6,15 +6,15 @@ import { ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, Chan
 import { saveDisplayOptions } from "../../../Common/redux/sagas/displayOptionsSaga";
 import { saveSettings } from "../../../Common/redux/modules/SettingsState/SettingsStateSagas";
 
-export function* watchEpicRollupSagaActions() {
+export function* watchEpicRoadmapSagaActions() {
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
     yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);    
 
-    yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions, "EpicRollup");
-    yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions, "EpicRollup");
-    yield takeLatest(ShiftDisplayIterationRightActionType, saveDisplayOptions, "EpicRollup");
-    yield takeLatest(ChangeDisplayIterationCountActionType, saveDisplayOptions, "EpicRollup");
-    yield takeLatest(ToggleShowWorkitemDetailsType, saveSettings, "EpicRollup");
-    yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings, "EpicRollup");
-    yield takeLatest(ChangeShowClosedSinceDaysType, saveSettings, "EpicRollup");
+    yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions, "EpicRoadmap");
+    yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions, "EpicRoadmap");
+    yield takeLatest(ShiftDisplayIterationRightActionType, saveDisplayOptions, "EpicRoadmap");
+    yield takeLatest(ChangeDisplayIterationCountActionType, saveDisplayOptions, "EpicRoadmap");
+    yield takeLatest(ToggleShowWorkitemDetailsType, saveSettings, "EpicRoadmap");
+    yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings, "EpicRoadmap");
+    yield takeLatest(ChangeShowClosedSinceDaysType, saveSettings, "EpicRoadmap");
 }

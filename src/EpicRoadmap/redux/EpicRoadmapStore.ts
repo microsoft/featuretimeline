@@ -5,19 +5,19 @@ import { overrideIterationProgressReducer } from '../../Common/redux/modules/ove
 import { savedOverrideIterationsReducer } from '../../Common/redux/modules/OverrideIterations/overrideWorkItemIterationReducer';
 import { progressAwareReducer } from '../../Common/redux/modules/ProgressAwareState/ProgressAwareStateReducer';
 import { settingsStateReducer } from '../../Common/redux/modules/SettingsState/SettingsStateReducer';
-import { IEpicRollupState } from './contracts';
+import { IEpicRoadmapState } from './contracts';
 import { backlogConfigurationReducer } from './modules/backlogconfiguration/backlogconfiguratonreducer';
 import { teamIterationsReducer } from './modules/teamIterations/teamIterationReducer';
 import { teamSettingsReducer } from './modules/teamsettings/teamsettingsreducer';
 import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMetadataReducer';
 import { workItemsReducer } from './modules/workItems/workItemReducer';
-import { fetchEpicRollup } from './sagas/fetchEpicRollupSaga';
+import { fetchEpicRoadmap } from './sagas/fetchEpicRoadmapSaga';
 import { showHideDetailsReducer } from '../../Common/redux/modules/ShowHideDetails/ShowHideDetailsReducer';
-import { watchEpicRollupSagaActions } from './sagas/watchEpicRollupSagaActions';
+import { watchEpicRoadmapSagaActions } from './sagas/watchEpicRoadmapSagaActions';
 
-export default function configureEpicRollupStore(
-    initialState: IEpicRollupState
-): Store<IEpicRollupState> {
+export default function configureEpicRoadmapStore(
+    initialState: IEpicRoadmapState
+): Store<IEpicRoadmapState> {
 
     const sagaMonitor = window["__SAGA_MONITOR_EXTENSION__"] || undefined;
     const sagaMiddleWare = createSagaMiddleware(sagaMonitor);
@@ -47,10 +47,10 @@ export default function configureEpicRollupStore(
         initialState,
         composeEnhancers(middleware));
 
-    sagaMiddleWare.run(watchEpicRollupSagaActions);
+    sagaMiddleWare.run(watchEpicRoadmapSagaActions);
 
     //TODO: User MRU or select
-    sagaMiddleWare.run(fetchEpicRollup, 10);
+    sagaMiddleWare.run(fetchEpicRoadmap, 10);
 
 
     return store;

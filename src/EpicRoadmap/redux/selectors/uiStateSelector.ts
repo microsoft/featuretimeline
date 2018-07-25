@@ -1,15 +1,15 @@
 import { createSelector } from "reselect";
-import { IEpicRollupState } from "../contracts";
+import { IEpicRoadmapState } from "../contracts";
 import { UIStatus } from "../../../Common/redux/Contracts/types";
 import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-export function getEpicRollupState(state: IEpicRollupState) {
+export function getEpicRoadmapState(state: IEpicRoadmapState) {
     return state;
 }
 export const uiStateSelector = createSelector(
-    getEpicRollupState,
+    getEpicRoadmapState,
     teamIterationsSelector,
-    (state: IEpicRollupState, teamIterations: TeamSettingsIteration[]): UIStatus => {
+    (state: IEpicRoadmapState, teamIterations: TeamSettingsIteration[]): UIStatus => {
         if (state.progress.loading) {
             return UIStatus.Loading;
         }

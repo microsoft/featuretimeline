@@ -1,9 +1,9 @@
 import { createSelector } from "reselect";
 import { getProjectId } from "../../../../Common/redux/Selectors/CommonSelectors";
-import { IEpicRollupState } from "../../contracts";
+import { IEpicRoadmapState } from "../../contracts";
 import { ProjectWorkItemMetadataMap } from "./workItemMetadataContracts";
 
-export function getWorkItemMetadata(state: IEpicRollupState) {
+export function getWorkItemMetadata(state: IEpicRoadmapState) {
     return state.workItemMetadata;
 }
 

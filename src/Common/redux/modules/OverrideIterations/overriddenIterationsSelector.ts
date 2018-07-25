@@ -1,8 +1,8 @@
 import { IWorkItemOverrideIterationAwareState } from './overriddenIterationContracts';
-import { IEpicRollupState } from '../../../../EpicRollup/redux/contracts';
+import { IEpicRoadmapState } from '../../../../EpicRoadmap/redux/contracts';
 export const
     OverriddenIterationSelector =
-        (state: IEpicRollupState) =>
+        (state: IEpicRoadmapState) =>
             state.savedOverriddenIterations;
 
 

@@ -18,7 +18,7 @@
                 paths: {
                     "react": "dist/react",
                     "react-dom": "dist/react-dom",
-                    "EpicRollup": "dist/epicrollup"
+                    "EpicRoadmap": "dist/EpicRoadmap"
                 }
             }
         });
@@ -27,9 +27,9 @@
         function registerContribution(contribution) {
             if (contribution.type === "ms.vss-web.tab") {
                 let title = "Epic Roadmap";
-                if (contribution.id === "ms-devlabs.workitem-feature-timeline-extension-dev.workitem-epic-rollup") {
+                if (contribution.id === "ms-devlabs.workitem-feature-timeline-extension-dev.workitem-epic-roadmap") {
                     title = title + " Dev";
-                } else if (contribution.id === "ms-devlabs.workitem-feature-timeline-extension-beta.workitem-epic-rollup") {
+                } else if (contribution.id === "ms-devlabs.workitem-feature-timeline-extension-beta.workitem-epic-roadmap") {
                     title = title + " Beta";
                 }
                 // Register the fully-qualified contribution id here.
@@ -60,9 +60,9 @@
                 VSS.notifyLoadSucceeded();
             } else {
                 // Load main entry point for extension 
-                VSS.require(["EpicRollup"], function (er) {
-                    EpicRollup = er;
-                    EpicRollup.initialize();
+                VSS.require(["EpicRoadmap"], function (er) {
+                    EpicRoadmap = er;
+                    EpicRoadmap.initialize();
                     // loading succeeded
                     VSS.notifyLoadSucceeded();
                 });

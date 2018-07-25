@@ -23,17 +23,17 @@ import { changeProgressTrackingCriteria, toggleShowWorkItemDetails } from '../..
 import { ProgressTrackingCriteria } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 import { closeDetails, showDetails } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsActions';
 import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
-import { IEpicRollupState } from '../../redux/contracts';
-import { epicRollupGridViewSelector, IEpicRollupGridView } from '../../redux/selectors/epicRollupGridViewSelector';
-import './EpicRollupGrid.scss';
+import { IEpicRoadmapState } from '../../redux/contracts';
+import { EpicRoadmapGridViewSelector, IEpicRoadmapGridView } from '../../redux/selectors/EpicRoadmapGridViewSelector';
+import './EpicRoadmapGrid.scss';
 import { TeamFieldCard } from '../../../Common/react/Components/TeamField/TeamFieldCard';
 import { TeamFieldHeader } from '../../../Common/react/Components/TeamFieldHeader/TeamFieldHeader';
 
-export interface IEpicRollupGridProps {
+export interface IEpicRoadmapGridProps {
     projectId: string;
     teamId: string;
-    gridView: IEpicRollupGridView;
-    rawState: IEpicRollupState,
+    gridView: IEpicRoadmapGridView;
+    rawState: IEpicRoadmapState,
 
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
@@ -52,7 +52,7 @@ export interface IEpicRollupGridProps {
     changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => void;
 }
 
-export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps, {}> {
+export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProps, {}> {
 
     public render(): JSX.Element {
         const {
@@ -354,11 +354,11 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
 }
 
 const makeMapStateToProps = () => {
-    return (state: IEpicRollupState) => {
+    return (state: IEpicRoadmapState) => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
-            gridView: epicRollupGridViewSelector(state),
+            gridView: EpicRoadmapGridViewSelector(state),
             rawState: state
         }
     }
@@ -416,4 +416,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export const EpicRollupGrid = DragDropContext(HTML5Backend)(connect(makeMapStateToProps, mapDispatchToProps)(EpicRollupGridContent));
+export const EpicRoadmapGrid = DragDropContext(HTML5Backend)(connect(makeMapStateToProps, mapDispatchToProps)(EpicRoadmapGridContent));

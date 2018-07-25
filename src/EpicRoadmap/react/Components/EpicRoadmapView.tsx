@@ -6,23 +6,23 @@ import * as React from 'react';
 import { connect, Provider } from 'react-redux';
 import { UIStatus } from '../../../Common/redux/Contracts/types';
 import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
-import { IEpicRollupState } from '../../redux/contracts';
-import configureEpicRollupStore from '../../redux/epicRollupStore';
+import { IEpicRoadmapState } from '../../redux/contracts';
+import configureEpicRoadmapStore from '../../redux/EpicRoadmapStore';
 import { uiStateSelector } from '../../redux/selectors/uiStateSelector';
-import { EpicRollupGrid } from './EpicRollupGrid';
+import { EpicRoadmapGrid } from './EpicRoadmapGrid';
 import { EpicSelector } from './EpicSelector';
-import './EpicRollupView.scss';
+import './EpicRoadmapView.scss';
 
 initializeIcons(/* optional base url */);
 
-export interface IEpicRollupViewProps {
+export interface IEpicRoadmapViewProps {
     projectId: string;
     teamId: string;
     uiState: UIStatus;
 }
 
 
-class EpicRollupViewContent extends React.Component<IEpicRollupViewProps, {}> {
+class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> {
     constructor() {
         super();
     }
@@ -62,7 +62,7 @@ class EpicRollupViewContent extends React.Component<IEpicRollupViewProps, {}> {
                 <EpicSelector
                     projectId={this.props.projectId}
                     teamId={this.props.teamId} />
-                <EpicRollupGrid />
+                <EpicRoadmapGrid />
             </div>
         );
     }
@@ -70,7 +70,7 @@ class EpicRollupViewContent extends React.Component<IEpicRollupViewProps, {}> {
 
 
 const makeMapStateToProps = () => {
-    return (state: IEpicRollupState) => {
+    return (state: IEpicRoadmapState) => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
@@ -79,16 +79,16 @@ const makeMapStateToProps = () => {
     }
 }
 
-export const ConnectedEpicRollupViewContent = connect(makeMapStateToProps)(EpicRollupViewContent);
+export const ConnectedEpicRoadmapViewContent = connect(makeMapStateToProps)(EpicRoadmapViewContent);
 
-export const EpicRollupView = () => {
-    const initialState: IEpicRollupState = {
-    } as IEpicRollupState;
-    const store = configureEpicRollupStore(initialState);
+export const EpicRoadmapView = () => {
+    const initialState: IEpicRoadmapState = {
+    } as IEpicRoadmapState;
+    const store = configureEpicRoadmapStore(initialState);
 
     return (
         <Provider store={store}>
-            <ConnectedEpicRollupViewContent />
+            <ConnectedEpicRoadmapViewContent />
         </Provider>);
 }
 
