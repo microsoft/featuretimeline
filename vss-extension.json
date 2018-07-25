@@ -51,14 +51,14 @@
         }
     },
     {
-        "id": "workitem-epic-rollup",
+        "id": "workitem-epic-roadmap",
         "type": "ms.vss-web.tab",
-        "description": "Epic Rollup.",
+        "description": "Epic roadmap.",
         "targets": [
             "ms.vss-work-web.product-backlog-tabs"
         ],
         "properties": {
-            "name": "Epic Rollup",
+            "name": "Epic roadmap",
             "order": 100,
             "uri": "dist/epicrollup.html",
             "dynamic": true

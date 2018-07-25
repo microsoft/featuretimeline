@@ -38,7 +38,6 @@ class EpicRollupViewContent extends React.Component<IEpicRollupViewProps, {}> {
             );
         }
 
-        //needs to move to EpicContent
         if (uiState === UIStatus.NoTeamIterations) {
             return (
                 <MessageBar
