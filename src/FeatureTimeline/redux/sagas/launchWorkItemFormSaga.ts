@@ -1,7 +1,7 @@
 import { call, put } from "redux-saga/effects";
 import { IWorkItemFormNavigationService, WorkItemFormNavigationService } from "TFS/WorkItemTracking/Services";
-import { LaunchWorkItemFormAction } from "../../../Common/actions/launchWorkItemForm";
-import { getProjectId, getTeamId } from "../../../Common/Selectors/CommonSelectors";
+import { LaunchWorkItemFormAction } from "../../../Common/redux/actions/launchWorkItemForm";
+import { getProjectId, getTeamId } from "../../../Common/redux/Selectors/CommonSelectors";
 import { getBacklogLevel } from "../selectors";
 import { createInitialize, resetAllData } from "../store/common/actioncreators";
 

@@ -1,16 +1,17 @@
-import { createStore, applyMiddleware, Store, compose, combineReducers } from 'redux';
-import createSagaMiddleware from 'redux-saga'
+import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
+import createSagaMiddleware from 'redux-saga';
+import { iterationDisplayOptionsReducer } from '../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsReducer';
+import { overrideIterationProgressReducer } from '../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressReducer';
+import { savedOverrideIterationsReducer } from '../../Common/redux/modules/OverrideIterations/overrideWorkItemIterationReducer';
+import { progressAwareReducer } from '../../Common/redux/modules/ProgressAwareState/ProgressAwareStateReducer';
+import { settingsStateReducer } from '../../Common/redux/modules/SettingsState/SettingsStateReducer';
 import { IEpicRollupState } from './contracts';
 import { backlogConfigurationReducer } from './modules/backlogconfiguration/backlogconfiguratonreducer';
 import { teamIterationsReducer } from './modules/teamIterations/teamIterationReducer';
-import savedOverrideIterationsReducer from '../../Common/modules/OverrideIterations/overrideWorkItemIterationReducer';
+import { teamSettingsReducer } from './modules/teamsettings/teamsettingsreducer';
+import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMetadataReducer';
 import { workItemsReducer } from './modules/workItems/workItemReducer';
 import { fetchEpicRollup } from './sagas/fetchEpicRollupSaga';
-import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMetadataReducer';
-import { settingsStateReducer } from '../../Common/modules/SettingsState/SettingsStateReducer';
-import { teamSettingsReducer } from './modules/teamsettings/teamsettingsreducer';
-import { iterationDisplayOptionsReducer } from '../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsReducer';
-import { progressAwareReducer } from '../../Common/modules/ProgressAwareState/ProgressAwareStateReducer';
 
 export default function configureEpicRollupStore(
     initialState: IEpicRollupState
@@ -33,7 +34,8 @@ export default function configureEpicRollupStore(
         teamSettings: teamSettingsReducer,
         settingsState: settingsStateReducer,
         iterationDisplayOptions: iterationDisplayOptionsReducer,
-        progress: progressAwareReducer
+        progress: progressAwareReducer,
+        workItemOverrideIteration: overrideIterationProgressReducer
     });
 
 

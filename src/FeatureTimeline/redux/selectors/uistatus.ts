@@ -1,6 +1,6 @@
 import { IFeatureTimelineRawState } from "../store/types";
-import { compareIteration } from "../../../Common/Helpers/iterationComparer";
-import { UIStatus } from "../../../Common/Contracts/types";
+import { compareIteration } from "../../../Common/redux/Helpers/iterationComparer";
+import { UIStatus } from "../../../Common/redux/Contracts/types";
 
 export function getUIStatus(
     projectId: string,

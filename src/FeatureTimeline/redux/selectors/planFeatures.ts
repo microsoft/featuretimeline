@@ -1,10 +1,10 @@
 import { BacklogConfiguration } from "TFS/Work/Contracts";
-import { IWorkItemListItem } from "../../react/Components/WorkItemList";
-import { getDefaultInProgressState } from "../../../Common/Helpers/getWorkItemStateCategory";
+import { IWorkItemListItem } from "../../../Common/react/Components/WorkItemList";
+import { getDefaultInProgressState } from "../../../Common/redux/Helpers/getWorkItemStateCategory";
 import { IFeatureTimelineRawState } from "../store/types";
-import { IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
+import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 import { FeatureFilter, getEpicHierarchy } from "./workItemHierarchySelector";
-import { UIStatus } from "../../../Common/Contracts/types";
+import { UIStatus } from "../../../Common/redux/Contracts/types";
 
 
 

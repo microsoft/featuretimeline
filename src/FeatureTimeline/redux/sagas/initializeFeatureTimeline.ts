@@ -2,10 +2,10 @@ import { all, call, put, select } from 'redux-saga/effects';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
-import { PageWorkItemHelper } from '../../../Common/Helpers/PageWorkItemHelper';
-import { restoreDisplayIterationCount } from '../../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
-import { restoreOverriddenIterations } from '../../../Common/modules/OverrideIterations/overriddenIterationsSaga';
-import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
+import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
+import { restoreDisplayIterationCount } from '../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
+import { restoreOverriddenIterations } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationsSaga';
+import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { workItemStateColorsReceived, workItemTypesReceived } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataActionCreators';
 import { WorkItemMetadataService } from '../../../Services/WorkItemMetadataService';
 import { getBacklogLevel } from '../selectors';
@@ -17,12 +17,12 @@ import { loading } from '../store/loading/actionCreators';
 import { teamSettingsIterationReceived } from '../store/teamiterations/actionCreators';
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
 import { workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
-import { restoreSettings } from '../../../Common/modules/SettingsState/SettingsStateSagas';
+import { restoreSettings } from '../../../Common/redux/modules/SettingsState/SettingsStateSagas';
 import Contracts = require('TFS/Work/Contracts');
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
-import { fetchIterationDisplayOptions } from '../../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsSaga';
-import { ISettingsState } from '../../../Common/modules/SettingsState/SettingsStateContracts';
+import { fetchIterationDisplayOptions } from '../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSaga';
+import { ISettingsState } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 
 // For sagas read  https://redux-saga.js.org/docs/introduction/BeginnerTutorial.html
 // For details saga effects read https://redux-saga.js.org/docs/basics/DeclarativeEffects.html

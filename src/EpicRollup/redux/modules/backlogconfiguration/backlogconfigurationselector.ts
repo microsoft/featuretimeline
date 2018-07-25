@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { getProjectId } from "../../../../Common/Selectors/CommonSelectors";
+import { getProjectId } from "../../../../Common/redux/Selectors/CommonSelectors";
 import { IProjectBacklogConfigurationAwareState } from "./backlogconfigurationcontracts";
 
 export const getBacklogConfigurationMap = (state: IProjectBacklogConfigurationAwareState) => state.backlogConfigurations;

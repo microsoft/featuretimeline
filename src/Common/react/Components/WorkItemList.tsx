@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IFeatureTimelineRawState } from '../../redux/store/types';
-import { unplannedFeaturesSelector, planFeatureStateSelector } from '../../redux/selectors';
-import { launchWorkItemForm } from "../../../Common/actions/launchWorkItemForm";
+import { IFeatureTimelineRawState } from '../../../FeatureTimeline/redux/store/types';
+import { unplannedFeaturesSelector, planFeatureStateSelector } from '../../../FeatureTimeline/redux/selectors';
+import { launchWorkItemForm } from "../../redux/actions/launchWorkItemForm";
 import { List } from 'office-ui-fabric-react/lib/List';
 import DraggableWorkItemListItemRenderer from './WorkItem/DraggableWorkItemListItemRenderer';
 import { MessageBar } from 'office-ui-fabric-react/lib/MessageBar';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { changePlanFeaturesFilter } from '../../redux/store/common/actioncreators';
+import { changePlanFeaturesFilter } from '../../../FeatureTimeline/redux/store/common/actioncreators';
 
 export interface IWorkItemListItem {
     id: number;

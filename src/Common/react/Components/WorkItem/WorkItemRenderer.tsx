@@ -1,7 +1,7 @@
 import './WorkItemRenderer.scss';
 import * as React from 'react';
 import { InfoIcon } from '../InfoIcon/InfoIcon';
-import { getRowColumnStyle } from '../../../../Common/Helpers/gridhelper';
+import { getRowColumnStyle } from '../../../redux/Helpers/gridhelper';
 import {
     TooltipHost, TooltipOverflowMode
 } from 'office-ui-fabric-react/lib/Tooltip';
@@ -11,11 +11,11 @@ import { ProgressDetails } from '../ProgressDetails/ProgressDetails';
 import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { State } from '../State/State';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
-import { IIterationDuration } from "../../../../Common/Contracts/IIterationDuration";
-import { IDimension, CropWorkItem } from '../../../../Common/Contracts/types';
-import { IWorkItemOverrideIteration } from '../../../../Common/modules/OverrideIterations/overriddenIterationContracts';
-import { IProgressIndicator } from '../../../../Common/Contracts/GridViewContracts';
-import { ISettingsState, ProgressTrackingCriteria } from '../../../../Common/modules/SettingsState/SettingsStateContracts';
+import { IIterationDuration } from "../../../redux/Contracts/IIterationDuration";
+import { IDimension, CropWorkItem } from '../../../redux/Contracts/types';
+import { IWorkItemOverrideIteration } from '../../../redux/modules/OverrideIterations/overriddenIterationContracts';
+import { IProgressIndicator } from '../../../redux/Contracts/GridViewContracts';
+import { ISettingsState, ProgressTrackingCriteria } from '../../../redux/modules/SettingsState/SettingsStateContracts';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;

@@ -1,9 +1,8 @@
 import { DropTarget } from 'react-dnd';
 import { IIterationSahdowProps, IterationShadow } from './IterationShadow';
-import React = require('react');
-import { IWorkItemRendererProps } from './WorkItem/WorkItemRenderer';
 import { IWorkItemListItemProps } from './WorkItem/WorkItemListItem';
-
+import { IWorkItemRendererProps } from './WorkItem/WorkItemRenderer';
+import React = require('react');
 
 export class DroppableIterationShadow extends React.Component<IIterationSahdowProps, {}> {
     public render() {

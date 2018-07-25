@@ -1,13 +1,13 @@
 import { getWorkItemsForLevel } from './workItemsForLevel';
 import { IFeatureTimelineRawState } from '../store/types';
-import { IIterationDuration, IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
-import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
+import { IIterationDuration, IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
+import { IWorkItemInfo, WorkItemLevel } from '../store/workitems/types';
 import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
-import { compareIteration } from '../../../Common/Helpers/iterationComparer';
+import { compareIteration } from '../../../Common/redux/Helpers/iterationComparer';
 import { getTeamIterations } from './teamIterations';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { UIStatus } from '../../../Common/Contracts/types';
-import { IWorkItemDisplayDetails } from '../../../Common/Contracts/GridViewContracts';
+import { UIStatus, StateCategory } from '../../../Common/redux/Contracts/types';
+import { IWorkItemDisplayDetails } from '../../../Common/redux/Contracts/GridViewContracts';
 
 
 export enum FeatureFilter {

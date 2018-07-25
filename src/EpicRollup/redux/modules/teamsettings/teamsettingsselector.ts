@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { getTeamId } from "../../../../Common/Selectors/CommonSelectors";
+import { getTeamId } from "../../../../Common/redux/Selectors/CommonSelectors";
 import { ITeamSettingsAwareState } from "./teamsettingscontracts";
 
 export const getTeamSettingsMap = (state: ITeamSettingsAwareState) => state.teamSettings;

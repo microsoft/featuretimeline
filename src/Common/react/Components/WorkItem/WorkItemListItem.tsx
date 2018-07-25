@@ -1,8 +1,8 @@
+import { TooltipHost, TooltipOverflowMode } from 'office-ui-fabric-react/lib/Tooltip';
+import * as React from 'react';
+import { hexToRgb } from '../colorhelper';
 import './WorkItemListItem.scss';
 
-import * as React from 'react';
-import { TooltipHost, TooltipOverflowMode } from 'office-ui-fabric-react/lib/Tooltip';
-import { hexToRgb } from '../colorhelper';
 
 export interface IWorkItemListItemProps {
     id: number;

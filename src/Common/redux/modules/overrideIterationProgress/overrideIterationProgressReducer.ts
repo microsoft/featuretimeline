@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { OverrideIterationActions, OverrideIterationHoverOverIterationType, OverrideIterationStartType, OverrideIterationCleanupType } from './actions';
+import { OverrideIterationActions, OverrideIterationHoverOverIterationType, OverrideIterationStartType, OverrideIterationCleanupType } from './overrideIterationProgressActions';
 import produce from "immer";
 import { IWorkItemOverrideIteration } from '../OverrideIterations/overriddenIterationContracts';
 

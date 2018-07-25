@@ -1,18 +1,18 @@
 import { backlogConfigurationForProjectSelector } from '../modules/backlogconfiguration/backlogconfigurationselector';
 import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
 import { workItemDisplayDetailsSelectors } from './workItemDisplayDetailsSelector';
-import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem, IGridWorkItem } from "../../../Common/Contracts/GridViewContracts";
+import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem, IGridWorkItem } from "../../../Common/redux/Contracts/GridViewContracts";
 import { TeamSettingsIteration, BacklogConfiguration } from "TFS/Work/Contracts";
-import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
+import { getDisplayIterations } from "../../../Common/redux/Selectors/displayIterationSelector";
 import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
-import { CropWorkItem, UIStatus } from "../../../Common/Contracts/types";
-import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
-import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
+import { CropWorkItem, UIStatus } from "../../../Common/redux/Contracts/types";
+import { getProgress } from "../../../Common/redux/Helpers/ProgressHelpers";
+import { getIterationDisplayDetails } from "../../../Common/redux/Helpers/getIterationDisplayDetails";
 import { createSelector } from "reselect";
 import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsselector';
-import { getIterationDisplayOptionsState } from '../../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsSelector';
-import { getSettingsState } from '../../../Common/modules/SettingsState/SettingsStateSelector';
-import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/modules/SettingsState/SettingsStateContracts';
+import { getIterationDisplayOptionsState } from '../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSelector';
+import { getSettingsState } from '../../../Common/redux/modules/SettingsState/SettingsStateSelector';
+import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 import { uiStateSelector } from './uiStateSelector';
 
 export interface ITeamFieldDisplayItem extends IGridItem {

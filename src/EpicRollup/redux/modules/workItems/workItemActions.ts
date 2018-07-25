@@ -1,5 +1,5 @@
 import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
-import { ActionsUnion, createAction } from '../../../../Common/Helpers/ActionHelper';
+import { ActionsUnion, createAction } from '../../../../Common/redux/Helpers/ActionHelper';
 
 
 export const EpicHierarchyReceivedType = "@@workitems/EpicHierarchyReceived";

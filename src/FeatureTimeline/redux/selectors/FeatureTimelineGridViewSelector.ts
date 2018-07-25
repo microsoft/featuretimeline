@@ -1,12 +1,12 @@
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/Contracts/GridViewContracts";
-import { CropWorkItem, IDimension, UIStatus } from "../../../Common/Contracts/types";
-import { getIterationDisplayDetails } from "../../../Common/Helpers/getIterationDisplayDetails";
-import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
-import { IWorkItemOverrideIteration } from "../../../Common/modules/OverrideIterations/overriddenIterationContracts";
-import { ISettingsState } from "../../../Common/modules/SettingsState/SettingsStateContracts";
-import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
-import { IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
+import { IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/redux/Contracts/GridViewContracts";
+import { CropWorkItem, IDimension, UIStatus } from "../../../Common/redux/Contracts/types";
+import { getIterationDisplayDetails } from "../../../Common/redux/Helpers/getIterationDisplayDetails";
+import { getProgress } from "../../../Common/redux/Helpers/ProgressHelpers";
+import { IWorkItemOverrideIteration } from "../../../Common/redux/modules/OverrideIterations/overriddenIterationContracts";
+import { ISettingsState } from "../../../Common/redux/modules/SettingsState/SettingsStateContracts";
+import { getDisplayIterations } from "../../../Common/redux/Selectors/displayIterationSelector";
+import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 import { workItemCompare } from "./workItemCompare";
 
 export function getGridView(

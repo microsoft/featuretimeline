@@ -1,5 +1,5 @@
 import { TeamSetting } from "TFS/Work/Contracts";
-import { createAction, ActionsUnion } from '../../../../Common/Helpers/ActionHelper';
+import { createAction, ActionsUnion } from '../../../../Common/redux/Helpers/ActionHelper';
 
 export const TeamSettingsReceivedType = "@@teamsettings/TeamSettingsReceived";
 export const TeamSettingsActionCreator = {

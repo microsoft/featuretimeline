@@ -1,4 +1,5 @@
-import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
+import { IWorkItemInfo, WorkItemLevel } from '../store/workitems/types';
+import { StateCategory } from '../../../Common/redux/Contracts/types';
 
 // returns all work items for given level
 export function getWorkItemsForLevel(

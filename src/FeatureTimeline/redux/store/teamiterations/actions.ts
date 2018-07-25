@@ -1,6 +1,7 @@
 import { Action } from "redux";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { DisplayAllIterationsAction, ChangeDisplayIterationCountAction, ShiftDisplayIterationLeftAction, ShiftDisplayIterationRightAction, RestoreDisplayIterationCountAction } from "../../../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsActions";
+import { DisplayAllIterationsAction, ChangeDisplayIterationCountAction, ShiftDisplayIterationLeftAction, 
+    ShiftDisplayIterationRightAction, RestoreDisplayIterationCountAction } from "../../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions";
 
 export const TeamSettingsIterationReceivedType = "@@TeamSettingsIteration/TeamSettingsIterationReceived";
 

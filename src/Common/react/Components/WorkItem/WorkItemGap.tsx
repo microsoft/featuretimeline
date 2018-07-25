@@ -1,8 +1,8 @@
 import "./WorkItemRenderer.scss";
 
 import * as React from 'react';
-import { getRowColumnStyle } from '../../../../Common/Helpers/gridhelper';
-import { IDimension } from "../../../../Common/Contracts/types";
+import { getRowColumnStyle } from '../../../redux/Helpers/gridhelper';
+import { IDimension } from "../../../redux/Contracts/types";
 
 export class WorkitemGap extends React.Component<IDimension, {}> {
     public render() {

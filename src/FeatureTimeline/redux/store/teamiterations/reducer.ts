@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import { ITeamSettingsIterationState } from './types';
 import produce from "immer";
 import { TeamSettingsIterationActions, TeamSettingsIterationReceivedType, TeamSettingsIterationReceivedAction } from './actions';
-import { iterationDisplayOptionsReducer } from '../../../../Common/modules/IterationDisplayOptions/iterationDisplayOptionsReducer';
+import { iterationDisplayOptionsReducer } from '../../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsReducer';
 
 // Type-safe initialState!
 export const getInitialState = (): ITeamSettingsIterationState => {

@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { getProjectId } from "../../../../Common/Selectors/CommonSelectors";
+import { getProjectId } from "../../../../Common/redux/Selectors/CommonSelectors";
 import { IEpicRollupState } from "../../contracts";
 import { ProjectWorkItemMetadataMap } from "./workItemMetadataContracts";
 

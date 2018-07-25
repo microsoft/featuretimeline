@@ -1,18 +1,18 @@
-import { IWorkItemDisplayDetails } from "../../../Common/Contracts/GridViewContracts";
-import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
-import { IDependenciesTree } from "../modules/workItems/workItemContracts";
-import { IWorkItemMetadata } from "../modules/workItemMetadata/workItemMetadataContracts";
-import { WorkItem, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
-import { WorkItemStartEndIteration, workItemStartEndIterationSelector } from "./workItemStartEndIterationSelector";
-import { BacklogConfiguration, TeamSettingsIteration } from "TFS/Work/Contracts";
-import { getWorkItemStateCategory } from "../../../Common/Helpers/getWorkItemStateCategory";
-import { StateCategory } from "../../../FeatureTimeline/redux/store/workitems/types";
 import { createSelector } from "reselect";
-import { normalizedDependencyTreeSelector } from "./dependencyTreeSelector";
-import { pagedWorkItemsMapSelector } from "./workItemSelector";
+import { BacklogConfiguration, TeamSettingsIteration } from "TFS/Work/Contracts";
+import { WorkItem, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
+import { IWorkItemDisplayDetails } from "../../../Common/redux/Contracts/GridViewContracts";
+import { StateCategory } from "../../../Common/redux/Contracts/types";
+import { getWorkItemStateCategory } from "../../../Common/redux/Helpers/getWorkItemStateCategory";
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";
+import { IWorkItemMetadata } from "../modules/workItemMetadata/workItemMetadataContracts";
 import { workItemMetadataSelector } from "../modules/workItemMetadata/workItemMetadataSelector";
+import { IDependenciesTree } from "../modules/workItems/workItemContracts";
+import { normalizedDependencyTreeSelector } from "./dependencyTreeSelector";
+import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
+import { pagedWorkItemsMapSelector } from "./workItemSelector";
+import { WorkItemStartEndIteration, workItemStartEndIterationSelector } from "./workItemStartEndIterationSelector";
 
 export const workItemDisplayDetailsSelectors = createSelector(
     () => 10, //TODO: This is hard coded for now

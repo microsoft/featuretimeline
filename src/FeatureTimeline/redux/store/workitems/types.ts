@@ -1,18 +1,11 @@
 import { WorkItem } from "TFS/WorkItemTracking/Contracts";
 import { Action } from "redux";
+import { StateCategory } from "../../../../Common/redux/Contracts/types";
 
 export enum WorkItemLevel {
     Parent,
     Current,
     Child
-}
-
-export enum StateCategory {
-    Proposed,
-    InProgress,
-    Resolved,
-    Completed,
-    Removed
 }
 
 export interface IWorkItemInfo {    

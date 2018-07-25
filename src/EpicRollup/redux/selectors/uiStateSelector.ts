@@ -1,6 +1,6 @@
 import { createSelector } from "reselect";
 import { IEpicRollupState } from "../contracts";
-import { UIStatus } from "../../../Common/Contracts/types";
+import { UIStatus } from "../../../Common/redux/Contracts/types";
 import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 export function getEpicRollupState(state: IEpicRollupState) {

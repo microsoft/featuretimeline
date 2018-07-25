@@ -1,16 +1,17 @@
-import { IContributionContext } from "../../../Common/Contracts/types";
+import { IContributionContext, StateCategory } from "../../../Common/redux/Contracts/types";
 import { createSelector } from "reselect";
 import { getWorkItemsForLevel } from "./workItemsForLevel";
 import { getUIStatus } from "./uistatus";
 import { IFeatureTimelineRawState } from "../store/types";
-import { WorkItemLevel, StateCategory } from "../store/workitems/types";
+import { WorkItemLevel } from "../store/workitems/types";
 import { getEpicHierarchy, FeatureFilter } from "./workItemHierarchySelector";
 import { getGridView } from "./FeatureTimelineGridViewSelector";
 import { getTeamIterations, getBacklogIteration } from "./teamIterations";
 import { getUnplannedFeatures2 } from "./planFeatures";
 import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReducer";
-import { getProjectId, getTeamId } from "../../../Common/Selectors/CommonSelectors";
-import { getSettingsState } from "../../../Common/modules/SettingsState/SettingsStateSelector";
+import { getProjectId, getTeamId } from "../../../Common/redux/Selectors/CommonSelectors";
+import { getSettingsState } from "../../../Common/redux/modules/SettingsState/SettingsStateSelector";
+import { getWorkItemOverrideIteration } from "../../../Common/redux/modules/OverrideIterations/overriddenIterationsSelector";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
 
@@ -53,10 +54,6 @@ export const unplannedFeaturesSelector = () => {
     );
 }
 
-export const workItemOverrideIterationSelector = () => {
-    return createSelector([getRawState], (state) => state.workItemOverrideIteration);
-}
-
 export const uiStatusSelector = () => {
     return createSelector([getProjectId, getTeamId, getRawState], getUIStatus);
 }
@@ -92,7 +89,7 @@ export const primaryGridViewSelector = () => {
         backlogIterationSelector(),
         teamIterationsSelector(),
         epicsHierarchySelector(),
-        workItemOverrideIterationSelector(),
+        getWorkItemOverrideIteration as any,
         getSettingsState,
         iterationDisplayOptionsSelector()
     ],

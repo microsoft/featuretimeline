@@ -4,13 +4,13 @@ import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBa
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import * as React from 'react';
 import { connect, Provider } from 'react-redux';
-import { UIStatus } from '../../../Common/Contracts/types';
-import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
+import { UIStatus } from '../../../Common/redux/Contracts/types';
+import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { IEpicRollupState } from '../../redux/contracts';
 import configureEpicRollupStore from '../../redux/epicRollupStore';
 import { epicRollupGridViewSelector, IEpicRollupGridView } from '../../redux/selectors/epicRollupGridViewSelector';
 import { uiStateSelector } from '../../redux/selectors/uiStateSelector';
-import { EpicContent } from './EpicContent';
+import { EpicRollupGrid } from './EpicRollupGrid';
 import { EpicSelector } from './EpicSelector';
 import './EpicRollupView.scss';
 
@@ -65,7 +65,7 @@ class EpicRollupViewContent extends React.Component<IEpicRollupViewProps, {}> {
                 <EpicSelector
                     projectId={this.props.projectId}
                     teamId={this.props.teamId} />
-                <EpicContent
+                <EpicRollupGrid
                     projectId={this.props.projectId}
                     teamId={this.props.teamId}
                     gridView={this.props.gridView} />

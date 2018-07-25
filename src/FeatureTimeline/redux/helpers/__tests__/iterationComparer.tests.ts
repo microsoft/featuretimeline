@@ -1,5 +1,5 @@
-import { getCurrentIterationIndex } from "../../../../Common/Helpers/iterationComparer";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { getCurrentIterationIndex } from "../../../../Common/redux/Helpers/iterationComparer";
 declare var it, expect;
 
 it('test get current iteration', () => {

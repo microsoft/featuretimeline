@@ -32,3 +32,11 @@ export interface IDimension {
     endRow: number;
     endCol: number;
 }
+
+export enum StateCategory {
+    Proposed,
+    InProgress,
+    Resolved,
+    Completed,
+    Removed
+}

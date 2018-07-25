@@ -1,4 +1,4 @@
-import { ActionsUnion, createAction } from "../../../../Common/Helpers/ActionHelper";
+import { ActionsUnion, createAction } from "../../../../Common/redux/Helpers/ActionHelper";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 
 export const TeamIterationsReceivedType = "@@teamiterations/TeamIterationsReceived";

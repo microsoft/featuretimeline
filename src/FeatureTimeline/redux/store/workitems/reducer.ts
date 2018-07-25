@@ -6,15 +6,15 @@ import {
     WorkItemsReceivedActionType,
     WorkItemLinksReceivedAction,
     WorkItemLinksReceivedActionType,
-    StartUpdateWorkitemIterationAction,
-    StartUpdateWorkitemIterationActionType,
     StartMarkInProgressActionType,
     StartMarkInProgressAction
 } from './actions';
-import { IWorkItemsState, WorkItemLevel, StateCategory } from './types';
+import { StartUpdateWorkitemIterationAction, StartUpdateWorkitemIterationActionType } from "../../../../Common/redux/actions/StartUpdateWorkitemIterationAction";
+import { IWorkItemsState, WorkItemLevel } from './types';
 import { Reducer } from 'redux';
-import { getWorkItemStateCategory } from '../../../../Common/Helpers/getWorkItemStateCategory';
+import { getWorkItemStateCategory } from '../../../../Common/redux/Helpers/getWorkItemStateCategory';
 import produce from "immer";
+import { StateCategory } from '../../../../Common/redux/Contracts/types';
 
 // Type-safe initialState!
 const getIntialState = () => {

@@ -1,5 +1,5 @@
 import { call, put, select } from 'redux-saga/effects';
-import { getTeamId } from '../../../Common/Selectors/CommonSelectors';
+import { getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { planFeatureStateSelector } from '../selectors';
 import { changePlanFeaturesFilter, changePlanFeaturesWidth, togglePlanFeaturesPane } from '../store/common/actioncreators';
 import { IPlanFeaturesState } from '../store/types';

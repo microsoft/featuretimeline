@@ -1,7 +1,7 @@
-import { IIterationDisplayOptionsAwareState } from "../../Common/modules/IterationDisplayOptions/IterationDisplayOptionsContracts";
-import { IOverriddenIterationsAwareState } from '../../Common/modules/OverrideIterations/overriddenIterationContracts';
-import { IProgressAwareState } from "../../Common/modules/ProgressAwareState/ProgressAwareStateContracts";
-import { ISettingsAwareState } from "../../Common/modules/SettingsState/SettingsStateContracts";
+import { IIterationDisplayOptionsAwareState } from "../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsContracts";
+import { IOverriddenIterationsAwareState, IWorkItemOverrideIterationAwareState } from '../../Common/redux/modules/OverrideIterations/overriddenIterationContracts';
+import { IProgressAwareState } from "../../Common/redux/modules/ProgressAwareState/ProgressAwareStateContracts";
+import { ISettingsAwareState } from "../../Common/redux/modules/SettingsState/SettingsStateContracts";
 import { IProjectBacklogConfigurationAwareState } from "./modules/backlogconfiguration/backlogconfigurationcontracts";
 import { ITeamIterationsAwareState } from "./modules/teamIterations/teamIterationsContracts";
 import { ITeamSettingsAwareState } from "./modules/teamsettings/teamsettingscontracts";
@@ -17,5 +17,6 @@ export interface IEpicRollupState extends
     ITeamSettingsAwareState,
     IIterationDisplayOptionsAwareState,
     ISettingsAwareState,
-    IProgressAwareState {
+    IProgressAwareState,
+    IWorkItemOverrideIterationAwareState {
 }

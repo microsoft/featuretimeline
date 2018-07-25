@@ -1,14 +1,14 @@
 import { createSelector } from 'reselect';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
-import { SavedOverriddenIteration } from '../../../Common/modules/OverrideIterations/overriddenIterationContracts';
-import { OverriddenIterationSelector } from '../../../Common/modules/OverrideIterations/overriddenIterationsSelector';
+import { SavedOverriddenIteration } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationContracts';
+import { OverriddenIterationSelector } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationsSelector';
 import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
 import { normalizedDependencyTreeSelector } from './dependencyTreeSelector';
 import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from './workItemSelector';
 import { IDependenciesTree } from '../modules/workItems/workItemContracts';
-import { IIterationDuration, IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
+import { IIterationDuration, IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsselector';
 
 export type WorkItemStartEndIteration = IDictionaryNumberTo<IIterationDuration>;

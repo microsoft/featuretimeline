@@ -9,6 +9,9 @@ export interface IOverriddenIterationDuration {
     user: string;
 }
 
+export interface IWorkItemOverrideIterationAwareState {
+    workItemOverrideIteration: IWorkItemOverrideIteration;
+}
 
 export interface IWorkItemOverrideIteration {
     workItemId: number;

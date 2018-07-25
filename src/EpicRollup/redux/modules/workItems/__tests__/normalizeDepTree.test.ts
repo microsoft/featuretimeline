@@ -1,8 +1,8 @@
-import { createNormalizedDependencyTree } from '../../../selectors/dependencyTreeSelector';
 import { IEpicTree } from "../../../selectors/epicTreeSelector";
-import { IDependenciesTree } from '../workItemContracts';
-declare var test, expect;
+import { createNormalizedDependencyTree } from "../../../selectors/dependencyTreeSelector";
+import { IDependenciesTree } from "../workItemContracts";
 
+declare var test, expect;
 
 test("validate createNormalizedDependencyTree", () => {
     const epicTree: IEpicTree = {
