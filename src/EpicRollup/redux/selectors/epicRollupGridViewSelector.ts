@@ -5,7 +5,7 @@ import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem
 import { TeamSettingsIteration, BacklogConfiguration } from "TFS/Work/Contracts";
 import { getDisplayIterations } from "../../../Common/redux/Selectors/displayIterationSelector";
 import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
-import { CropWorkItem, UIStatus } from "../../../Common/redux/Contracts/types";
+import { CropWorkItem, UIStatus, IDimension } from "../../../Common/redux/Contracts/types";
 import { getProgress } from "../../../Common/redux/Helpers/ProgressHelpers";
 import { getIterationDisplayDetails } from "../../../Common/redux/Helpers/getIterationDisplayDetails";
 import { createSelector } from "reselect";
@@ -22,6 +22,7 @@ export interface ITeamFieldDisplayItem extends IGridItem {
 
 export interface IEpicRollupGridView extends IGridView {
     teamFieldDisplayItems: ITeamFieldDisplayItem[];
+    teamFieldHeaderItem: IDimension;
 }
 
 export const epicRollupGridViewSelector = createSelector(
@@ -56,7 +57,8 @@ export function getEpicRollupGridView(
             emptyHeaderRow: [],
             iterationHeader: [],
             iterationShadow: [],
-            currentIterationIndex: -1
+            currentIterationIndex: -1,
+            teamFieldHeaderItem: null
         };
     }
 
@@ -108,7 +110,13 @@ export function getEpicRollupGridView(
         iterationHeader,
         iterationShadow,
         emptyHeaderRow,
-        currentIterationIndex
+        currentIterationIndex,
+        teamFieldHeaderItem: {
+            startCol: 1,
+            startRow: 2,
+            endCol: 2,
+            endRow: 3
+        }
     }
 
 }
@@ -128,13 +136,11 @@ function getGridItems(
     let teamGroupStartRow = 3;
     let teamGroupEndRow = -1;
     sortedTeamFields.forEach(teamField => {
-        debugger;
         // create cards for work items, and only if there are more than one card for work items create card for the teamfield
         const orderedWorkItems = workItemsByTeamField[teamField].sort(workItemCompare);
         const workItemStartColumn = 2;
         let workItemStartRow = teamGroupStartRow;
         const childItems = orderedWorkItems.map(workItem => {
-            debugger;
             const { iterationDuration: { startIteration, endIteration } } = workItem;
             let startIterationIndex = displayIterations.findIndex(di => di.id === startIteration.id);
             let endIterationIndex = displayIterations.findIndex(di => di.id === endIteration.id);

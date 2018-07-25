@@ -26,6 +26,8 @@ import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonS
 import { IEpicRollupState } from '../../redux/contracts';
 import { epicRollupGridViewSelector, IEpicRollupGridView } from '../../redux/selectors/epicRollupGridViewSelector';
 import './EpicRollupGrid.scss';
+import { TeamFieldCard } from '../../../Common/react/Components/TeamField/TeamFieldCard';
+import { TeamFieldHeader } from '../../../Common/react/Components/TeamFieldHeader/TeamFieldHeader';
 
 export interface IEpicRollupGridProps {
     projectId: string;
@@ -63,7 +65,9 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
                 shadowForWorkItemId,
                 iterationDisplayOptions,
                 isSubGrid,
-                teamIterations
+                teamIterations,
+                teamFieldDisplayItems,
+                teamFieldHeaderItem
             }
         } = this.props;
 
@@ -92,7 +96,6 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
         });
 
         let workItemShadowCell = null;
-        debugger;
         if (shadowForWorkItemId > 0) {
             const workItem = workItems.filter(w => !w.isGap && w.workItem.id === shadowForWorkItemId)[0];
             workItemShadowCell = (
@@ -100,7 +103,8 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
             );
         }
 
-        debugger;
+        const teamFieldCards = teamFieldDisplayItems.map(tfdi => <TeamFieldCard dimension={tfdi.dimension} teamField={tfdi.teamField} />);
+
         const workItemCells = workItems.filter(w => !w.isGap && w.workItem.id).map(w => {
             return (
                 <DraggableWorkItemRenderer
@@ -135,12 +139,12 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
         });
 
 
-        const extraColumns = this.props.gridView.hideParents ? [] : ['300px'];
+        const extraColumns = this.props.gridView.hideParents ? [] : ['200px'];
         let min = '200px';
         if (isSubGrid) {
             min = '150px';
         }
-        const gridStyle = getTemplateColumns(extraColumns, shadows.length, `minmax(${min}, 300px)`);
+        const gridStyle = getTemplateColumns(extraColumns, shadows.length, `minmax(${min}, 200px)`);
 
         let childDialog = null;
         if (this.props.rawState.workItemsToShowInfoFor.length > 0) {
@@ -282,15 +286,18 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
             </div>
         );
 
+        const teamFieldHeader = <TeamFieldHeader dimension={teamFieldHeaderItem} />
         const grid = (
             <div className="feature-timeline-main-container">
                 <div className="container" style={gridStyle}>
                     {commandHeading}
+                    {teamFieldHeader}
                     {columnHeading}
                     {shadows}
                     {workItemShadowCell}
                     {workItemCells}
                     {workItemGaps}
+                    {teamFieldCards}
                     {childDialog}
                 </div>
             </div>
@@ -315,7 +322,7 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
         const {
             projectId,
             teamId,
-            gridView:{
+            gridView: {
                 teamIterations,
                 currentIterationIndex
             }
