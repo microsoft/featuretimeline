@@ -13,6 +13,7 @@ import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMeta
 import { workItemsReducer } from './modules/workItems/workItemReducer';
 import { fetchEpicRollup } from './sagas/fetchEpicRollupSaga';
 import { showHideDetailsReducer } from '../../Common/redux/modules/ShowHideDetails/ShowHideDetailsReducer';
+import { watchEpicRollupSagaActions } from './sagas/watchEpicRollupSagaActions';
 
 export default function configureEpicRollupStore(
     initialState: IEpicRollupState
@@ -46,8 +47,11 @@ export default function configureEpicRollupStore(
         initialState,
         composeEnhancers(middleware));
 
+    sagaMiddleWare.run(watchEpicRollupSagaActions);
+
     //TODO: User MRU or select
     sagaMiddleWare.run(fetchEpicRollup, 10);
+
 
     return store;
 }

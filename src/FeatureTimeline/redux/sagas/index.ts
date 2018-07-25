@@ -7,7 +7,7 @@ import { InitializeType, TogglePlanFeaturesPaneType, PlanFeaturesPaneFilterChang
 import { callInitialize } from "./initializeFeatureTimeline";
 import { launchOverrideWorkItemIteration, launchClearOverrideIteration, launchSaveOverrideIteration } from "../../../Common/redux/sagas/workItemOverrideIterationListner";
 import { updateWorkItemIteration } from "../../../Common/redux/sagas/updateWorkItemIterationListner";
-import { saveDisplayOptions } from './displayOptions';
+import { saveDisplayOptions } from '../../../Common/redux/sagas/displayOptionsSaga';
 import { markWorkItemInProgressListner } from "./markWorkItemInProgressListner";
 import { savePlanFeaturesDisplayOptions, restorePlanFeaturesDisplayOptions } from "./planFeaturesDisplayOptions";
 import { initializeFeatureState } from "./featureStateReader";
@@ -28,18 +28,19 @@ export function* watchSagaActions() {
 
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
     yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);
-    yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions);
-    yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions);
-    yield takeLatest(ShiftDisplayIterationRightActionType, saveDisplayOptions);
-    yield takeLatest(ChangeDisplayIterationCountActionType, saveDisplayOptions);
+
+
+    yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions, "");
+    yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions, "");
+    yield takeLatest(ShiftDisplayIterationRightActionType, saveDisplayOptions, "");
+    yield takeLatest(ChangeDisplayIterationCountActionType, saveDisplayOptions, "");
+    yield takeLatest(ToggleShowWorkitemDetailsType, saveSettings, "");
+    yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings, "");
+    yield takeLatest(ChangeShowClosedSinceDaysType, saveSettings, "");
 
     yield takeLatest(TogglePlanFeaturesPaneType, savePlanFeaturesDisplayOptions);
     yield takeLatest(PlanFeaturesPaneFilterChangedType, savePlanFeaturesDisplayOptions);
     yield takeLatest(PlanFeaturesPaneWidthChangedType, savePlanFeaturesDisplayOptions);
-
-    yield takeLatest(ToggleShowWorkitemDetailsType, saveSettings, "");
-    yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings, "");
-    yield takeLatest(ChangeShowClosedSinceDaysType, saveSettings, "");
 
     yield takeLatest(InitializeType, restorePlanFeaturesDisplayOptions);
 }

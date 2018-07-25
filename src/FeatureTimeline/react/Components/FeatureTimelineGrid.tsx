@@ -274,7 +274,6 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             );
         });
 
-        debugger;
         const workItemSeparators = separators.map(d => {
             return (
                 <ChildRowsSeparator {...d} />
