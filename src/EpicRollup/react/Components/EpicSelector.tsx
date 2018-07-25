@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
-import { Label } from 'office-ui-fabric-react/lib/Label';
 import './EpicSelector.scss';
 
 

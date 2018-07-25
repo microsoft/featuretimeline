@@ -29,7 +29,7 @@ test("validate createNormalizeEpicTree", () => {
                 parentToChildrenMap: {},
                 childToParentMap: {}
             }))
-        .toEqual({ "childToParentMap": {}, "parentToChildrenMap": { "0": [] } });
+        .toEqual({ "childToParentMap": {}, "parentToChildrenMap": {} });
 
     expect(
         createNormalizedEpicTree(
