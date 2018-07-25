@@ -100,6 +100,7 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
             );
         }
 
+        debugger;
         const workItemCells = workItems.filter(w => !w.isGap && w.workItem.id).map(w => {
             return (
                 <DraggableWorkItemRenderer
@@ -144,7 +145,7 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
         let childDialog = null;
         if (this.props.rawState.workItemsToShowInfoFor.length > 0) {
             //const props = { ...this.props, id: this.props.rawState.workItemsToShowInfoFor[0] };
-            childDialog = <div>{`Showing infor for ${10} `}</div>;//<TimelineDialog {...props} />
+            childDialog = <div>{`Showing infor for ${this.props.rawState.workItemsToShowInfoFor[0]} `}</div>;//<TimelineDialog {...props} />
         }
 
         let leftButton = <span className="non-button"></span>;

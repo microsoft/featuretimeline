@@ -125,14 +125,16 @@ function getGridItems(
     const sortedTeamFields = Object.keys(workItemsByTeamField).sort();
     const gridWorkItems: IGridWorkItem[] = [];
     const teamFieldDisplayItems: ITeamFieldDisplayItem[] = [];
-    let teamGroupStartRow = 2;
+    let teamGroupStartRow = 3;
     let teamGroupEndRow = -1;
     sortedTeamFields.forEach(teamField => {
+        debugger;
         // create cards for work items, and only if there are more than one card for work items create card for the teamfield
         const orderedWorkItems = workItemsByTeamField[teamField].sort(workItemCompare);
         const workItemStartColumn = 2;
         let workItemStartRow = teamGroupStartRow;
         const childItems = orderedWorkItems.map(workItem => {
+            debugger;
             const { iterationDuration: { startIteration, endIteration } } = workItem;
             let startIterationIndex = displayIterations.findIndex(di => di.id === startIteration.id);
             let endIterationIndex = displayIterations.findIndex(di => di.id === endIteration.id);
