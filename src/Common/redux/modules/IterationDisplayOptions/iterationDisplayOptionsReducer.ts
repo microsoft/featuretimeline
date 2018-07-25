@@ -32,28 +32,27 @@ export const iterationDisplayOptionsReducer: Reducer<IIterationDisplayOptions> =
 
 function handleRestoreDisplayIterationCountAction(state: IIterationDisplayOptions, action: RestoreDisplayIterationCountAction) {
     const {
-        displayOptions,
-        maxIterations
-    } = this.action.payload;
+        displayOptions
+    } = action.payload;
 
-    return produce(state, draft => {
-        try {
-            draft = { ...displayOptions };
-            let { count } = displayOptions;
-            draft.totalIterations = maxIterations;
+    try {
+        let newDisplayOptions = { ...displayOptions };
+        let { count } = displayOptions;
+        const maxIterations = displayOptions.totalIterations;
+        newDisplayOptions.totalIterations = maxIterations;
 
-            // Handle incase if the team iterations changed before restore
-
-
-            if (maxIterations === 0 || !count || count > maxIterations || displayOptions.endIndex >= maxIterations) {
-                console.log("Ignoring restore display options as iterations changed.");
-                draft = null;
-            }
+        // Handle incase if the team iterations changed before restore
+        if (maxIterations === 0 || !count || count > maxIterations || displayOptions.endIndex >= maxIterations) {
+            console.log("Ignoring restore display options as iterations changed.");
+            newDisplayOptions = null;
         }
-        catch (error) {
-            console.log('Can not restore display options: ', error, action);
-        }
-    });
+
+        return newDisplayOptions;
+    }
+    catch (error) {
+        console.log('Can not restore display options: ', error, action);
+    }
+    return null;
 }
 
 function handleChangeDisplayIterationCountAction(state: IIterationDisplayOptions, action: ChangeDisplayIterationCountAction) {

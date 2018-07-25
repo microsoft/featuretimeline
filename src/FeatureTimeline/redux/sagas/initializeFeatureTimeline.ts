@@ -3,7 +3,6 @@ import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
-import { restoreDisplayIterationCount } from '../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
 import { restoreOverriddenIterations } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationsSaga';
 import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { workItemStateColorsReceived, workItemTypesReceived } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataActionCreators';
@@ -62,13 +61,13 @@ export function* handleInitialize(action: InitializeAction) {
 
     try {
         // Fetch backlog config, team iterations, workItem types and state metadata in parallel
-        const [bc, tis, wits, iterationDisplayOptions, ts, tfv] = yield all([
+        const [bc, tis, wits, ts, tfv] = yield all([
             call(workHttpClient.getBacklogConfigurations.bind(workHttpClient), teamContext),
             call(workHttpClient.getTeamIterations.bind(workHttpClient), teamContext),
             call(metadataService.getWorkItemTypes.bind(metadataService), projectId),
-            call(fetchIterationDisplayOptions, teamId),
             call(workHttpClient.getTeamSettings.bind(workHttpClient), teamContext),
-            call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext)
+            call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext),
+            call(fetchIterationDisplayOptions, teamId)
         ]);
 
         yield call(restoreOverriddenIterations);
@@ -180,13 +179,7 @@ export function* handleInitialize(action: InitializeAction) {
             yield put(workItemLinksReceived(linksReceived));
 
 
-        }
-
-        if (iterationDisplayOptions && iterationDisplayOptions !== "null") {
-            console.log(`parsed iteration displayoptions`, JSON.parse(iterationDisplayOptions));
-            yield put(restoreDisplayIterationCount(JSON.parse(iterationDisplayOptions)));
-        }
-
+        }        
     } catch (error) {
         yield put(genericError(error));
     }

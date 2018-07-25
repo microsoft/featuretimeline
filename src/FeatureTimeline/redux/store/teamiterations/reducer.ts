@@ -19,8 +19,9 @@ const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsItera
             return handleTeamSettingsIterationReceived(state, action as TeamSettingsIterationReceivedAction);
         default:
             return produce(state, draft => {
-                draft.iterationDisplayOptions = iterationDisplayOptionsReducer(state.iterationDisplayOptions, action);
+                draft.iterationDisplayOptions = iterationDisplayOptionsReducer(draft.iterationDisplayOptions, action);
             });
+
     }
 };
 

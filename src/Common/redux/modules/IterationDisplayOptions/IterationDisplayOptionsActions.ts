@@ -21,8 +21,7 @@ export interface ChangeDisplayIterationCountAction extends Action {
 export interface RestoreDisplayIterationCountAction extends Action {
     type: "@@TeamSettingsIteration/RestoreDisplayIterationCountAction";
     payload: {
-        displayOptions: IIterationDisplayOptions,
-        maxIterations: number
+        displayOptions: IIterationDisplayOptions
     }
 }
 
