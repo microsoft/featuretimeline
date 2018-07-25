@@ -76,7 +76,7 @@ export function getEpicRoadmapGridView(
     } = settingsState;
 
     const teamFieldName = typeFields["Team"];
-
+    debugger;
     const displayIterations: TeamSettingsIteration[] = getDisplayIterations(
         backlogIteration,
         teamIterations,
@@ -85,7 +85,7 @@ export function getEpicRoadmapGridView(
         iterationDisplayOptions);
 
     const { gridWorkItems, teamFieldDisplayItems, separators } =
-        getGridItems(
+        _getGridItems(
             isSubGrid,
             workItemDisplayDetails,
             teamFieldName,
@@ -127,7 +127,7 @@ export function getEpicRoadmapGridView(
 
 }
 
-function getGridItems(
+function _getGridItems(
     isSubGrid: boolean,
     workItemDisplayDetails: IWorkItemDisplayDetails[],
     teamFieldName: string,
@@ -182,15 +182,14 @@ function getGridItems(
             }
 
             const allowOverrideIteration = !isSubGrid && workItem.iterationDuration.startIteration.id !== backlogIteration.id;
-            if (!allowOverrideIteration) {
-                debugger;
-            }
+            const startCol = workItemStartColumn + startIterationIndex;
+            const endCol = workItemStartColumn + endIterationIndex + 1;
             const ret = {
                 dimension: {
                     startRow: workItemStartRow,
                     endRow: workItemStartRow + 1,
-                    startCol: workItemStartColumn + startIterationIndex,
-                    endCol: workItemStartColumn + endIterationIndex
+                    startCol,
+                    endCol
                 },
                 workItem,
                 settingsState,
