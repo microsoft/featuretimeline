@@ -19,8 +19,8 @@ export interface IWorkItemDisplayDetails {
     childrenWithNoEfforts: number;
 
     children: IWorkItemDisplayDetails[];
-    predecessors?: number[];
-    successors?: number[];
+    predecessors: number[];
+    successors: number[];
 }
 
 export interface IGridIteration {

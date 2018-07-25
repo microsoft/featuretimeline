@@ -112,7 +112,7 @@ function getWorkItemDetails(
     const orderFieldName = input.backlogConfiguration.backlogConfigurations[projectId][teamId].backlogFields.typeFields["Order"];
     const effortFieldName = input.backlogConfiguration.backlogConfigurations[projectId][teamId].backlogFields.typeFields["Effort"];
     const color = workItemType ? "#" + (workItemType.color.length > 6 ? workItemType.color.substr(2) : workItemType.color) : "#c2c8d1";
-    const workItemDetails = {
+    const workItemDetails: IWorkItemDisplayDetails = {
         id,
         title: workItem ? workItem.fields["System.Title"] : "Unparented",
         color,
@@ -125,7 +125,9 @@ function getWorkItemDetails(
         showInfoIcon: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden),
         isComplete: workItemInfo && workItemInfo.stateCategory === StateCategory.Completed,
         workItemStateColor,
-        childrenWithNoEfforts: children.filter(c => c.efforts === 0).length
+        childrenWithNoEfforts: children.filter(c => c.efforts === 0).length,
+        predecessors: [],
+        successors: []        
     };
 
     return workItemDetails;

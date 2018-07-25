@@ -83,7 +83,9 @@ export function getWorkItemDisplayDetails(
             showInfoIcon: true,
             workItemStateColor,
             childrenWithNoEfforts,
-            isComplete: stateCategory === StateCategory.Completed
+            isComplete: stateCategory === StateCategory.Completed,
+            predecessors: dependencyTree.stop[workItem.id],
+            successors: dependencyTree.ptos[workItem.id]
         };
 
         return displayDetails;
