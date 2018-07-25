@@ -1,7 +1,6 @@
 import { ActionCreator } from 'redux';
 import {
-    InitializeAction, InitializeType, ShowDetailsAction,
-    ShowDetailsType, CloseDetailsAction, CloseDetailsType,
+    InitializeAction, InitializeType,
     ResetAction, ResetType,
     TogglePlanFeaturesPaneAction, TogglePlanFeaturesPaneType, ToggleFeatureStateAction, 
     ToggleFeatureStateType, PlanFeaturesPaneWidthChangedAction, PlanFeaturesPaneFilterChangedAction, 
@@ -23,18 +22,6 @@ export const createInitialize: ActionCreator<InitializeAction> =
         }
     });
 
-export const showDetails: ActionCreator<ShowDetailsAction> =
-    (id: number) => ({
-        type: ShowDetailsType,
-        payload: { id }
-    });
-
-
-export const closeDetails: ActionCreator<CloseDetailsAction> =
-    (id: number) => ({
-        type: CloseDetailsType,
-        payload: { id }
-    });
 
 export const togglePlanFeaturesPane: ActionCreator<TogglePlanFeaturesPaneAction> = (show: boolean) => ({
     type: TogglePlanFeaturesPaneType,

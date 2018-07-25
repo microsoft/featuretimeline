@@ -1,8 +1,7 @@
-import { Reducer } from 'redux';
-import { CommonActions, ShowDetailsType, CloseDetailsType } from './actions';
 import produce from "immer";
+import { ShowDetailsType, CloseDetailsType, ShowHideDetailsActions } from "./ShowHideDetailsActions";
 
-const reducer: Reducer<number[]> = (state: number[] = [], action: CommonActions) => {
+export function showHideDetailsReducer(state: number[] = [], action: ShowHideDetailsActions): number[] {
     return produce(state, draft => {
         switch (action.type) {
             case ShowDetailsType:
@@ -14,5 +13,3 @@ const reducer: Reducer<number[]> = (state: number[] = [], action: CommonActions)
         }
     });
 };
-
-export default reducer;

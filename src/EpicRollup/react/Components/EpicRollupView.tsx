@@ -8,7 +8,6 @@ import { UIStatus } from '../../../Common/redux/Contracts/types';
 import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { IEpicRollupState } from '../../redux/contracts';
 import configureEpicRollupStore from '../../redux/epicRollupStore';
-import { epicRollupGridViewSelector, IEpicRollupGridView } from '../../redux/selectors/epicRollupGridViewSelector';
 import { uiStateSelector } from '../../redux/selectors/uiStateSelector';
 import { EpicRollupGrid } from './EpicRollupGrid';
 import { EpicSelector } from './EpicSelector';
@@ -20,7 +19,6 @@ export interface IEpicRollupViewProps {
     projectId: string;
     teamId: string;
     uiState: UIStatus;
-    gridView: IEpicRollupGridView
 }
 
 
@@ -65,10 +63,7 @@ class EpicRollupViewContent extends React.Component<IEpicRollupViewProps, {}> {
                 <EpicSelector
                     projectId={this.props.projectId}
                     teamId={this.props.teamId} />
-                <EpicRollupGrid
-                    projectId={this.props.projectId}
-                    teamId={this.props.teamId}
-                    gridView={this.props.gridView} />
+                <EpicRollupGrid />
             </div>
         );
     }
@@ -80,8 +75,7 @@ const makeMapStateToProps = () => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
-            uiState: uiStateSelector(state),
-            gridView: epicRollupGridViewSelector(state)
+            uiState: uiStateSelector(state)
         }
     }
 }
@@ -92,9 +86,6 @@ export const EpicRollupView = () => {
     const initialState: IEpicRollupState = {
     } as IEpicRollupState;
     const store = configureEpicRollupStore(initialState);
-
-    // const projectId = getProjectId();
-    // const teamId = getTeamId();
 
     return (
         <Provider store={store}>

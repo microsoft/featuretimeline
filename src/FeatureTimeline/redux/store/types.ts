@@ -5,7 +5,6 @@ import backlogConfigurationReducer from './backlogconfiguration/reducer';
 import { IBacklogConfigurationState } from './backlogconfiguration/types';
 import { ResetType } from './common/actions';
 import featureStateReducer from './common/featureStateReducer';
-import showHideDetailsReducer from "./common/reducer";
 import togglePaneReducer from './common/togglePaneReducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
@@ -20,6 +19,8 @@ import { workItemMetadataReducer } from '../../../EpicRollup/redux/modules/workI
 import { settingsStateReducer } from '../../../Common/redux/modules/SettingsState/SettingsStateReducer';
 import { ISettingsAwareState } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 import { savedOverrideIterationsReducer } from '../../../Common/redux/modules/OverrideIterations/overrideWorkItemIterationReducer';
+import { showHideDetailsReducer } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsReducer';
+import { IShowWorkItemInfoAwareState } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsContracts';
 
 export interface IPlanFeaturesState {
     show: boolean;
@@ -31,17 +32,15 @@ export interface IFeatureTimelineRawState extends
     IOverriddenIterationsAwareState,
     IWorkItemMetadataAwareState,
     ISettingsAwareState,
-    IWorkItemOverrideIterationAwareState {
+    IWorkItemOverrideIterationAwareState,
+    IShowWorkItemInfoAwareState {
     workItemsState: IWorkItemsState;
     iterationState: ITeamSettingsIterationState;
     error: string;
     backlogConfiguration: IBacklogConfigurationState;
     teamSetting: ITeamSettingState;
     loading: boolean;
-
-    // list of work item ids for which the details window is shown 
-    workItemDetails: number[];
-
+   
     planFeaturesState: IPlanFeaturesState;
     featureState: IDictionaryStringTo<boolean>;
 }
@@ -58,7 +57,7 @@ const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFe
                 backlogConfiguration: undefined,
                 teamSetting: undefined,
                 savedOverriddenIterations: undefined,
-                workItemDetails: undefined,
+                workItemsToShowInfoFor: undefined,
                 workItemOverrideIteration: undefined
             } as IFeatureTimelineRawState;
         }
@@ -75,7 +74,7 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     backlogConfiguration: backlogConfigurationReducer,
     teamSetting: teamSettingReducer,
     loading: loadingReducer,
-    workItemDetails: showHideDetailsReducer,
+    workItemsToShowInfoFor: showHideDetailsReducer,
     workItemOverrideIteration: overrideIterationProgressReducer,
     savedOverriddenIterations: savedOverrideIterationsReducer,
     planFeaturesState: togglePaneReducer,

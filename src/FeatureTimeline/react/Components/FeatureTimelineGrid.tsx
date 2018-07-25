@@ -23,7 +23,7 @@ import { OverriddenIterationsActionCreator } from '../../../Common/redux/modules
 import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import configureFeatureTimelineStore from '../../redux/configureStore';
 import { getBacklogLevel, getRawState, planFeatureStateSelector, primaryGridViewSelector, uiStatusSelector } from '../../redux/selectors';
-import { changePlanFeaturesWidth, closeDetails, createInitialize, showDetails, togglePlanFeaturesPane } from '../../redux/store/common/actioncreators';
+import { changePlanFeaturesWidth, createInitialize, togglePlanFeaturesPane } from '../../redux/store/common/actioncreators';
 import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/types';
 import { startMarkInProgress } from '../../redux/store/workitems/actionCreators';
 import { IterationDropTarget } from '../../../Common/react/Components/DroppableIterationShadow';
@@ -37,6 +37,7 @@ import { WorkItemShadow } from '../../../Common/react/Components/WorkItem/WorkIt
 import DraggableWorkItemRenderer from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
 import { WorkitemGap } from '../../../Common/react/Components/WorkItem/WorkItemGap';
 import { startUpdateWorkItemIteration } from '../../../Common/redux/actions/StartUpdateWorkitemIterationAction';
+import { showDetails, closeDetails } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsActions';
 
 
 initializeIcons(/* optional base url */);
@@ -78,7 +79,7 @@ const makeMapStateToProps = () => {
             rawState: getRawState(state),
             uiState: uiStatusSelector()(state),
             gridView: primaryGridViewSelector()(state),
-            childItems: state.workItemDetails,
+            childItems: state.workItemsToShowInfoFor,
             planFeaturesState: planFeatureStateSelector()(state),
             settingsState: getSettingsState(state)
         }

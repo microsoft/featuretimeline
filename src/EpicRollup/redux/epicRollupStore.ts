@@ -12,6 +12,7 @@ import { teamSettingsReducer } from './modules/teamsettings/teamsettingsreducer'
 import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMetadataReducer';
 import { workItemsReducer } from './modules/workItems/workItemReducer';
 import { fetchEpicRollup } from './sagas/fetchEpicRollupSaga';
+import { showHideDetailsReducer } from '../../Common/redux/modules/ShowHideDetails/ShowHideDetailsReducer';
 
 export default function configureEpicRollupStore(
     initialState: IEpicRollupState
@@ -35,7 +36,8 @@ export default function configureEpicRollupStore(
         settingsState: settingsStateReducer,
         iterationDisplayOptions: iterationDisplayOptionsReducer,
         progress: progressAwareReducer,
-        workItemOverrideIteration: overrideIterationProgressReducer
+        workItemOverrideIteration: overrideIterationProgressReducer,
+        workItemsToShowInfoFor: showHideDetailsReducer
     });
 
 
