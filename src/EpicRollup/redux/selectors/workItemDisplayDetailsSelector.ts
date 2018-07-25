@@ -21,7 +21,7 @@ export const workItemDisplayDetailsSelectors = createSelector(
     pagedWorkItemsMapSelector,
     workItemStartEndIterationSelector,
     backlogConfigurationForProjectSelector,
-    teamIterationsSelector,
+    teamIterationsSelector as any,
     workItemMetadataSelector,
     getWorkItemDisplayDetails
 );
@@ -35,7 +35,11 @@ export function getWorkItemDisplayDetails(
     teamIterations: TeamSettingsIteration[],
     metadata: IWorkItemMetadata): IWorkItemDisplayDetails[] {
 
-    const workItems = epicTree.parentToChildrenMap[rootWorkItemId];
+    if (!metadata || !metadata.workItemTypes || !metadata.workItemStateColors) {
+        return [];
+    }
+
+    const workItems = epicTree.parentToChildrenMap[rootWorkItemId] || [];
     return workItems.map(workItemId => {
         const workItem = pagedWorkItems[workItemId];
         const workItemTypeName = workItem.fields["System.WorkItemType"];

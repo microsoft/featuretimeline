@@ -13,10 +13,11 @@ export function createRawEpicTree(links: WorkItemLink[]) {
         parentToChildrenMap: {},
         childToParentMap: {}
     };
+    links = links || [];
     // target is child and source is parent
     links.reduce((epicTree, link) => {
-        const childId = link.target.id;
-        const parentId = link.source.id;
+        const childId = link.target ? link.target.id : 0;
+        const parentId = link.source ? link.source.id : 0;
         const { childToParentMap, parentToChildrenMap } = epicTree;
         childToParentMap[childId] = parentId;
         if (!parentToChildrenMap[parentId]) {
@@ -32,6 +33,11 @@ export const normalizedEpicTreeSelector = createSelector(backlogConfigurationFor
  * Gets a map of WorkItemTypeName to its rank in backlog configuration
  */
 function getWorkItemTypeRankMap(backlogConfiguration: BacklogConfiguration): IDictionaryStringTo<number> {
+
+    if (!backlogConfiguration) {
+        return {};
+    }
+
     const result: IDictionaryStringTo<number> = {};
     const processBacklogLevel = (backlogLevel: BacklogLevelConfiguration) => {
         backlogLevel.workItemTypes.forEach(wit => result[wit.name] = backlogLevel.rank);
@@ -50,6 +56,11 @@ export function createNormalizedEpicTree(backlogConfiguration: BacklogConfigurat
         parentToChildrenMap: {},
         childToParentMap: {}
     };
+
+    if (Object.keys(workItemsMap).length === 0) {
+        return result;
+    }
+
     const witRankMap = getWorkItemTypeRankMap(backlogConfiguration);
     const normalizeChild = (grandParentId: number, parentId: number, parentWitRank: number) => {
         let children: number[] = parentToChildrenMap[parentId];

@@ -8,7 +8,6 @@ import { IBacklogConfigurationState } from './backlogconfiguration/types';
 import { ResetType } from './common/actions';
 import featureStateReducer from './common/featureStateReducer';
 import showHideDetailsReducer from "./common/reducer";
-import settingsReducer from "./common/settingsReducer";
 import togglePaneReducer from './common/togglePaneReducer';
 import errorReducer from './error/reducer';
 import loadingReducer from './loading/reducer';
@@ -18,9 +17,10 @@ import teamSettingReducer from './teamSettings/reducer';
 import { ITeamSettingState } from './teamSettings/types';
 import workItemReducer from './workitems/reducer';
 import { IWorkItemsState } from './workitems/types';
-import { ISettingsState } from '../../../Common/Contracts/OptionsInterfaces';
 import { IWorkItemMetadataAwareState } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataContracts';
 import { workItemMetadataReducer } from '../../../EpicRollup/redux/modules/workItemMetadata/workItemMetadataReducer';
+import { settingsStateReducer } from '../../../Common/modules/SettingsState/SettingsStateReducer';
+import { ISettingsAwareState } from '../../../Common/modules/SettingsState/SettingsStateContracts';
 
 
 export interface IIterationDuration {
@@ -36,7 +36,8 @@ export enum IterationDurationKind {
     Self,
     ChildRollup,
     UserOverridden,
-    Predecessors
+    Predecessors,
+    PredecessorsOutofScope //Usually happens if team does not subscribe to any iteration beyond last iteration of predessors
 }
 
 export interface IPlanFeaturesState {
@@ -46,7 +47,7 @@ export interface IPlanFeaturesState {
 }
 
 export interface IFeatureTimelineRawState extends
-    IOverriddenIterationsAwareState, IWorkItemMetadataAwareState {
+    IOverriddenIterationsAwareState, IWorkItemMetadataAwareState, ISettingsAwareState {
     workItemsState: IWorkItemsState;
     iterationState: ITeamSettingsIterationState;
     error: string;
@@ -60,7 +61,6 @@ export interface IFeatureTimelineRawState extends
     workItemOverrideIteration?: IWorkItemOverrideIteration;
     planFeaturesState: IPlanFeaturesState;
     featureState: IDictionaryStringTo<boolean>;
-    settingsState: ISettingsState;
 }
 
 const crossSliceReducer = (state: IFeatureTimelineRawState, action: Action): IFeatureTimelineRawState => {
@@ -97,7 +97,7 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     savedOverriddenIterations: savedOverrideIterationsReducer,
     planFeaturesState: togglePaneReducer,
     featureState: featureStateReducer,
-    settingsState: settingsReducer
+    settingsState: settingsStateReducer
 });
 
 // setup reducers

@@ -1,34 +1,36 @@
 import { Reducer } from 'redux';
 import produce from "immer";
-import { IIterationDisplayOptionsAwareState } from './IterationDisplayActionsContracts';
-import { IterationDisplayActions, DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType, RestoreDisplayIterationCountActionType, ShiftDisplayIterationRightAction, ShiftDisplayIterationLeftAction, ChangeDisplayIterationCountAction, RestoreDisplayIterationCountAction } from './IterationDisplayOptionsActions';
+import {
+    IterationDisplayActions, DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType,
+    ChangeDisplayIterationCountActionType, RestoreDisplayIterationCountActionType, ShiftDisplayIterationRightAction, ShiftDisplayIterationLeftAction,
+    ChangeDisplayIterationCountAction, RestoreDisplayIterationCountAction
+} from './IterationDisplayOptionsActions';
+import { IIterationDisplayOptions } from '../../Contracts/GridViewContracts';
 
 // Type-safe initialState!
-export const getInitialState = (): IIterationDisplayOptionsAwareState => {
-    return {
-        // project -> team -> teamsettingsiterations
-        iterationDisplayOptions: null
+export const getInitialState = (): IIterationDisplayOptions => {
+    return null;
+};
+export const iterationDisplayOptionsReducer: Reducer<IIterationDisplayOptions> =
+    (state: IIterationDisplayOptions = getInitialState(),
+        action: IterationDisplayActions) => {
+        switch (action.type) {
+            case DisplayAllIterationsActionType:
+                return handleDisplayAllIterations(state);
+            case ShiftDisplayIterationLeftActionType:
+                return handleShiftDisplayIterationLeft(state, action);
+            case ShiftDisplayIterationRightActionType:
+                return handleShiftDisplayIterationRight(state, action);
+            case ChangeDisplayIterationCountActionType:
+                return handleChangeDisplayIterationCountAction(state, action);
+            case RestoreDisplayIterationCountActionType:
+                return handleRestoreDisplayIterationCountAction(state, action);
+            default:
+                return state;
+        }
     };
-};
-export const iterationDisplayOptionsReducer: Reducer<IIterationDisplayOptionsAwareState> = (state: IIterationDisplayOptionsAwareState = getInitialState(),
-    action: IterationDisplayActions) => {
-    switch (action.type) {
-        case DisplayAllIterationsActionType:
-            return handleDisplayAllIterations(state);
-        case ShiftDisplayIterationLeftActionType:
-            return handleShiftDisplayIterationLeft(state, action);
-        case ShiftDisplayIterationRightActionType:
-            return handleShiftDisplayIterationRight(state, action);
-        case ChangeDisplayIterationCountActionType:
-            return handleChangeDisplayIterationCountAction(state, action);
-        case RestoreDisplayIterationCountActionType:
-            return handleRestoreDisplayIterationCountAction(state, action);
-        default:
-            return state;
-    }
-};
 
-function handleRestoreDisplayIterationCountAction(state: IIterationDisplayOptionsAwareState, action: RestoreDisplayIterationCountAction) {
+function handleRestoreDisplayIterationCountAction(state: IIterationDisplayOptions, action: RestoreDisplayIterationCountAction) {
     const {
         displayOptions,
         maxIterations
@@ -36,16 +38,16 @@ function handleRestoreDisplayIterationCountAction(state: IIterationDisplayOption
 
     return produce(state, draft => {
         try {
-            draft.iterationDisplayOptions = { ...displayOptions };
+            draft = { ...displayOptions };
             let { count } = displayOptions;
-            draft.iterationDisplayOptions.totalIterations = maxIterations;
+            draft.totalIterations = maxIterations;
 
             // Handle incase if the team iterations changed before restore
 
 
             if (maxIterations === 0 || !count || count > maxIterations || displayOptions.endIndex >= maxIterations) {
                 console.log("Ignoring restore display options as iterations changed.");
-                draft.iterationDisplayOptions = null;
+                draft = null;
             }
         }
         catch (error) {
@@ -54,7 +56,7 @@ function handleRestoreDisplayIterationCountAction(state: IIterationDisplayOption
     });
 }
 
-function handleChangeDisplayIterationCountAction(state: IIterationDisplayOptionsAwareState, action: ChangeDisplayIterationCountAction) {
+function handleChangeDisplayIterationCountAction(state: IIterationDisplayOptions, action: ChangeDisplayIterationCountAction) {
     let {
         count,
         teamId,
@@ -90,42 +92,40 @@ function handleChangeDisplayIterationCountAction(state: IIterationDisplayOptions
         displayOptions.startIndex = startIndex;
         displayOptions.endIndex = endIndex;
 
-        draft.iterationDisplayOptions = displayOptions;
+        draft = displayOptions;
     });
 }
 
 
-function handleShiftDisplayIterationLeft(state: IIterationDisplayOptionsAwareState, action: ShiftDisplayIterationLeftAction) {
+function handleShiftDisplayIterationLeft(state: IIterationDisplayOptions, action: ShiftDisplayIterationLeftAction) {
     return produce(state, draft => {
-        if (draft.iterationDisplayOptions) {
-            const displayOptions = draft.iterationDisplayOptions;
+        if (draft) {
+            const displayOptions = draft;
             if ((displayOptions.startIndex - action.payload.count) >= 0) {
                 displayOptions.startIndex -= action.payload.count;
-                displayOptions.endIndex = displayOptions.startIndex + draft.iterationDisplayOptions.count - 1;
+                displayOptions.endIndex = displayOptions.startIndex + draft.count - 1;
             }
-            draft.iterationDisplayOptions = displayOptions
+            draft = displayOptions;
         }
     });
 }
 
-function handleShiftDisplayIterationRight(state: IIterationDisplayOptionsAwareState, action: ShiftDisplayIterationRightAction) {
+function handleShiftDisplayIterationRight(state: IIterationDisplayOptions, action: ShiftDisplayIterationRightAction) {
     return produce(state, draft => {
 
-        if (draft.iterationDisplayOptions) {
+        if (draft) {
             const iterationCount = action.payload.maxIterations;
-            const displayOptions = draft.iterationDisplayOptions;
+            const displayOptions = draft;
             if ((displayOptions.endIndex + action.payload.count) < iterationCount) {
                 displayOptions.endIndex += action.payload.count;
-                displayOptions.startIndex = displayOptions.endIndex - draft.iterationDisplayOptions.count + 1;
+                displayOptions.startIndex = displayOptions.endIndex - draft.count + 1;
             }
-            draft.iterationDisplayOptions = displayOptions;
+            draft = displayOptions;
         }
     });
 }
 
-function handleDisplayAllIterations(state: IIterationDisplayOptionsAwareState) {
-    return produce(state, draft => {
-        draft.iterationDisplayOptions = null;
-    });
+function handleDisplayAllIterations(state: IIterationDisplayOptions) {
+    return null;
 }
 
