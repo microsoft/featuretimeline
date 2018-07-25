@@ -8,6 +8,7 @@ import { ISettingsState } from "../../../Common/redux/modules/SettingsState/Sett
 import { getDisplayIterations } from "../../../Common/redux/Selectors/displayIterationSelector";
 import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 import { workItemCompare } from "./workItemCompare";
+import { getCurrentIterationIndex } from "../../../Common/redux/Helpers/iterationComparer";
 
 export function getGridView(
     uiStatus: UIStatus,
@@ -31,7 +32,8 @@ export function getGridView(
             hideParents: false,
             iterationDisplayOptions: null,
             teamIterations: [],
-            backlogIteration: null
+            backlogIteration: null,
+            currentIterationIndex: -1
         }
     }
 
@@ -69,6 +71,7 @@ export function getGridView(
         iterationShadow
     } = getIterationDisplayDetails(gridWorkItems, displayIterations, hideParents);
 
+    const currentIterationIndex = getCurrentIterationIndex(teamIterations);
     const view: IGridView = {
         workItems: gridWorkItems,
         isSubGrid,
@@ -79,7 +82,8 @@ export function getGridView(
         backlogIteration,
         emptyHeaderRow,
         iterationHeader,
-        iterationShadow
+        iterationShadow,
+        currentIterationIndex
     }
     return view;
 }

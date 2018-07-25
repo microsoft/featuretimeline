@@ -58,9 +58,9 @@ export interface IFeatureTimelineGridProps {
     overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
     overrideIterationEnd: () => void;
     changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => void;
-    showNIterations: (projectId: string, teamId: string, count: Number) => void;
-    shiftDisplayIterationLeft: () => void;
-    shiftDisplayIterationRight: () => void;
+    showNIterations: (projectId: string, teamId: string, count: Number, maxIterations: number, currentIterationIndex: number) => void;
+    shiftDisplayIterationLeft: (maxIterations: number) => void;
+    shiftDisplayIterationRight: (maxIterations: number) => void;
     showAllIterations: () => void;
     togglePlanFeaturesPane: (show: boolean) => void;
     resizePlanFeaturesPane: (width: number) => void;
@@ -116,17 +116,17 @@ const mapDispatchToProps = (dispatch) => {
         markInProgress: (id: number, teamIteration: TeamSettingsIteration, state: string) => {
             dispatch(startMarkInProgress(id, teamIteration, state));
         },
-        showNIterations: (projectId: string, teamId: string, count: Number) => {
-            dispatch(changeDisplayIterationCount(count, projectId, teamId));
+        showNIterations: (projectId: string, teamId: string, count: Number, maxIterations: number, currentIterationIndex: number) => {
+            dispatch(changeDisplayIterationCount(count, projectId, teamId, maxIterations, currentIterationIndex));
         },
         showAllIterations: () => {
             dispatch(displayAllIterations());
         },
-        shiftDisplayIterationLeft: () => {
-            dispatch(shiftDisplayIterationLeft(1));
+        shiftDisplayIterationLeft: (maxIterations: number) => {
+            dispatch(shiftDisplayIterationLeft(1, maxIterations));
         },
-        shiftDisplayIterationRight: () => {
-            dispatch(shiftDisplayIterationRight(1));
+        shiftDisplayIterationRight: (maxIterations: number) => {
+            dispatch(shiftDisplayIterationRight(1, maxIterations));
         },
         togglePlanFeaturesPane: (show: boolean) => {
             dispatch(togglePlanFeaturesPane(show));
@@ -297,7 +297,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             leftButton = (
                 <IconButton
                     className="button"
-                    onClick={() => this.props.shiftDisplayIterationLeft()}
+                    onClick={() => this.props.shiftDisplayIterationLeft(teamIterations.length)}
                     iconProps={
                         {
                             iconName: "ChevronLeftSmall"
@@ -313,7 +313,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             rightButton = (
                 <IconButton
                     className="button"
-                    onClick={() => this.props.shiftDisplayIterationRight()}
+                    onClick={() => this.props.shiftDisplayIterationRight(teamIterations.length)}
                     iconProps={
                         {
                             iconName: "ChevronRightSmall"
@@ -520,13 +520,17 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
     private _onViewChanged = (text: string) => {
         const {
             projectId,
-            teamId
+            teamId,
+            gridView:{
+                teamIterations,
+                currentIterationIndex
+            }
         } = this.props;
         const number = +text;
         if (number === 0) {
             this.props.showAllIterations();
         } else {
-            this.props.showNIterations(projectId, teamId, number);
+            this.props.showNIterations(projectId, teamId, number, teamIterations.length, currentIterationIndex);
         }
 
         return text;

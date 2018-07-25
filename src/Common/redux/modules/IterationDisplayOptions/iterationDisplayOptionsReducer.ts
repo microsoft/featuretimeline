@@ -65,35 +65,32 @@ function handleChangeDisplayIterationCountAction(state: IIterationDisplayOptions
         currentIterationIndex
     } = action.payload;
 
-    return produce(state, draft => {
+    const originalCount = count;
 
-        const originalCount = count;
+    if (count > maxIterations) {
+        count = maxIterations;
+    }
 
-        if (count > maxIterations) {
-            count = maxIterations;
-        }
+    const displayOptions = {
+        count,
+        originalCount,
+        teamId,
+        projectId,
+        startIndex: 0,
+        endIndex: 0,
+        totalIterations: maxIterations
+    };
 
-        const displayOptions = {
-            count,
-            originalCount,
-            teamId,
-            projectId,
-            startIndex: 0,
-            endIndex: 0,
-            totalIterations: maxIterations
-        };
+    let startIndex = currentIterationIndex - Math.floor((count / 2));
+    if (startIndex < 0) {
+        startIndex = 0;
+    }
+    const endIndex = startIndex + (count - 1);
 
-        let startIndex = currentIterationIndex - Math.floor((count / 2));
-        if (startIndex < 0) {
-            startIndex = 0;
-        }
-        const endIndex = startIndex + (count - 1);
+    displayOptions.startIndex = startIndex;
+    displayOptions.endIndex = endIndex;
 
-        displayOptions.startIndex = startIndex;
-        displayOptions.endIndex = endIndex;
-
-        draft = displayOptions;
-    });
+    return displayOptions;
 }
 
 

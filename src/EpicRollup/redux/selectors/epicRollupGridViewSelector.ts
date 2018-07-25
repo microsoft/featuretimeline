@@ -14,6 +14,7 @@ import { getIterationDisplayOptionsState } from '../../../Common/redux/modules/I
 import { getSettingsState } from '../../../Common/redux/modules/SettingsState/SettingsStateSelector';
 import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 import { uiStateSelector } from './uiStateSelector';
+import { getCurrentIterationIndex } from '../../../Common/redux/Helpers/iterationComparer';
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
@@ -54,7 +55,8 @@ export function getEpicRollupGridView(
             backlogIteration: null,
             emptyHeaderRow: [],
             iterationHeader: [],
-            iterationShadow: []
+            iterationShadow: [],
+            currentIterationIndex: -1
         };
     }
 
@@ -93,6 +95,7 @@ export function getEpicRollupGridView(
         iterationShadow
     } = getIterationDisplayDetails(gridWorkItems, displayIterations, /*hideParents*/ false);
 
+    const currentIterationIndex = getCurrentIterationIndex(teamIterations);
     return {
         workItems: gridWorkItems,
         teamFieldDisplayItems,
@@ -104,7 +107,8 @@ export function getEpicRollupGridView(
         backlogIteration,
         iterationHeader,
         iterationShadow,
-        emptyHeaderRow
+        emptyHeaderRow,
+        currentIterationIndex
     }
 
 }

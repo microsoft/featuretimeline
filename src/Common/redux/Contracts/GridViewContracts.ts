@@ -58,6 +58,7 @@ export interface IGridView extends IGridIterationDisplayDetails {
     iterationDisplayOptions: IIterationDisplayOptions;
     teamIterations: TeamSettingsIteration[];
     backlogIteration: TeamSettingsIteration,
+    currentIterationIndex: number
 }
 
 export interface IIterationDisplayOptions {
