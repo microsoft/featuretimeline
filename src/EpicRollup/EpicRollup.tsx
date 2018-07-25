@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { EpicRollupGrid } from "./react/Components/EpicRollupGrid";
+import { EpicRollupView } from "./react/Components/EpicView";
 import { iePollyfill } from "../polyfill";
 
 export function initialize(): void {
     if (!isBackground()) {
         iePollyfill();
         ReactDOM.render(
-            <EpicRollupGrid />, document.getElementById("root"));
+            <EpicRollupView />, document.getElementById("root"));
     }
 }
 
