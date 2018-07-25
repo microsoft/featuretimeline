@@ -21,6 +21,8 @@ import { ISettingsAwareState } from '../../../Common/redux/modules/SettingsState
 import { savedOverrideIterationsReducer } from '../../../Common/redux/modules/OverrideIterations/overrideWorkItemIterationReducer';
 import { showHideDetailsReducer } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsReducer';
 import { IShowWorkItemInfoAwareState } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsContracts';
+import { IIterationDisplayOptionsAwareState } from '../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsContracts';
+import { iterationDisplayOptionsReducer } from '../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsReducer';
 
 export interface IPlanFeaturesState {
     show: boolean;
@@ -33,7 +35,8 @@ export interface IFeatureTimelineRawState extends
     IWorkItemMetadataAwareState,
     ISettingsAwareState,
     IWorkItemOverrideIterationAwareState,
-    IShowWorkItemInfoAwareState {
+    IShowWorkItemInfoAwareState,
+    IIterationDisplayOptionsAwareState {
     workItemsState: IWorkItemsState;
     iterationState: ITeamSettingsIterationState;
     error: string;
@@ -79,7 +82,8 @@ const intermediateReducer = combineReducers<IFeatureTimelineRawState>({
     savedOverriddenIterations: savedOverrideIterationsReducer,
     planFeaturesState: togglePaneReducer,
     featureState: featureStateReducer,
-    settingsState: settingsStateReducer
+    settingsState: settingsStateReducer,
+    iterationDisplayOptions: iterationDisplayOptionsReducer
 });
 
 // setup reducers

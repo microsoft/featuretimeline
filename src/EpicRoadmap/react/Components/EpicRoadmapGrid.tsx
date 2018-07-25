@@ -145,7 +145,7 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
         if (isSubGrid) {
             min = '150px';
         }
-        const gridStyle = getTemplateColumns(extraColumns, shadows.length, `minmax(${min}, 200px)`);
+        const gridStyle = getTemplateColumns(extraColumns, shadows.length, `minmax(${min}, 300px)`);
 
         let childDialog = null;
         if (this.props.rawState.workItemsToShowInfoFor.length > 0) {

@@ -4,7 +4,7 @@ import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
 import { restoreOverriddenIterations } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationsSaga';
-import { getProjectId } from '../../../Common/redux/Selectors/CommonSelectors';
+import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
 import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
@@ -14,13 +14,15 @@ import { ProgressAwareActionCreator } from "../../../Common/redux/modules/Progre
 import { workItemStateColorsReceived, workItemTypesReceived } from "../modules/workItemMetadata/workItemMetadataActionCreators";
 import { WorkItemMetadataService } from "../../../Services/WorkItemMetadataService";
 import { restoreSettings } from "../../../Common/redux/modules/SettingsState/SettingsStateSagas";
+import { fetchIterationDisplayOptions } from "../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSaga";
 
 export function* fetchEpicRoadmap(epicId: number) {
     try {
         yield put(ProgressAwareActionCreator.setLoading(true));
         const projectId = getProjectId();
+        const teamId = getTeamId();
         // get backlog configuration/ team settings and backlog iteration for the project/current team
-        yield all([fetchBacklogConfiguration(), fetchTeamIterations(), fetchTeamSettings(),  restoreSettings("EpicRoadmap")]);
+        yield all([fetchBacklogConfiguration(), fetchTeamIterations(), fetchTeamSettings(),  restoreSettings("EpicRoadmap"), fetchIterationDisplayOptions(teamId, "EpicRoadmap")]);
         const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
 
         // const portfolioBacklogs = backlogconfiguration.portfolioBacklogs;

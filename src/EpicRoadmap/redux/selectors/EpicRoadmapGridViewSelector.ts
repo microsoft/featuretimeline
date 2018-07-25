@@ -15,7 +15,6 @@ import { getSettingsState } from '../../../Common/redux/modules/SettingsState/Se
 import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 import { uiStateSelector } from './uiStateSelector';
 import { getCurrentIterationIndex } from '../../../Common/redux/Helpers/iterationComparer';
-import { IterationDurationKind } from '../../../Common/redux/Contracts/IIterationDuration';
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
@@ -78,7 +77,6 @@ export function getEpicRoadmapGridView(
 
     const teamFieldName = typeFields["Team"];
 
-    debugger;
     const displayIterations: TeamSettingsIteration[] = getDisplayIterations(
         backlogIteration,
         teamIterations,
@@ -183,12 +181,10 @@ function getGridItems(
                 startIterationIndex = endIterationIndex = displayIterations.findIndex(i => i.id === backlogIteration.id);
             }
 
-            const iterationDurationKind = workItem.iterationDuration.kind;
-            let allowOverrideIteration = !isSubGrid;
-            if (iterationDurationKind === IterationDurationKind.BacklogIteration || IterationDurationKind.FallbackBacklogIteration_IterationOutOfScope || IterationDurationKind.FallbackBacklogIteration_PredecessorsOutofScope) {
-                allowOverrideIteration = false;
+            const allowOverrideIteration = !isSubGrid && workItem.iterationDuration.startIteration.id !== backlogIteration.id;
+            if (!allowOverrideIteration) {
+                debugger;
             }
-
             const ret = {
                 dimension: {
                     startRow: workItemStartRow,
@@ -198,7 +194,6 @@ function getGridItems(
                 },
                 workItem,
                 settingsState,
-                isGap: false,
                 progressIndicator: getProgress(workItem.children, progressTrackingCriteria),
                 crop,
                 allowOverrideIteration

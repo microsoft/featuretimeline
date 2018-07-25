@@ -12,6 +12,7 @@ import { getDefaultPlanFeaturesPaneState } from "../store/common/togglePaneReduc
 import { getProjectId, getTeamId } from "../../../Common/redux/Selectors/CommonSelectors";
 import { getSettingsState } from "../../../Common/redux/modules/SettingsState/SettingsStateSelector";
 import { getWorkItemOverrideIteration } from "../../../Common/redux/modules/OverrideIterations/overriddenIterationsSelector";
+import { getIterationDisplayOptionsState } from "../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSelector";
 
 export const getRawState = (state: IFeatureTimelineRawState) => state;
 
@@ -19,18 +20,6 @@ export const getBacklogLevel = () => {
     const contributionContext: IContributionContext = VSS.getConfiguration();
     return contributionContext.level;
 };
-
-
-export const iterationDisplayOptionsSelector = () => {
-    return createSelector(
-        [getRawState],
-        (state) => {
-            if (!state || !state.iterationState) {
-                return null;
-            }
-            return state.iterationState.iterationDisplayOptions;
-        });
-}
 
 export const workItemIdsSelector = (level: WorkItemLevel, stateCategory: StateCategory) => {
     return createSelector(
@@ -91,7 +80,7 @@ export const primaryGridViewSelector = () => {
         epicsHierarchySelector(),
         getWorkItemOverrideIteration as any,
         getSettingsState,
-        iterationDisplayOptionsSelector()
+        getIterationDisplayOptionsState as any
     ],
         getGridView)
 }

@@ -17,6 +17,7 @@ export function* saveIterationDisplayOptions(
     teamId: string,
     iterationDisplayOptions: IIterationDisplayOptions,
     settingsPrefix: string = "") {
+        debugger;
     const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
     const value = !iterationDisplayOptions ? null : JSON.stringify(iterationDisplayOptions);
     yield call([dataService, dataService.setValue],
