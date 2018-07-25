@@ -1,6 +1,6 @@
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
 import { WorkItem, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
-import { IIterationDuration } from "../../FeatureTimeline/redux/store/types";
+import { IIterationDuration } from "./IIterationDuration";
 import { CropWorkItem, IDimension } from "./types";
 import { ISettingsState } from "../modules/SettingsState/SettingsStateContracts";
 

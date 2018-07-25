@@ -70,12 +70,13 @@ export function getEpicRollupGridView(
 
     const teamFieldName = typeFields["Team"];
 
-    const displayIterations: TeamSettingsIteration[] = iterationDisplayOptions ? getDisplayIterations(
+    debugger;
+    const displayIterations: TeamSettingsIteration[] = getDisplayIterations(
         backlogIteration,
         teamIterations,
         workItemDisplayDetails,
         /* includeBacklogIteration */ true,
-        iterationDisplayOptions) : teamIterations;
+        iterationDisplayOptions);
 
     const { gridWorkItems, teamFieldDisplayItems } =
         getGridItems(
@@ -159,6 +160,7 @@ function getGridItems(
             if (startIterationIndex < 0) {
                 startIterationIndex = endIterationIndex = displayIterations.findIndex(i => i.id === backlogIteration.id);
             }
+debugger;
             const ret = {
                 dimension: {
                     startRow: workItemStartRow,

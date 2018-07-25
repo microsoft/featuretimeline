@@ -1,12 +1,20 @@
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { IterationDurationKind } from "../../FeatureTimeline/redux/store/types";
+import { IterationDurationKind } from "../Contracts/IIterationDuration";
 import { IIterationDisplayOptions, IWorkItemDisplayDetails } from "../Contracts/GridViewContracts";
 import { compareIteration } from "../Helpers/iterationComparer";
 
-export function getDisplayIterations(backlogIteration: TeamSettingsIteration, teamIterations: TeamSettingsIteration[], workItems: IWorkItemDisplayDetails[], includeBacklogIteration: boolean, iterationDisplayOptions?: IIterationDisplayOptions): TeamSettingsIteration[] {
+export function getDisplayIterations(
+    backlogIteration: TeamSettingsIteration,
+    teamIterations: TeamSettingsIteration[],
+    workItems: IWorkItemDisplayDetails[],
+    includeBacklogIteration: boolean,
+    iterationDisplayOptions?: IIterationDisplayOptions): TeamSettingsIteration[] {
+
     // Sort the input iteration
     teamIterations = teamIterations.slice().sort(compareIteration);
-    if (iterationDisplayOptions) {
+    const validIterationDisplayOptions = iterationDisplayOptions && iterationDisplayOptions.startIndex != null && iterationDisplayOptions.endIndex != null;
+
+    if (validIterationDisplayOptions) {
         return teamIterations.slice(iterationDisplayOptions.startIndex, iterationDisplayOptions.endIndex + 1);
     }
     const hasBacklogIteration = (workItem: IWorkItemDisplayDetails) => {

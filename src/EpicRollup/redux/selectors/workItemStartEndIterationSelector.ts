@@ -8,8 +8,8 @@ import { normalizedDependencyTreeSelector } from './dependencyTreeSelector';
 import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from './workItemSelector';
 import { IDependenciesTree } from '../modules/workItems/workItemContracts';
-import { IIterationDuration, IterationDurationKind } from '../../../FeatureTimeline/redux/store/types';
-import { backlogIterationSelector } from '../../../FeatureTimeline/redux/selectors';
+import { IIterationDuration, IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
+import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsselector';
 
 export type WorkItemStartEndIteration = IDictionaryNumberTo<IIterationDuration>;
 
@@ -22,7 +22,7 @@ export const workItemStartEndIterationSelector = createSelector(
     normalizedDependencyTreeSelector,
     OverriddenIterationSelector,
     teamIterationsSelector as any,
-    backlogIterationSelector as any,
+    backogIterationsSelector as any,
     pagedWorkItemsMapSelector as any,
     getWorkItemIterationDuration
 );
@@ -124,6 +124,7 @@ export function getWorkItemIterationDuration(
             }
             if (!startIteration || !endIteration) {
                 startIteration = endIteration = backlogIteration;
+                kind = IterationDurationKind.BacklogIteration;
             }
 
             result[workItemId] = {

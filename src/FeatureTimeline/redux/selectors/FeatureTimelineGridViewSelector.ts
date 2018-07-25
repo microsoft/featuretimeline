@@ -6,7 +6,7 @@ import { getProgress } from "../../../Common/Helpers/ProgressHelpers";
 import { IWorkItemOverrideIteration } from "../../../Common/modules/OverrideIterations/overriddenIterationContracts";
 import { ISettingsState } from "../../../Common/modules/SettingsState/SettingsStateContracts";
 import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
-import { IterationDurationKind } from "../store/types";
+import { IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
 import { workItemCompare } from "./workItemCompare";
 
 export function getGridView(

@@ -1,5 +1,6 @@
 import { getWorkItemsForLevel } from './workItemsForLevel';
-import { IFeatureTimelineRawState, IIterationDuration, IterationDurationKind } from '../store/types';
+import { IFeatureTimelineRawState } from '../store/types';
+import { IIterationDuration, IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
 import { IWorkItemInfo, WorkItemLevel, StateCategory } from '../store/workitems/types';
 import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { compareIteration } from '../../../Common/Helpers/iterationComparer';

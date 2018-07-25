@@ -4,7 +4,7 @@ import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dia
 import { FeatureTimelineGrid, IFeatureTimelineGridProps } from './FeatureTimelineGrid';
 import { getGridView } from '../../redux/selectors/FeatureTimelineGridViewSelector';
 import { getTeamIterations } from '../../redux/selectors/teamIterations';
-import { IterationDurationKind } from '../../redux/store/types';
+import { IterationDurationKind } from "../../../Common/Contracts/IIterationDuration";
 import { IterationRenderer } from './IterationRenderer';
 import { Button, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 

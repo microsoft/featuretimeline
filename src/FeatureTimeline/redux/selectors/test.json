@@ -7,8 +7,8 @@
             "dimension": {
                 "startRow": 2,
                 "endRow": 3,
-                "startCol": 1,
-                "endCol": 1
+                "startCol": 2,
+                "endCol": 2
             },
             "workItem": {
                 "id": 11,
@@ -30,7 +30,19 @@
                     "url": "http://localhost:8080/tfs/DefaultCollection/_apis/wit/workItems/11"
                 },
                 "iterationDuration": {
-                    "kind": 1
+                    "startIteration": {
+                        "id": "5d5d3d2e-40cb-4944-bcaf-4269750510a4",
+                        "name": "ngtest",
+                        "path": "",
+                        "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/_apis/wit/classificationNodes/Iterations"
+                    },
+                    "endIteration": {
+                        "id": "5d5d3d2e-40cb-4944-bcaf-4269750510a4",
+                        "name": "ngtest",
+                        "path": "",
+                        "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/_apis/wit/classificationNodes/Iterations"
+                    },
+                    "kind": 0
                 },
                 "children": [{
                     "id": 13,
@@ -52,7 +64,19 @@
                         "url": "http://localhost:8080/tfs/DefaultCollection/_apis/wit/workItems/13"
                     },
                     "iterationDuration": {
-                        "kind": 1
+                        "startIteration": {
+                            "id": "5d5d3d2e-40cb-4944-bcaf-4269750510a4",
+                            "name": "ngtest",
+                            "path": "",
+                            "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/_apis/wit/classificationNodes/Iterations"
+                        },
+                        "endIteration": {
+                            "id": "5d5d3d2e-40cb-4944-bcaf-4269750510a4",
+                            "name": "ngtest",
+                            "path": "",
+                            "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/_apis/wit/classificationNodes/Iterations"
+                        },
+                        "kind": 0
                     },
                     "children": [],
                     "isRoot": false,
@@ -86,8 +110,8 @@
             "dimension": {
                 "startRow": 3,
                 "endRow": 4,
-                "startCol": 1,
-                "endCol": 1
+                "startCol": 3,
+                "endCol": 3
             },
             "workItem": {
                 "id": 12,
@@ -366,8 +390,121 @@
             "path": "",
             "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/_apis/wit/classificationNodes/Iterations"
         },
-        "iterationHeader": [],
-        "iterationShadow": [],
-        "emptyHeaderRow": []
+        "iterationHeader": [{
+            "teamIteration": {
+                "id": "5d5d3d2e-40cb-4944-bcaf-4269750510a4",
+                "name": "ngtest",
+                "path": "",
+                "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/_apis/wit/classificationNodes/Iterations"
+            },
+            "dimension": {
+                "startCol": 2,
+                "startRow": 2,
+                "endRow": 2,
+                "endCol": 3
+            }
+        }, {
+            "teamIteration": {
+                "id": "909a6f3f-6ec1-4ac6-802a-1499fb0ca145",
+                "name": "Iteration 1",
+                "path": "ngtest\\Iteration 1",
+                "attributes": {
+                    "startDate": null,
+                    "finishDate": null,
+                    "timeFrame": 1
+                },
+                "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/6785ecb2-f7bf-439b-bfd3-504b4717e400/_apis/work/teamsettings/iterations/909a6f3f-6ec1-4ac6-802a-1499fb0ca145"
+            },
+            "dimension": {
+                "startCol": 3,
+                "startRow": 2,
+                "endRow": 2,
+                "endCol": 4
+            }
+        }, {
+            "teamIteration": {
+                "id": "8efa0cb5-208f-41e8-9b2d-791fae4812ee",
+                "name": "Iteration 10",
+                "path": "ngtest\\Iteration 10",
+                "attributes": {
+                    "startDate": null,
+                    "finishDate": null,
+                    "timeFrame": 2
+                },
+                "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/6785ecb2-f7bf-439b-bfd3-504b4717e400/_apis/work/teamsettings/iterations/8efa0cb5-208f-41e8-9b2d-791fae4812ee"
+            },
+            "dimension": {
+                "startCol": 4,
+                "startRow": 2,
+                "endRow": 2,
+                "endCol": 5
+            }
+        }],
+        "iterationShadow": [{
+            "teamIteration": {
+                "id": "5d5d3d2e-40cb-4944-bcaf-4269750510a4",
+                "name": "ngtest",
+                "path": "",
+                "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/_apis/wit/classificationNodes/Iterations"
+            },
+            "dimension": {
+                "startRow": 3,
+                "startCol": 2,
+                "endCol": 3,
+                "endRow": 5
+            }
+        }, {
+            "teamIteration": {
+                "id": "909a6f3f-6ec1-4ac6-802a-1499fb0ca145",
+                "name": "Iteration 1",
+                "path": "ngtest\\Iteration 1",
+                "attributes": {
+                    "startDate": null,
+                    "finishDate": null,
+                    "timeFrame": 1
+                },
+                "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/6785ecb2-f7bf-439b-bfd3-504b4717e400/_apis/work/teamsettings/iterations/909a6f3f-6ec1-4ac6-802a-1499fb0ca145"
+            },
+            "dimension": {
+                "startRow": 3,
+                "startCol": 3,
+                "endCol": 4,
+                "endRow": 5
+            }
+        }, {
+            "teamIteration": {
+                "id": "8efa0cb5-208f-41e8-9b2d-791fae4812ee",
+                "name": "Iteration 10",
+                "path": "ngtest\\Iteration 10",
+                "attributes": {
+                    "startDate": null,
+                    "finishDate": null,
+                    "timeFrame": 2
+                },
+                "url": "http://localhost:8080/tfs/DefaultCollection/45fc247a-42a5-4618-a0d3-63325c20eab9/6785ecb2-f7bf-439b-bfd3-504b4717e400/_apis/work/teamsettings/iterations/8efa0cb5-208f-41e8-9b2d-791fae4812ee"
+            },
+            "dimension": {
+                "startRow": 3,
+                "startCol": 4,
+                "endCol": 5,
+                "endRow": 5
+            }
+        }],
+        "emptyHeaderRow": [{
+            "startCol": 2,
+            "startRow": 1,
+            "endRow": 2,
+            "endCol": 3
+        }, {
+            "startCol": 3,
+            "startRow": 1,
+            "endRow": 2,
+            "endCol": 4
+        }, {
+            "startCol": 4,
+            "startRow": 1,
+            "endRow": 2,
+            "endCol": 5
+        }]
     }
 }

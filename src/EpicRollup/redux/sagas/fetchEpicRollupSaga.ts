@@ -95,10 +95,7 @@ export function* fetchEpicRollup(epicId: number) {
             ]);
 
 
-            debugger;
         yield put(workItemTypesReceived(projectId, wits));
-
-        debugger;
         yield put(workItemStateColorsReceived(projectId, stateColors));
 
         yield put(ProgressAwareActionCreator.setLoading(false));
