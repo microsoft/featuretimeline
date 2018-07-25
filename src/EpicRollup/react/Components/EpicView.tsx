@@ -1,4 +1,5 @@
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 //import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import * as React from 'react';
@@ -7,23 +8,23 @@ import { UIStatus } from '../../../Common/Contracts/types';
 import { getProjectId, getTeamId } from '../../../Common/Selectors/CommonSelectors';
 import { IEpicRollupState } from '../../redux/contracts';
 import configureEpicRollupStore from '../../redux/epicRollupStore';
+import { epicRollupGridViewSelector, IEpicRollupGridView } from '../../redux/selectors/epicRollupGridViewSelector';
+import { uiStateSelector } from '../../redux/selectors/uiStateSelector';
 import { EpicContent } from './EpicContent';
 import { EpicSelector } from './EpicSelector';
 import './EpicView.scss';
 
 initializeIcons(/* optional base url */);
 
-export interface IEpicRollupProps {
+export interface IEpicRollupViewProps {
     projectId: string;
     teamId: string;
     uiState: UIStatus;
-    //gridView: IGridView,
-    //childItems: number[];
-    //settingsState: ISettingsState;
+    gridView: IEpicRollupGridView
 }
 
 
-class EpicView extends React.Component<IEpicRollupProps, {}> {
+class EpicRollupViewContent extends React.Component<IEpicRollupViewProps, {}> {
     constructor() {
         super();
     }
@@ -40,7 +41,7 @@ class EpicView extends React.Component<IEpicRollupProps, {}> {
         }
 
         //needs to move to EpicContent
-        /* if (uiState === UIStatus.NoTeamIterations) {
+        if (uiState === UIStatus.NoTeamIterations) {
             return (
                 <MessageBar
                     messageBarType={MessageBarType.error}
@@ -58,16 +59,18 @@ class EpicView extends React.Component<IEpicRollupProps, {}> {
             >
                 {"No in-progress Features for the timeline."}
             </MessageBar>);
-        } */
+        }
         return (
             <div className="epic-container">
                 <EpicSelector
-                    projectId={this.props.projectId} 
-                    teamId={this.props.teamId} />);
-                <EpicContent 
-                    projectId={this.props.projectId} 
-                    teamId={this.props.teamId} />);
-            </div>);
+                    projectId={this.props.projectId}
+                    teamId={this.props.teamId} />
+                <EpicContent
+                    projectId={this.props.projectId}
+                    teamId={this.props.teamId}
+                    gridView={this.props.gridView} />
+            </div>
+        );
     }
 }
 
@@ -77,15 +80,16 @@ const makeMapStateToProps = () => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
-            uiState: UIStatus.Default,
+            uiState: uiStateSelector(state),
+            gridView: epicRollupGridViewSelector(state)
         }
     }
 }
 
-export const ConnectedEpicRollupGrid = connect(makeMapStateToProps)(EpicView);
+export const ConnectedEpicRollupViewContent = connect(makeMapStateToProps)(EpicRollupViewContent);
 
 export const EpicRollupView = () => {
-    const initialState: IEpicRollupState = {        
+    const initialState: IEpicRollupState = {
     } as IEpicRollupState;
     const store = configureEpicRollupStore(initialState);
 
@@ -94,7 +98,7 @@ export const EpicRollupView = () => {
 
     return (
         <Provider store={store}>
-            <ConnectedEpicRollupGrid />
+            <ConnectedEpicRollupViewContent />
         </Provider>);
 }
 

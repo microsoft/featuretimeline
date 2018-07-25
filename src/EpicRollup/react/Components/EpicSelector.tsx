@@ -16,7 +16,7 @@ export class EpicSelector extends React.Component<IEpicSelectorProps, {}> {
                 placeHolder="Select an Epic"
                 label="Epic:"
                 id="Epic"
-                ariaLabel="Select a Epic"
+                ariaLabel="Select an Epic"
                 options={[
                     { key: 'E1', text: 'Option E1' },
                     { key: 'E2', text: 'Option E2' },
