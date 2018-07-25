@@ -35,9 +35,10 @@ export function getWorkItemDisplayDetails(
     teamIterations: TeamSettingsIteration[],
     metadata: IWorkItemMetadata): IWorkItemDisplayDetails[] {
 
-    if (!metadata) {
+    if (!metadata || !metadata.workItemTypes || !metadata.workItemStateColors) {
         return [];
     }
+
     const workItems = epicTree.parentToChildrenMap[rootWorkItemId] || [];
     return workItems.map(workItemId => {
         const workItem = pagedWorkItems[workItemId];

@@ -26,6 +26,6 @@ export const uiStateSelector = createSelector(
             return UIStatus.NoWorkItems;
         }
 
-        UIStatus.Default;
+        return UIStatus.Default;
     }
 )

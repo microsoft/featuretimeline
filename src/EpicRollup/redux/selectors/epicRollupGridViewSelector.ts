@@ -57,6 +57,7 @@ export function getEpicRollupGridView(
             iterationShadow: []
         };
     }
+
     const {
         backlogFields: {
             typeFields

@@ -11,6 +11,8 @@ import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
 import { fetchTeamIterations, fetchTeamSettings } from './fetchTeamSettingsSaga';
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { ProgressAwareActionCreator } from "../../../Common/modules/ProgressAwareState/ProgressAwareStateActions";
+import { workItemStateColorsReceived, workItemTypesReceived } from "../modules/workItemMetadata/workItemMetadataActionCreators";
+import { WorkItemMetadataService } from "../../../Services/WorkItemMetadataService";
 
 export function* fetchEpicRollup(epicId: number) {
     try {
@@ -76,6 +78,28 @@ export function* fetchEpicRollup(epicId: number) {
 
         // Fetch overridden iteration start/end dates
         yield call(restoreOverriddenIterations);
+
+        // For now show only lowest level of portfolio backlog
+        const workItemTypeNames = [];
+        backlogConfiguration.portfolioBacklogs.reduce((workItemTypeNames, backlog) => {
+            workItemTypeNames.push(...backlog.workItemTypes.map(w => w.name));
+            return workItemTypeNames;
+        }, workItemTypeNames);
+
+        workItemTypeNames.push(...backlogConfiguration.requirementBacklog.workItemTypes.map(w => w.name));
+        const metadataService = WorkItemMetadataService.getInstance();
+        const [stateColors, wits] = yield all(
+            [
+                call([metadataService, metadataService.getStates], projectId, workItemTypeNames),
+                call(metadataService.getWorkItemTypes.bind(metadataService), projectId)
+            ]);
+
+
+            debugger;
+        yield put(workItemTypesReceived(projectId, wits));
+
+        debugger;
+        yield put(workItemStateColorsReceived(projectId, stateColors));
 
         yield put(ProgressAwareActionCreator.setLoading(false));
     }

@@ -56,7 +56,7 @@ class Grid extends React.Component<IEpicRollupGridProps, {}> {
                 {"No in-progress Features for the timeline."}
             </MessageBar>);
         }
-        return (<div>{"Epic Rollup is great"}</div>)
+        return (<div>{JSON.stringify(this.props)}</div>)
     }
 }
 
