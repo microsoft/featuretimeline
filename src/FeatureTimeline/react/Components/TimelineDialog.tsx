@@ -80,7 +80,7 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
     }
 
     private _getGridWorkItem() {
-        return this.props.gridView.workItems.filter(w => !w.isGap && w.workItem.id === this.props.id)[0];
+        return this.props.gridView.workItems.filter(w => w.workItem.id === this.props.id)[0];
     }
 
     private _getCustomIterationDurationDetails() {

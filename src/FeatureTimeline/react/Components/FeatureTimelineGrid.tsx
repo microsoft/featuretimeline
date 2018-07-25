@@ -35,7 +35,7 @@ import { getSettingsState } from '../../../Common/redux/modules/SettingsState/Se
 import { toggleShowWorkItemDetails, changeProgressTrackingCriteria, changeShowClosedSinceDays } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
 import { WorkItemShadow } from '../../../Common/react/Components/WorkItem/WorkItemShadow';
 import DraggableWorkItemRenderer from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
-import { WorkitemGap } from '../../../Common/react/Components/WorkItem/WorkItemGap';
+import { ChildRowsSeparator } from '../../../Common/react/Components/WorkItem/ChildRowsSeparatorGap';
 import { startUpdateWorkItemIteration } from '../../../Common/redux/actions/StartUpdateWorkitemIterationAction';
 import { showDetails, closeDetails } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsActions';
 
@@ -208,6 +208,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             iterationHeader,
             iterationShadow,
             workItems,
+            separators,
             shadowForWorkItemId,
             iterationDisplayOptions,
             isSubGrid,
@@ -240,13 +241,13 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         let workItemShadowCell = null;
         if (shadowForWorkItemId) {
-            const workItem = workItems.filter(w => !w.isGap && w.workItem.id === shadowForWorkItemId)[0];
+            const workItem = workItems.filter(w => w.workItem.id === shadowForWorkItemId)[0];
             workItemShadowCell = (
                 <WorkItemShadow dimension={workItem.dimension} twoRows={workItem.settingsState.showWorkItemDetails} />
             );
         }
 
-        const workItemCells = workItems.filter(w => !w.isGap && w.workItem.id).map(w => {
+        const workItemCells = workItems.filter(w => w.workItem.id).map(w => {
             return (
                 <DraggableWorkItemRenderer
                     id={w.workItem.id}
@@ -273,9 +274,10 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
             );
         });
 
-        const workItemGaps = workItems.filter(w => w.isGap).map(w => {
+        debugger;
+        const workItemSeparators = separators.map(d => {
             return (
-                <WorkitemGap {...w.dimension} />
+                <ChildRowsSeparator {...d} />
             );
         });
 
@@ -469,7 +471,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     {shadows}
                     {workItemShadowCell}
                     {workItemCells}
-                    {workItemGaps}
+                    {workItemSeparators}
                     {childDialog}
                 </div>
             </div>

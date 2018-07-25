@@ -33,7 +33,8 @@ export function getGridView(
             iterationDisplayOptions: null,
             teamIterations: [],
             backlogIteration: null,
-            currentIterationIndex: -1
+            currentIterationIndex: -1,
+            separators: []
         }
     }
 
@@ -49,7 +50,7 @@ export function getGridView(
         iterationDisplayOptions);
 
     const hideParents = isSubGrid || (workItemDisplayDetails.length === 1 && workItemDisplayDetails[0].id === 0);
-    const gridWorkItems = getGridWorkItems(
+    const { gridWorkItems, separators} = getGridWorkItems(
         backlogIteration,
         teamIterations,
         displayIterations,
@@ -83,7 +84,8 @@ export function getGridView(
         emptyHeaderRow,
         iterationHeader,
         iterationShadow,
-        currentIterationIndex
+        currentIterationIndex,
+        separators
     }
     return view;
 }
@@ -97,12 +99,13 @@ export function getGridWorkItems(
     startRow: number,
     startColumn: number,
     hideParents: boolean,
-    settingsState: ISettingsState): IGridWorkItem[] {
+    settingsState: ISettingsState): { gridWorkItems: IGridWorkItem[], separators: IDimension[]} {
 
     const {
         progressTrackingCriteria
     } = settingsState;
-    const output: IGridWorkItem[] = [];
+    const gridWorkItems: IGridWorkItem[] = [];
+    const separators: IDimension[] = [];
     workItems = workItems.sort(workItemCompare);
 
     let lastColumn = displayIterations.length + 1;
@@ -135,7 +138,7 @@ export function getGridWorkItems(
                 progressIndicator: getProgress(children, progressTrackingCriteria),
                 settingsState
             };
-            output.push(gridItem); //This can be popped later in this function
+            gridWorkItems.push(gridItem); //This can be popped later in this function
         }
 
         let childStartRow = parentStartRow;
@@ -196,7 +199,7 @@ export function getGridWorkItems(
                     progressIndicator: getProgress(child.children, progressTrackingCriteria),
                     settingsState
                 };
-                output.push(gridItem);
+                gridWorkItems.push(gridItem);
                 noChildren = false;
 
                 childStartRow++;
@@ -205,28 +208,16 @@ export function getGridWorkItems(
 
         if (noChildren && !hideParents) {
             //If there are no child elements than pop the parent added
-            output.pop();
+            gridWorkItems.pop();
         }
         else {
             // Insert Gap
             if (children.length > 0 && parentIndex < (workItems.length - 1)) {
-                output.push({
-                    workItem: <IWorkItemDisplayDetails>{
-                        id: -1,
-                        title: "",
-                        children: [],
-                        showInfoIcon: false
-                    },
-                    dimension: {
+                separators.push({
                         startRow: parentEndRow - 1,
                         endRow: parentEndRow,
                         startCol: hideParents ? 1 : 2,
                         endCol: lastColumn
-                    },
-                    isGap: true,
-                    crop: CropWorkItem.None,
-                    progressIndicator: null,
-                    settingsState
                 });
             }
 
@@ -234,7 +225,7 @@ export function getGridWorkItems(
         }
     });
 
-    return output;
+    return {gridWorkItems, separators};
 }
 
 

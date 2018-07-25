@@ -58,7 +58,8 @@ export function getEpicRollupGridView(
             iterationHeader: [],
             iterationShadow: [],
             currentIterationIndex: -1,
-            teamFieldHeaderItem: null
+            teamFieldHeaderItem: null,
+            separators: []
         };
     }
 
@@ -81,7 +82,7 @@ export function getEpicRollupGridView(
         /* includeBacklogIteration */ true,
         iterationDisplayOptions);
 
-    const { gridWorkItems, teamFieldDisplayItems } =
+    const { gridWorkItems, teamFieldDisplayItems, separators } =
         getGridItems(
             workItemDisplayDetails,
             teamFieldName,
@@ -116,7 +117,8 @@ export function getEpicRollupGridView(
             startRow: 2,
             endCol: 2,
             endRow: 3
-        }
+        },
+        separators
     }
 
 }
@@ -128,14 +130,15 @@ function getGridItems(
     iterationDisplayOptions: IIterationDisplayOptions,
     backlogIteration: TeamSettingsIteration,
     settingsState: ISettingsState,
-    progressTrackingCriteria: ProgressTrackingCriteria): { gridWorkItems: IGridWorkItem[]; teamFieldDisplayItems: ITeamFieldDisplayItem[]; } {
+    progressTrackingCriteria: ProgressTrackingCriteria): { gridWorkItems: IGridWorkItem[]; teamFieldDisplayItems: ITeamFieldDisplayItem[]; separators: IDimension[] } {
     const workItemsByTeamField = getWorkItemsByTeamField(workItemDisplayDetails, teamFieldName);
     const sortedTeamFields = Object.keys(workItemsByTeamField).sort();
     const gridWorkItems: IGridWorkItem[] = [];
     const teamFieldDisplayItems: ITeamFieldDisplayItem[] = [];
+    const separators: IDimension[] = [];
     let teamGroupStartRow = 3;
     let teamGroupEndRow = -1;
-    sortedTeamFields.forEach(teamField => {
+    sortedTeamFields.forEach((teamField, teamFieldIndex) => {
         // create cards for work items, and only if there are more than one card for work items create card for the teamfield
         const orderedWorkItems = workItemsByTeamField[teamField].sort(workItemCompare);
         const workItemStartColumn = 2;
@@ -189,7 +192,16 @@ function getGridItems(
         }).filter(x => !!x);
         if (childItems.length > 0) {
             gridWorkItems.push(...childItems);
-            teamGroupEndRow = teamGroupStartRow + childItems.length;
+            teamGroupEndRow = teamGroupStartRow + childItems.length + 1; // +1 for the separator
+            if (teamFieldIndex < sortedTeamFields.length -1) {
+                separators.push({
+                    startRow: teamGroupEndRow - 1,
+                    endRow: teamGroupEndRow,
+                    startCol: 2,
+                    endCol: displayIterations.length + 2
+                });
+            }
+
             teamFieldDisplayItems.push({
                 dimension: {
                     startRow: teamGroupStartRow,
@@ -202,7 +214,7 @@ function getGridItems(
             teamGroupStartRow = teamGroupEndRow;
         }
     });
-    return { gridWorkItems, teamFieldDisplayItems };
+    return { gridWorkItems, teamFieldDisplayItems, separators };
 }
 
 function getWorkItemsByTeamField(workItemDisplayDetails: IWorkItemDisplayDetails[], teamFieldName: string): IDictionaryStringTo<IWorkItemDisplayDetails[]> {
@@ -210,7 +222,7 @@ function getWorkItemsByTeamField(workItemDisplayDetails: IWorkItemDisplayDetails
     // get work items by leaf area path
     const workItemsByTeamField: IDictionaryStringTo<IWorkItemDisplayDetails[]> = workItemDisplayDetails.reduce((map, w) => {
         const areaPath: string = w.workItem.fields[teamFieldName];
-        const parts = areaPath.split("/");
+        const parts = areaPath.split("\\");
         let index = parts.length - 1;
         let leafValue = parts[index];
         // to check incase if the leaf value is duplicate, we keep track of entire path

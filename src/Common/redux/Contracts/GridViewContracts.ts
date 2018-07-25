@@ -41,7 +41,6 @@ export interface IGridWorkItem extends IGridItem {
     progressIndicator: IProgressIndicator;
     crop: CropWorkItem;
     settingsState: ISettingsState;
-    isGap?: boolean;
 }
 
 export interface IGridIterationDisplayDetails {
@@ -58,7 +57,8 @@ export interface IGridView extends IGridIterationDisplayDetails {
     iterationDisplayOptions: IIterationDisplayOptions;
     teamIterations: TeamSettingsIteration[];
     backlogIteration: TeamSettingsIteration,
-    currentIterationIndex: number
+    currentIterationIndex: number;
+    separators: IDimension[];
 }
 
 export interface IIterationDisplayOptions {

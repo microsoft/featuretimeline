@@ -10,7 +10,7 @@ import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { IterationDropTarget } from '../../../Common/react/Components/DroppableIterationShadow';
 import { IterationRenderer } from '../../../Common/react/Components/IterationRenderer';
 import DraggableWorkItemRenderer from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
-import { WorkitemGap } from '../../../Common/react/Components/WorkItem/WorkItemGap';
+import { ChildRowsSeparator } from '../../../Common/react/Components/WorkItem/ChildRowsSeparatorGap';
 import { WorkItemShadow } from '../../../Common/react/Components/WorkItem/WorkItemShadow';
 import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
 import { startUpdateWorkItemIteration } from '../../../Common/redux/actions/StartUpdateWorkitemIterationAction';
@@ -62,6 +62,7 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
                 iterationHeader,
                 iterationShadow,
                 workItems,
+                separators,
                 shadowForWorkItemId,
                 iterationDisplayOptions,
                 isSubGrid,
@@ -97,7 +98,7 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
 
         let workItemShadowCell = null;
         if (shadowForWorkItemId > 0) {
-            const workItem = workItems.filter(w => !w.isGap && w.workItem.id === shadowForWorkItemId)[0];
+            const workItem = workItems.filter(w => w.workItem.id === shadowForWorkItemId)[0];
             workItemShadowCell = (
                 <WorkItemShadow dimension={workItem.dimension} twoRows={workItem.settingsState.showWorkItemDetails} />
             );
@@ -105,7 +106,7 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
 
         const teamFieldCards = teamFieldDisplayItems.map(tfdi => <TeamFieldCard dimension={tfdi.dimension} teamField={tfdi.teamField} />);
 
-        const workItemCells = workItems.filter(w => !w.isGap && w.workItem.id).map(w => {
+        const workItemCells = workItems.filter(w => w.workItem.id).map(w => {
             return (
                 <DraggableWorkItemRenderer
                     id={w.workItem.id}
@@ -132,9 +133,9 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
             );
         });
 
-        const workItemGaps = workItems.filter(w => w.isGap).map(w => {
+        const childRowsSeparator = separators.map(d => {
             return (
-                <WorkitemGap {...w.dimension} />
+                <ChildRowsSeparator {...d} />
             );
         });
 
@@ -296,7 +297,7 @@ export class EpicRollupGridContent extends React.Component<IEpicRollupGridProps,
                     {shadows}
                     {workItemShadowCell}
                     {workItemCells}
-                    {workItemGaps}
+                    {childRowsSeparator}
                     {teamFieldCards}
                     {childDialog}
                 </div>
