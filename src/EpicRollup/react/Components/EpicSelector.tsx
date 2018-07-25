@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
+import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import './EpicSelector.scss';
 
 
@@ -12,20 +12,29 @@ export class EpicSelector extends React.Component<IEpicSelectorProps, {}> {
 
     public render(): JSX.Element {
         return (<div className="epic-selector-container">
-            <Dropdown
-                placeHolder="Select an Epic"
-                id="Epic"
+            <ComboBox
+                label="Select an Epic:"
+                id="epic-selector"
                 ariaLabel="Select an Epic"
-                options={[
-                    { key: 'E1', text: 'Option E1' },
-                    { key: 'E2', text: 'Option E2' },
-                    { key: 'E3', text: 'Option E3' },
-                ]}
+                autoComplete="on"
+                allowFreeform={true}
+                options={this._getOptions()}
                 onChanged={this._epicSelectionChanged}
             />
         </div>)
 
     }
 
-    private _epicSelectionChanged() { }
+    private _getOptions(): IComboBoxOption[] {
+        //test data
+        return [
+            { key: 'Epic awesome1', text: 'Option E1' },
+            { key: 'Epic awesome2', text: 'Option E2' },
+            { key: 'Epic awesome3', text: 'Option E3' },
+        ];
+    }
+
+    private _epicSelectionChanged(option: IComboBoxOption, index: number, value: string): void {
+
+     }
 }
