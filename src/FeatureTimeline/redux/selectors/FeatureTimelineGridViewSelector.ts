@@ -38,10 +38,6 @@ export function getGridView(
         }
     }
 
-    if (isSubGrid) {
-        debugger;
-    }
-
     const displayIterations = getDisplayIterations(
         backlogIteration,
         teamIterations,

@@ -21,7 +21,6 @@ export function* launchOverrideWorkItemIteration(action: OverrideIterationEndAct
 export function* launchSaveOverrideIteration(action: SaveOverrideIterationAction) {
 
     const overrideIterationState = action.payload;
-
     yield put(OverriddenIterationsActionCreator.set(overrideIterationState.workItemId, overrideIterationState.iterationDuration));
     const dataService = yield call(VSS.getService, VSS.ServiceIds.ExtensionData);
     let currentValues = yield call(dataService.getValue.bind(dataService), "overriddenWorkItemIterations");
@@ -47,7 +46,7 @@ export function* launchClearOverrideIteration(action: AnyAction) {
     } else {
         currentValues = {};
     }
-    delete currentValues[action.payload];
+    delete currentValues[action.payload.workItemId];
 
     yield call(dataService.setValue.bind(dataService), "overriddenWorkItemIterations", JSON.stringify(currentValues));
 }
