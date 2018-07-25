@@ -25,7 +25,7 @@ const iterationDropTarget = {
         let draggedItem = monitor.getItem();
         if (draggedItem["dimension"]) {
             const item = draggedItem as IWorkItemRendererProps;
-            dropTargetProps.changeIteration(item.id, dropTargetProps.teamIteration, draggedItem.allowOverride);
+            dropTargetProps.changeIteration(item.id, dropTargetProps.teamIteration, draggedItem.allowOverrideIteration);
         } else {
             const item = draggedItem as IWorkItemListItemProps;
             dropTargetProps.markInProgress(item.id, dropTargetProps.teamIteration, item.inProgressState);

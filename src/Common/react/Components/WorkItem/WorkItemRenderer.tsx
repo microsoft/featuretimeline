@@ -24,7 +24,7 @@ export interface IWorkItemRendererProps {
     isRoot: boolean;
     isSubGrid: boolean;
     showInfoIcon: boolean;
-    allowOverride: boolean;
+    allowOverrideIteration: boolean;
     iterationDuration: IIterationDuration;
     dimension: IDimension;
     crop: CropWorkItem;
@@ -72,7 +72,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             showDetails,
             isRoot,
             showInfoIcon,
-            allowOverride,
+            allowOverrideIteration,
             isDragging,
             crop,
             iterationDuration,
@@ -115,8 +115,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         }
 
         const rendererClass = isRoot ? "root-work-item-renderer" : "work-item-renderer";
-        let canOverrideLeft = allowOverride;
-        let canOverrideRight = allowOverride;
+        let canOverrideLeft = allowOverrideIteration;
+        let canOverrideRight = allowOverrideIteration;
         let leftCropped = false;
         let rightCropped = false;
         switch (crop) {
@@ -145,7 +145,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         let leftHandle = null;
         let rightHandle = null;
 
-        if (!isRoot && allowOverride) {
+        if (allowOverrideIteration) {
             leftHandle = canOverrideLeft && (
                 <div
                     className="work-item-iteration-override-handle"

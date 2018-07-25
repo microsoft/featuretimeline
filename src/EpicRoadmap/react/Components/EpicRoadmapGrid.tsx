@@ -120,7 +120,7 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
                     showDetails={id => this.props.showDetails(id)}
                     overrideIterationStart={payload => this.props.overrideIterationStart(payload)}
                     overrideIterationEnd={() => this.props.overrideIterationEnd()}
-                    allowOverride={!this.props.gridView.isSubGrid}
+                    allowOverrideIteration={w.allowOverrideIteration}
                     isSubGrid={this.props.gridView.isSubGrid}
                     progressIndicator={w.progressIndicator}
                     crop={w.crop}
@@ -358,7 +358,7 @@ const makeMapStateToProps = () => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
-            gridView: EpicRoadmapGridViewSelector(state),
+            gridView: EpicRoadmapGridViewSelector(/* isSubGrid */false)(state),
             rawState: state
         }
     }

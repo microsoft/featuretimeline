@@ -261,7 +261,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     showDetails={id => this.props.showDetails(id)}
                     overrideIterationStart={payload => this.props.overrideIterationStart(payload)}
                     overrideIterationEnd={() => this.props.overrideIterationEnd()}
-                    allowOverride={!this.props.gridView.isSubGrid}
+                    allowOverrideIteration={w.allowOverrideIteration}
                     isSubGrid={this.props.gridView.isSubGrid}
                     progressIndicator={w.progressIndicator}
                     crop={w.crop}

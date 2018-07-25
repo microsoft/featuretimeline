@@ -69,62 +69,73 @@ export function getWorkItemIterationDuration(
             // 2. If any predecessor choose start iteration = Max(predecessor end iteration) +1
             // process predecessors to ensure we have them sorted out
             const predecessors = depTree.stop[workItemId] || [];
-            let startIndex = -1;
-            let endIndex = -1;
-            predecessors.forEach(p => {
-                process(p);
-                const pIndex = teamIterations.findIndex(i => i.id === result[p].endIteration.id) + 1;
-                startIndex = pIndex > startIndex ? pIndex : startIndex;
-            });
+            let startIndexByPredecessors = -1;
+            predecessors.forEach(process);
+
+            predecessors
+                .filter(p => result[p].kind !== IterationDurationKind.BacklogIteration)
+                .forEach(p => {
+                    const pIndex = teamIterations.findIndex(i => i.id === result[p].endIteration.id) + 1;
+                    startIndexByPredecessors = pIndex > startIndexByPredecessors ? pIndex : startIndexByPredecessors;
+                });
 
             // 3. choose min start , max end date of children
-            let minChildStart = children.length === 0 ? -1 : teamIterations.length;
-            let maxChildEnd = -1;
+            let startIndexByChildren = startIndexByPredecessors;
+            let endIndexByChildren = startIndexByPredecessors;
             let kind = IterationDurationKind.Predecessors;
-            children.forEach(c => {
-                const childStart = teamIterations.findIndex(i => i.id === result[c].startIteration.id);
-                const childEnd = teamIterations.findIndex(i => i.id === result[c].endIteration.id);
-                if (childStart < minChildStart) {
-                    minChildStart = childStart;
-                }
-                if (maxChildEnd === -1) {
-                    maxChildEnd = minChildStart;
-                }
-                if (childEnd > maxChildEnd) {
-                    maxChildEnd = childEnd;
-                }
-            });
+            children
+                .filter(c => result[c].kind !== IterationDurationKind.BacklogIteration)
+                .forEach(c => {
+                    const childStart = teamIterations.findIndex(i => i.id === result[c].startIteration.id);
+                    const childEnd = teamIterations.findIndex(i => i.id === result[c].endIteration.id);
+                    if (childStart < startIndexByChildren || startIndexByChildren === -1) {
+                        startIndexByChildren = childStart;
+                    }
+                    if (childEnd > endIndexByChildren) {
+                        endIndexByChildren = childEnd;
+                    }
+                });
 
+            let startIndex = startIndexByChildren;
+            let endIndex = endIndexByChildren;
 
-            if (minChildStart > startIndex) {
+            if (startIndexByChildren > startIndexByPredecessors) {
                 kind = IterationDurationKind.ChildRollup;
-                startIndex = minChildStart;
-            }
-            if (endIndex < maxChildEnd) {
-                endIndex = maxChildEnd;
+                startIndex = startIndexByChildren;
             }
 
-            if (endIndex === -1) {
-                endIndex = startIndex;
+            const workItem = pagedWorkItems[workItemId];
+            let iterationPath = "";
+            if (workItem) {
+                iterationPath = workItem.fields["System.IterationPath"];
             }
-
             // 4. choose self's iteration
             if (startIndex === -1) {
-                kind = IterationDurationKind.Self;
-                const workItem = pagedWorkItems[workItemId];
-                const iterationPath = workItem.fields["System.IterationPath"];
-                startIndex = endIndex = teamIterations.findIndex(itr => itr.path === iterationPath);
+                const isInBacklogIteration = iterationPath === (backlogIteration.path || backlogIteration.name);
+                if (isInBacklogIteration) {
+                    kind = IterationDurationKind.BacklogIteration;
+                    startIndex = -1;
+                    endIndex = -1;
+                } else {
+                    kind = IterationDurationKind.Self;
+                    startIndex = endIndex = teamIterations.findIndex(itr => itr.path === iterationPath);
+                }
             }
 
-            let startIteration = startIndex >= 0 ? teamIterations[startIndex] : null;
-            let endIteration = endIndex >= 0 ? teamIterations[endIndex] : null;
+            let startIteration = kind === IterationDurationKind.BacklogIteration ? backlogIteration : (startIndex >= 0 ? teamIterations[startIndex] : null);
+            let endIteration = kind === IterationDurationKind.BacklogIteration ? backlogIteration : (endIndex >= 0 ? teamIterations[endIndex] : null);
 
+            // If we have chosen the iteration based on the predessor but the team does not subscribe to that iteration
             if (kind == IterationDurationKind.Predecessors && (!startIteration || !endIteration)) {
-                kind = IterationDurationKind.PredecessorsOutofScope;
-            }
-            if (!startIteration || !endIteration) {
                 startIteration = endIteration = backlogIteration;
-                kind = IterationDurationKind.BacklogIteration;
+                kind = IterationDurationKind.FallbackBacklogIteration_PredecessorsOutofScope;
+            }
+
+            // For all other reasons we can not find the iteration the work item was suppsed to be so we are putting that in backlog iteration
+            if (!startIteration || !endIteration) {
+                debugger; // If you hit this please diagnose what that happens
+                startIteration = endIteration = backlogIteration;
+                kind = IterationDurationKind.FallbackBacklogIteration_IterationOutOfScope;
             }
 
             result[workItemId] = {

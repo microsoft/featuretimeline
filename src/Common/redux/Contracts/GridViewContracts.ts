@@ -41,6 +41,7 @@ export interface IGridWorkItem extends IGridItem {
     progressIndicator: IProgressIndicator;
     crop: CropWorkItem;
     settingsState: ISettingsState;
+    allowOverrideIteration: boolean;
 }
 
 export interface IGridIterationDisplayDetails {

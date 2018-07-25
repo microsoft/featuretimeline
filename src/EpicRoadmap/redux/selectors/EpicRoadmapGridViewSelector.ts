@@ -15,6 +15,7 @@ import { getSettingsState } from '../../../Common/redux/modules/SettingsState/Se
 import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 import { uiStateSelector } from './uiStateSelector';
 import { getCurrentIterationIndex } from '../../../Common/redux/Helpers/iterationComparer';
+import { IterationDurationKind } from '../../../Common/redux/Contracts/IIterationDuration';
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
@@ -25,7 +26,7 @@ export interface IEpicRoadmapGridView extends IGridView {
     teamFieldHeaderItem: IDimension;
 }
 
-export const EpicRoadmapGridViewSelector = createSelector(
+export const EpicRoadmapGridViewSelector = isSubGrid => createSelector(
     workItemDisplayDetailsSelectors,
     backogIterationsSelector as any,
     teamIterationsSelector as any,
@@ -33,7 +34,8 @@ export const EpicRoadmapGridViewSelector = createSelector(
     backlogConfigurationForProjectSelector,
     getSettingsState as any,
     uiStateSelector as any,
-    getEpicRoadmapGridView,
+    () => isSubGrid,
+    getEpicRoadmapGridView
 );
 export function getEpicRoadmapGridView(
     workItemDisplayDetails: IWorkItemDisplayDetails[],
@@ -42,13 +44,14 @@ export function getEpicRoadmapGridView(
     iterationDisplayOptions: IIterationDisplayOptions,
     backlogConfiguration: BacklogConfiguration,
     settingsState: ISettingsState,
-    uiStatus: UIStatus
+    uiStatus: UIStatus,
+    isSubGrid: boolean
 ): IEpicRoadmapGridView {
     if (uiStatus !== UIStatus.Default) {
         return {
             teamFieldDisplayItems: [],
             workItems: [],
-            isSubGrid: false,
+            isSubGrid,
             shadowForWorkItemId: 0,
             hideParents: false,
             iterationDisplayOptions,
@@ -80,11 +83,12 @@ export function getEpicRoadmapGridView(
         backlogIteration,
         teamIterations,
         workItemDisplayDetails,
-        /* includeBacklogIteration */ false,
+        /* includeBacklogIteration */ true,
         iterationDisplayOptions);
 
     const { gridWorkItems, teamFieldDisplayItems, separators } =
         getGridItems(
+            isSubGrid,
             workItemDisplayDetails,
             teamFieldName,
             teamIterations,
@@ -126,6 +130,7 @@ export function getEpicRoadmapGridView(
 }
 
 function getGridItems(
+    isSubGrid: boolean,
     workItemDisplayDetails: IWorkItemDisplayDetails[],
     teamFieldName: string,
     teamIterations: TeamSettingsIteration[],
@@ -177,6 +182,13 @@ function getGridItems(
             if (startIterationIndex < 0) {
                 startIterationIndex = endIterationIndex = displayIterations.findIndex(i => i.id === backlogIteration.id);
             }
+
+            const iterationDurationKind = workItem.iterationDuration.kind;
+            let allowOverrideIteration = !isSubGrid;
+            if (iterationDurationKind === IterationDurationKind.BacklogIteration || IterationDurationKind.FallbackBacklogIteration_IterationOutOfScope || IterationDurationKind.FallbackBacklogIteration_PredecessorsOutofScope) {
+                allowOverrideIteration = false;
+            }
+
             const ret = {
                 dimension: {
                     startRow: workItemStartRow,
@@ -188,7 +200,8 @@ function getGridItems(
                 settingsState,
                 isGap: false,
                 progressIndicator: getProgress(workItem.children, progressTrackingCriteria),
-                crop
+                crop,
+                allowOverrideIteration
             };
             workItemStartRow++;
             return ret;
@@ -196,7 +209,7 @@ function getGridItems(
         if (childItems.length > 0) {
             gridWorkItems.push(...childItems);
             teamGroupEndRow = teamGroupStartRow + childItems.length + 1; // +1 for the separator
-            if (teamFieldIndex < sortedTeamFields.length -1) {
+            if (teamFieldIndex < sortedTeamFields.length - 1) {
                 separators.push({
                     startRow: teamGroupEndRow - 1,
                     endRow: teamGroupEndRow,
