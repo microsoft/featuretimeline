@@ -1,8 +1,8 @@
-import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem, IGridWorkItem } from "../../../Common/Contracts/GridViewContracts";
+import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem } from "../../../Common/Contracts/GridViewContracts";
 import { TeamSettingsIteration, BacklogConfiguration } from "TFS/Work/Contracts";
-import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
+//import { getDisplayIterations } from "../../../Common/Selectors/displayIterationSelector";
 import { ISettingsState } from "../../../Common/Contracts/OptionsInterfaces";
-import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
+//import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamFieldValue: string;
@@ -27,27 +27,27 @@ export function getEpicRollupGridView(
         }
     } = backlogConfiguration;
 
-    const orderFieldName = typeFields["Order"];
-    const effortFieldName = typeFields["Effort"];
+    //const orderFieldName = typeFields["Order"];
+    //const effortFieldName = typeFields["Effort"];
     const teamFieldName = typeFields["Team"];
 
-    const displayIterations = getDisplayIterations(
-        backlogIteration,
-        teamIterations,
-        workItemDisplayDetails,
-        /* includeBacklogIteration */ true,
-        iterationDisplayOptions);
+    // const displayIterations = getDisplayIterations(
+    //    backlogIteration,
+    //    teamIterations,
+    //    workItemDisplayDetails,
+    //    /* includeBacklogIteration */ true,
+    //    iterationDisplayOptions);
 
     const workItemsByTeamField = getWorkItemsByTeamField(
         workItemDisplayDetails, 
         teamFieldName);
 
     const sortedTeamFields = Object.keys(workItemsByTeamField).sort();
-    const gridWorkItems: IGridWorkItem[] = [];
+    //const gridWorkItems: IGridWorkItem[] = [];
     const teamFieldPathDisplayItems: ITeamFieldDisplayItem[] = [];
     let teamGroupStartRow = 2;
     sortedTeamFields.forEach(teamFieldValue => {
-        const workItems = workItemsByTeamField[teamFieldValue].sort(workItemCompare);
+        //const workItems = workItemsByTeamField[teamFieldValue].sort(workItemCompare);
         teamFieldPathDisplayItems.push({
             teamFieldValue,
             dimension: {
@@ -62,6 +62,8 @@ export function getEpicRollupGridView(
         
 
     });
+
+    return null;
 
 }
 

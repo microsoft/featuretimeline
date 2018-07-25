@@ -9,7 +9,6 @@
 
 <body style="height:100%">
     <script>
-        let FeatureTimeline = null;
         VSS.init({
             usePlatformStyles: true,
             explicitNotifyLoaded: true,
@@ -51,11 +50,7 @@
         let previousContext = null
 
         function updateConfiguration(tabContext) {
-            // if (!isBackground() && typeof tabContext === "object" && FeatureTimeline && JSON.stringify(previousContext) !== JSON.stringify(tabContext)) {
-            //     FeatureTimeline.unmount();
-            //     FeatureTimeline.initialize();
-            //     previousContext = tabContext;
-            // }
+            
         }
 
         VSS.ready(function () {
