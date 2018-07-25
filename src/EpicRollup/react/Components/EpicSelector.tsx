@@ -13,18 +13,6 @@ export class EpicSelector extends React.Component<IEpicSelectorProps, {}> {
     public render(): JSX.Element {
         return (<div className="epic-selector-container">
             <Dropdown
-                placeHolder="Select an Team"
-                label="Team:"
-                id="Team"
-                ariaLabel="Select a Team"
-                options={[
-                    { key: 'A', text: 'Option a' },
-                    { key: 'B', text: 'Option b' },
-                    { key: 'C', text: 'Option c' },
-                ]}
-                onChanged={this._teamSelectionChanged}
-            /> 
-            <Dropdown
                 placeHolder="Select an Epic"
                 label="Epic:"
                 id="Epic"
@@ -39,8 +27,6 @@ export class EpicSelector extends React.Component<IEpicSelectorProps, {}> {
             </div>)
 
     }
-
-    private _teamSelectionChanged() {}
 
     private _epicSelectionChanged() {}
 }
