@@ -5,10 +5,13 @@ import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, Sh
 import { ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
 import { saveDisplayOptions } from "../../../Common/redux/sagas/displayOptionsSaga";
 import { saveSettings } from "../../../Common/redux/modules/SettingsState/SettingsStateSagas";
+import { LaunchWorkItemFormActionType } from "../../../Common/redux/actions/launchWorkItemForm";
+import { launchWorkItemFormSaga } from "./launchWorkItemFromSaga";
 
 export function* watchEpicRoadmapSagaActions() {
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
-    yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);    
+    yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);   
+    yield takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga); 
 
     yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions, "EpicRoadmap");
     yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions, "EpicRoadmap");
