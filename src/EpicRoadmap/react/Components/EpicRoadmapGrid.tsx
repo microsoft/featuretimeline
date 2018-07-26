@@ -109,7 +109,6 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
         const teamFieldCards = teamFieldDisplayItems.map(tfdi => <TeamFieldCard dimension={tfdi.dimension} teamField={tfdi.teamField} />);
 
         const workItemCells = workItems.filter(w => w.workItem.id).map(w => {
-            debugger;
             return (
                 <DraggableWorkItemRenderer
                     id={w.workItem.id}

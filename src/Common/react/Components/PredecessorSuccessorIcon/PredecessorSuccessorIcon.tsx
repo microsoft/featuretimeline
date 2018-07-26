@@ -4,6 +4,7 @@ import * as React from 'react';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import './PredecessorSuccessorIcon.scss';
 import { Callout } from 'office-ui-fabric-react/lib/Callout';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 
 export interface IPredecessorSuccessorIconProps {
     workItems: WorkItem[];
@@ -37,6 +38,7 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
             return null;
         }
         const items = this.props.workItems.map(this._renderWorkItem);
+        const label = <Label className="callout-title">{this.props.isSuccessor ? "Successors" : "Predecessors"}</Label>
         return (
             <Callout
                 className="work-item-links-list-callout"
@@ -44,6 +46,7 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
                 isBeakVisible={true}
                 onDismiss={this._toggleCallout}
             >
+                {label}
                 {items}
             </Callout>
         )
