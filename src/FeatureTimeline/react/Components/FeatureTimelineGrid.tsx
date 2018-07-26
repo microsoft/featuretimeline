@@ -14,7 +14,7 @@ import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { IterationDropTarget } from '../../../Common/react/Components/DroppableIterationShadow';
 import { IterationRenderer } from '../../../Common/react/Components/IterationRenderer';
 import { ChildRowsSeparator } from '../../../Common/react/Components/WorkItem/ChildRowsSeparatorGap';
-import DraggableWorkItemRenderer from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
+import { DraggableWorkItemRenderer } from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
 import { WorkItemShadow } from '../../../Common/react/Components/WorkItem/WorkItemShadow';
 import { ConnectedWorkItemsList } from '../../../Common/react/Components/WorkItemList';
 import { launchWorkItemForm } from "../../../Common/redux/actions/launchWorkItemForm";
@@ -147,14 +147,14 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 interface IFeatureTimelineGridState {
-    
+
 }
 
 export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridProps, IFeatureTimelineGridState> {
     constructor() {
         super();
         this.state = {
-            
+
         };
     }
 
@@ -269,6 +269,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     efforts={w.workItem.efforts}
                     childrernWithNoEfforts={w.workItem.childrenWithNoEfforts}
                     isComplete={w.workItem.isComplete}
+                    successors={w.workItem.successors}
+                    predecessors={w.workItem.predecessors}
                 />
             );
         });
@@ -522,7 +524,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         const {
             projectId,
             teamId,
-            gridView:{
+            gridView: {
                 teamIterations,
                 currentIterationIndex
             }

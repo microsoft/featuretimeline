@@ -16,7 +16,7 @@ import { WorkItemStartEndIteration, workItemStartEndIterationSelector } from "./
 import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 
 export const workItemDisplayDetailsSelectors = rootWorkItemId => createSelector(
-    () => rootWorkItemId, 
+    () => rootWorkItemId,
     normalizedEpicTreeSelector,
     normalizedDependencyTreeSelector,
     pagedWorkItemsMapSelector,
@@ -81,12 +81,12 @@ export function getWorkItemDisplayDetails(
             iterationDuration,
             children,
             isRoot: false,
-            showInfoIcon: children.length >0 || iterationDuration.kind === IterationDurationKind.UserOverridden,
+            showInfoIcon: children.length > 0 || iterationDuration.kind === IterationDurationKind.UserOverridden,
             workItemStateColor,
             childrenWithNoEfforts,
             isComplete: stateCategory === StateCategory.Completed,
-            predecessors: dependencyTree.stop[workItem.id],
-            successors: dependencyTree.ptos[workItem.id]
+            predecessors: (dependencyTree.stop[workItem.id] || []).map(i => pagedWorkItems[i]),
+            successors: (dependencyTree.ptos[workItem.id] || []).map(i => pagedWorkItems[i])
         };
 
         return displayDetails;

@@ -80,7 +80,6 @@ export function getEpicRoadmapGridView(
         iterationDisplayOptions = null;
     }
 
-    debugger;
     const displayIterations: TeamSettingsIteration[] = getDisplayIterations(
         backlogIteration,
         teamIterations,

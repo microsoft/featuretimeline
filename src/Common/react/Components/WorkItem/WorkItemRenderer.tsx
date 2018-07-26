@@ -8,7 +8,7 @@ import {
 import { css } from '@uifabric/utilities/lib/css';
 import { hexToRgb } from '../colorhelper';
 import { ProgressDetails } from '../ProgressDetails/ProgressDetails';
-import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItemStateColor, WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { State } from '../State/State';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { IIterationDuration } from "../../../redux/Contracts/IIterationDuration";
@@ -33,6 +33,8 @@ export interface IWorkItemRendererProps {
     efforts: number;
     childrernWithNoEfforts: number;
     isComplete: number;
+    predecessors: WorkItem[];
+    successors: WorkItem[];
 
     onClick: (id: number) => void;
     showDetails: (id: number) => void;
@@ -107,7 +109,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
         if (isDragging) {
             style['border-color'] = hexToRgb(this.props.color, 0.1);
-        } else if(isComplete){
+        } else if (isComplete) {
             style['border-color'] = hexToRgb(this.props.color, 0.3);
         }
         else {
@@ -215,9 +217,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                             iconName={'Warning'}
                             className="work-item-warning"
                             onClick={() => {
-                                if (!isSubGrid) 
-                                { 
-                                    showDetails(id); 
+                                if (!isSubGrid) {
+                                    showDetails(id);
                                 } else {
                                     onClick(id);
                                 }
@@ -246,6 +247,18 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             );
         }
 
+        let predecessorsIcon = null;
+        let successorsIcon = null;
+
+        if (this.props.predecessors && this.props.predecessors.length > 0) {
+            predecessorsIcon = <div>P</div>;
+        }
+
+        if (this.props.successors && this.props.successors.length > 0) {
+            debugger;
+            successorsIcon = <div>S</div>;
+        }
+
         const item = (
             <div
                 className={rendererClass}
@@ -258,6 +271,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                         <div
                             className={css("work-item-details-container", additionalDetailsContainer)}
                         >
+                            {predecessorsIcon}
                             {startsFrom}
                             <div
                                 className="title-contents"
@@ -270,9 +284,10 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                                     {title}
                                 </TooltipHost>
                             </div>
-                            {endsAt}
+                            {endsAt}                            
                         </div>
                         {infoIcon}
+                        {successorsIcon}
                     </div>
                     {secondRow}
                 </div>

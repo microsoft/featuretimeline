@@ -25,4 +25,4 @@ function collect(connect, monitor) {
     };
 }
 
-export default DragSource("WorkItem", WorkItemSource, collect)(DraggableHelper);
+export const DraggableWorkItemRenderer = DragSource("WorkItem", WorkItemSource, collect)(DraggableHelper);

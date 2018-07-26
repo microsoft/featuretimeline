@@ -12,7 +12,7 @@ import { IterationRenderer } from '../../../Common/react/Components/IterationRen
 import { TeamFieldCard } from '../../../Common/react/Components/TeamField/TeamFieldCard';
 import { TeamFieldHeader } from '../../../Common/react/Components/TeamFieldHeader/TeamFieldHeader';
 import { ChildRowsSeparator } from '../../../Common/react/Components/WorkItem/ChildRowsSeparatorGap';
-import DraggableWorkItemRenderer from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
+import { DraggableWorkItemRenderer } from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
 import { WorkItemShadow } from '../../../Common/react/Components/WorkItem/WorkItemShadow';
 import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
 import { startUpdateWorkItemIteration } from '../../../Common/redux/actions/StartUpdateWorkitemIterationAction';
@@ -109,6 +109,7 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
         const teamFieldCards = teamFieldDisplayItems.map(tfdi => <TeamFieldCard dimension={tfdi.dimension} teamField={tfdi.teamField} />);
 
         const workItemCells = workItems.filter(w => w.workItem.id).map(w => {
+            debugger;
             return (
                 <DraggableWorkItemRenderer
                     id={w.workItem.id}
@@ -131,6 +132,8 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
                     efforts={w.workItem.efforts}
                     childrernWithNoEfforts={w.workItem.childrenWithNoEfforts}
                     isComplete={w.workItem.isComplete}
+                    successors={w.workItem.successors}
+                    predecessors={w.workItem.predecessors}
                 />
             );
         });
@@ -280,7 +283,6 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
             );
         }
 
-        debugger;
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
