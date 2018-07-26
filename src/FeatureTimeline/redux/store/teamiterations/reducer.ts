@@ -10,12 +10,18 @@ export const getInitialState = (): ITeamSettingsIterationState => {
         teamSettingsIterations: {}
     };
 };
-const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsIterationState = getInitialState(),
+const reducer: Reducer<ITeamSettingsIterationState> = (state: ITeamSettingsIterationState,
     action: TeamSettingsIterationActions) => {
+
+    if (!state) {
+        state = getInitialState();
+    }
     switch (action.type) {
         case TeamSettingsIterationReceivedType:
             return handleTeamSettingsIterationReceived(state, action as TeamSettingsIterationReceivedAction);
     }
+
+    return state;
 };
 
 function handleTeamSettingsIterationReceived(state: ITeamSettingsIterationState, action: TeamSettingsIterationReceivedAction): ITeamSettingsIterationState {

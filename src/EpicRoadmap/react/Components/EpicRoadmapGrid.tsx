@@ -9,8 +9,10 @@ import { connect } from 'react-redux';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { IterationDropTarget } from '../../../Common/react/Components/DroppableIterationShadow';
 import { IterationRenderer } from '../../../Common/react/Components/IterationRenderer';
-import DraggableWorkItemRenderer from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
+import { TeamFieldCard } from '../../../Common/react/Components/TeamField/TeamFieldCard';
+import { TeamFieldHeader } from '../../../Common/react/Components/TeamFieldHeader/TeamFieldHeader';
 import { ChildRowsSeparator } from '../../../Common/react/Components/WorkItem/ChildRowsSeparatorGap';
+import DraggableWorkItemRenderer from '../../../Common/react/Components/WorkItem/DraggableWorkItemRenderer';
 import { WorkItemShadow } from '../../../Common/react/Components/WorkItem/WorkItemShadow';
 import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
 import { startUpdateWorkItemIteration } from '../../../Common/redux/actions/StartUpdateWorkitemIterationAction';
@@ -26,14 +28,14 @@ import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonS
 import { IEpicRoadmapState } from '../../redux/contracts';
 import { EpicRoadmapGridViewSelector, IEpicRoadmapGridView } from '../../redux/selectors/EpicRoadmapGridViewSelector';
 import './EpicRoadmapGrid.scss';
-import { TeamFieldCard } from '../../../Common/react/Components/TeamField/TeamFieldCard';
-import { TeamFieldHeader } from '../../../Common/react/Components/TeamFieldHeader/TeamFieldHeader';
+import { RoadmapTimelineDialog } from './RoadmapTimelineDialog/RoadmapTimelineDialog';
 
-export interface IEpicRoadmapGridProps {
+export interface IEpicRoadmapGridContentProps {
     projectId: string;
     teamId: string;
     gridView: IEpicRoadmapGridView;
     rawState: IEpicRoadmapState,
+    isSubGrid: boolean,
 
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
@@ -52,7 +54,7 @@ export interface IEpicRoadmapGridProps {
     changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => void;
 }
 
-export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProps, {}> {
+export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridContentProps, {}> {
 
     public render(): JSX.Element {
         const {
@@ -65,11 +67,11 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
                 separators,
                 shadowForWorkItemId,
                 iterationDisplayOptions,
-                isSubGrid,
                 teamIterations,
                 teamFieldDisplayItems,
                 teamFieldHeaderItem
-            }
+            },
+            isSubGrid
         } = this.props;
 
         const columnHeading = iterationHeader.map((iteration, index) => {
@@ -121,7 +123,7 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
                     overrideIterationStart={payload => this.props.overrideIterationStart(payload)}
                     overrideIterationEnd={() => this.props.overrideIterationEnd()}
                     allowOverrideIteration={w.allowOverrideIteration}
-                    isSubGrid={this.props.gridView.isSubGrid}
+                    isSubGrid={isSubGrid}
                     progressIndicator={w.progressIndicator}
                     crop={w.crop}
                     workItemStateColor={w.workItem.workItemStateColor}
@@ -148,10 +150,15 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
         const gridStyle = getTemplateColumns(extraColumns, shadows.length, `minmax(${min}, 300px)`);
 
         let childDialog = null;
-        if (this.props.rawState.workItemsToShowInfoFor.length > 0) {
-            //const props = { ...this.props, id: this.props.rawState.workItemsToShowInfoFor[0] };
-            childDialog = <div>{`Showing infor for ${this.props.rawState.workItemsToShowInfoFor[0]} `}</div>;//<TimelineDialog {...props} />
+        if (!this.props.isSubGrid && this.props.rawState.workItemsToShowInfoFor.length > 0) {
+            childDialog = (
+                <RoadmapTimelineDialog
+                    {...this.props}
+                    isSubGrid={true}
+                />
+            );
         }
+
 
         let leftButton = <span className="non-button"></span>;
         if (iterationDisplayOptions && iterationDisplayOptions.startIndex > 0) {
@@ -250,7 +257,7 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
             showWorkItemDetails,
             progressTrackingCriteria
         } = this.props.rawState.settingsState;
-        if (showWorkItemDetails) {
+        if (!isSubGrid && showWorkItemDetails) {
             const selectedKey = progressTrackingCriteria === ProgressTrackingCriteria.ChildWorkItems ? "child" : "efforts";
             progressTrackingCriteriaElement = (
                 <div className="progress-options">
@@ -273,6 +280,7 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
             );
         }
 
+        debugger;
         const commands = !isSubGrid && (
             <div className="header-commands">
                 {displayOptions}
@@ -288,6 +296,7 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
         );
 
         const teamFieldHeader = <TeamFieldHeader dimension={teamFieldHeaderItem} />
+
         const grid = (
             <div className="feature-timeline-main-container">
                 <div className="container" style={gridStyle}>
@@ -305,11 +314,11 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridProp
         );
 
         return (
-            <div className="root-container">
+            <div className="root-container" >
                 {commands}
-                {<div className="header-gap"></div>}
+                {<div className="header-gap" ></div>}
                 {grid}
-            </div>
+            </div >
 
         );
 
@@ -358,8 +367,9 @@ const makeMapStateToProps = () => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
-            gridView: EpicRoadmapGridViewSelector(/* isSubGrid */false)(state),
-            rawState: state
+            gridView: EpicRoadmapGridViewSelector(/* isSubGrid */false, /* rootWorkItemId */ 10)(state), //TODO: This need to come from another selector which is populated by the dropdown
+            rawState: state,
+            isSubGrid: false
         }
     }
 }

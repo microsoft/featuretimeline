@@ -1,20 +1,20 @@
-import { backlogConfigurationForProjectSelector } from '../modules/backlogconfiguration/backlogconfigurationselector';
-import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
-import { workItemDisplayDetailsSelectors } from './workItemDisplayDetailsSelector';
-import { IGridView, IWorkItemDisplayDetails, IIterationDisplayOptions, IGridItem, IGridWorkItem } from "../../../Common/redux/Contracts/GridViewContracts";
-import { TeamSettingsIteration, BacklogConfiguration } from "TFS/Work/Contracts";
+import { createSelector } from "reselect";
+import { BacklogConfiguration, TeamSettingsIteration } from "TFS/Work/Contracts";
+import { IGridItem, IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/redux/Contracts/GridViewContracts";
+import { CropWorkItem, IDimension, UIStatus } from "../../../Common/redux/Contracts/types";
+import { getIterationDisplayDetails } from "../../../Common/redux/Helpers/getIterationDisplayDetails";
+import { getCurrentIterationIndex } from '../../../Common/redux/Helpers/iterationComparer';
+import { getProgress } from "../../../Common/redux/Helpers/ProgressHelpers";
+import { getIterationDisplayOptionsState } from '../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSelector';
+import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
+import { getSettingsState } from '../../../Common/redux/modules/SettingsState/SettingsStateSelector';
 import { getDisplayIterations } from "../../../Common/redux/Selectors/displayIterationSelector";
 import { workItemCompare } from "../../../FeatureTimeline/redux/selectors/workItemCompare";
-import { CropWorkItem, UIStatus, IDimension } from "../../../Common/redux/Contracts/types";
-import { getProgress } from "../../../Common/redux/Helpers/ProgressHelpers";
-import { getIterationDisplayDetails } from "../../../Common/redux/Helpers/getIterationDisplayDetails";
-import { createSelector } from "reselect";
+import { backlogConfigurationForProjectSelector } from '../modules/backlogconfiguration/backlogconfigurationselector';
+import { teamIterationsSelector } from '../modules/teamIterations/teamIterationSelector';
 import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsselector';
-import { getIterationDisplayOptionsState } from '../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSelector';
-import { getSettingsState } from '../../../Common/redux/modules/SettingsState/SettingsStateSelector';
-import { ISettingsState, ProgressTrackingCriteria } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
 import { uiStateSelector } from './uiStateSelector';
-import { getCurrentIterationIndex } from '../../../Common/redux/Helpers/iterationComparer';
+import { workItemDisplayDetailsSelectors } from './workItemDisplayDetailsSelector';
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
@@ -25,8 +25,8 @@ export interface IEpicRoadmapGridView extends IGridView {
     teamFieldHeaderItem: IDimension;
 }
 
-export const EpicRoadmapGridViewSelector = isSubGrid => createSelector(
-    workItemDisplayDetailsSelectors,
+export const EpicRoadmapGridViewSelector = (isSubGrid: boolean, rootWorkItemId: number) => createSelector(
+    workItemDisplayDetailsSelectors(rootWorkItemId),
     backogIterationsSelector as any,
     teamIterationsSelector as any,
     getIterationDisplayOptionsState as any,
@@ -44,7 +44,7 @@ export function getEpicRoadmapGridView(
     backlogConfiguration: BacklogConfiguration,
     settingsState: ISettingsState,
     uiStatus: UIStatus,
-    isSubGrid: boolean
+    isSubGrid: boolean,
 ): IEpicRoadmapGridView {
     if (uiStatus !== UIStatus.Default) {
         return {
@@ -76,6 +76,10 @@ export function getEpicRoadmapGridView(
     } = settingsState;
 
     const teamFieldName = typeFields["Team"];
+    if(isSubGrid) {
+        iterationDisplayOptions = null;
+    }
+
     debugger;
     const displayIterations: TeamSettingsIteration[] = getDisplayIterations(
         backlogIteration,

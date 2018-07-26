@@ -12,8 +12,12 @@ export const getInitialState = (): IIterationDisplayOptions => {
     return null;
 };
 export const iterationDisplayOptionsReducer: Reducer<IIterationDisplayOptions> =
-    (state: IIterationDisplayOptions = getInitialState(),
+    (state: IIterationDisplayOptions,
         action: IterationDisplayActions) => {
+
+        if (!state) {
+            state = getInitialState();
+        }
         switch (action.type) {
             case DisplayAllIterationsActionType:
                 return handleDisplayAllIterations(state);

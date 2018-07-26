@@ -13,9 +13,10 @@ import { normalizedDependencyTreeSelector } from "./dependencyTreeSelector";
 import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from "./workItemSelector";
 import { WorkItemStartEndIteration, workItemStartEndIterationSelector } from "./workItemStartEndIterationSelector";
+import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 
-export const workItemDisplayDetailsSelectors = createSelector(
-    () => 10, //TODO: This is hard coded for now
+export const workItemDisplayDetailsSelectors = rootWorkItemId => createSelector(
+    () => rootWorkItemId, 
     normalizedEpicTreeSelector,
     normalizedDependencyTreeSelector,
     pagedWorkItemsMapSelector,
@@ -80,7 +81,7 @@ export function getWorkItemDisplayDetails(
             iterationDuration,
             children,
             isRoot: false,
-            showInfoIcon: true,
+            showInfoIcon: children.length >0 || iterationDuration.kind === IterationDurationKind.UserOverridden,
             workItemStateColor,
             childrenWithNoEfforts,
             isComplete: stateCategory === StateCategory.Completed,
