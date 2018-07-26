@@ -127,7 +127,9 @@ function getWorkItemDetails(
         workItemStateColor,
         childrenWithNoEfforts: children.filter(c => c.efforts === 0).length,
         predecessors: [],
-        successors: []        
+        successors: [],
+        highlighteSuccessorIcon: false,
+        highlightPredecessorIcon: false        
     };
 
     return workItemDetails;

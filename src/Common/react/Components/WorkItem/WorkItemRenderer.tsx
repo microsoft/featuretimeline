@@ -34,16 +34,22 @@ export interface IWorkItemRendererProps {
     efforts: number;
     childrernWithNoEfforts: number;
     isComplete: number;
-    predecessors: WorkItem[];
-    successors: WorkItem[];
 
     onClick: (id: number) => void;
+
     showDetails: (id: number) => void;
     overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
     overrideIterationEnd: () => void;
 
     isDragging?: boolean;
     connectDragSource?: (element: JSX.Element) => JSX.Element;
+
+    predecessors: WorkItem[];
+    successors: WorkItem[];
+    highlightPredecessorIcon: boolean;
+    highlighteSuccessorIcon: boolean;
+    onHighlightDependencies: (id: number, highlightSuccessor: boolean) => void;
+    onDismissDependencies: () => void;
 }
 
 export interface IWorkItemRendrerState {
@@ -252,11 +258,31 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         let successorsIcon = null;
 
         if (this.props.predecessors && this.props.predecessors.length > 0) {
-            predecessorsIcon = <PredecessorSuccessorIcon isSuccessor={false} workItems={this.props.predecessors} onClick={this.props.onClick}/>;
+            predecessorsIcon = (
+                <PredecessorSuccessorIcon
+                    id={this.props.id}
+                    hasSuccessors={false}
+                    workItems={this.props.predecessors}
+                    onShowWorkItem={this.props.onClick}
+                    onHighlightDependencies={this.props.onHighlightDependencies}
+                    onDismissDependencies={this.props.onDismissDependencies}
+                    isHighlighted={this.props.highlighteSuccessorIcon}
+                />
+            );
         }
 
         if (this.props.successors && this.props.successors.length > 0) {
-            successorsIcon = <PredecessorSuccessorIcon isSuccessor={true} workItems={this.props.successors} onClick={this.props.onClick}/>;
+            successorsIcon = (
+                <PredecessorSuccessorIcon
+                    id={this.props.id}
+                    hasSuccessors={true}
+                    workItems={this.props.successors}
+                    onShowWorkItem={this.props.onClick}
+                    onHighlightDependencies={this.props.onHighlightDependencies}
+                    onDismissDependencies={this.props.onDismissDependencies}
+                    isHighlighted={this.props.highlightPredecessorIcon}
+                />
+            );
         }
 
         const item = (
@@ -284,7 +310,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                                     {title}
                                 </TooltipHost>
                             </div>
-                            {endsAt}                            
+                            {endsAt}
                         </div>
                         {infoIcon}
                         {successorsIcon}

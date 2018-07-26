@@ -8,6 +8,7 @@ import { ITeamSettingsAwareState } from "./modules/teamsettings/teamsettingscont
 import { IWorkItemMetadataAwareState } from "./modules/workItemMetadata/workItemMetadataContracts";
 import { IEpicRoadmapWorkItemAwareState } from './modules/workItems/workItemContracts';
 import { IShowWorkItemInfoAwareState } from "../../Common/redux/modules/ShowHideDetails/ShowHideDetailsContracts";
+import { IHighlightDependenciesAwareState } from "../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule";
 
 export interface IEpicRoadmapState extends
     IProjectBacklogConfigurationAwareState,
@@ -20,5 +21,6 @@ export interface IEpicRoadmapState extends
     ISettingsAwareState,
     IProgressAwareState,
     IWorkItemOverrideIterationAwareState,
-    IShowWorkItemInfoAwareState {
+    IShowWorkItemInfoAwareState,
+    IHighlightDependenciesAwareState {
 }

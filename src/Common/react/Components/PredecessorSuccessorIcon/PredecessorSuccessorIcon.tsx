@@ -7,9 +7,13 @@ import { Callout } from 'office-ui-fabric-react/lib/Callout';
 import { Label } from 'office-ui-fabric-react/lib/Label';
 
 export interface IPredecessorSuccessorIconProps {
+    id: number;
     workItems: WorkItem[];
-    isSuccessor: boolean;
-    onClick: (id: number) => void;
+    hasSuccessors: boolean;
+    isHighlighted: boolean;
+    onShowWorkItem: (id: number) => void;
+    onHighlightDependencies: (id: number, highlightSuccessor: boolean) => void;
+    onDismissDependencies: () => void;
 }
 
 interface IPredecessorSuccessorIconState {
@@ -25,9 +29,13 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
         }
     }
     public render() {
-        const icon = this.props.isSuccessor ? "bowtie-navigate-forward-circle" : "bowtie-navigate-back-circle";
+        const icon = this.props.hasSuccessors ? "bowtie-navigate-forward-circle" : "bowtie-navigate-back-circle";
+        const highlight = this.props.isHighlighted ? "highlight" : "";
+        if(this.props.isHighlighted) {
+            debugger;
+        }
         return (
-            <div className={css("bowtie-icon", icon, "successor-predeccessor")} onClick={this._toggleCallout} ref={div => (this._containerDiv = div)}>
+            <div className={css("bowtie-icon", icon, "successor-predeccessor", highlight)} onClick={this._toggleCallout} ref={div => (this._containerDiv = div)}>
                 {this._renderPanel()}
             </div>
         );
@@ -38,7 +46,7 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
             return null;
         }
         const items = this.props.workItems.map(this._renderWorkItem);
-        const label = <Label className="callout-title">{this.props.isSuccessor ? "Successors" : "Predecessors"}</Label>
+        const label = <Label className="callout-title">{this.props.hasSuccessors ? "Successors" : "Predecessors"}</Label>
         return (
             <Callout
                 className="work-item-links-list-callout"
@@ -53,16 +61,22 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
     }
 
     private _toggleCallout = () => {
+        const isCalloutVisible = !this.state.isCalloutVisible;
+        if (isCalloutVisible) {
+            this.props.onHighlightDependencies(this.props.id, this.props.hasSuccessors);
+        } else {
+            this.props.onDismissDependencies();
+        }
         this.setState({
-            isCalloutVisible: !this.state.isCalloutVisible
-        })
+            isCalloutVisible,
+        });
     }
 
     private _renderWorkItem = (workItem: WorkItem) => {
         return (
             <div className="work-item-link-container">
                 <div className="work-item-link-id">{workItem.id}</div>
-                <Link className="work-item-link-title" href="#" onClick={() => this.props.onClick(workItem.id)}>{workItem.fields["System.Title"]}</Link>
+                <Link className="work-item-link-title" href="#" onClick={() => this.props.onShowWorkItem(workItem.id)}>{workItem.fields["System.Title"]}</Link>
             </div>
         );
     }

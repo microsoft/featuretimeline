@@ -3,6 +3,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    border-radius: 25px;
 }
 
 .work-item-links-list-callout {
@@ -19,4 +20,8 @@
 
 .callout-title {
     font-weight: bolder;
+}
+
+.highlight {
+    background: yellowgreen;
 }

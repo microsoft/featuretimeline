@@ -14,6 +14,7 @@ import { workItemsReducer } from './modules/workItems/workItemReducer';
 import { fetchEpicRoadmap } from './sagas/fetchEpicRoadmapSaga';
 import { showHideDetailsReducer } from '../../Common/redux/modules/ShowHideDetails/ShowHideDetailsReducer';
 import { watchEpicRoadmapSagaActions } from './sagas/watchEpicRoadmapSagaActions';
+import { highlightDependencyReducer } from '../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule';
 
 export default function configureEpicRoadmapStore(
     initialState: IEpicRoadmapState
@@ -38,7 +39,8 @@ export default function configureEpicRoadmapStore(
         iterationDisplayOptions: iterationDisplayOptionsReducer,
         progress: progressAwareReducer,
         workItemOverrideIteration: overrideIterationProgressReducer,
-        workItemsToShowInfoFor: showHideDetailsReducer
+        workItemsToShowInfoFor: showHideDetailsReducer,
+        highlightedDependency: highlightDependencyReducer        
     });
 
 

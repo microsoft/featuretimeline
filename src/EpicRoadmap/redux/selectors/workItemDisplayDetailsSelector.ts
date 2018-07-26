@@ -14,6 +14,7 @@ import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from "./workItemSelector";
 import { WorkItemStartEndIteration, workItemStartEndIterationSelector } from "./workItemStartEndIterationSelector";
 import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
+import { highlightDependenciesSelector, IHighlightedDependency } from "../../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule";
 
 export const workItemDisplayDetailsSelectors = rootWorkItemId => createSelector(
     () => rootWorkItemId,
@@ -24,6 +25,7 @@ export const workItemDisplayDetailsSelectors = rootWorkItemId => createSelector(
     backlogConfigurationForProjectSelector,
     teamIterationsSelector as any,
     workItemMetadataSelector,
+    highlightDependenciesSelector as any,
     getWorkItemDisplayDetails
 );
 export function getWorkItemDisplayDetails(
@@ -34,7 +36,8 @@ export function getWorkItemDisplayDetails(
     workItemStartEndIterations: WorkItemStartEndIteration,
     backlogConfiguration: BacklogConfiguration,
     teamIterations: TeamSettingsIteration[],
-    metadata: IWorkItemMetadata): IWorkItemDisplayDetails[] {
+    metadata: IWorkItemMetadata,
+    highlightedDependency: IHighlightedDependency): IWorkItemDisplayDetails[] {
 
     if (!metadata || !metadata.workItemTypes || !metadata.workItemStateColors) {
         return [];
@@ -67,9 +70,20 @@ export function getWorkItemDisplayDetails(
             workItemStartEndIterations,
             backlogConfiguration,
             teamIterations,
-            metadata);
+            metadata,
+            highlightedDependency);
         const childrenWithNoEfforts = children.filter(c => c.efforts === 0).length;
         const stateCategory = getWorkItemStateCategory(workItemTypeName, state, backlogConfiguration.workItemTypeMappedStates);
+
+        let highlighteSuccessorIcon = false;
+        let highlightPredecessorIcon = false;
+        if (highlightedDependency.id && highlightedDependency.highlightSuccesors && dependencyTree.stop[workItem.id]) {
+            highlighteSuccessorIcon = dependencyTree.stop[workItem.id].findIndex(i => i === highlightedDependency.id) !== -1;
+        }
+
+        if (highlightedDependency.id && !highlightedDependency.highlightSuccesors && dependencyTree.ptos[workItem.id]) {
+            highlightPredecessorIcon = dependencyTree.ptos[workItem.id].findIndex(i => i === highlightedDependency.id) !== -1;
+        }
 
         const displayDetails: IWorkItemDisplayDetails = {
             id: workItem.id,
@@ -86,7 +100,9 @@ export function getWorkItemDisplayDetails(
             childrenWithNoEfforts,
             isComplete: stateCategory === StateCategory.Completed,
             predecessors: (dependencyTree.stop[workItem.id] || []).map(i => pagedWorkItems[i]),
-            successors: (dependencyTree.ptos[workItem.id] || []).map(i => pagedWorkItems[i])
+            successors: (dependencyTree.ptos[workItem.id] || []).map(i => pagedWorkItems[i]),
+            highlighteSuccessorIcon,
+            highlightPredecessorIcon
         };
 
         return displayDetails;

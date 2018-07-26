@@ -271,6 +271,10 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     isComplete={w.workItem.isComplete}
                     successors={w.workItem.successors}
                     predecessors={w.workItem.predecessors}
+                    highlightPredecessorIcon={w.workItem.highlightPredecessorIcon}
+                    highlighteSuccessorIcon={w.workItem.highlighteSuccessorIcon}
+                    onHighlightDependencies={() => {}}
+                    onDismissDependencies={() => {}}
                 />
             );
         });

@@ -29,6 +29,7 @@ import { IEpicRoadmapState } from '../../redux/contracts';
 import { EpicRoadmapGridViewSelector, IEpicRoadmapGridView } from '../../redux/selectors/EpicRoadmapGridViewSelector';
 import './EpicRoadmapGrid.scss';
 import { RoadmapTimelineDialog } from './RoadmapTimelineDialog/RoadmapTimelineDialog';
+import { HighlightDependenciesActionsCreator } from '../../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule';
 
 export interface IEpicRoadmapGridContentProps {
     projectId: string;
@@ -52,6 +53,8 @@ export interface IEpicRoadmapGridContentProps {
     markInProgress: (id: number, teamIteration: TeamSettingsIteration) => void;
     toggleShowWorkItemDetails: (show: boolean) => void;
     changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => void;
+    onHighlightDependencies: (id: number, hightlightSuccessor: boolean) => void;
+    onDismissDependencies: () => void;
 }
 
 export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridContentProps, {}> {
@@ -133,6 +136,11 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
                     isComplete={w.workItem.isComplete}
                     successors={w.workItem.successors}
                     predecessors={w.workItem.predecessors}
+                    highlightPredecessorIcon={w.workItem.highlightPredecessorIcon}
+                    highlighteSuccessorIcon={w.workItem.highlighteSuccessorIcon}
+                    onHighlightDependencies={this.props.onHighlightDependencies}
+                    onDismissDependencies={this.props.onDismissDependencies}
+
                 />
             );
         });
@@ -423,6 +431,12 @@ const mapDispatchToProps = (dispatch) => {
         },
         changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => {
             dispatch(changeProgressTrackingCriteria(criteria));
+        },
+        onHighlightDependencies: (id: number, highlightSuccessor: boolean) => {
+            dispatch(HighlightDependenciesActionsCreator.highlightDependencies(id, highlightSuccessor));
+        },
+        onDismissDependencies: () => {
+            dispatch(HighlightDependenciesActionsCreator.dismissDependencies());
         }
     };
 };
