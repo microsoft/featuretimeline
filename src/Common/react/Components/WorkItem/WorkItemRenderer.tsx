@@ -16,6 +16,7 @@ import { IDimension, CropWorkItem } from '../../../redux/Contracts/types';
 import { IWorkItemOverrideIteration } from '../../../redux/modules/OverrideIterations/overriddenIterationContracts';
 import { IProgressIndicator } from '../../../redux/Contracts/GridViewContracts';
 import { ISettingsState, ProgressTrackingCriteria } from '../../../redux/modules/SettingsState/SettingsStateContracts';
+import { PredecessorSuccessorIcon } from '../PredecessorSuccessorIcon/PredecessorSuccessorIcon';
 export interface IWorkItemRendererProps {
     id: number;
     title: string;
@@ -251,12 +252,12 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         let successorsIcon = null;
 
         if (this.props.predecessors && this.props.predecessors.length > 0) {
-            predecessorsIcon = <div>P</div>;
+            predecessorsIcon = <PredecessorSuccessorIcon isSuccessor={false} workItems={this.props.predecessors} onClick={this.props.onClick}/>;
         }
 
         if (this.props.successors && this.props.successors.length > 0) {
             debugger;
-            successorsIcon = <div>S</div>;
+            successorsIcon = <PredecessorSuccessorIcon isSuccessor={true} workItems={this.props.successors} onClick={this.props.onClick}/>;
         }
 
         const item = (
