@@ -8,12 +8,15 @@ import { saveSettings } from "../../../Common/redux/modules/SettingsState/Settin
 import { LaunchWorkItemFormActionType } from "../../../Common/redux/actions/launchWorkItemForm";
 import { launchWorkItemFormSaga } from "./launchWorkItemFromSaga";
 import { ClearOverrideIterationType } from "../../../Common/redux/modules/OverrideIterations/overrideIterationsActions";
+import { StartUpdateWorkitemIterationActionType } from "../../../Common/redux/actions/StartUpdateWorkitemIterationAction";
+import { updateWorkItemIteration } from "../../../Common/redux/sagas/updateWorkItemIterationListner";
 
 export function* watchEpicRoadmapSagaActions() {
     yield takeEvery(ClearOverrideIterationType, launchClearOverrideIteration);
     yield takeEvery(OverrideIterationEndType, launchOverrideWorkItemIteration);
     yield takeEvery(SaveOverrideIterationActionType, launchSaveOverrideIteration);   
     yield takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga); 
+    yield takeEvery(StartUpdateWorkitemIterationActionType, updateWorkItemIteration);
 
     yield takeLatest(DisplayAllIterationsActionType, saveDisplayOptions, "EpicRoadmap");
     yield takeLatest(ShiftDisplayIterationLeftActionType, saveDisplayOptions, "EpicRoadmap");
