@@ -256,9 +256,6 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         }
 
         if (this.props.successors && this.props.successors.length > 0) {
-            if(this.props.successors.some(w => !w)) {
-                debugger;
-            }
             successorsIcon = <PredecessorSuccessorIcon isSuccessor={true} workItems={this.props.successors} onClick={this.props.onClick}/>;
         }
 

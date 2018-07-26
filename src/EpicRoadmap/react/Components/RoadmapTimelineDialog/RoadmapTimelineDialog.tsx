@@ -118,8 +118,8 @@ export class RoadmapTimelineDialog extends React.Component<IRoadmapTimelineDialo
     }
 
     private _onClear = () => {
-        this.props.closeDetails(this._getId());
         this.props.clearOverrideIteration(this._getId());
+        this.props.closeDetails(this._getId());
     }
 
     private _getId = () => {
