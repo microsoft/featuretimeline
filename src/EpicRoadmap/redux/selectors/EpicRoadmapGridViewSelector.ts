@@ -65,7 +65,6 @@ export function getEpicRoadmapGridView(
         };
     }
 
-    debugger;
     const {
         backlogFields: {
             typeFields

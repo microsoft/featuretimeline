@@ -5,6 +5,7 @@ import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import './PredecessorSuccessorIcon.scss';
 import { Callout } from 'office-ui-fabric-react/lib/Callout';
 import { Label } from 'office-ui-fabric-react/lib/Label';
+import { SimpleWorkItem } from '../WorkItem/SimpleWorkItem';
 
 export interface IPredecessorSuccessorIconProps {
     id: number;
@@ -72,10 +73,10 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
 
     private _renderWorkItem = (workItem: WorkItem) => {
         return (
-            <div className="work-item-link-container">
-                <div className="work-item-link-id">{workItem.id}</div>
-                <Link className="work-item-link-title" href="#" onClick={() => this.props.onShowWorkItem(workItem.id)}>{workItem.fields["System.Title"]}</Link>
-            </div>
+            <SimpleWorkItem
+                workItem={workItem}
+                onShowWorkItem={this.props.onShowWorkItem}
+            />
         );
     }
 }

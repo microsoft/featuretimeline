@@ -8,10 +8,13 @@ import { UIStatus } from '../../../Common/redux/Contracts/types';
 import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { IEpicRoadmapState } from '../../redux/contracts';
 import configureEpicRoadmapStore from '../../redux/EpicRoadmapStore';
-import { uiStateSelector } from '../../redux/selectors/uiStateSelector';
+import { uiStateSelector, outOfScopeWorkItems } from '../../redux/selectors/uiStateSelector';
 import { EpicRoadmapGrid } from './EpicRoadmapGrid';
 import { EpicSelector } from './EpicSelector';
 import './EpicRoadmapView.scss';
+import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
+import { SimpleWorkItem } from '../../../Common/react/Components/WorkItem/SimpleWorkItem';
 
 initializeIcons(/* optional base url */);
 
@@ -19,6 +22,8 @@ export interface IEpicRoadmapViewProps {
     projectId: string;
     teamId: string;
     uiState: UIStatus;
+    outOfScopeWorkItems: WorkItem[];
+    launchWorkItemForm: (id: number) => void;
 }
 
 
@@ -57,6 +62,29 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
                 {"No in-progress Features for the timeline."}
             </MessageBar>);
         }
+
+        if (uiState === UIStatus.OutofScopeTeamIterations) {
+
+            return (
+                <MessageBar
+                    messageBarType={MessageBarType.severeWarning}
+                    isMultiline={true}
+                >
+                    <div>{"Following Work Items are in iterations that the current team does not subscribe to."}</div>
+                    <div>
+                        {
+                            this.props.outOfScopeWorkItems.map(w =>
+                                <SimpleWorkItem
+                                    workItem={w}
+                                    onShowWorkItem={this.props.launchWorkItemForm}
+                                />
+                            )
+                        }
+                    </div>
+                </MessageBar>
+            );
+        }
+
         return (
             <div className="epic-container">
                 <EpicSelector
@@ -74,12 +102,24 @@ const makeMapStateToProps = () => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
-            uiState: uiStateSelector(state)
+            uiState: uiStateSelector(state),
+            outOfScopeWorkItems: outOfScopeWorkItems(state)
         }
     }
 }
 
-export const ConnectedEpicRoadmapViewContent = connect(makeMapStateToProps)(EpicRoadmapViewContent);
+const mapDispatchToProps = () => {
+    return (dispatch) => {
+        return {
+            launchWorkItemForm: (id) => {
+                if (id) {
+                    dispatch(launchWorkItemForm(id));
+                }
+            }
+        }
+    }
+}
+export const ConnectedEpicRoadmapViewContent = connect(makeMapStateToProps, mapDispatchToProps)(EpicRoadmapViewContent);
 
 export const EpicRoadmapView = () => {
     const initialState: IEpicRoadmapState = {

@@ -10,7 +10,7 @@ export function getEpicDependenciesLinks(state: IEpicRoadmapState) {
     return state.workItemsState.dependencies;
 }
 
-function getPagedWorkItems(state: IEpicRoadmapState) {
+export function getPagedWorkItems(state: IEpicRoadmapState) {
     return state.workItemsState.pagedWorkItems;
 }
 
