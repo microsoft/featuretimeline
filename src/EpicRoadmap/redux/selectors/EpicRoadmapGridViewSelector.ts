@@ -65,6 +65,7 @@ export function getEpicRoadmapGridView(
         };
     }
 
+    debugger;
     const {
         backlogFields: {
             typeFields
@@ -154,8 +155,9 @@ function _getGridItems(
         let workItemStartRow = teamGroupStartRow;
         const childItems = orderedWorkItems.map(workItem => {
             const { iterationDuration: { startIteration, endIteration } } = workItem;
-            let startIterationIndex = teamIterations.findIndex(di => di.id === startIteration.id);
-            let endIterationIndex = teamIterations.findIndex(di => di.id === endIteration.id);
+            const iterationsForIndex = isSubGrid ? displayIterations : teamIterations;
+            let startIterationIndex = iterationsForIndex.findIndex(di => di.id === startIteration.id);
+            let endIterationIndex = iterationsForIndex.findIndex(di => di.id === endIteration.id);
             let crop: CropWorkItem = CropWorkItem.None;
             let outofScope = false;
             if (iterationDisplayOptions) {
