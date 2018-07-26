@@ -9,7 +9,7 @@ export default function configureFeatureTimelineStore(
 ): Store<IFeatureTimelineRawState> {
 
     const sagaMonitor = window["__SAGA_MONITOR_EXTENSION__"] || undefined;
-    const sagaMiddleWare = createSagaMiddleware(sagaMonitor);
+    const sagaMiddleWare = createSagaMiddleware({sagaMonitor});
     const middleware = applyMiddleware(sagaMiddleWare, trackActions);
 
     // Setup for using the redux dev tools in chrome 

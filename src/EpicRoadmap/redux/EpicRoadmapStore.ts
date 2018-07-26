@@ -20,7 +20,7 @@ export default function configureEpicRoadmapStore(
 ): Store<IEpicRoadmapState> {
 
     const sagaMonitor = window["__SAGA_MONITOR_EXTENSION__"] || undefined;
-    const sagaMiddleWare = createSagaMiddleware(sagaMonitor);
+    const sagaMiddleWare = createSagaMiddleware({sagaMonitor});
     const middleware = applyMiddleware(sagaMiddleWare);
 
     // Setup for using the redux dev tools in chrome 
