@@ -30,7 +30,7 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
     }
     public render() {
         const icon = this.props.hasSuccessors ? "bowtie-navigate-forward-circle" : "bowtie-navigate-back-circle";
-        const highlight = this.props.isHighlighted ? "highlight" : "";
+        const highlight = this.props.isHighlighted ? "highlight-icon" : "";
 
         return (
             <div className={css("bowtie-icon", icon, "successor-predeccessor", highlight)} onClick={this._toggleCallout} ref={div => (this._containerDiv = div)}>
