@@ -43,8 +43,9 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
             );
         }
 
+        let contents = null;
         if (uiState === UIStatus.NoTeamIterations) {
-            return (
+            contents = (
                 <MessageBar
                     messageBarType={MessageBarType.error}
                     isMultiline={false}
@@ -55,17 +56,19 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
         }
 
         if (uiState === UIStatus.NoWorkItems) {
-            return (<MessageBar
-                messageBarType={MessageBarType.info}
-                isMultiline={false}
-            >
-                {"No in-progress Features for the timeline."}
-            </MessageBar>);
+            contents = (
+                <MessageBar
+                    messageBarType={MessageBarType.info}
+                    isMultiline={false}
+                >
+                    {"No in-progress Features for the timeline."}
+                </MessageBar>
+            );
         }
 
         if (uiState === UIStatus.OutofScopeTeamIterations) {
 
-            return (
+            contents = (
                 <MessageBar
                     messageBarType={MessageBarType.severeWarning}
                     isMultiline={true}
@@ -85,12 +88,16 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
             );
         }
 
+        if (uiState === UIStatus.Default) {
+            contents = <EpicRoadmapGrid />;
+        }
+
         return (
             <div className="epic-container">
                 <EpicSelector
                     projectId={this.props.projectId}
                     teamId={this.props.teamId} />
-                <EpicRoadmapGrid />
+                {contents}
             </div>
         );
     }
