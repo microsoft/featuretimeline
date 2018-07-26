@@ -31,17 +31,15 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
     public render() {
         const icon = this.props.hasSuccessors ? "bowtie-navigate-forward-circle" : "bowtie-navigate-back-circle";
         const highlight = this.props.isHighlighted ? "highlight" : "";
-        if(this.props.isHighlighted) {
-            debugger;
-        }
+
         return (
             <div className={css("bowtie-icon", icon, "successor-predeccessor", highlight)} onClick={this._toggleCallout} ref={div => (this._containerDiv = div)}>
-                {this._renderPanel()}
+                {this._renderCallout()}
             </div>
         );
     }
 
-    private _renderPanel() {
+    private _renderCallout() {
         if (!this.state || !this.state.isCalloutVisible || !this._containerDiv) {
             return null;
         }
