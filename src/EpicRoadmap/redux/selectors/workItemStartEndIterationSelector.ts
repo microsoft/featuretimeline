@@ -56,8 +56,20 @@ export function getWorkItemIterationDuration(
         // 1. choose overriddenIteration if provided
         const overriddenIteration = overriddenIterations[workItemId];
         if (overriddenIteration) {
-            const startIteration = teamIterations.find(i => i.id === overriddenIteration.startIterationId);
-            const endIteration = teamIterations.find(i => i.id === overriddenIteration.endIterationId);
+            let startIteration = null;
+            let endIteration = null;
+
+            if (overriddenIteration.startIterationId === backlogIteration.id) {
+                startIteration = backlogIteration;
+            } else {
+                startIteration = teamIterations.find(i => i.id === overriddenIteration.startIterationId);
+            }
+
+            if (overriddenIteration.endIterationId === backlogIteration.id) {
+                endIteration = backlogIteration;
+            } else {
+                endIteration = teamIterations.find(i => i.id === overriddenIteration.endIterationId);
+            }
 
             result[workItemId] = {
                 startIteration,
@@ -84,7 +96,7 @@ export function getWorkItemIterationDuration(
             let endIndexByChildren = startIndexByPredecessors;
             let kind = IterationDurationKind.Predecessors;
             children
-                .filter(c => result[c].kind !== IterationDurationKind.BacklogIteration)
+                .filter(c => result[c].startIteration && result[c].endIteration && result[c].kind !== IterationDurationKind.BacklogIteration)
                 .forEach(c => {
                     const childStart = teamIterations.findIndex(i => i.id === result[c].startIteration.id);
                     const childEnd = teamIterations.findIndex(i => i.id === result[c].endIteration.id);
