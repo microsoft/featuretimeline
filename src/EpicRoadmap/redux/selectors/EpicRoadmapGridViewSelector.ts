@@ -46,7 +46,7 @@ export function getEpicRoadmapGridView(
     uiStatus: UIStatus,
     isSubGrid: boolean,
 ): IEpicRoadmapGridView {
-    if (uiStatus !== UIStatus.Default) {
+    if (uiStatus !== UIStatus.Default && uiStatus !== UIStatus.OutofScopeTeamIterations ) {
         return {
             teamFieldDisplayItems: [],
             workItems: [],

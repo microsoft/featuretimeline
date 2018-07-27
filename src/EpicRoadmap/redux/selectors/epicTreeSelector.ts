@@ -3,32 +3,45 @@ import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { backlogConfigurationForProjectSelector } from '../modules/backlogconfiguration/backlogconfigurationselector';
 import { BacklogConfiguration, BacklogLevelConfiguration } from 'TFS/Work/Contracts';
 import { getEpicHierarchyLinks, pagedWorkItemsMapSelector } from './workItemSelector';
+import { outOfScopeWorkItems } from './uiStateSelector';
 export interface IEpicTree {
     parentToChildrenMap: IDictionaryNumberTo<number[]>;
     childToParentMap: IDictionaryNumberTo<number>;
 }
-const rawEpicTreeSelector = createSelector(getEpicHierarchyLinks, createRawEpicTree);
-export function createRawEpicTree(links: WorkItemLink[]) {
+const rawEpicTreeSelector = createSelector(
+    getEpicHierarchyLinks,
+    outOfScopeWorkItems,
+    createRawEpicTree);
+export function createRawEpicTree(
+    links: WorkItemLink[],
+    outOfScopeWorkItems: WorkItem[]
+) {
     const epicTree: IEpicTree = {
         parentToChildrenMap: {},
         childToParentMap: {}
     };
     links = links || [];
+    const outOfScopeWorkItemsSet = new Set();
+    outOfScopeWorkItems.forEach(w => outOfScopeWorkItemsSet.add(w.id));
+
     // target is child and source is parent
     links.reduce((epicTree, link) => {
         const childId = link.target ? link.target.id : 0;
         const parentId = link.source ? link.source.id : 0;
-        const { childToParentMap, parentToChildrenMap } = epicTree;
-        childToParentMap[childId] = parentId;
-        if (!parentToChildrenMap[parentId]) {
-            parentToChildrenMap[parentId] = [];
+        // Exclude work items not in iterations subscribed by the team
+        if (!outOfScopeWorkItemsSet.has(childId) && !outOfScopeWorkItemsSet.has(parentId)) {
+            const { childToParentMap, parentToChildrenMap } = epicTree;
+            childToParentMap[childId] = parentId;
+            if (!parentToChildrenMap[parentId]) {
+                parentToChildrenMap[parentId] = [];
+            }
+            parentToChildrenMap[parentId].push(childId);
         }
-        parentToChildrenMap[parentId].push(childId);
         return epicTree;
     }, epicTree);
     return epicTree;
 }
-export const normalizedEpicTreeSelector = createSelector(backlogConfigurationForProjectSelector, pagedWorkItemsMapSelector, rawEpicTreeSelector, createNormalizedEpicTree);
+export const normalizedEpicTreeSelector = createSelector(backlogConfigurationForProjectSelector, pagedWorkItemsMapSelector, rawEpicTreeSelector as any, createNormalizedEpicTree);
 /**
  * Gets a map of WorkItemTypeName to its rank in backlog configuration
  */

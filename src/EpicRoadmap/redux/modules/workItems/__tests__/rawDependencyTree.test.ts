@@ -17,7 +17,7 @@ function successorPredecessor(source: number, target: number) {
 test("validate createRawDependencyTree", () => {
     // Test empty links
     let links: WorkItemLink[] = [];
-    expect(createRawDependencyTree(links))
+    expect(createRawDependencyTree(links, []))
         .toEqual({
             ptos: {},
             stop: {}
@@ -27,7 +27,7 @@ test("validate createRawDependencyTree", () => {
         successorPredecessor(1, 2),
         successorPredecessor(3, 2),
         successorPredecessor(4, 3)];
-    expect(createRawDependencyTree(links)).toEqual({
+    expect(createRawDependencyTree(links, [])).toEqual({
         ptos: { 2: [1, 3], 3: [4] },
         stop: { 1: [2], 3: [2], 4: [3] }
     });

@@ -15,6 +15,7 @@ import './EpicRoadmapView.scss';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
 import { SimpleWorkItem } from '../../../Common/react/Components/WorkItem/SimpleWorkItem';
+import { Callout } from 'office-ui-fabric-react/lib/Callout';
 
 initializeIcons(/* optional base url */);
 
@@ -26,12 +27,19 @@ export interface IEpicRoadmapViewProps {
     launchWorkItemForm: (id: number) => void;
 }
 
+export interface IEpicRoadmapViewContentState {
+    showCallout: boolean
+}
+class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpicRoadmapViewContentState> {
+    constructor(props, context) {
+        super(props, context);
 
-class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> {
-    constructor() {
-        super();
+        this.state = {
+            showCallout: false
+        }
     }
 
+    private _calloutContainer: HTMLDivElement;
     public render(): JSX.Element {
         const {
             uiState,
@@ -66,49 +74,79 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
             );
         }
 
+        let additionalMessage = null;
         if (uiState === UIStatus.OutofScopeTeamIterations) {
-            const {
-                outOfScopeWorkItems
-            } = this.props;
-
-            const uniqueIterations = new Set();
-            outOfScopeWorkItems.forEach(w => uniqueIterations.add(w.fields["System.IterationPath"]));
-
-            const iterations = Array.from(uniqueIterations).sort();
-
-            contents = (
+            const style = {cursor: "pointer"};
+            additionalMessage = (
                 <MessageBar
                     messageBarType={MessageBarType.severeWarning}
                     isMultiline={true}
-                >
-                    <div>{"Some Work Items are in iterations that the current team does not subscribe to."}</div>
-                    <div>{"Please subscribe to following iterations to continue."}</div>
-                    {
-                        iterations.map(i => <div className="missing-iteration-name">{i}</div>)
-                    }
-                    <div className="simple-work-item-list">
-                        {
-                            outOfScopeWorkItems.map(w =>
-                                <SimpleWorkItem
-                                    workItem={w}
-                                    onShowWorkItem={this.props.launchWorkItemForm}
-                                />
-                            )
-                        }
-                    </div>
+                    onClick={this._toggleCallout}
+                >                 
+                    <div style={style} ref={ref => this._calloutContainer = ref} onClick={this._toggleCallout}>{"Some Work Items are excluded as they are in iterations that the current team does not subscribe to."}</div>
                 </MessageBar>
             );
         }
 
-        if (uiState === UIStatus.Default) {
+        if (uiState === UIStatus.Default || uiState === UIStatus.OutofScopeTeamIterations) {
             contents = <EpicRoadmapGrid />;
+        }
+
+        let callout = null;
+        if (this.state.showCallout) {
+            callout = this._renderCallout();
         }
 
         return (
             <div className="epic-container">
                 <EpicSelector />
+                {additionalMessage}
+                {callout}
                 {contents}
             </div>
+        );
+    }
+
+    private _toggleCallout = () => {
+        this.setState({
+            showCallout: !this.state.showCallout
+        })
+    }
+
+    private _renderCallout = () => {
+        if (!this._calloutContainer) {
+            return;
+        }
+        const {
+            outOfScopeWorkItems
+        } = this.props;
+
+        const uniqueIterations = new Set();
+        outOfScopeWorkItems.forEach(w => uniqueIterations.add(w.fields["System.IterationPath"]));
+
+        const iterations = Array.from(uniqueIterations).sort();
+        return (
+            <Callout
+                className="work-item-links-list-callout"
+                target={this._calloutContainer}
+                onDismiss={this._toggleCallout}
+                isBeakVisible={true}
+            >
+                <div>{"Please subscribe to following iterations to include these workitems."}</div>
+                {
+                    iterations.map(i => <div className="missing-iteration-name">{i}</div>)
+                }
+                <div className="simple-work-item-list">
+                    {
+                        outOfScopeWorkItems.map(w =>
+                            <SimpleWorkItem
+                                workItem={w}
+                                onShowWorkItem={this.props.launchWorkItemForm}
+                            />
+                        )
+                    }
+                </div>
+            </Callout>
         );
     }
 }
