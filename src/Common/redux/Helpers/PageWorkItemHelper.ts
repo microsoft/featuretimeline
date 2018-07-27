@@ -10,6 +10,7 @@ export class PageWorkItemHelper {
      */
     public static pageWorkItems(ids: number[], projectName?: string, fields?: string[]): IPromise<WorkItem[]> {
         const pwh = PageWorkItemHelper;
+        fields = fields.filter(f => !!f);
 
         // Calculate length of the field query parameter
         const fieldLength = fields ? `&fields=${fields.join("%2C")}`.length : 0;
