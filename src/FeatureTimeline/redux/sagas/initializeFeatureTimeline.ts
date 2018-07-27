@@ -1,3 +1,5 @@
+import { escapeStr } from '../../../Common/redux/Helpers/escape';
+
 import { all, call, put, select } from 'redux-saga/effects';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
@@ -194,14 +196,14 @@ function getBacklogLevelQueryWiql(
 
     const currentBacklogLevel = backlogConfig.portfolioBacklogs[0];
     const orderField = backlogConfig.backlogFields.typeFields["Order"];
-    const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${w.name}'`).join(",");
+    const workItemTypes = currentBacklogLevel.workItemTypes.map(w => `'${escapeStr(w.name)}'`).join(",");
 
     let backlogIteration = teamSettings.backlogIteration.path || teamSettings.backlogIteration.name;
     if (backlogIteration[0] === "\\") {
         const webContext = VSS.getWebContext();
         backlogIteration = webContext.project.name + backlogIteration;
     }
-    backlogIteration = _escape(backlogIteration);
+    backlogIteration = escapeStr(backlogIteration);
 
     const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfig.workItemTypeMappedStates
         .filter(wtms => currentBacklogLevel.workItemTypes.some(wit => wit.name.toLowerCase() === wtms.workItemTypeName.toLowerCase()));
@@ -209,11 +211,11 @@ function getBacklogLevelQueryWiql(
         .map(si => {
             const states = Object.keys(si.states)
                 .filter(state => si.states[state] === stateCategory)
-                .map(state => _escape(state))
+                .map(state => escapeStr(state))
                 .join("', '");
 
             return `(
-                             [System.WorkItemType] = '${_escape(si.workItemTypeName)}'
+                             [System.WorkItemType] = '${escapeStr(si.workItemTypeName)}'
                              AND [System.State] IN ('${states}')
                             )`;
         })
@@ -222,7 +224,7 @@ function getBacklogLevelQueryWiql(
     const teamFieldClause = teamFieldValues.values
         .map((tfValue) => {
             const operator = tfValue.includeChildren ? "UNDER" : "=";
-            return `[${_escape(teamFieldValues.field.referenceName)}] ${operator} '${_escape(tfValue.value)}'`;
+            return `[${escapeStr(teamFieldValues.field.referenceName)}] ${operator} '${escapeStr(tfValue.value)}'`;
         })
         .join(" OR ");
 
@@ -235,10 +237,6 @@ function getBacklogLevelQueryWiql(
                         ${extraCondition || ""}
                         ORDER BY [${orderField}] ASC,[System.Id] ASC`;
     return wiql;
-}
-
-function _escape(value: string): string {
-    return value.replace("'", "''");
 }
 
 // function _isInProgress(workItem: WitContracts.WorkItem, backlogConfig: Contracts.BacklogConfiguration) {
@@ -288,10 +286,10 @@ async function _runChildWorkItemQuery(
     const workItemTypeAndStatesClause = stateInfo
         .map(si => {
             const states = Object.keys(si.states).filter(state => si.states[state] !== "Removed")
-                .map(state => _escape(state))
+                .map(state => escapeStr(state))
                 .join("', '");
             return `(
-                Target.[System.WorkItemType] = '${_escape(si.workItemTypeName)}'
+                Target.[System.WorkItemType] = '${escapeStr(si.workItemTypeName)}'
                              AND Target.[System.State] IN ('${states}')
                             )`;
         }).join(" OR ");

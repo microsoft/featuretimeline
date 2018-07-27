@@ -9,6 +9,7 @@ import { IWorkItemMetadataAwareState } from "./modules/workItemMetadata/workItem
 import { IEpicRoadmapWorkItemAwareState } from './modules/workItems/workItemContracts';
 import { IShowWorkItemInfoAwareState } from "../../Common/redux/modules/ShowHideDetails/ShowHideDetailsContracts";
 import { IHighlightDependenciesAwareState } from "../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule";
+import { IEpicsAvailableAwareState } from "./modules/EpicsAvailable/EpicsAvailable";
 
 export interface IEpicRoadmapState extends
     IProjectBacklogConfigurationAwareState,
@@ -22,5 +23,8 @@ export interface IEpicRoadmapState extends
     IProgressAwareState,
     IWorkItemOverrideIterationAwareState,
     IShowWorkItemInfoAwareState,
-    IHighlightDependenciesAwareState {
+    IHighlightDependenciesAwareState,
+    IEpicsAvailableAwareState {
 }
+
+export const EpicsMetadataAvailable = "EpicsMetadataAvailable";

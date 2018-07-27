@@ -61,7 +61,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
                     messageBarType={MessageBarType.info}
                     isMultiline={false}
                 >
-                    {"No in-progress Features for the timeline."}
+                    {"Select an Epic."}
                 </MessageBar>
             );
         }
@@ -94,9 +94,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
 
         return (
             <div className="epic-container">
-                <EpicSelector
-                    projectId={this.props.projectId}
-                    teamId={this.props.teamId} />
+                <EpicSelector />
                 {contents}
             </div>
         );

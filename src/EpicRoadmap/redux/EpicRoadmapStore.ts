@@ -11,10 +11,11 @@ import { teamIterationsReducer } from './modules/teamIterations/teamIterationRed
 import { teamSettingsReducer } from './modules/teamsettings/teamsettingsreducer';
 import { workItemMetadataReducer } from './modules/workItemMetadata/workItemMetadataReducer';
 import { workItemsReducer } from './modules/workItems/workItemReducer';
-import { fetchEpicRoadmap } from './sagas/fetchEpicRoadmapSaga';
 import { showHideDetailsReducer } from '../../Common/redux/modules/ShowHideDetails/ShowHideDetailsReducer';
 import { watchEpicRoadmapSagaActions } from './sagas/watchEpicRoadmapSagaActions';
 import { highlightDependencyReducer } from '../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule';
+import { FetchAllMetadata } from './sagas/FetchAllMetadata';
+import { epicsAvailableReducer } from './modules/EpicsAvailable/EpicsAvailable';
 
 export default function configureEpicRoadmapStore(
     initialState: IEpicRoadmapState
@@ -40,7 +41,8 @@ export default function configureEpicRoadmapStore(
         progress: progressAwareReducer,
         workItemOverrideIteration: overrideIterationProgressReducer,
         workItemsToShowInfoFor: showHideDetailsReducer,
-        highlightedDependency: highlightDependencyReducer        
+        highlightedDependency: highlightDependencyReducer  ,
+        epicsAvailableState: epicsAvailableReducer      
     });
 
 
@@ -50,11 +52,7 @@ export default function configureEpicRoadmapStore(
         composeEnhancers(middleware));
 
     sagaMiddleWare.run(watchEpicRoadmapSagaActions);
-
-    //TODO: User MRU or select
-    sagaMiddleWare.run(fetchEpicRoadmap, 10);
-
-
+    sagaMiddleWare.run(FetchAllMetadata);
     return store;
 }
 

@@ -3,7 +3,7 @@ import { IEpicRoadmapState } from "../contracts";
 import { UIStatus } from "../../../Common/redux/Contracts/types";
 import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";
 import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { pagedWorkItemsMapSelector, getPagedWorkItems } from "./workItemSelector";
+import { getPagedWorkItems } from "./workItemSelector";
 import { WorkItem } from "TFS/WorkItemTracking/Contracts";
 import { backogIterationsSelector } from "../modules/teamsettings/teamsettingsselector";
 export function getEpicRoadmapState(state: IEpicRoadmapState) {

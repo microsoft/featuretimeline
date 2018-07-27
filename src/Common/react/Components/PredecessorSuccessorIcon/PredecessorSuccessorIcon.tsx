@@ -1,5 +1,4 @@
 import { css } from '@uifabric/utilities/lib';
-import { Link } from 'office-ui-fabric-react/lib/Link';
 import * as React from 'react';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import './PredecessorSuccessorIcon.scss';

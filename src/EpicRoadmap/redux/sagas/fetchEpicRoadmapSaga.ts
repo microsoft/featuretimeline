@@ -1,44 +1,29 @@
-import { all, call, put, select } from "redux-saga/effects";
+import { call, put, select } from "redux-saga/effects";
 import { BacklogConfiguration } from 'TFS/Work/Contracts';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
+import { ActionWithPayload } from "../../../Common/redux/Helpers/ActionHelper";
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
 import { restoreOverriddenIterations } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationsSaga';
-import { getProjectId, getTeamId } from '../../../Common/redux/Selectors/CommonSelectors';
+import { ProgressAwareActionCreator } from "../../../Common/redux/modules/ProgressAwareState/ProgressAwareStateActions";
+import { getProjectId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
-import { fetchBacklogConfiguration } from "./fetchBacklogConfigurationSaga";
-import { fetchTeamIterations, fetchTeamSettings } from './fetchTeamSettingsSaga';
+import { getCommonFields } from "./getCommonFields";
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
-import { ProgressAwareActionCreator } from "../../../Common/redux/modules/ProgressAwareState/ProgressAwareStateActions";
-import { workItemStateColorsReceived, workItemTypesReceived } from "../modules/workItemMetadata/workItemMetadataActionCreators";
-import { WorkItemMetadataService } from "../../../Services/WorkItemMetadataService";
-import { restoreSettings } from "../../../Common/redux/modules/SettingsState/SettingsStateSagas";
-import { fetchIterationDisplayOptions } from "../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSaga";
 
-export function* fetchEpicRoadmap(epicId: number) {
+export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic", number>) {
     try {
-        yield put(ProgressAwareActionCreator.setLoading(true));
         const projectId = getProjectId();
-        const teamId = getTeamId();
-        // get backlog configuration/ team settings and backlog iteration for the project/current team
-        yield all([fetchBacklogConfiguration(), fetchTeamIterations(), fetchTeamSettings(),  restoreSettings("EpicRoadmap"), fetchIterationDisplayOptions(teamId, "EpicRoadmap")]);
+        yield put(ProgressAwareActionCreator.setLoading(true));
         const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
 
-        // const portfolioBacklogs = backlogconfiguration.portfolioBacklogs;
-        // const requiermentBacklog = backlogconfiguration.requirementBacklog;
-
-        // const featureTypes = portfolioBacklogs[0].workItemTypes;
-        // const storyTypes = requiermentBacklog.workItemTypes;
-        const stackRankFieldRefName = backlogConfiguration.backlogFields.typeFields["Order"];
-        const effortsFieldRefName = backlogConfiguration.backlogFields.typeFields["Effort"];
-        const teamFieldRefName = backlogConfiguration.backlogFields.typeFields["Team"];
 
         // get all children including grand children
         // Target is child and source is parent
         const parentChildWiql = `SELECT [System.Id] 
                 FROM WorkItemLinks 
-                WHERE (Source.[System.Id] IN(${ epicId}) )
+                WHERE (Source.[System.Id] IN(${ action.payload}) )
                     AND [System.Links.LinkType] IN ('System.LinkTypes.Hierarchy-Forward')
                     AND Target.[System.WorkItemType] <> '' mode(Recursive)`;
 
@@ -62,44 +47,13 @@ export function* fetchEpicRoadmap(epicId: number) {
 
         // check if there are any dependencies that are cross epic, if any filter them out and show message
         // const crossEpicDependencies = predecessorWorkItemIds.filter(pwit => !workItemIds.some(w => w === pwit));
-
-        const fields = ["System.Id",
-            "System.Title",
-            "System.AssignedTo",
-            "System.State",
-            "System.IterationId",
-            "System.IterationPath",
-            "System.WorkItemType",
-            stackRankFieldRefName,
-            effortsFieldRefName,
-            teamFieldRefName];
+        const fields = getCommonFields(backlogConfiguration);
 
         const pagedWorkItems: WitContracts.WorkItem[] = yield call(PageWorkItemHelper.pageWorkItems, workItemIds.concat(predecessorWorkItemIds), projectId, fields);
         yield put(WorkItemsActionCreator.pagedWorkItemsReceived(pagedWorkItems));
 
-        // LATER: check if there are any dependencies that are cross project, if any filter them out and show message
-
         // Fetch overridden iteration start/end dates
         yield call(restoreOverriddenIterations);
-
-        // For now show only lowest level of portfolio backlog
-        const workItemTypeNames = [];
-        backlogConfiguration.portfolioBacklogs.reduce((workItemTypeNames, backlog) => {
-            workItemTypeNames.push(...backlog.workItemTypes.map(w => w.name));
-            return workItemTypeNames;
-        }, workItemTypeNames);
-
-        workItemTypeNames.push(...backlogConfiguration.requirementBacklog.workItemTypes.map(w => w.name));
-        const metadataService = WorkItemMetadataService.getInstance();
-        const [stateColors, wits] = yield all(
-            [
-                call([metadataService, metadataService.getStates], projectId, workItemTypeNames),
-                call(metadataService.getWorkItemTypes.bind(metadataService), projectId)
-            ]);
-
-
-        yield put(workItemTypesReceived(projectId, wits));
-        yield put(workItemStateColorsReceived(projectId, stateColors));
 
         yield put(ProgressAwareActionCreator.setLoading(false));
     }
