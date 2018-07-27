@@ -438,6 +438,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                             { key: '90', text: 'Last 90 days' },
                             { key: '120', text: 'Last 120 days' },
                             { key: '180', text: 'Last 180 days' },
+                            { key: '365', text: 'Last 1 year' },
+                            { key: '9999', text: 'Forever (Slow)'}
                         ]
                     }
                     onChanged={this._onShowClosedSinceChanged}

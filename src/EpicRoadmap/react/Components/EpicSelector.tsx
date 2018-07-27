@@ -7,7 +7,6 @@ import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { selectEpic } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
 import { IEpicRoadmapState } from '../../redux/contracts';
 import './EpicSelector.scss';
-import { Label } from 'office-ui-fabric-react/lib/Label';
 
 export interface IEpicSelectorProps {
     selectedId: number;
