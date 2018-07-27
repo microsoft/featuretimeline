@@ -11,6 +11,7 @@ export interface IPredecessorSuccessorIconProps {
     workItems: WorkItem[];
     hasSuccessors: boolean;
     isHighlighted: boolean;
+    teamFieldName: string;
     onShowWorkItem: (id: number) => void;
     onHighlightDependencies: (id: number, highlightSuccessor: boolean) => void;
     onDismissDependencies: () => void;
@@ -43,7 +44,28 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
         if (!this.state || !this.state.isCalloutVisible || !this._containerDiv) {
             return null;
         }
-        const items = this.props.workItems.map(this._renderWorkItem);
+        const filteredItems = this.props.workItems
+            .filter(w => !!w);
+
+        const itemsByTeamField = filteredItems.reduce((map, w) => {
+            const value = this._getSimpleTeamFieldName(w.fields[this.props.teamFieldName]);
+            if (!map[value]) {
+                map[value] = [];
+            }
+            map[value].push(w);
+            return map;
+        }, {});
+
+        let items = [];
+        Object.keys(itemsByTeamField)
+            .sort()
+            .forEach(teamField => {
+                debugger;
+                items.push(<div className="team-field-value">{teamField}</div>)
+                const workItems = itemsByTeamField[teamField];
+                items = items.concat(workItems.map(this._renderWorkItem))
+            });
+
         const label = <Label className="callout-title">{this.props.hasSuccessors ? "Successors" : "Predecessors"}</Label>
         return (
             <Callout
@@ -56,6 +78,12 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
                 {items}
             </Callout>
         )
+    }
+
+    private _getSimpleTeamFieldName = (teamField) => {
+        teamField = teamField || "";
+        const parts = teamField.split("\\");
+        return parts[parts.length - 1];
     }
 
     private _toggleCallout = () => {

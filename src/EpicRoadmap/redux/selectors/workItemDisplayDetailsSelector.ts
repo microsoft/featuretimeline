@@ -99,8 +99,8 @@ export function getWorkItemDisplayDetails(
             workItemStateColor,
             childrenWithNoEfforts,
             isComplete: stateCategory === StateCategory.Completed,
-            predecessors: (dependencyTree.stop[workItem.id] || []).map(i => pagedWorkItems[i]),
-            successors: (dependencyTree.ptos[workItem.id] || []).map(i => pagedWorkItems[i]),
+            predecessors: (dependencyTree.stop[workItem.id] || []).map(i => pagedWorkItems[i]).filter(w => !!w),
+            successors: (dependencyTree.ptos[workItem.id] || []).map(i => pagedWorkItems[i]).filter(w => !!w),
             highlighteSuccessorIcon,
             highlightPredecessorIcon
         };

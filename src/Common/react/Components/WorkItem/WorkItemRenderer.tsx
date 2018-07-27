@@ -33,7 +33,8 @@ export interface IWorkItemRendererProps {
     settingsState: ISettingsState;
     efforts: number;
     childrernWithNoEfforts: number;
-    isComplete: number;
+    isComplete: boolean;
+    teamFieldName: string;
 
     onClick: (id: number) => void;
 
@@ -91,7 +92,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             childrernWithNoEfforts,
             efforts,
             isSubGrid,
-            isComplete
+            isComplete,
+            teamFieldName
         } = this.props;
 
         const {
@@ -267,6 +269,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                     onHighlightDependencies={this.props.onHighlightDependencies}
                     onDismissDependencies={this.props.onDismissDependencies}
                     isHighlighted={this.props.highlighteSuccessorIcon}
+                    teamFieldName={teamFieldName}
                 />
             );
         }
@@ -281,6 +284,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                     onHighlightDependencies={this.props.onHighlightDependencies}
                     onDismissDependencies={this.props.onDismissDependencies}
                     isHighlighted={this.props.highlightPredecessorIcon}
+                    teamFieldName={teamFieldName}
                 />
             );
         }

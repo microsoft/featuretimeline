@@ -68,7 +68,7 @@ if (mode !== "development") {
 }
 module.exports = {
 	entry: {
-		featureTimeLIne: './src/FeatureTimeline/FeatureTimeline.tsx',
+		FeatureTimeline: './src/FeatureTimeline/FeatureTimeline.tsx',
 		EpicRoadmap: './src/EpicRoadmap/EpicRoadmap.tsx',
 	},
 	output: {

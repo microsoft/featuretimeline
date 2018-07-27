@@ -275,6 +275,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     highlighteSuccessorIcon={w.workItem.highlighteSuccessorIcon}
                     onHighlightDependencies={() => {}}
                     onDismissDependencies={() => {}}
+                    teamFieldName={"System.AreaPath"}
                 />
             );
         });

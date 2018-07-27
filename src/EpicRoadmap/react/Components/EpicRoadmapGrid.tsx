@@ -30,6 +30,7 @@ import { EpicRoadmapGridViewSelector, IEpicRoadmapGridView } from '../../redux/s
 import './EpicRoadmapGrid.scss';
 import { RoadmapTimelineDialog } from './RoadmapTimelineDialog/RoadmapTimelineDialog';
 import { HighlightDependenciesActionsCreator } from '../../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule';
+import { IWorkItemRendererProps } from '../../../Common/react/Components/WorkItem/WorkItemRenderer';
 
 export interface IEpicRoadmapGridContentProps {
     projectId: string;
@@ -37,6 +38,7 @@ export interface IEpicRoadmapGridContentProps {
     gridView: IEpicRoadmapGridView;
     rawState: IEpicRoadmapState,
     isSubGrid: boolean,
+    teamFieldName: string,
 
     launchWorkItemForm: (id: number) => void;
     showDetails: (id: number) => void;
@@ -112,35 +114,38 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
         const teamFieldCards = teamFieldDisplayItems.map(tfdi => <TeamFieldCard dimension={tfdi.dimension} teamField={tfdi.teamField} />);
 
         const workItemCells = workItems.filter(w => w.workItem.id).map(w => {
+            const props: IWorkItemRendererProps = {
+                id: w.workItem.id,
+                title: w.workItem.title,
+                color: w.workItem.color,
+                isRoot: w.workItem.isRoot,
+                iterationDuration: w.workItem.iterationDuration,
+                dimension: w.dimension,
+                onClick: this.props.launchWorkItemForm,
+                showInfoIcon: w.workItem.showInfoIcon,
+                showDetails: this.props.showDetails,
+                overrideIterationStart: this.props.overrideIterationStart,
+                overrideIterationEnd: this.props.overrideIterationEnd,
+                allowOverrideIteration: w.allowOverrideIteration,
+                isSubGrid: isSubGrid,
+                progressIndicator: w.progressIndicator,
+                crop: w.crop,
+                workItemStateColor: w.workItem.workItemStateColor,
+                settingsState: w.settingsState,
+                efforts: w.workItem.efforts,
+                childrernWithNoEfforts: w.workItem.childrenWithNoEfforts,
+                isComplete: w.workItem.isComplete,
+                successors: w.workItem.successors,
+                predecessors: w.workItem.predecessors,
+                highlightPredecessorIcon: w.workItem.highlightPredecessorIcon,
+                highlighteSuccessorIcon: w.workItem.highlighteSuccessorIcon,
+                onHighlightDependencies: this.props.onHighlightDependencies,
+                onDismissDependencies: this.props.onDismissDependencies,
+                teamFieldName: this.props.teamFieldName
+            }
             return (
                 <DraggableWorkItemRenderer
-                    id={w.workItem.id}
-                    title={w.workItem.title}
-                    color={w.workItem.color}
-                    isRoot={w.workItem.isRoot}
-                    iterationDuration={w.workItem.iterationDuration}
-                    dimension={w.dimension}
-                    onClick={id => this.props.launchWorkItemForm(id)}
-                    showInfoIcon={w.workItem.showInfoIcon}
-                    showDetails={id => this.props.showDetails(id)}
-                    overrideIterationStart={payload => this.props.overrideIterationStart(payload)}
-                    overrideIterationEnd={() => this.props.overrideIterationEnd()}
-                    allowOverrideIteration={w.allowOverrideIteration}
-                    isSubGrid={isSubGrid}
-                    progressIndicator={w.progressIndicator}
-                    crop={w.crop}
-                    workItemStateColor={w.workItem.workItemStateColor}
-                    settingsState={w.settingsState}
-                    efforts={w.workItem.efforts}
-                    childrernWithNoEfforts={w.workItem.childrenWithNoEfforts}
-                    isComplete={w.workItem.isComplete}
-                    successors={w.workItem.successors}
-                    predecessors={w.workItem.predecessors}
-                    highlightPredecessorIcon={w.workItem.highlightPredecessorIcon}
-                    highlighteSuccessorIcon={w.workItem.highlighteSuccessorIcon}
-                    onHighlightDependencies={this.props.onHighlightDependencies}
-                    onDismissDependencies={this.props.onDismissDependencies}
-
+                    {...props}
                 />
             );
         });
@@ -373,12 +378,14 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
 
 const makeMapStateToProps = () => {
     return (state: IEpicRoadmapState) => {
+        debugger;
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
             gridView: EpicRoadmapGridViewSelector(/* isSubGrid */false, /* rootWorkItemId */ state.settingsState.lastEpicSelected)(state), //TODO: This need to come from another selector which is populated by the dropdown
             rawState: state,
-            isSubGrid: false
+            isSubGrid: false,
+            teamFieldName: state.backlogConfigurations[getProjectId()].backlogFields.typeFields["Team"]
         }
     }
 }

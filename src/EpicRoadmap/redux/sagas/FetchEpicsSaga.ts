@@ -31,6 +31,7 @@ export function* FetchEpicsSaga() {
             return `(
                          [System.WorkItemType] = '${escapeStr(si.workItemTypeName)}'
                          AND [System.State] IN ('${states}')
+                         AND [System.TeamProject] = @project
                         )`;
         })
 
