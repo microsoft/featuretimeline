@@ -65,7 +65,7 @@ export function createNormalizedDependencyTree(
             const parentOfChildPredecessors = predecessorsOfChildren.map(poc => epicTree.childToParentMap[poc]);
             parentOfChildPredecessors.forEach(x => predecessorsSet.add(x));
         });
-        const predecessors = Array.from(predecessorsSet);
+        const predecessors = Array.from(predecessorsSet).filter(w => w !== workItemId);
         result.stop[workItemId] = predecessors;
         predecessors.forEach(p => {
             if (!result.ptos[p]) {

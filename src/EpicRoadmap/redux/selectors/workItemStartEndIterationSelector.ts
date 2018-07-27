@@ -71,10 +71,17 @@ export function getWorkItemIterationDuration(
                 endIteration = teamIterations.find(i => i.id === overriddenIteration.endIterationId);
             }
 
+            let kind = IterationDurationKind.UserOverridden;
+
+            if(!startIteration || !endIteration) {
+                startIteration = backlogIteration;
+                endIteration = backlogIteration;
+                kind= IterationDurationKind.FallbackBacklogIteration_IterationOutOfScope;
+            }
             result[workItemId] = {
                 startIteration,
                 endIteration,
-                kind: IterationDurationKind.UserOverridden,
+                kind,
                 overridedBy: overriddenIteration.user
             };
         } else {

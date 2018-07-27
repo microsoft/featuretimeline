@@ -376,7 +376,7 @@ const makeMapStateToProps = () => {
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),
-            gridView: EpicRoadmapGridViewSelector(/* isSubGrid */false, /* rootWorkItemId */ 10)(state), //TODO: This need to come from another selector which is populated by the dropdown
+            gridView: EpicRoadmapGridViewSelector(/* isSubGrid */false, /* rootWorkItemId */ state.settingsState.lastEpicSelected)(state), //TODO: This need to come from another selector which is populated by the dropdown
             rawState: state,
             isSubGrid: false
         }
