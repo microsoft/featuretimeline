@@ -1,5 +1,5 @@
 import { call, put, select } from "redux-saga/effects";
-import { BacklogConfiguration } from 'TFS/Work/Contracts';
+import { BacklogConfiguration, WorkItemTypeStateInfo } from 'TFS/Work/Contracts';
 import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { ActionWithPayload } from "../../../Common/redux/Helpers/ActionHelper";
@@ -11,12 +11,24 @@ import { backlogConfigurationForProjectSelector } from "../modules/backlogconfig
 import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
 import { getCommonFields } from "./getCommonFields";
 import WitContracts = require('TFS/WorkItemTracking/Contracts');
+import { escapeStr } from "../../../Common/redux/Helpers/escape";
 
 export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic", number>) {
     try {
         const projectId = getProjectId();
         yield put(ProgressAwareActionCreator.setLoading(true));
         const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
+        const stateInfo: WorkItemTypeStateInfo[] = backlogConfiguration.workItemTypeMappedStates;
+        const statesSet = new Set();
+        stateInfo
+            .forEach(si => {
+                Object.keys(si.states)
+                    .filter(state => si.states[state] !== "Removed")
+                    .forEach(state => statesSet.add(`'${escapeStr(state)}'`))
+            });
+
+        const allowedStates = Array.from(statesSet);
+        const statesValues = allowedStates.join(",")
 
 
         // get all children including grand children
@@ -25,6 +37,7 @@ export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic
                 FROM WorkItemLinks 
                 WHERE (Source.[System.Id] IN(${ action.payload}) )
                     AND [System.Links.LinkType] IN ('System.LinkTypes.Hierarchy-Forward')
+                    AND Target.[System.State] IN (${statesValues})
                     AND Target.[System.WorkItemType] <> '' mode(Recursive)`;
 
         const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
@@ -38,6 +51,7 @@ export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic
                                 FROM WorkItemLinks 
                                 WHERE (Source.[System.Id] IN(${ workItemIds.join(",")}) )
                                     AND [System.Links.LinkType] IN ('System.LinkTypes.Dependency-Reverse')
+                                    AND Target.[System.State] IN (${statesValues})
                                     AND Target.[System.WorkItemType] <> ''`;
 
         const dependenciesQueryResult: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: dependenciesWiql }, projectId);

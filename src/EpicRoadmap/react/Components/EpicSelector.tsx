@@ -43,7 +43,6 @@ export class EpicSelectorContent extends React.Component<IEpicSelectorProps, {}>
                 return title1.localeCompare(title2);
             });
 
-        debugger;
         return sortedEpics
             .map(e => {
                 return {
