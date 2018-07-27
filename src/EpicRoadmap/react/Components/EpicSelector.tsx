@@ -1,16 +1,18 @@
-import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
+import { IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
+import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
+
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { selectEpic } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
 import { IEpicRoadmapState } from '../../redux/contracts';
 import './EpicSelector.scss';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 
 export interface IEpicSelectorProps {
     selectedId: number;
     epics: WorkItem[];
     selectEpic: (id: number) => void;
-
 }
 
 export class EpicSelectorContent extends React.Component<IEpicSelectorProps, {}> {
@@ -18,12 +20,10 @@ export class EpicSelectorContent extends React.Component<IEpicSelectorProps, {}>
     public render(): JSX.Element {
         return (
             <div className="epic-selector-container">
-                <ComboBox
-                    label="Select an Epic:"
-                    id="epic-selector"
+                <Dropdown
+                    className="epic-selector-dropdown"
+                    placeHolder="Select an Epic"
                     ariaLabel="Select an Epic"
-                    autoComplete="on"
-                    allowFreeform={true}
                     options={this._getOptions()}
                     defaultSelectedKey={this.props.selectedId + ""}
                     onChanged={this._epicSelectionChanged}

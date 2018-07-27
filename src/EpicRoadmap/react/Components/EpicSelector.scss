@@ -1,6 +1,14 @@
 .epic-selector-container {
+    display: flex;
     margin-bottom: 5px;
     margin-top: 5px;
-    height: 100px;
 }
 
+.select-epic-label {
+    font-size: 15px;
+    margin-right: 5px;
+}
+
+.epic-selector-dropdown{
+    min-width: 200px;
+}
