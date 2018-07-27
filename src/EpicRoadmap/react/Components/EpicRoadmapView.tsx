@@ -67,16 +67,28 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, {}> 
         }
 
         if (uiState === UIStatus.OutofScopeTeamIterations) {
+            const {
+                outOfScopeWorkItems
+            } = this.props;
+
+            const uniqueIterations = new Set();
+            outOfScopeWorkItems.forEach(w => uniqueIterations.add(w.fields["System.IterationPath"]));
+
+            const iterations = Array.from(uniqueIterations).sort();
 
             contents = (
                 <MessageBar
                     messageBarType={MessageBarType.severeWarning}
                     isMultiline={true}
                 >
-                    <div>{"Following Work Items are in iterations that the current team does not subscribe to."}</div>
-                    <div>
+                    <div>{"Some Work Items are in iterations that the current team does not subscribe to."}</div>
+                    <div>{"Please subscribe to following iterations to continue."}</div>
+                    {
+                        iterations.map(i => <div className="missing-iteration-name">{i}</div>)
+                    }
+                    <div className="simple-work-item-list">
                         {
-                            this.props.outOfScopeWorkItems.map(w =>
+                            outOfScopeWorkItems.map(w =>
                                 <SimpleWorkItem
                                     workItem={w}
                                     onShowWorkItem={this.props.launchWorkItemForm}

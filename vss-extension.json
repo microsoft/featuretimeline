@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
-    "version": "0.0.270",
+    "version": "0.0.272",
     "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",
@@ -58,7 +58,7 @@
             "ms.vss-work-web.product-backlog-tabs"
         ],
         "properties": {
-            "name": "Epic Roadmap",
+            "name": "Epic Roadmap (BETA)",
             "order": 100,
             "uri": "dist/EpicRoadmap.html",
             "dynamic": true

@@ -13,6 +13,7 @@ export class SimpleWorkItem extends React.Component<ISimpleWorkItemProps, {}>{
         const {
             workItem
         } = this.props;
+
         return (
             <div className="work-item-link-container">
                 <div className="work-item-link-id">{workItem.id}</div>
