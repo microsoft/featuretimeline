@@ -46,7 +46,7 @@ export function getEpicRoadmapGridView(
     uiStatus: UIStatus,
     isSubGrid: boolean,
 ): IEpicRoadmapGridView {
-    if (uiStatus !== UIStatus.Default && uiStatus !== UIStatus.OutofScopeTeamIterations ) {
+    if (uiStatus !== UIStatus.Default && uiStatus !== UIStatus.OutofScopeTeamIterations) {
         return {
             teamFieldDisplayItems: [],
             workItems: [],
@@ -76,7 +76,7 @@ export function getEpicRoadmapGridView(
     } = settingsState;
 
     const teamFieldName = typeFields["Team"];
-    if(isSubGrid) {
+    if (isSubGrid) {
         iterationDisplayOptions = null;
     }
 
@@ -236,7 +236,7 @@ function getWorkItemsByTeamField(workItemDisplayDetails: IWorkItemDisplayDetails
     // get work items by leaf area path
     const workItemsByTeamField: IDictionaryStringTo<IWorkItemDisplayDetails[]> = workItemDisplayDetails.reduce((map, w) => {
         const areaPath: string = w.workItem.fields[teamFieldName];
-        const parts = areaPath.split("\\");
+        const parts = (areaPath || "Unknown").split("\\");
         let index = parts.length - 1;
         let leafValue = parts[index];
         // to check incase if the leaf value is duplicate, we keep track of entire path

@@ -38,6 +38,8 @@ export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic
                 WHERE (Source.[System.Id] IN(${ action.payload}) )
                     AND [System.Links.LinkType] IN ('System.LinkTypes.Hierarchy-Forward')
                     AND Target.[System.State] IN (${statesValues})
+                    AND Source.[System.TeamProject] = @project
+                    AND Target.[System.TeamProject] = @project
                     AND Target.[System.WorkItemType] <> '' mode(Recursive)`;
 
         const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
@@ -52,6 +54,8 @@ export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic
                                 WHERE (Source.[System.Id] IN(${ workItemIds.join(",")}) )
                                     AND [System.Links.LinkType] IN ('System.LinkTypes.Dependency-Reverse')
                                     AND Target.[System.State] IN (${statesValues})
+                                    AND Source.[System.TeamProject] = @project
+                                    AND Target.[System.TeamProject] = @project
                                     AND Target.[System.WorkItemType] <> ''`;
 
         const dependenciesQueryResult: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: dependenciesWiql }, projectId);
