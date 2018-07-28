@@ -1,3 +1,5 @@
+import { areChildrenOutOfBounds } from '../../../Common/redux/Helpers/areChildrenOutOfBounds';
+
 import { getWorkItemsForLevel } from './workItemsForLevel';
 import { IFeatureTimelineRawState } from '../store/types';
 import { IIterationDuration, IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
@@ -5,7 +7,6 @@ import { IWorkItemInfo, WorkItemLevel } from '../store/workitems/types';
 import { WorkItem, WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
 import { compareIteration } from '../../../Common/redux/Helpers/iterationComparer';
 import { getTeamIterations } from './teamIterations';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 import { UIStatus, StateCategory } from '../../../Common/redux/Contracts/types';
 import { IWorkItemDisplayDetails } from '../../../Common/redux/Contracts/GridViewContracts';
 
@@ -129,7 +130,7 @@ function getWorkItemDetails(
         predecessors: [],
         successors: [],
         highlighteSuccessorIcon: false,
-        highlightPredecessorIcon: false        
+        highlightPredecessorIcon: false
     };
 
     return workItemDetails;
@@ -159,6 +160,7 @@ function getWorkItemIterationDuration(
 
     const teamSettings = input.teamSetting.teamSetting[projectId][teamId];
 
+    let kindMessage = "";
     // if the start/end iteration is overridden use that value
     if (input.savedOverriddenIterations &&
         input.savedOverriddenIterations[id]) {
@@ -170,7 +172,8 @@ function getWorkItemIterationDuration(
 
         if (startIteration && endIteration) {
             const childrenAreOutofBounds = areChildrenOutOfBounds(startIteration, endIteration, iterationDuration, allIterations);
-            iterationDuration = { startIteration, endIteration, kind: IterationDurationKind.UserOverridden, overridedBy, childrenAreOutofBounds };
+            kindMessage = "User specified start and end iteration.";
+            iterationDuration = { startIteration, endIteration, kind: IterationDurationKind.UserOverridden, overridedBy, kindMessage, childrenAreOutofBounds };
         }
     }
 
@@ -181,6 +184,7 @@ function getWorkItemIterationDuration(
         iterationDuration.startIteration = iteration;
         iterationDuration.endIteration = iteration;
         iterationDuration.kind = IterationDurationKind.Self;
+        kindMessage = "Work Items own iteration.";
     }
 
     // If still null take currentIteration
@@ -188,6 +192,7 @@ function getWorkItemIterationDuration(
         iterationDuration.startIteration = teamSettings.backlogIteration;
         iterationDuration.endIteration = teamSettings.backlogIteration;
         iterationDuration.kind = IterationDurationKind.BacklogIteration;
+        kindMessage = "Using backlog iteration";
     }
     return iterationDuration;
 }
@@ -218,9 +223,11 @@ function getIterationDurationFromChildren(
         return {
             startIteration,
             endIteration,
-            kind: !startIteration ? IterationDurationKind.BacklogIteration : IterationDurationKind.ChildRollup
+            kind: !startIteration ? IterationDurationKind.BacklogIteration : IterationDurationKind.ChildRollup,
+            kindMessage: !startIteration ? "Using backlog iteration." : "Using iterations based on children start and end iteration",
+            childrenAreOutofBounds: false,
         }
-    }, { startIteration: null, endIteration: null, kind: IterationDurationKind.BacklogIteration });
+    }, { startIteration: null, endIteration: null, kind: IterationDurationKind.BacklogIteration, kindMessage: "Backlog iteration", childrenAreOutofBounds: false });
 }
 
 function getChildrenIds(
@@ -243,20 +250,3 @@ function getChildrenIds(
     return childIds;
 }
 
-function areChildrenOutOfBounds(
-    start: TeamSettingsIteration,
-    end: TeamSettingsIteration,
-    iterationDuration: IIterationDuration,
-    allIterations: TeamSettingsIteration[]): boolean {
-    if (iterationDuration.kind === IterationDurationKind.BacklogIteration || !start || !end) {
-        return false;
-    }
-
-    const startIndex = allIterations.findIndex(itr => itr.id == start.id);
-    const endIndex = allIterations.findIndex(itr => itr.id == end.id);
-
-    const childStartIndex = allIterations.findIndex(itr => itr.id == iterationDuration.startIteration.id);
-    const childEndIndex = allIterations.findIndex(itr => itr.id == iterationDuration.endIteration.id);
-
-    return childStartIndex < startIndex || childEndIndex > endIndex;
-}

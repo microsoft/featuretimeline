@@ -10,6 +10,7 @@ import { pagedWorkItemsMapSelector } from './workItemSelector';
 import { IDependenciesTree } from '../modules/workItems/workItemContracts';
 import { IIterationDuration, IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsselector';
+import { areChildrenOutOfBounds } from '../../../Common/redux/Helpers/areChildrenOutOfBounds';
 
 export type WorkItemStartEndIteration = IDictionaryNumberTo<IIterationDuration>;
 
@@ -42,7 +43,6 @@ export function getWorkItemIterationDuration(
         return {};
     }
 
-    // build bottom up
     const process = (workItemId: number) => {
         // If already processed return
         if (result[workItemId]) {
@@ -55,42 +55,27 @@ export function getWorkItemIterationDuration(
 
         // 1. choose overriddenIteration if provided
         const overriddenIteration = overriddenIterations[workItemId];
+        let overridedBy = undefined;
+        let kind = undefined;
+        let startIteration = undefined;
+        let endIteration = undefined;
+        let kindMessage = "";
         if (overriddenIteration) {
-            let startIteration = null;
-            let endIteration = null;
-
-            if (overriddenIteration.startIterationId === backlogIteration.id) {
-                startIteration = backlogIteration;
-            } else {
-                startIteration = teamIterations.find(i => i.id === overriddenIteration.startIterationId);
-            }
-
-            if (overriddenIteration.endIterationId === backlogIteration.id) {
-                endIteration = backlogIteration;
-            } else {
-                endIteration = teamIterations.find(i => i.id === overriddenIteration.endIterationId);
-            }
-
-            let kind = IterationDurationKind.UserOverridden;
-
-            if(!startIteration || !endIteration) {
-                startIteration = backlogIteration;
-                endIteration = backlogIteration;
-                kind= IterationDurationKind.FallbackBacklogIteration_IterationOutOfScope;
-            }
-            result[workItemId] = {
-                startIteration,
-                endIteration,
-                kind,
-                overridedBy: overriddenIteration.user
-            };
+            kind = IterationDurationKind.UserOverridden;
+            startIteration = teamIterations.find(i => i.id === overriddenIteration.startIterationId);
+            endIteration = teamIterations.find(i => i.id === overriddenIteration.endIterationId);
+            overridedBy = overriddenIteration.user;
+            kindMessage = "User specified start and end iteration.";
         } else {
             // 2. If any predecessor choose start iteration = Max(predecessor end iteration) +1
+
             // process predecessors to ensure we have them sorted out
             const predecessors = depTree.stop[workItemId] || [];
             let startIndexByPredecessors = -1;
             predecessors.forEach(process);
 
+            kind = IterationDurationKind.Predecessors;
+            kindMessage = "Based on the predecessors of the work item";
             predecessors
                 .filter(p => result[p].kind !== IterationDurationKind.BacklogIteration)
                 .forEach(p => {
@@ -101,12 +86,13 @@ export function getWorkItemIterationDuration(
             // 3. choose min start , max end date of children
             let startIndexByChildren = startIndexByPredecessors;
             let endIndexByChildren = startIndexByPredecessors;
-            let kind = IterationDurationKind.Predecessors;
             children
-                .filter(c => result[c].startIteration && result[c].endIteration && result[c].kind !== IterationDurationKind.BacklogIteration)
+                .filter(c => result[c].kind !== IterationDurationKind.BacklogIteration)
                 .forEach(c => {
                     const childStart = teamIterations.findIndex(i => i.id === result[c].startIteration.id);
                     const childEnd = teamIterations.findIndex(i => i.id === result[c].endIteration.id);
+                    // If any child starts before a predecessor most likely that child is not affected by the predecessor
+                    // so we can choose child's start as parents start
                     if (childStart < startIndexByChildren || startIndexByChildren === -1) {
                         startIndexByChildren = childStart;
                     }
@@ -121,48 +107,70 @@ export function getWorkItemIterationDuration(
             if (startIndexByChildren > startIndexByPredecessors) {
                 kind = IterationDurationKind.ChildRollup;
                 startIndex = startIndexByChildren;
+                kindMessage = "Based on the start iteration of the children";
             }
 
-            const workItem = pagedWorkItems[workItemId];
-            let iterationPath = "";
-            if (workItem) {
-                iterationPath = workItem.fields["System.IterationPath"];
-            }
-            // 4. choose self's iteration
-            if (startIndex === -1) {
-                const isInBacklogIteration = iterationPath === (backlogIteration.path || backlogIteration.name);
-                if (isInBacklogIteration) {
-                    kind = IterationDurationKind.BacklogIteration;
-                    startIndex = -1;
-                    endIndex = -1;
-                } else {
-                    kind = IterationDurationKind.Self;
-                    startIndex = endIndex = teamIterations.findIndex(itr => itr.path === iterationPath);
+            startIteration = teamIterations[startIndex];
+            endIteration = teamIterations[endIndex];
+        }
+
+        const workItem = pagedWorkItems[workItemId];
+        let workItemIteration = null;
+        if (workItem) {
+            let iterationPath = workItem.fields["System.IterationPath"];
+            workItemIteration = teamIterations.find(itr => itr.path === iterationPath);
+        }
+
+        // Use fall backs if none of the above yield start end iteration
+        if (!startIteration || !endIteration) {
+            switch (kind) {
+                case IterationDurationKind.ChildRollup: {
+                    kindMessage = "Children iterations are not subscribed by the team. ";
+                    break;
+                }
+                case IterationDurationKind.UserOverridden: {
+                    kindMessage = "User specified iterations are not subscribed by the team. ";
+                    break;
+                }
+                case IterationDurationKind.Predecessors: {
+                    kindMessage = "Predecessors iterations are not subscribed by the team. ";
+                    break;
                 }
             }
 
-            let startIteration = kind === IterationDurationKind.BacklogIteration ? backlogIteration : (startIndex >= 0 ? teamIterations[startIndex] : null);
-            let endIteration = kind === IterationDurationKind.BacklogIteration ? backlogIteration : (endIndex >= 0 ? teamIterations[endIndex] : null);
-
-            // If we have chosen the iteration based on the predessor but the team does not subscribe to that iteration
-            if (kind == IterationDurationKind.Predecessors && (!startIteration || !endIteration)) {
-                startIteration = endIteration = backlogIteration;
-                kind = IterationDurationKind.FallbackBacklogIteration_PredecessorsOutofScope;
-            }
-
-            // For all other reasons we can not find the iteration the work item was suppsed to be so we are putting that in backlog iteration
-            if (!startIteration || !endIteration) {
-                debugger; // If you hit this please diagnose what that happens
-                startIteration = endIteration = backlogIteration;
-                kind = IterationDurationKind.FallbackBacklogIteration_IterationOutOfScope;
-            }
-
-            result[workItemId] = {
-                startIteration,
-                endIteration,
-                kind
+            // Use work item's own iteration as first fallback
+            if (workItemIteration) {
+                kindMessage = kindMessage + " Using work items own iteration";
+                kind = IterationDurationKind.Self;
+                startIteration = endIteration = workItemIteration;
+            } else {
+                // Use backlog iteration as final fallback
+                kindMessage = kindMessage + " Using backlog iteration.";
+                startIteration = backlogIteration;
+                endIteration = backlogIteration;
+                kind = IterationDurationKind.BacklogIteration;
             }
         }
+
+        let childrenAreOutofBounds = false;
+        children
+            .forEach(c => {
+                childrenAreOutofBounds = childrenAreOutofBounds ||
+                    areChildrenOutOfBounds(startIteration, endIteration, result[c], teamIterations);
+            });
+
+
+        result[workItemId] = {
+            startIteration,
+            endIteration,
+            kind,
+            kindMessage,
+            overridedBy: kind === IterationDurationKind.UserOverridden ? overridedBy : undefined,
+            childrenAreOutofBounds
+        }
+
+        console.log("workItemStartEndIteration", workItemId, workItem, result[workItemId]);
+
     };
 
     process(0);

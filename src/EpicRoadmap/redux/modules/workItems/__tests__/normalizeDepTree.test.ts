@@ -38,20 +38,11 @@ test("validate createNormalizedDependencyTree", () => {
             rawDependencyTree))
         .toEqual(
             {
-                ptos: {
-                    3: [2],
-                    6: [5]
-                },
-                stop: {
-                    0: [],
-                    1: [],
-                    2: [3],
-                    3: [],
-                    4: [],
-                    5: [6],
-                    6: [],
-                    7: []
-                }
+                "allPtos": { 6: [5], 3: [2] },
+                "ptos": { 6: [5] },
+
+                "stop": { 5: [6] },
+                "allStop": { 5: [6], 2: [3] }
             }
         );
 });

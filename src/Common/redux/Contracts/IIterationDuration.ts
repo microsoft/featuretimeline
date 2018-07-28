@@ -3,15 +3,15 @@ export interface IIterationDuration {
     startIteration: TeamSettingsIteration;
     endIteration: TeamSettingsIteration;
     kind: IterationDurationKind;
+    kindMessage: string; // Little more descriptive message to indicate why the specific kin was used
     overridedBy?: string; // User name for the case when kind is UserOverridden
-    childrenAreOutofBounds?: boolean; // Indicates if the child work items has iterations that are out of bounds
+    childrenAreOutofBounds; // Used to show a warning if there are any children that are outside of the bounds of the work item start/end iteration
 }
+
 export enum IterationDurationKind {
-    FallbackBacklogIteration_IterationOutOfScope = "FallbackBacklogIteration_IterationOutOfScope", // The work item is no in backlog iteration but it is used as fallback
     BacklogIteration = "BacklogIteration",
     Self = "Self",
     ChildRollup = "ChildRollup",
     UserOverridden = "UserOverridden",
     Predecessors = "Predecessors",
-    FallbackBacklogIteration_PredecessorsOutofScope = "FallbackBacklogIteration_PredecessorsOutofScope" //Usually happens if team does not subscribe to any iteration beyond last iteration of predessors
 }

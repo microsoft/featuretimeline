@@ -378,7 +378,6 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
 
 const makeMapStateToProps = () => {
     return (state: IEpicRoadmapState) => {
-        debugger;
         return {
             projectId: getProjectId(),
             teamId: getTeamId(),

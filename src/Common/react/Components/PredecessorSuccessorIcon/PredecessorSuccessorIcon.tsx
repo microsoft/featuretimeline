@@ -60,7 +60,6 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
         Object.keys(itemsByTeamField)
             .sort()
             .forEach(teamField => {
-                debugger;
                 items.push(<div className="team-field-value">{teamField}</div>)
                 const workItems = itemsByTeamField[teamField];
                 items = items.concat(workItems.map(this._renderWorkItem))

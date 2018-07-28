@@ -13,7 +13,6 @@ export interface IEpicRoadmapWorkItemAwareState {
     workItemsState: IWorkItemsState;
 }
 
-
 export interface IDependenciesTree {
 
     /**
@@ -25,4 +24,17 @@ export interface IDependenciesTree {
      * Successor to Predecessor
      */
     stop: IDictionaryNumberTo<number[]>;
+}
+
+export interface INormalizedDependencyTree extends IDependenciesTree {
+    /**
+     * Indirect + Direct Predecessor to Successor
+     */
+    allPtos: IDictionaryNumberTo<number[]>;
+
+    /**
+     * Indirect + Direct Successor to Predecessor
+     */
+    allStop: IDictionaryNumberTo<number[]>;
+
 }

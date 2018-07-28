@@ -8,7 +8,7 @@ import { backlogConfigurationForProjectSelector } from "../modules/backlogconfig
 import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";
 import { IWorkItemMetadata } from "../modules/workItemMetadata/workItemMetadataContracts";
 import { workItemMetadataSelector } from "../modules/workItemMetadata/workItemMetadataSelector";
-import { IDependenciesTree } from "../modules/workItems/workItemContracts";
+import { INormalizedDependencyTree } from "../modules/workItems/workItemContracts";
 import { normalizedDependencyTreeSelector } from "./dependencyTreeSelector";
 import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from "./workItemSelector";
@@ -31,7 +31,7 @@ export const workItemDisplayDetailsSelectors = rootWorkItemId => createSelector(
 export function getWorkItemDisplayDetails(
     rootWorkItemId: number,
     epicTree: IEpicTree,
-    dependencyTree: IDependenciesTree,
+    dependencyTree: INormalizedDependencyTree,
     pagedWorkItems: IDictionaryNumberTo<WorkItem>,
     workItemStartEndIterations: WorkItemStartEndIteration,
     backlogConfiguration: BacklogConfiguration,
@@ -77,12 +77,12 @@ export function getWorkItemDisplayDetails(
 
         let highlighteSuccessorIcon = false;
         let highlightPredecessorIcon = false;
-        if (highlightedDependency.id && highlightedDependency.highlightSuccesors && dependencyTree.stop[workItem.id]) {
-            highlighteSuccessorIcon = dependencyTree.stop[workItem.id].findIndex(i => i === highlightedDependency.id) !== -1;
+        if (highlightedDependency.id && highlightedDependency.highlightSuccesors && dependencyTree.allStop[workItem.id]) {
+            highlighteSuccessorIcon = dependencyTree.allStop[workItem.id].findIndex(i => i === highlightedDependency.id) !== -1;
         }
 
-        if (highlightedDependency.id && !highlightedDependency.highlightSuccesors && dependencyTree.ptos[workItem.id]) {
-            highlightPredecessorIcon = dependencyTree.ptos[workItem.id].findIndex(i => i === highlightedDependency.id) !== -1;
+        if (highlightedDependency.id && !highlightedDependency.highlightSuccesors && dependencyTree.allPtos[workItem.id]) {
+            highlightPredecessorIcon = dependencyTree.allPtos[workItem.id].findIndex(i => i === highlightedDependency.id) !== -1;
         }
 
         const displayDetails: IWorkItemDisplayDetails = {
@@ -99,8 +99,8 @@ export function getWorkItemDisplayDetails(
             workItemStateColor,
             childrenWithNoEfforts,
             isComplete: stateCategory === StateCategory.Completed,
-            predecessors: (dependencyTree.stop[workItem.id] || []).map(i => pagedWorkItems[i]).filter(w => !!w),
-            successors: (dependencyTree.ptos[workItem.id] || []).map(i => pagedWorkItems[i]).filter(w => !!w),
+            predecessors: (dependencyTree.allStop[workItem.id] || []).map(i => pagedWorkItems[i]).filter(w => !!w),
+            successors: (dependencyTree.allPtos[workItem.id] || []).map(i => pagedWorkItems[i]).filter(w => !!w),
             highlighteSuccessorIcon,
             highlightPredecessorIcon
         };

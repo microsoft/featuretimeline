@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { IDependenciesTree } from '../modules/workItems/workItemContracts';
+import { IDependenciesTree, INormalizedDependencyTree } from '../modules/workItems/workItemContracts';
 import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { getEpicDependenciesLinks } from './workItemSelector';
 import { normalizedEpicTreeSelector, IEpicTree } from './epicTreeSelector';
@@ -46,39 +46,66 @@ export function createRawDependencyTree(
 export const normalizedDependencyTreeSelector = createSelector(normalizedEpicTreeSelector, rawDependencyTreeSelector as any, createNormalizedDependencyTree);
 export function createNormalizedDependencyTree(
     epicTree: IEpicTree,
-    dependencyTree: IDependenciesTree) {
-    const result: IDependenciesTree = { ptos: {}, stop: {} };
+    dependencyTree: IDependenciesTree): INormalizedDependencyTree {
+    const result: INormalizedDependencyTree = {
+        ptos: deepExtend(dependencyTree.ptos),
+        stop: deepExtend(dependencyTree.stop),
+        allPtos: deepExtend(dependencyTree.ptos),
+        allStop: deepExtend(dependencyTree.stop)
+    };
 
     const process = (workItemId: number) => {
         // visit bottom up
         const children = epicTree.parentToChildrenMap[workItemId] || [];
         children.forEach(process);
 
-        // get direct dependencies
-        const predecessorsSet = new Set();
-        const immediatePredecessors = dependencyTree.stop[workItemId] || [];
-        immediatePredecessors.forEach(x => predecessorsSet.add(x));
-
         // get dependencies of children find their parents and merge
+        const indirectPredecessors = new Set<number>();
         children.forEach(child => {
             const predecessorsOfChildren = dependencyTree.stop[child] || [];
             const parentOfChildPredecessors = predecessorsOfChildren.map(poc => epicTree.childToParentMap[poc]);
-            parentOfChildPredecessors.forEach(x => predecessorsSet.add(x));
+            parentOfChildPredecessors.forEach(x => indirectPredecessors.add(x));
         });
         const parentId = epicTree.childToParentMap[workItemId];
-        const predecessors = Array.from(predecessorsSet)
+        const indirectPredecessorsArray = Array.from(indirectPredecessors)
             .filter(w => w !== workItemId)
             .filter(w => w !== parentId);
-        result.stop[workItemId] = predecessors;
-        predecessors.forEach(p => {
-            if (!result.ptos[p]) {
-                result.ptos[p] = [];
+
+        if (indirectPredecessorsArray.length > 0) {
+            if (!result.allStop[workItemId]) {
+                result.allStop[workItemId] = [];
             }
-            result.ptos[p].push(workItemId);
-        });
+            result.allStop[workItemId] = indirectPredecessorsArray;
+            indirectPredecessors.forEach(p => {
+                if (!result.allPtos[p]) {
+                    result.allPtos[p] = [];
+                }
+                result.allPtos[p].push(workItemId);
+            });
+        }
     };
     // start the process with the root which is 0
     process(0);
 
     return result;
+}
+
+function deepExtend(source) {
+    const destination = {};
+    if(typeof source !== "object") {
+        return source;
+    }
+    for (var property in source) {
+        if (source[property] && source[property].constructor &&
+            source[property].constructor === Object) {
+            destination[property] = destination[property] || {};
+            arguments.callee(destination[property], source[property]);
+        } else if (source[property] && source[property].constructor &&
+            source[property].constructor === Array) {
+            destination[property] = source[property].map(v => deepExtend(v));
+        } else {
+            destination[property] = source[property];
+        }
+    }
+    return destination;
 }
