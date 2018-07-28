@@ -47,7 +47,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
 
         if (uiState === UIStatus.Loading) {
             return (
-                <Spinner size={SpinnerSize.large} label="Loading..." />
+                <Spinner size={SpinnerSize.large} className="loading-indicator" label="Loading..." />
             );
         }
 

@@ -167,7 +167,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         } = this.props;
         if (!rawState || uiState === UIStatus.Loading) {
             return (
-                <Spinner size={SpinnerSize.large} label="Loading..." />
+                <Spinner size={SpinnerSize.large} className="loading-indicator" label="Loading..." />
             );
         }
 
