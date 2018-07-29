@@ -33,7 +33,7 @@ export function* FetchEpicsSaga() {
                          AND [System.State] IN ('${states}')
                          AND [System.TeamProject] = @project
                         )`;
-        }).join(" AND ");
+        }).join(" OR ");
 
     const projectId = getProjectId();
     const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);

@@ -83,7 +83,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
                     isMultiline={true}
                     onClick={this._toggleCallout}
                 >                 
-                    <div style={style} ref={ref => this._calloutContainer = ref} onClick={this._toggleCallout}>{"Some Work Items are excluded as they are in iterations that the current team does not subscribe to."}</div>
+                    <div style={style} ref={ref => this._calloutContainer = ref} onClick={this._toggleCallout}>{"Some Work Items are excluded as they are in iterations that the current team does not subscribe to. Click here to see the details"}</div>
                 </MessageBar>
             );
         }
@@ -132,7 +132,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
                 onDismiss={this._toggleCallout}
                 isBeakVisible={true}
             >
-                <div>{"Please subscribe to following iterations to include these workitems."}</div>
+                <div>{"Please add following iterations in team settings to include these workitems."}</div>
                 {
                     iterations.map(i => <div className="missing-iteration-name">{i}</div>)
                 }
