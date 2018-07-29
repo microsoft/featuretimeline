@@ -1,8 +1,8 @@
 {
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
-    "version": "0.0.262",
-    "name": "Feature timeline",
+    "version": "0.0.305",
+    "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",
     "targets": [{
@@ -15,7 +15,7 @@
     "icons": {
         "default": "dist/images/icon.png"
     },
-    "tags": ["work item", "timeline", "feature"],
+    "tags": ["work item", "timeline", "feature", "epic", "roadmap"],
     "content": {
         "details": {
             "path": "dist/details.md"
@@ -46,7 +46,21 @@
         "properties": {
             "name": "Feature Timeline",
             "order": 99,
-            "uri": "dist/index.html",
+            "uri": "dist/featuretimeline.html",
+            "dynamic": true
+        }
+    },
+    {
+        "id": "workitem-epic-roadmap",
+        "type": "ms.vss-web.tab",
+        "description": "Epic roadmap.",
+        "targets": [
+            "ms.vss-work-web.product-backlog-tabs"
+        ],
+        "properties": {
+            "name": "Epic Roadmap (BETA)",
+            "order": 100,
+            "uri": "dist/EpicRoadmap.html",
             "dynamic": true
         }
     }]

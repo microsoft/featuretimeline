@@ -1,0 +1,140 @@
+.feature-timeline-main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.root-container {
+    height: 100%;
+    overflow: auto;
+}
+.container {
+    display: -ms-grid;
+    display: grid;
+    grid-column-gap: 5px;
+}
+
+.feature-container {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin button-dimension {
+    height: 20px;
+    padding: 3px;
+    margin: 2px;
+    border-radius: 5px;
+    border: solid 1px lightgray;
+    cursor: pointer;
+    font-family: sans-serif;
+}
+
+.command {
+    @include button-dimension();
+    background: lightgray;
+    color: black;
+    overflow: ellipse;
+    white-space: nowrap;
+}
+
+.non-button {
+    @include button-dimension();
+    background: transparent;
+    border: none;
+}
+
+.header-commands {
+    display: flex;
+    justify-content: flex-end;
+
+    position: absolute;
+    right: 20px;
+    background: white;
+    left: 0;
+    align-items: center;
+}
+
+.plan-feature-checkbox {
+    margin-left: 15px;
+}
+
+.iteration-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iteration-options-label {
+    margin: 5px;
+    font-size: 16px;
+}
+
+.rc-input-number-input{
+    width: 40px;
+    text-align: right;
+    font-size: 16px;
+}
+
+.header-gap {
+    height: 32px;
+}
+
+.command-right-section,
+.last-header-column-command {
+    display: flex;
+    flex-direction: column;
+    .non-button,
+    .button {
+        margin-left: auto;
+        margin-right: 0;
+    }
+}
+
+.first-header-column-command {
+    display: flex;
+}
+
+.single-column-commands {
+    display: flex;
+    justify-content: space-between;
+}
+
+#root {
+    height: 100%;
+}
+
+.timeline-splitter {
+    position: static;
+    height: calc(100% - 32px);
+}
+
+.show-work-item-details-checkbox{
+    margin-left: 5px;
+}
+
+
+.progress-options,
+.closed-since-options {
+    display: flex;
+}
+
+.progress-options-label,
+.show-closed-since-label {
+    margin: 5px;
+    margin-left: 15px;
+    font-size: 16px;
+}
+
+.progress-options-dropdown,
+.show-closed-since-dropdown {
+    width: 170px;
+}
+
+.columnheading {
+    position: sticky;
+    top: 34px;
+}
+
+.loading-indicator {
+    margin-top: 10px;
+}

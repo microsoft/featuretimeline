@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%">
+
+<head>
+    <meta charset="utf-8" />
+    <!-- VSS Framework -->
+    <script src="libs/VSS.SDK.min.js"></script>
+</head>
+
+<body style="height:100%">
+    <script>
+        let FeatureTimeline = null;
+        VSS.init({
+            usePlatformStyles: true,
+            explicitNotifyLoaded: true,
+            usePlatformScripts: true,
+            extensionReusedCallback: registerContribution,
+            moduleLoaderConfig: {
+                paths: {
+                    "react": "dist/react",
+                    "react-dom": "dist/react-dom",
+                    "FeatureTimeline": "dist/featuretimeline"
+                }
+            }
+        });
+
+        // We need to register the new contribution if this extension host is reused
+        function registerContribution(contribution) {
+            if (contribution.type === "ms.vss-web.tab") {
+                let title = "Feature Timeline";
+                if (contribution.id === "ms-devlabs.workitem-feature-timeline-extension-dev.workitem-feature-timeline") {
+                    title = title + " Dev";
+                } else if (contribution.id === "ms-devlabs.workitem-feature-timeline-extension-beta.workitem-feature-timeline") {
+                    title = title + " Beta";
+                }
+                // Register the fully-qualified contribution id here.
+                // Because we're using the contribution id, we do NOT need to define a registeredObjectId in the extension manfiest.
+                VSS.register(contribution.id, {
+                    pageTitle: title,
+                    // We set the "dynamic" contribution property to true in the manifest so that it will get the tab name from this function.
+                    name: title,
+                    title: title,
+                    updateContext: updateConfiguration,
+                    isInvisible: function (state) {
+                        return false;
+                    }
+                });
+            }
+        }
+
+        let previousContext = null
+
+        function updateConfiguration(tabContext) {
+            // if (!isBackground() && typeof tabContext === "object" && FeatureTimeline && JSON.stringify(previousContext) !== JSON.stringify(tabContext)) {
+            //     FeatureTimeline.unmount();
+            //     FeatureTimeline.initialize();
+            //     previousContext = tabContext;
+            // }
+        }
+
+        VSS.ready(function () {
+            registerContribution(VSS.getContribution());
+
+            if (isBackground()) {
+                VSS.notifyLoadSucceeded();
+            } else {
+                // Load main entry point for extension 
+                VSS.require(["FeatureTimeline"], function (ft) {
+                    FeatureTimeline = ft;
+                    FeatureTimeline.initialize();
+                    // loading succeeded
+                    VSS.notifyLoadSucceeded();
+                });
+            }
+        });
+
+        function isBackground() {
+            const contributionContext = VSS.getConfiguration();
+            return contributionContext && contributionContext.host && contributionContext.host.background;
+        }
+    </script>
+    <div id="root" />
+</body>
+
+</html>

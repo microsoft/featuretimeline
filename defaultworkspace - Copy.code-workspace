@@ -1,0 +1,34 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.autoSave": "afterDelay",
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/node_modules": true,
+			"**/.github": true,
+			"**/dist": true,
+			"**/typings": true,
+			"**/.gitignore": true,
+			"**/*vsix": true,
+			"**/.vscode": true,
+			"**/*code-workspace*": true,
+			"**/package-lock*": true,
+			"**/LICENSE": true,
+			"**/docs": true,
+			"**/images": true,
+			"**/configs": true,
+			"**/scripts": true,
+			"**/*.md": true,
+			//"**/*.json": true,
+			//"**/*config.js": true,
+		}
+	}
+}

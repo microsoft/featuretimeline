@@ -1,0 +1,11 @@
+.info-icon {
+    margin-left: 5px;
+    color: transparent !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.info-icon:hover {
+    color: grey !important;
+}

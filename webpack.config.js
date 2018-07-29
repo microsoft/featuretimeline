@@ -40,7 +40,11 @@ const plugins = [
 			to: "react-dom.js"
 		},
 		{
-			from: "./src/index.html",
+			from: "./src/FeatureTimeline/featuretimeline.html",
+			to: "./"
+		},
+		{
+			from: "./src/EpicRoadmap/EpicRoadmap.html",
 			to: "./"
 		},
 		{
@@ -63,12 +67,15 @@ if (mode !== "development") {
 	//plugins.unshift(new PrettierPlugin());
 }
 module.exports = {
-	entry: './src/FeatureTimeline.tsx',
+	entry: {
+		FeatureTimeline: './src/FeatureTimeline/FeatureTimeline.tsx',
+		EpicRoadmap: './src/EpicRoadmap/EpicRoadmap.tsx',
+	},
 	output: {
-		filename: 'bundle.js',
+		filename: '[name].js',
 		path: path.resolve(__dirname, 'dist'),
 		libraryTarget: 'umd',
-		library: "FeatureTimeline"
+		library: "[name]"
 	},
 	devtool: "source-map",
 	mode: mode,
