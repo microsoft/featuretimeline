@@ -29,7 +29,6 @@ export class RoadmapTimelineDialog extends React.Component<IRoadmapTimelineDialo
                         </div>
                     </DialogFooter>
                 )
-
         }
 
         return (

@@ -1,12 +1,11 @@
 import './TimelineDialog.scss'
 import * as React from 'react';
-import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
+import { Dialog, DialogType } from 'office-ui-fabric-react/lib/Dialog';
 import { FeatureTimelineGrid, IFeatureTimelineGridProps } from './FeatureTimelineGrid';
 import { getGridView } from '../../redux/selectors/FeatureTimelineGridViewSelector';
 import { getTeamIterations } from '../../redux/selectors/teamIterations';
-import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
-import { IterationRenderer } from '../../../Common/react/Components/IterationRenderer';
-import { Button, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { IterationDurationComponent } from '../../../Common/react/Components/IterationDuration/IterationDuration';
+import { TeamSettingsIteration } from 'TFS/Work/Contracts';
 
 export interface ITimelineDialogProps extends IFeatureTimelineGridProps {
     id: number;
@@ -16,21 +15,7 @@ export interface ITimelineDialogProps extends IFeatureTimelineGridProps {
 export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
     public render() {
         const gridWorkItem = this._getGridWorkItem();
-        let dialogDetails = null;
-        let footer = null;
-        switch (gridWorkItem.workItem.iterationDuration.kind) {
-            case IterationDurationKind.UserOverridden:
-                dialogDetails = this._getCustomIterationDurationDetails();
-                break;
-            default:
-                dialogDetails = this._getChildrenFeatureTimelineGrid();
-                footer = (<DialogFooter>
-                    <div>
-                        <PrimaryButton onClick={() => this.props.closeDetails(this.props.id)}>Close</PrimaryButton>
-                    </div>
-                </DialogFooter>)
-
-        }
+        const dialogDetails = this._getCustomIterationDurationDetails();
 
         return (
             <Dialog
@@ -50,7 +35,6 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
                 }
             >
                 {dialogDetails}
-                {footer}
             </Dialog>
         );
     }
@@ -86,12 +70,9 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
     private _getCustomIterationDurationDetails() {
         const gridWorkItem = this._getGridWorkItem();
         const {
-            overridedBy,
-            startIteration,
-            endIteration
-        } = gridWorkItem.workItem.iterationDuration;
-
-        const title = `${overridedBy} has set following start and end iteration for this workitem.`;
+            backlogIteration,
+            teamIterations
+        } = this.props.gridView;
 
         return (
             <div className="dialog-contents">
@@ -100,42 +81,39 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
                 </div>
 
                 <div className="custom-duration-container">
-                    <div className="custom-duration-title">
-                        {title}
-                    </div>
-                    <div className="custom-duration-iterations">
-                        <div className="custom-duration-iteration text">
-                            {"Start Iteration"}
-                        </div>
-                        <div className="custom-duration-iteration text">
-                            {"End Iteration"}
-                        </div>
-                    </div>
-                    <div className="custom-duration-iterations">
-                        <div className="custom-duration-iteration">
-                            <IterationRenderer teamIterations={this.props.gridView.teamIterations} iteration={startIteration} />
-                        </div>
-                        <div className="custom-duration-iteration">
-                            <IterationRenderer teamIterations={this.props.gridView.teamIterations} iteration={endIteration} />
-                        </div>
-                    </div>
-                </div>
+                    <IterationDurationComponent
+                        iterationDuration={gridWorkItem.workItem.iterationDuration}
+                        teamIterations={teamIterations}
+                        backlogIteration={backlogIteration}
+                        onClear={this._onClear}
+                        onOverrideIteration={this._onOverrideIteration}
+                        onCancel={this._onClose}
 
-                <div className="custom-duration-footer">
-                    <div>
-                        <Button onClick={this._onClear}>Clear</Button>
-                    </div>
-                    <div>
-                        <PrimaryButton onClick={() => this.props.closeDetails(this.props.id)}>Close</PrimaryButton>
-                    </div>
+                    />
                 </div>
             </div>
 
         );
     }
+    private _onOverrideIteration = (startIteration: TeamSettingsIteration, endIteration: TeamSettingsIteration) => {
+        this._onClose();
+        this.props.saveOverrideIteration({
+            workItemId: this.props.id,
+            iterationDuration: {
+                startIterationId: startIteration.id,
+                endIterationId: endIteration.id,
+                user: VSS.getWebContext().user.uniqueName
+            },
+            changingStart: false
+        });
+    }
+
+    private _onClose = () => {
+        this.props.closeDetails(this.props.id);
+    }
 
     private _onClear = () => {
-        this.props.closeDetails(this.props.id);
+        this._onClose();
         this.props.clearOverrideIteration(this.props.id);
     }
 }

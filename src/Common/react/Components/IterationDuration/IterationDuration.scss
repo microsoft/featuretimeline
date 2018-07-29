@@ -1,0 +1,41 @@
+.iteration-duration-component {
+    width: 100%;
+}
+
+.iteration-duration-form{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.iteration-duration-column {
+    margin-right: 10px;
+}
+
+.iteration-duration-commands{
+    display: flex;
+    flex-direction: row;
+}
+.iteration-duration-kind-message {
+    font-weight: bolder;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+.iteration-duration-commands {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    .div {
+        margin: 10px;
+    }
+}
+
+.iteration-duration-error-message {
+    color: red;
+}
+
+.iteration-duration-button {
+    margin: 5px;
+}
