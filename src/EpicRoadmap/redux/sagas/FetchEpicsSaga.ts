@@ -33,7 +33,7 @@ export function* FetchEpicsSaga() {
                          AND [System.State] IN ('${states}')
                          AND [System.TeamProject] = @project
                         )`;
-        })
+        }).join(" AND ");
 
     const projectId = getProjectId();
     const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
@@ -52,3 +52,5 @@ export function* FetchEpicsSaga() {
         yield put(selectEpic(settings.lastEpicSelected));
     }
 }
+
+//"SELECT [System.Id] FROM WorkItems WHERE ( [System.WorkItemType] = 'Feature Release' AND [System.State] IN ('Proposed', 'Active') AND [System.TeamProject] = @project ),( [System.WorkItemType] = 'Epic' AND [System.State] IN ('Proposed', 'Active', 'Resolved') AND [System.TeamProject] = @project )"
