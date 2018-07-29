@@ -1,9 +1,18 @@
 .columnshadow {
     margin-top: 2px;
-    background: #f4f4f4;   
+    background: #f4f4f4;
     min-height: 36px;
 }
 
 .highlight {
-    border: 1px solid yellowgreen;
+    //border: 1px solid yellowgreen;
+    box-shadow: 3px 3px 15px lightgrey;
+    border-color:lightgrey;
+    background: lightgrey;
+    color: #fff;
+    cursor: pointer;
+    /*Opacity*/
+    zoom: 1;
+    filter: alpha(opacity=100);
+    opacity: 1;
 }

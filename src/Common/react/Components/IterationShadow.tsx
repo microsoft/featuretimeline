@@ -23,6 +23,8 @@ export interface IIterationSahdowState {
 export class IterationShadow extends React.Component<IIterationSahdowProps, IIterationSahdowState> {
 
     private _div: HTMLDivElement;
+    private _clientRect: ClientRect;
+    private _listnerAdded: boolean;
 
     public constructor(props) {
         super(props);
@@ -32,6 +34,42 @@ export class IterationShadow extends React.Component<IIterationSahdowProps, IIte
         };
     }
 
+    private _setRef = (e: HTMLDivElement) => {
+        if(this._div) {
+            // do nothing
+        }        
+        if (e) {
+            //debugger;
+            this._div = e;
+            this._clientRect = e.getBoundingClientRect();
+            if (!this._listnerAdded) {
+                this._listnerAdded = true;
+                document.addEventListener("mousemove", this._MouseMove, { capture: true });
+            }
+        }
+    }
+
+
+    private _MouseMove = (mouseEvent: MouseEvent): any => {
+        if (this.state.shouldHighlight && !this.props.isOverrideIterationInProgress) {
+            this._onMouseLeave();
+        }
+        if (this.props.isOverrideIterationInProgress) {
+            const {
+                left,
+                width
+            } = this._clientRect;
+            if (mouseEvent.clientX >= left && mouseEvent.clientX <= (left + width)) {
+                this._onMouseEnter();
+            } else {
+                this._onMouseLeave();
+            }
+        }
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener("mousemove", this._MouseMove);
+    }
 
     public render() {
         const className = "columnshadow" + (this.state.shouldHighlight || this.props.isOver ? " highlight" : "");
@@ -41,7 +79,7 @@ export class IterationShadow extends React.Component<IIterationSahdowProps, IIte
         return connectDropTarget(
             <div
                 className={className}
-                ref={(e) => this._div = e}
+                ref={this._setRef}
                 onMouseMove={this._onMouseEnter}
                 onDragOver={this._onMouseEnter}
                 onMouseLeave={this._onMouseLeave}
@@ -53,7 +91,7 @@ export class IterationShadow extends React.Component<IIterationSahdowProps, IIte
     }
 
     private _onMouseEnter = () => {
-        if (this.props.isOverrideIterationInProgress) {
+        if (this.props.isOverrideIterationInProgress && !this.state.shouldHighlight) {
             this.setState({
                 shouldHighlight: true
             });
@@ -63,7 +101,7 @@ export class IterationShadow extends React.Component<IIterationSahdowProps, IIte
     }
 
     private _onMouseLeave = () => {
-        if (this.props.isOverrideIterationInProgress)
+        if (this.state.shouldHighlight)
             this.setState({
                 shouldHighlight: false
             })
