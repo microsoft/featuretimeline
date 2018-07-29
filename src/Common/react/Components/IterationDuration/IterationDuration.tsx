@@ -94,7 +94,7 @@ export class IterationDurationComponent extends React.Component<IIterationDurati
                 <div className="iteration-duration-commands">
                     {
                         kind === IterationDurationKind.UserOverridden &&
-                        <Button className="iteration-duration-button" onClick={onClear}>Clear Itertions</Button>
+                        <Button className="iteration-duration-button" onClick={onClear}>Clear Iterations</Button>
                     }
                     {
                         isDirty && <Button className="iteration-duration-button" onClick={this.props.onCancel}>Cancel</Button>

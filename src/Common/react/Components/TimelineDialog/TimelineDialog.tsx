@@ -1,22 +1,29 @@
 import './TimelineDialog.scss'
 import * as React from 'react';
 import { Dialog, DialogType } from 'office-ui-fabric-react/lib/Dialog';
-import { FeatureTimelineGrid, IFeatureTimelineGridProps } from './FeatureTimelineGrid';
-import { getGridView } from '../../redux/selectors/FeatureTimelineGridViewSelector';
-import { getTeamIterations } from '../../redux/selectors/teamIterations';
-import { IterationDurationComponent } from '../../../Common/react/Components/IterationDuration/IterationDuration';
+import { IterationDurationComponent } from '../IterationDuration/IterationDuration';
 import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { IWorkItemOverrideIteration } from '../../../redux/modules/OverrideIterations/overriddenIterationContracts';
+import { IIterationDuration } from '../../../redux/Contracts/IIterationDuration';
 
-export interface ITimelineDialogProps extends IFeatureTimelineGridProps {
+export interface ITimelineDialogProps {
     id: number;
+    title: string;
+    iterationDuration: IIterationDuration;
+    teamIterations: TeamSettingsIteration[];
+    backlogIteration: TeamSettingsIteration;
+    closeDetails: (id: number) => void;
     clearOverrideIteration: (id: number) => void;
+    saveOverrideIteration: (payload: IWorkItemOverrideIteration) => void;
 }
 
 export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
     public render() {
-        const gridWorkItem = this._getGridWorkItem();
         const dialogDetails = this._getCustomIterationDurationDetails();
 
+        const {
+            title
+        } = this.props;
         return (
             <Dialog
                 hidden={false}
@@ -24,7 +31,7 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
                 dialogContentProps={
                     {
                         type: DialogType.close,
-                        title: gridWorkItem.workItem.title
+                        title
                     }
                 }
                 modalProps={
@@ -39,50 +46,22 @@ export class TimelineDialog extends React.Component<ITimelineDialogProps, {}> {
         );
     }
 
-    private _getChildrenFeatureTimelineGrid() {
-        const gridWorkItem = this._getGridWorkItem();
-        const gridView = getGridView(
-            this.props.uiState,
-            this.props.gridView.backlogIteration,
-            getTeamIterations(this.props.projectId, this.props.teamId, this.props.uiState, this.props.rawState),
-            [gridWorkItem.workItem],
-            /* workItemOverrideIteration */ null,
-            this.props.settingsState,
-            /* iterationDisplayOptions */ null,
-            /* isSubGrid */ true);
-
-        const childItems = this.props.childItems.filter(id => id !== this.props.id);
-
-        const props = { ...this.props, gridView, childItems };
-        if (gridView.workItems.length > 0) {
-            return (
-                <FeatureTimelineGrid {...props}>
-                </FeatureTimelineGrid>
-            );
-        }
-        return null;
-    }
-
-    private _getGridWorkItem() {
-        return this.props.gridView.workItems.filter(w => w.workItem.id === this.props.id)[0];
-    }
-
-    private _getCustomIterationDurationDetails() {
-        const gridWorkItem = this._getGridWorkItem();
+    private _getCustomIterationDurationDetails= () => {
         const {
             backlogIteration,
-            teamIterations
-        } = this.props.gridView;
+            teamIterations,
+            iterationDuration
+        } = this.props;
 
         return (
             <div className="dialog-contents">
                 <div className="dialog-grid-container">
-                    {this._getChildrenFeatureTimelineGrid()}
+                    {this.props.children}
                 </div>
 
                 <div className="custom-duration-container">
                     <IterationDurationComponent
-                        iterationDuration={gridWorkItem.workItem.iterationDuration}
+                        iterationDuration={iterationDuration}
                         teamIterations={teamIterations}
                         backlogIteration={backlogIteration}
                         onClear={this._onClear}

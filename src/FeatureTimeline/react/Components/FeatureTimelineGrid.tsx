@@ -37,7 +37,7 @@ import { changePlanFeaturesWidth, createInitialize, togglePlanFeaturesPane } fro
 import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/types';
 import { startMarkInProgress } from '../../redux/store/workitems/actionCreators';
 import './FeatureTimelineGrid.scss';
-import { TimelineDialog } from './TimelineDialog';
+import { FeatureTimelineDialog } from './FeatureTimelineDialog';
 
 initializeIcons(/* optional base url */);
 
@@ -301,7 +301,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         let childDialog = null;
         if (this.props.childItems.length > 0) {
             const props = { ...this.props, id: this.props.childItems[0] };
-            childDialog = <TimelineDialog {...props} />
+            childDialog = <FeatureTimelineDialog {...props} />
         }
 
         let leftButton = <span className="non-button"></span>;
