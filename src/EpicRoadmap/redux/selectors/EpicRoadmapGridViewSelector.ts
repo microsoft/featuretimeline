@@ -15,6 +15,8 @@ import { teamIterationsSelector } from '../modules/teamIterations/teamIterationS
 import { backogIterationsSelector } from '../modules/teamsettings/teamsettingsselector';
 import { uiStateSelector } from './uiStateSelector';
 import { workItemDisplayDetailsSelectors } from './workItemDisplayDetailsSelector';
+import { IWorkItemOverrideIteration } from "../../../Common/redux/modules/OverrideIterations/overriddenIterationContracts";
+import { getWorkItemOverrideIteration } from "../../../Common/redux/modules/OverrideIterations/overriddenIterationsSelector";
 
 export interface ITeamFieldDisplayItem extends IGridItem {
     teamField: string;
@@ -34,6 +36,7 @@ export const EpicRoadmapGridViewSelector = (isSubGrid: boolean, rootWorkItemId: 
     getSettingsState as any,
     uiStateSelector as any,
     () => isSubGrid,
+    getWorkItemOverrideIteration as any,
     getEpicRoadmapGridView
 );
 export function getEpicRoadmapGridView(
@@ -45,6 +48,7 @@ export function getEpicRoadmapGridView(
     settingsState: ISettingsState,
     uiStatus: UIStatus,
     isSubGrid: boolean,
+    workItemOverrideIteration: IWorkItemOverrideIteration
 ): IEpicRoadmapGridView {
     if (uiStatus !== UIStatus.Default && uiStatus !== UIStatus.OutofScopeTeamIterations) {
         return {
@@ -110,7 +114,7 @@ export function getEpicRoadmapGridView(
         workItems: gridWorkItems,
         teamFieldDisplayItems,
         isSubGrid: false,
-        shadowForWorkItemId: -1,
+        shadowForWorkItemId: workItemOverrideIteration && workItemOverrideIteration.workItemId,
         hideParents: false,
         iterationDisplayOptions,
         teamIterations,
