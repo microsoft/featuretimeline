@@ -157,8 +157,11 @@ function _getGridItems(
         const workItemStartColumn = 2;
         let workItemStartRow = teamGroupStartRow;
         const childItems = orderedWorkItems.map(workItem => {
+            if (workItem.id === 11) {
+                debugger;
+            }
             const { iterationDuration: { startIteration, endIteration } } = workItem;
-            const iterationsForIndex = isSubGrid ? displayIterations : teamIterations;
+            const iterationsForIndex = !isSubGrid && iterationDisplayOptions ? teamIterations:  displayIterations; // isSubGrid ? displayIterations : teamIterations;
             let startIterationIndex = iterationsForIndex.findIndex(di => di.id === startIteration.id);
             let endIterationIndex = iterationsForIndex.findIndex(di => di.id === endIteration.id);
             let crop: CropWorkItem = CropWorkItem.None;
@@ -182,7 +185,8 @@ function _getGridItems(
                     endIterationIndex = displayIterations.findIndex(gi => gi.id === endIteration.id);
                 }
             }
-            if (outofScope) {
+            if (outofScope || startIterationIndex < 0 || endIterationIndex < 0) {
+                debugger;
                 return null;
             }
             if (startIterationIndex < 0) {
@@ -191,7 +195,7 @@ function _getGridItems(
 
             const allowOverrideIteration = !isSubGrid && workItem.iterationDuration.startIteration.id !== backlogIteration.id;
             const startCol = workItemStartColumn + startIterationIndex;
-            const endCol = workItemStartColumn + endIterationIndex + 1;
+            const endCol = workItemStartColumn + endIterationIndex  + 1;
             const ret = {
                 dimension: {
                     startRow: workItemStartRow,
