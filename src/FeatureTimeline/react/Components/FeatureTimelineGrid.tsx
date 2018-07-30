@@ -260,7 +260,6 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     iterationDuration={w.workItem.iterationDuration}
                     dimension={w.dimension}
                     onClick={id => this.props.launchWorkItemForm(id)}
-                    showInfoIcon={w.workItem.showInfoIcon}
                     showDetails={id => this.props.showDetails(id)}
                     overrideIterationStart={payload => this.props.overrideIterationStart(payload)}
                     overrideIterationEnd={() => this.props.overrideIterationEnd()}

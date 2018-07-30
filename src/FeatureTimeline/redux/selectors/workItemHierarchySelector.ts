@@ -123,7 +123,6 @@ function getWorkItemDetails(
         iterationDuration,
         children,
         isRoot,
-        showInfoIcon: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden),
         isComplete: workItemInfo && workItemInfo.stateCategory === StateCategory.Completed,
         workItemStateColor,
         childrenWithNoEfforts: children.filter(c => c.efforts === 0).length,

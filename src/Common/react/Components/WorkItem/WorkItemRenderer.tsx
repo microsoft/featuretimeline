@@ -24,7 +24,6 @@ export interface IWorkItemRendererProps {
     color: string;
     isRoot: boolean;
     isSubGrid: boolean;
-    showInfoIcon: boolean;
     allowOverrideIteration: boolean;
     iterationDuration: IIterationDuration;
     dimension: IDimension;
@@ -81,7 +80,6 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
             onClick,
             showDetails,
             isRoot,
-            showInfoIcon,
             allowOverrideIteration,
             isDragging,
             crop,
@@ -149,8 +147,8 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                 break;
             }
         }
-
-        const infoIcon = showInfoIcon ? <InfoIcon id={id} onClick={id => showDetails(id)} /> : null;
+ 
+        const infoIcon = !isRoot && <InfoIcon id={id} onClick={id => showDetails(id)} />;
         const additionalDetailsContainer = infoIcon ? "work-item-details-with-infoicon" : "work-item-details-without-infoicon";
 
         let leftHandle = null;
