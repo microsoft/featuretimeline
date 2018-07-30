@@ -161,7 +161,7 @@ function _getGridItems(
                 debugger;
             }
             const { iterationDuration: { startIteration, endIteration } } = workItem;
-            const iterationsForIndex = !isSubGrid && iterationDisplayOptions ? teamIterations:  displayIterations; // isSubGrid ? displayIterations : teamIterations;
+            const iterationsForIndex = !isSubGrid && iterationDisplayOptions ? teamIterations : displayIterations; // isSubGrid ? displayIterations : teamIterations;
             let startIterationIndex = iterationsForIndex.findIndex(di => di.id === startIteration.id);
             let endIterationIndex = iterationsForIndex.findIndex(di => di.id === endIteration.id);
             let crop: CropWorkItem = CropWorkItem.None;
@@ -195,7 +195,7 @@ function _getGridItems(
 
             const allowOverrideIteration = !isSubGrid && workItem.iterationDuration.startIteration.id !== backlogIteration.id;
             const startCol = workItemStartColumn + startIterationIndex;
-            const endCol = workItemStartColumn + endIterationIndex  + 1;
+            const endCol = workItemStartColumn + endIterationIndex + 1;
             const ret = {
                 dimension: {
                     startRow: workItemStartRow,
@@ -245,6 +245,9 @@ function getWorkItemsByTeamField(workItemDisplayDetails: IWorkItemDisplayDetails
     const workItemsByTeamField: IDictionaryStringTo<IWorkItemDisplayDetails[]> = workItemDisplayDetails.reduce((map, w) => {
         const areaPath: string = w.workItem.fields[teamFieldName];
         const parts = (areaPath || "Unknown").split("\\");
+        if (!areaPath) {
+            console.log("AreaPath is null", w.workItem, teamFieldName);
+        }
         let index = parts.length - 1;
         let leafValue = parts[index];
         // to check incase if the leaf value is duplicate, we keep track of entire path

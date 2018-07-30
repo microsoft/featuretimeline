@@ -223,7 +223,7 @@ function getIterationDurationFromChildren(
             startIteration,
             endIteration,
             kind: !startIteration ? IterationDurationKind.BacklogIteration : IterationDurationKind.ChildRollup,
-            kindMessage: !startIteration ? "Using backlog iteration." : "Start and end iterations are based on based on iteration of the child work items.",
+            kindMessage: !startIteration ? "Using backlog iteration." : "Start and end iterations are based on iteration of the child work items.",
             childrenAreOutofBounds: false,
         }
     }, { startIteration: null, endIteration: null, kind: IterationDurationKind.BacklogIteration, kindMessage: "Backlog iteration", childrenAreOutofBounds: false });
