@@ -13,7 +13,6 @@ export interface IWorkItemDisplayDetails {
     workItem: WorkItem;
     order: number;
     iterationDuration: IIterationDuration;
-    showInfoIcon: boolean;
     isComplete: boolean;
     efforts: number;
     childrenWithNoEfforts: number;

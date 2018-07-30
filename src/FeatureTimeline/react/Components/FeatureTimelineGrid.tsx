@@ -23,7 +23,7 @@ import { IGridView } from '../../../Common/redux/Contracts/GridViewContracts';
 import { UIStatus } from '../../../Common/redux/Contracts/types';
 import { getRowColumnStyle, getTemplateColumns } from '../../../Common/redux/Helpers/gridhelper';
 import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
-import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressActionCreators';
+import { saveOverrideIteration, endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressActionCreators';
 import { IWorkItemOverrideIteration } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationContracts';
 import { OverriddenIterationsActionCreator } from '../../../Common/redux/modules/OverrideIterations/overrideIterationsActions';
 import { changeProgressTrackingCriteria, changeShowClosedSinceDays, toggleShowWorkItemDetails } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
@@ -37,7 +37,7 @@ import { changePlanFeaturesWidth, createInitialize, togglePlanFeaturesPane } fro
 import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/types';
 import { startMarkInProgress } from '../../redux/store/workitems/actionCreators';
 import './FeatureTimelineGrid.scss';
-import { TimelineDialog } from './TimelineDialog';
+import { FeatureTimelineDialog } from './FeatureTimelineDialog';
 
 initializeIcons(/* optional base url */);
 
@@ -56,6 +56,7 @@ export interface IFeatureTimelineGridProps {
     clearOverrideIteration: (id: number) => void;
     dragHoverOverIteration: (iteration: string) => void;
     overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
+    saveOverrideIteration: (payload: IWorkItemOverrideIteration) => void;
     overrideIterationEnd: () => void;
     changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => void;
     showNIterations: (projectId: string, teamId: string, count: Number, maxIterations: number, currentIterationIndex: number) => void;
@@ -103,6 +104,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         overrideIterationStart: (payload: IWorkItemOverrideIteration) => {
             dispatch(startOverrideIteration(payload));
+        },
+        saveOverrideIteration: (payload: IWorkItemOverrideIteration) => {
+            dispatch(saveOverrideIteration(payload));
         },
         overrideIterationEnd: () => {
             dispatch(endOverrideIteration());
@@ -256,7 +260,6 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     iterationDuration={w.workItem.iterationDuration}
                     dimension={w.dimension}
                     onClick={id => this.props.launchWorkItemForm(id)}
-                    showInfoIcon={w.workItem.showInfoIcon}
                     showDetails={id => this.props.showDetails(id)}
                     overrideIterationStart={payload => this.props.overrideIterationStart(payload)}
                     overrideIterationEnd={() => this.props.overrideIterationEnd()}
@@ -297,7 +300,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
         let childDialog = null;
         if (this.props.childItems.length > 0) {
             const props = { ...this.props, id: this.props.childItems[0] };
-            childDialog = <TimelineDialog {...props} />
+            childDialog = <FeatureTimelineDialog {...props} />
         }
 
         let leftButton = <span className="non-button"></span>;

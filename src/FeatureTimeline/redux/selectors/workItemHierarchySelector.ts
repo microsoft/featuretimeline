@@ -123,7 +123,6 @@ function getWorkItemDetails(
         iterationDuration,
         children,
         isRoot,
-        showInfoIcon: !isRoot && (iterationDuration.kind === IterationDurationKind.ChildRollup || iterationDuration.kind === IterationDurationKind.UserOverridden),
         isComplete: workItemInfo && workItemInfo.stateCategory === StateCategory.Completed,
         workItemStateColor,
         childrenWithNoEfforts: children.filter(c => c.efforts === 0).length,
@@ -224,7 +223,7 @@ function getIterationDurationFromChildren(
             startIteration,
             endIteration,
             kind: !startIteration ? IterationDurationKind.BacklogIteration : IterationDurationKind.ChildRollup,
-            kindMessage: !startIteration ? "Using backlog iteration." : "Using iterations based on children start and end iteration",
+            kindMessage: !startIteration ? "Using backlog iteration." : "Start and end iterations are based on based on iteration of the child work items.",
             childrenAreOutofBounds: false,
         }
     }, { startIteration: null, endIteration: null, kind: IterationDurationKind.BacklogIteration, kindMessage: "Backlog iteration", childrenAreOutofBounds: false });

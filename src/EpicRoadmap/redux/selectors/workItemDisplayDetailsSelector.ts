@@ -13,7 +13,6 @@ import { normalizedDependencyTreeSelector } from "./dependencyTreeSelector";
 import { IEpicTree, normalizedEpicTreeSelector } from "./epicTreeSelector";
 import { pagedWorkItemsMapSelector } from "./workItemSelector";
 import { WorkItemStartEndIteration, workItemStartEndIterationSelector } from "./workItemStartEndIterationSelector";
-import { IterationDurationKind } from "../../../Common/redux/Contracts/IIterationDuration";
 import { highlightDependenciesSelector, IHighlightedDependency } from "../../../Common/redux/modules/HighlightDependencies/HighlightDependenciesModule";
 
 export const workItemDisplayDetailsSelectors = rootWorkItemId => createSelector(
@@ -95,7 +94,6 @@ export function getWorkItemDisplayDetails(
             iterationDuration,
             children,
             isRoot: false,
-            showInfoIcon: children.length > 0 || iterationDuration.kind === IterationDurationKind.UserOverridden,
             workItemStateColor,
             childrenWithNoEfforts,
             isComplete: stateCategory === StateCategory.Completed,

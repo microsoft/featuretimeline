@@ -18,7 +18,7 @@ import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItem
 import { startUpdateWorkItemIteration } from '../../../Common/redux/actions/StartUpdateWorkitemIterationAction';
 import { getRowColumnStyle, getTemplateColumns } from '../../../Common/redux/Helpers/gridhelper';
 import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIterationLeft, shiftDisplayIterationRight } from '../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions';
-import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressActionCreators';
+import { endOverrideIteration, overrideHoverOverIteration, startOverrideIteration, saveOverrideIteration } from '../../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressActionCreators';
 import { IWorkItemOverrideIteration } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationContracts';
 import { OverriddenIterationsActionCreator } from '../../../Common/redux/modules/OverrideIterations/overrideIterationsActions';
 import { changeProgressTrackingCriteria, toggleShowWorkItemDetails } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
@@ -47,6 +47,7 @@ export interface IEpicRoadmapGridContentProps {
     dragHoverOverIteration: (iteration: string) => void;
     overrideIterationStart: (payload: IWorkItemOverrideIteration) => void;
     overrideIterationEnd: () => void;
+    saveOverrideIteration: (payload: IWorkItemOverrideIteration) => void;
     changeIteration: (id: number, teamIteration: TeamSettingsIteration, override: boolean) => void;
     showNIterations: (projectId: string, teamId: string, count: Number, maxIterations: number, currentIterationIndex: number) => void;
     shiftDisplayIterationLeft: (maxIterations: number) => void;
@@ -122,7 +123,6 @@ export class EpicRoadmapGridContent extends React.Component<IEpicRoadmapGridCont
                 iterationDuration: w.workItem.iterationDuration,
                 dimension: w.dimension,
                 onClick: this.props.launchWorkItemForm,
-                showInfoIcon: w.workItem.showInfoIcon,
                 showDetails: this.props.showDetails,
                 overrideIterationStart: this.props.overrideIterationStart,
                 overrideIterationEnd: this.props.overrideIterationEnd,
@@ -410,6 +410,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         overrideIterationEnd: () => {
             dispatch(endOverrideIteration());
+        },
+        saveOverrideIteration: (payload: IWorkItemOverrideIteration) => {
+            dispatch(saveOverrideIteration(payload));
         },
         clearOverrideIteration: (id: number) => {
             dispatch(OverriddenIterationsActionCreator.clear(id));

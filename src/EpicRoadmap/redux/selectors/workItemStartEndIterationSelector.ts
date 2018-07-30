@@ -72,16 +72,18 @@ export function getWorkItemIterationDuration(
             // process predecessors to ensure we have them sorted out
             const predecessors = depTree.stop[workItemId] || [];
             let startIndexByPredecessors = -1;
-            predecessors.forEach(process);
 
-            kind = IterationDurationKind.Predecessors;
-            kindMessage = "Based on the predecessors of the work item";
-            predecessors
-                .filter(p => result[p].kind !== IterationDurationKind.BacklogIteration)
-                .forEach(p => {
-                    const pIndex = teamIterations.findIndex(i => i.id === result[p].endIteration.id) + 1;
-                    startIndexByPredecessors = pIndex > startIndexByPredecessors ? pIndex : startIndexByPredecessors;
-                });
+            if (predecessors.length > 0) {
+                predecessors.forEach(process);
+                kind = IterationDurationKind.Predecessors;
+                kindMessage = "Start/End iterations are calculated the predecessors of the work item.";
+                predecessors
+                    .filter(p => result[p].kind !== IterationDurationKind.BacklogIteration)
+                    .forEach(p => {
+                        const pIndex = teamIterations.findIndex(i => i.id === result[p].endIteration.id) + 1;
+                        startIndexByPredecessors = pIndex > startIndexByPredecessors ? pIndex : startIndexByPredecessors;
+                    });
+            }
 
             // 3. choose min start , max end date of children
             let startIndexByChildren = startIndexByPredecessors;
@@ -107,7 +109,7 @@ export function getWorkItemIterationDuration(
             if (startIndexByChildren > startIndexByPredecessors) {
                 kind = IterationDurationKind.ChildRollup;
                 startIndex = startIndexByChildren;
-                kindMessage = "Based on the start iteration of the children";
+                kindMessage = "Start/End iterations are calculated based on the iteration of the children.";
             }
 
             startIteration = teamIterations[startIndex];
@@ -133,6 +135,7 @@ export function getWorkItemIterationDuration(
                     break;
                 }
                 case IterationDurationKind.Predecessors: {
+                    debugger;
                     kindMessage = "Predecessors iterations are not subscribed by the team. ";
                     break;
                 }
@@ -140,7 +143,7 @@ export function getWorkItemIterationDuration(
 
             // Use work item's own iteration as first fallback
             if (workItemIteration) {
-                kindMessage = kindMessage + " Using work items own iteration";
+                kindMessage = kindMessage + " Using work items own iteration.";
                 kind = IterationDurationKind.Self;
                 startIteration = endIteration = workItemIteration;
             } else {
