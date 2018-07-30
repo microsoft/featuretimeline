@@ -159,7 +159,6 @@ function getWorkItemIterationDuration(
 
     const teamSettings = input.teamSetting.teamSetting[projectId][teamId];
 
-    let kindMessage = "";
     // if the start/end iteration is overridden use that value
     if (input.savedOverriddenIterations &&
         input.savedOverriddenIterations[id]) {
@@ -171,7 +170,7 @@ function getWorkItemIterationDuration(
 
         if (startIteration && endIteration) {
             const childrenAreOutofBounds = areChildrenOutOfBounds(startIteration, endIteration, iterationDuration, allIterations);
-            kindMessage = "User specified start and end iteration.";
+            let kindMessage = "User specified start and end iteration.";
             iterationDuration = { startIteration, endIteration, kind: IterationDurationKind.UserOverridden, overridedBy, kindMessage, childrenAreOutofBounds };
         }
     }
@@ -183,7 +182,7 @@ function getWorkItemIterationDuration(
         iterationDuration.startIteration = iteration;
         iterationDuration.endIteration = iteration;
         iterationDuration.kind = IterationDurationKind.Self;
-        kindMessage = "Work Items own iteration.";
+        iterationDuration.kindMessage = "Work Items own iteration.";
     }
 
     // If still null take currentIteration
@@ -191,7 +190,7 @@ function getWorkItemIterationDuration(
         iterationDuration.startIteration = teamSettings.backlogIteration;
         iterationDuration.endIteration = teamSettings.backlogIteration;
         iterationDuration.kind = IterationDurationKind.BacklogIteration;
-        kindMessage = "Using backlog iteration";
+        iterationDuration.kindMessage = "Using backlog iteration";
     }
     return iterationDuration;
 }
