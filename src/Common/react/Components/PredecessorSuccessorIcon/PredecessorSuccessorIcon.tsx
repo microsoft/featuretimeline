@@ -30,7 +30,7 @@ export class PredecessorSuccessorIcon extends React.Component<IPredecessorSucces
         }
     }
     public render() {
-        const icon = this.props.hasSuccessors ? "bowtie-navigate-forward-circle" : "bowtie-navigate-back-circle";
+        const icon = this.props.hasSuccessors ? "bowtie-link" : "bowtie-link";
         const highlight = this.props.isHighlighted ? "highlight-icon" : "";
 
         return (
