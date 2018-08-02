@@ -3,7 +3,7 @@ import { IEpicRoadmapState } from '../../../../EpicRoadmap/redux/contracts';
 export const
     OverriddenIterationSelector =
         (state: IEpicRoadmapState) =>
-            state.savedOverriddenIterations;
+            state.savedOverriddenIterations || {};
 
 
 export function getWorkItemOverrideIteration(state: IWorkItemOverrideIterationAwareState) {
