@@ -1,10 +1,12 @@
 .epic-selector-container {
     display: flex;
     margin-bottom: 5px;
-    margin-top: 5px;
+    margin-top: 15px;
+    text-align: center;
 }
 
 .select-epic-label {
+    padding-top: 5px;
     font-size: 15px;
     margin-right: 5px;
 }

@@ -18,6 +18,7 @@ export class EpicSelectorContent extends React.Component<IEpicSelectorProps, {}>
     public render(): JSX.Element {
         return (
             <div className="epic-selector-container">
+                <div className="select-epic-label">Epic:</div>
                 <ComboBox
                     className="epic-selector-dropdown"
                     ariaLabel="Select an Epic"
