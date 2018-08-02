@@ -3,8 +3,11 @@ import { RestoreOverrideIterationType, OverriddenIterationActions, SetOverrideIt
 import { IOverriddenIterationDuration } from './overriddenIterationContracts';
 
 export function savedOverrideIterationsReducer(
-    state: IDictionaryNumberTo<IOverriddenIterationDuration> = {},
+    state: IDictionaryNumberTo<IOverriddenIterationDuration>,
     action: OverriddenIterationActions) {
+    if (!state) {
+        state = {};
+    }
     return produce(state, draft => {
         switch (action.type) {
             case SetOverrideIterationType:
