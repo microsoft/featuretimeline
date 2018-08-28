@@ -112,7 +112,7 @@ function getWorkItemDetails(
 
     const orderFieldName = input.backlogConfiguration.backlogConfigurations[projectId][teamId].backlogFields.typeFields["Order"];
     const effortFieldName = input.backlogConfiguration.backlogConfigurations[projectId][teamId].backlogFields.typeFields["Effort"];
-    const color = workItemType ? "#" + (workItemType.color.length > 6 ? workItemType.color.substr(2) : workItemType.color) : "#c2c8d1";
+    const color = workItemType && workItemType.color ? "#" + (workItemType.color.length > 6 ? workItemType.color.substr(2) : workItemType.color) : "#c2c8d1";
     const workItemDetails: IWorkItemDisplayDetails = {
         id,
         title: workItem ? workItem.fields["System.Title"] : "Unparented",
