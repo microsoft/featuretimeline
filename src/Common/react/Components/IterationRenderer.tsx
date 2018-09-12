@@ -9,8 +9,8 @@ export interface IIterationRendererProps {
 }
 
 function getMMDD(date: Date) {
-    var mm = date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1); // getMonth() is zero-based
-    var dd = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+    var mm = date.getUTCMonth() < 9 ? "0" + (date.getUTCMonth() + 1) : (date.getUTCMonth() + 1); // getMonth() is zero-based
+    var dd = date.getUTCDate() < 10 ? "0" + date.getUTCDate() : date.getUTCDate();
     return `${mm}/${dd}`;
 }
 
