@@ -119,7 +119,7 @@ export function* handleInitialize(action: InitializeAction) {
         // query for Proposed work items
         {
             const wiql = yield call(getBacklogLevelQueryWiql, backlogConfig, teamSettings, teamFieldValues, "Proposed");
-            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId, /** team**/ null, /* teamPrecision */ null, /*top*/ 100);
+            const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId, /** team**/ null, /* teamPrecision */ null, /*top*/ 300);
 
             if (queryResults && queryResults.workItems) {
                 // Page only first 100 proposed items for optimization
