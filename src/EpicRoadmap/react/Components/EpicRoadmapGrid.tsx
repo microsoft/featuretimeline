@@ -384,7 +384,7 @@ const makeMapStateToProps = () => {
             gridView: EpicRoadmapGridViewSelector(/* isSubGrid */false, /* rootWorkItemId */ state.settingsState.lastEpicSelected)(state), //TODO: This need to come from another selector which is populated by the dropdown
             rawState: state,
             isSubGrid: false,
-            teamFieldName: state.backlogConfigurations[getProjectId()].backlogFields.typeFields["Team"]
+            teamFieldName: state.backlogConfigurations[getProjectId()].backlogFields.typeFields["Team"] || "System.AreaPath"
         }
     }
 }

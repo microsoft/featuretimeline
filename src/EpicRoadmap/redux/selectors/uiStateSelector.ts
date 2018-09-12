@@ -48,7 +48,8 @@ export const outOfScopeWorkItems = createSelector(
         return workItems.filter(w => {
             const iterationPath = w.fields["System.IterationPath"];
             return (backlogIteration.path || backlogIteration.name) !== iterationPath &&
-                !teamIterations.some(i => i.path === iterationPath);
+                !teamIterations.some(i => i.path === iterationPath) 
+                && w.fields["System.State"] && w.fields["System.State"] !== "Closed";
         });
 
     });

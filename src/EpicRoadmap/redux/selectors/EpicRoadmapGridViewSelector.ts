@@ -79,7 +79,7 @@ export function getEpicRoadmapGridView(
         progressTrackingCriteria
     } = settingsState;
 
-    const teamFieldName = typeFields["Team"];
+    const teamFieldName = typeFields["Team"] || "System.AreaPath";
     if (isSubGrid) {
         iterationDisplayOptions = null;
     }

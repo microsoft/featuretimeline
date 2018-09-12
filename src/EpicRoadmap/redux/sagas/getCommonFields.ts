@@ -2,7 +2,7 @@ import { BacklogConfiguration } from 'TFS/Work/Contracts';
 export function getCommonFields(backlogConfiguration: BacklogConfiguration) {
     const stackRankFieldRefName = backlogConfiguration.backlogFields.typeFields["Order"];
     const effortsFieldRefName = backlogConfiguration.backlogFields.typeFields["Effort"];
-    const teamFieldRefName = backlogConfiguration.backlogFields.typeFields["Team"];
+    const teamFieldRefName = backlogConfiguration.backlogFields.typeFields["Team"] || "System.AreaPath";
     const fields = ["System.Id",
         "System.Title",
         "System.AssignedTo",
