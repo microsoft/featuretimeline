@@ -25,6 +25,10 @@ export const uiStateSelector = createSelector(
             return UIStatus.NoTeamIterations;
         }
 
+        if(!state.epicsAvailableState.epics || state.epicsAvailableState.epics.length < 1 ) {
+            return UIStatus.NoEpics;
+        }
+        
         if (!state.workItemsState || !state.workItemsState.pagedWorkItems || state.workItemsState.pagedWorkItems.length === 0) {
             return UIStatus.NoWorkItems;
         }
@@ -32,6 +36,7 @@ export const uiStateSelector = createSelector(
         if (outOfScopeWorkItems(state).length > 0) {
             return UIStatus.OutofScopeTeamIterations;
         }
+
         return UIStatus.Default;
     }
 )

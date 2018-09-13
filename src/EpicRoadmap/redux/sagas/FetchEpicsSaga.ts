@@ -5,7 +5,7 @@ import * as VSS_Service from 'VSS/Service';
 import { escapeStr } from "../../../Common/redux/Helpers/escape";
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
 import { ProgressAwareActionCreator } from "../../../Common/redux/modules/ProgressAwareState/ProgressAwareStateActions";
-import { getProjectId } from "../../../Common/redux/Selectors/CommonSelectors";
+import { getProjectId, getTeamId } from "../../../Common/redux/Selectors/CommonSelectors";
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { EpicsAvailableCreator } from "../modules/EpicsAvailable/EpicsAvailable";
 import { getCommonFields } from './getCommonFields';
@@ -14,9 +14,17 @@ import WitContracts = require('TFS/WorkItemTracking/Contracts');
 import { getSettingsState } from "../../../Common/redux/modules/SettingsState/SettingsStateSelector";
 import { ISettingsState } from "../../../Common/redux/modules/SettingsState/SettingsStateContracts";
 import { selectEpic } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
+import { WorkHttpClient } from "TFS/Work/RestClient";
 
 export function* FetchEpicsSaga() {
     yield put(ProgressAwareActionCreator.setLoading(true));
+    const projectId = getProjectId();
+    const teamId = getTeamId();
+    const workHttpClient = VSS_Service.getClient(WorkHttpClient);
+    const teamContext = { project: projectId, team: teamId };
+
+    const teamFieldValues = yield call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext);
+
     const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
     const currentBacklogLevel = backlogConfiguration.portfolioBacklogs[1];
     const stateInfo: Contracts.WorkItemTypeStateInfo[] = backlogConfiguration.workItemTypeMappedStates
@@ -35,11 +43,18 @@ export function* FetchEpicsSaga() {
                         )`;
         }).join(" OR ");
 
-    const projectId = getProjectId();
+    const teamFieldClause = teamFieldValues.values
+    .map((tfValue) => {
+        const operator = tfValue.includeChildren ? "UNDER" : "=";
+        return `[${escapeStr(teamFieldValues.field.referenceName)}] ${operator} '${escapeStr(tfValue.value)}'`;
+    })
+    .join(" OR ");
+    
     const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
     const wiql = `SELECT [System.Id] 
     FROM WorkItems 
-    WHERE ${workItemTypeAndStatesClause}`;
+    WHERE ${workItemTypeAndStatesClause} AND ${teamFieldClause}`;
+
     const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
 
     const epicIds = queryResults.workItems.map(ref => ref.id);

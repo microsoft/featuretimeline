@@ -16,7 +16,8 @@ export enum UIStatus {
     Error,
     NoWorkItems,
     NoTeamIterations,
-    OutofScopeTeamIterations
+    OutofScopeTeamIterations,
+    NoEpics
 }
 
 export enum CropWorkItem {

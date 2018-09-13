@@ -121,7 +121,6 @@ export class IterationDurationComponent extends React.Component<IIterationDurati
     }
 
     private _validate = (startId: string, endId: string) => {
-        debugger;
         const {
             backlogIteration,
             teamIterations

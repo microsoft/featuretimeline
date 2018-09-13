@@ -45,6 +45,8 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
             uiState,
         } = this.props;
 
+        let showSelector: boolean = true;
+
         if (uiState === UIStatus.Loading) {
             return (
                 <Spinner size={SpinnerSize.large} className="loading-indicator" label="Loading..." />
@@ -74,6 +76,18 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
             );
         }
 
+        if (uiState === UIStatus.NoEpics) {
+            showSelector = false;
+            contents = (
+                <MessageBar
+                    messageBarType={MessageBarType.warning}
+                    isMultiline={false}
+                >
+                    {"Team does not have any Epics assigned."}
+                </MessageBar>
+            );
+        }
+
         let additionalMessage = null;
         if (uiState === UIStatus.OutofScopeTeamIterations) {
             const style = {cursor: "pointer"};
@@ -99,7 +113,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
 
         return (
             <div className="epic-container">
-                <EpicSelector />
+                {showSelector && <EpicSelector />}
                 {additionalMessage}
                 {callout}
                 {contents}

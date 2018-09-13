@@ -47,7 +47,6 @@ function handleStartUpdateWorkItemIteration(state: IWorkItemsState, action: Star
     } = action.payload;
 
     return produce(state, draft => {
-        debugger;
         const workItemObject = draft.workItemInfos[workItem];
         if (workItemObject) {
             workItemObject.workItem.fields["System.IterationPath"] = teamIteration.path;
