@@ -33,14 +33,23 @@ export class WorkItemMetadataService {
         }
 
         const map = {};
+        const promises = [];
         const witHttpClient = getClient(WorkItemTrackingHttpClient);
         if (witHttpClient.getWorkItemTypeStates) {
             for (const wit of workItemTypeNames) {
-                map[wit] = await witHttpClient.getWorkItemTypeStates(projectId, wit);
+                promises.push(this.getStatusForWit(projectId, wit, map));
             }
         }
-
+        await Promise.all(promises);
         this._states = map;
         return map;
+    }
+
+    private async getStatusForWit(projectId, wit, map) {
+        const witHttpClient = getClient(WorkItemTrackingHttpClient);
+        return witHttpClient.getWorkItemTypeStates(projectId, wit)
+            .then((states) => {
+                map[wit] = states;
+            });
     }
 }
