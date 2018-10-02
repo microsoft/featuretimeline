@@ -232,6 +232,11 @@ function getChildrenIds(
     workItemInfos: IDictionaryNumberTo<IWorkItemInfo>,
     parentId: number): number[] {
 
+    const workItem = workItemInfos[parentId];
+    if (workItem) {
+        return workItemInfos[parentId].children;
+    }
+
     const childIds = [];
     for (const key in workItemInfos) {
         const workItem = workItemInfos[key];
