@@ -50,6 +50,13 @@ export function getEpicHierarchy(projectId: string,
 
     // Filter only inprogress features
     epics.forEach(epic => epic.children = epic.children.filter(filter));
+    const compare = (w1: IWorkItemDisplayDetails, w2: IWorkItemDisplayDetails) => {
+        if (w1.order === w2.order) {
+            return w1.id - w2.id;
+        }
+        return w1.order - w2.order;
+    }
+    epics.forEach(epic => epic.children.sort(compare));
 
     // Return only those epics that have one or more children
     return epics.filter(e => e.children.length > 0);
@@ -117,7 +124,7 @@ function getWorkItemDetails(
         id,
         title: workItem ? workItem.fields["System.Title"] : "Unparented",
         color,
-        order: workItem ? workItem.fields[orderFieldName] : 0,
+        order: workItem ? workItem.fields[orderFieldName] || Number.MAX_VALUE : Number.MAX_VALUE,
         efforts: workItem ? workItem.fields[effortFieldName] || 0 : 0,
         workItem,
         iterationDuration,

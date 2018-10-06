@@ -58,7 +58,7 @@ export function getWorkItemDisplayDetails(
         const orderFieldName = backlogConfiguration.backlogFields.typeFields["Order"];
         const effortFieldName = backlogConfiguration.backlogFields.typeFields["Effort"];
         const color = workItemType && workItemType.color ? "#" + (workItemType.color.length > 6 ? workItemType.color.substr(2) : workItemType.color) : "#c2c8d1";
-        const order = workItem.fields[orderFieldName];
+        const order = workItem.fields[orderFieldName] || Number.MAX_VALUE;
         const efforts = workItem.fields[effortFieldName] || 0;
         const iterationDuration = workItemStartEndIterations[workItemId];
         const children = getWorkItemDisplayDetails(

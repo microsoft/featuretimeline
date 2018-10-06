@@ -39,7 +39,7 @@ export function getUnplannedFeatures2(projectId: string,
         const workItemTypeName = workItem.fields["System.WorkItemType"];
         const workItemType = workItemMetadata[projectId].workItemTypes.filter((wit) => wit.name.toLowerCase() === workItemTypeName.toLowerCase())[0];
         const color = workItemType && workItemType.color ? "#" + (workItemType.color.length > 6 ? workItemType.color.substr(2) : workItemType.color) : "#c2c8d1";
-        const order = workItem.fields[orderField];
+        const order = workItem.fields[orderField] || Number.MAX_VALUE;
         const backlogConfig: BacklogConfiguration = backlogConfiguration.backlogConfigurations[projectId][teamId];
         const inProgressState = getDefaultInProgressState(workItemTypeName, backlogConfig.workItemTypeMappedStates);
         return {
@@ -50,5 +50,5 @@ export function getUnplannedFeatures2(projectId: string,
             order
         };
     })
-    .sort((a, b) => a.order - b.order);
+        .sort((a, b) => a.order - b.order);
 }
