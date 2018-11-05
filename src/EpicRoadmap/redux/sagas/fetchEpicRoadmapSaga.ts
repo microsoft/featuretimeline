@@ -43,7 +43,7 @@ export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic
                     AND Target.[System.WorkItemType] <> '' mode(Recursive)`;
 
         const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
-        const parentChildQueryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: parentChildWiql }, projectId);
+        const parentChildQueryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: parentChildWiql }, projectId, /* team */ undefined, /*timePrecision? */ undefined, /* top */ 19999);
 
         yield put(WorkItemsActionCreator.epicHierarchyReceived(parentChildQueryResults.workItemRelations));
 
@@ -58,7 +58,7 @@ export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic
                                     AND Target.[System.TeamProject] = @project
                                     AND Target.[System.WorkItemType] <> ''`;
 
-        const dependenciesQueryResult: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: dependenciesWiql }, projectId);
+        const dependenciesQueryResult: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: dependenciesWiql }, projectId, /* team */ undefined, /*timePrecision? */ undefined, /* top */ 19999);
         yield put(WorkItemsActionCreator.dependenciesReceived(dependenciesQueryResult.workItemRelations));
 
         const predecessorWorkItemIds = dependenciesQueryResult.workItemRelations.map(rel => rel.target.id);

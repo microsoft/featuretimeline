@@ -55,7 +55,7 @@ export function* FetchEpicsSaga() {
     FROM WorkItems 
     WHERE ${workItemTypeAndStatesClause} AND ${teamFieldClause}`;
 
-    const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId);
+    const queryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: wiql }, projectId, /* team */ undefined, /*timePrecision? */ undefined, /* top */ 19999);
 
     const epicIds = queryResults.workItems.map(ref => ref.id);
     const workItems = yield PageWorkItemHelper.pageWorkItems(epicIds, projectId, getCommonFields(backlogConfiguration));
