@@ -15,7 +15,7 @@ Choose a browser
 [ ] Safari
 
 **Version**
-[ ] VSTS
+[ ] Azure DevOps/VSTS
 [ ] TFS 2017 Update 2/3
 [ ] TFS 2018
 
