@@ -24,12 +24,15 @@
   },
   "keywords": [
     "timeline",
-    "work item"
+    "work item",
+    "feature",
+    "roadmap"
   ],
   "dependencies": {
+    "azure-devops-ui": "^1.143.0",
     "es6-promise": "^4.2.4",
     "immer": "^1.3.1",
-    "npm": "^6.3.0",
+    "npm": "^6.4.1",
     "office-ui-fabric-react": "^5.117.0",
     "rc-input-number": "^4.0.12",
     "react": "^16.4.1",

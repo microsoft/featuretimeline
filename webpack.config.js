@@ -28,9 +28,9 @@ const mode = process.env.NODE_ENV || "development";
 const sourcemap = mode === "development";
 const plugins = [
 	new CopyWebpackPlugin([{
-			from: "./node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js",
-			to: "libs/VSS.SDK.min.js"
-		},
+		from: "./node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js",
+		to: "libs/VSS.SDK.min.js"
+	},
 		{
 			from: "./node_modules/react/umd/react.production.min.js",
 			to: "react.js"
@@ -106,24 +106,7 @@ module.exports = {
 			{
 				test: /\.(scss)$/,
 
-				use: [{
-						loader: 'style-loader',
-						options: {
-							sourcemap: sourcemap
-						}
-					}, {
-						loader: 'css-loader',
-						options: {
-							sourcemap: sourcemap
-						}
-					},
-					{
-						loader: 'sass-loader',
-						options: {
-							sourcemap: sourcemap
-						}
-					}
-				]
+				use: ["style-loader", "css-loader", "azure-devops-ui/buildScripts/css-variables-loader", "sass-loader"]
 			}
 
 		]

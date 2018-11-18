@@ -1,15 +1,16 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 .columnshadow {
     margin-top: 2px;
-    background: #f4f4f4;
+    background: $calloutShadowColor;
     min-height: 36px;
 }
 
 .highlight {
     //border: 1px solid yellowgreen;
-    box-shadow: 3px 3px 15px lightgrey;
-    border-color:lightgrey;
-    background: lightgrey;
-    color: #fff;
+    box-shadow: 3px 3px 15px $tooltip-background-color;
+    border-color:$tooltip-background-color;
+    background: $tooltip-background-color;
+    color: $tooltip-background-color;
     cursor: pointer;
     /*Opacity*/
     zoom: 1;

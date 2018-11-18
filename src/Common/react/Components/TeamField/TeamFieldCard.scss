@@ -1,8 +1,9 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 .team-field-card{
-    border: solid 1px lightgrey;
+    border: solid 1px $tooltip-background-color;
     padding: 5px;
     font-size: 15px;
     text-align: center;
-    background-color: #f4f4f4;
+    background-color: $tooltip-background-color;
     margin-bottom: 5px;
 }

@@ -58,7 +58,7 @@
             "ms.vss-work-web.product-backlog-tabs"
         ],
         "properties": {
-            "name": "Epic Roadmap (BETA)",
+            "name": "Epic Roadmap",
             "order": 100,
             "uri": "dist/EpicRoadmap.html",
             "dynamic": true

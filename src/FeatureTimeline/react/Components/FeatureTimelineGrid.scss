@@ -1,7 +1,10 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 .feature-timeline-main-container {
     display: flex;
     flex-direction: column;
     height: 100%;
+    background-color: $backgroundColor;
+
 }
 
 .root-container {
@@ -24,14 +27,14 @@
     padding: 3px;
     margin: 2px;
     border-radius: 5px;
-    border: solid 1px lightgray;
+    border: solid 1px black;
     cursor: pointer;
     font-family: sans-serif;
 }
 
 .command {
     @include button-dimension();
-    background: lightgray;
+    background-color: $backgroundColor;
     color: black;
     overflow: ellipse;
     white-space: nowrap;
@@ -49,7 +52,7 @@
 
     position: absolute;
     right: 20px;
-    background: white;
+    background-color: $backgroundColor;
     left: 0;
     align-items: center;
 }

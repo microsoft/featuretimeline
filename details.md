@@ -32,7 +32,7 @@ If you are a kanban team and does not set iterations for your user story, plan w
 * Plan
 * Track progress
 
-# Epic Roadmap (Beta) 
+# Epic Roadmap
 
 We are testing out a new feature, **Cross team dependency tracking** for an epic. While Feature timeline is a teams view of work in-progress, epic roadmap is for a epic worked by multiple teams across multiple sprints.
 
