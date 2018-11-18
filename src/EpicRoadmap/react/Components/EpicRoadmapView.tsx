@@ -12,7 +12,7 @@ import { uiStateSelector, outOfScopeWorkItems } from '../../redux/selectors/uiSt
 import { EpicRoadmapGrid } from './EpicRoadmapGrid';
 import { EpicSelector } from './EpicSelector';
 import './EpicRoadmapView.scss';
-import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
 import { SimpleWorkItem } from '../../../Common/react/Components/WorkItem/SimpleWorkItem';
 import { Callout } from 'office-ui-fabric-react/lib/Callout';

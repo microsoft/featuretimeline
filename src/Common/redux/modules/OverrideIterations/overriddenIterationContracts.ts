@@ -1,3 +1,5 @@
+import { IDictionaryNumberTo } from "../../Contracts/types";
+
 export type SavedOverriddenIteration = IDictionaryNumberTo<IOverriddenIterationDuration>;
 export interface IOverriddenIterationsAwareState {
     savedOverriddenIterations: SavedOverriddenIteration;

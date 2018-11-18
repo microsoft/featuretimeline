@@ -1,5 +1,5 @@
 import { createNormalizedEpicTree } from "../../../selectors/epicTreeSelector";
-import { BacklogConfiguration } from 'TFS/Work/Contracts';
+import { BacklogConfiguration } from 'azure-devops-extension-api/Work';
 declare var test, expect;
 
 const backlogConfiguration: BacklogConfiguration = {

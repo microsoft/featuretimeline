@@ -8,7 +8,7 @@ import {
 import { css } from '@uifabric/utilities/lib/css';
 import { hexToRgb } from '../colorhelper';
 import { ProgressDetails } from '../ProgressDetails/ProgressDetails';
-import { WorkItemStateColor, WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItemStateColor, WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { State } from '../State/State';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { IIterationDuration } from "../../../redux/Contracts/IIterationDuration";

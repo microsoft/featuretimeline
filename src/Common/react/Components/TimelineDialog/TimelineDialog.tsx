@@ -2,7 +2,7 @@ import './TimelineDialog.scss'
 import * as React from 'react';
 import { Dialog, DialogType } from 'office-ui-fabric-react/lib/Dialog';
 import { IterationDurationComponent } from '../IterationDuration/IterationDuration';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
 import { IWorkItemOverrideIteration } from '../../../redux/modules/OverrideIterations/overriddenIterationContracts';
 import { IIterationDuration } from '../../../redux/Contracts/IIterationDuration';
 

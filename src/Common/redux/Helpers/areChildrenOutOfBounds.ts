@@ -1,5 +1,5 @@
 import { IIterationDuration, IterationDurationKind } from "../Contracts/IIterationDuration";
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
 export function areChildrenOutOfBounds(parentStartIteration: TeamSettingsIteration, parentEndIteration: TeamSettingsIteration, childrenIterationDuration: IIterationDuration, allIterations: TeamSettingsIteration[]): boolean {
     if (childrenIterationDuration.kind === IterationDurationKind.BacklogIteration || !parentStartIteration || !parentEndIteration) {
         return false;

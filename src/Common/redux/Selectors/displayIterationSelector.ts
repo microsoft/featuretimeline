@@ -1,4 +1,4 @@
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { IIterationDisplayOptions, IWorkItemDisplayDetails } from "../Contracts/GridViewContracts";
 import { compareIteration } from "../Helpers/iterationComparer";
 

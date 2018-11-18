@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { ActionsUnion, createAction } from '../../../../Common/redux/Helpers/ActionHelper';
 
 export interface IEpicsAvailableState {

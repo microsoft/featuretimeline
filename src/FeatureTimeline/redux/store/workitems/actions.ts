@@ -1,8 +1,8 @@
 import { StartUpdateWorkitemIterationAction } from "../../../../Common/redux/actions/StartUpdateWorkitemIterationAction";
 
 import { Action } from "redux";
-import { WorkItem, WorkItemLink } from "TFS/WorkItemTracking/Contracts";
-import { TeamSettingsIteration, WorkItemTypeStateInfo } from "TFS/Work/Contracts";
+import { WorkItem, WorkItemLink } from "azure-devops-extension-api/WorkItemTracking";
+import { TeamSettingsIteration, WorkItemTypeStateInfo } from "azure-devops-extension-api/Work";
 export const StartMarkInProgressActionType = "@@workitems/StartMarkInProgressAction";
 export const ChangeParentActionType = "@@workitems/ChangeParentAction";
 export const WorkItemsReceivedActionType = "@@workitems/WorkItemsReceived";

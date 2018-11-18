@@ -1,4 +1,4 @@
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { IGridIteration, IGridIterationDisplayDetails, IGridWorkItem } from "../Contracts/GridViewContracts";
 import { IDimension } from "../Contracts/types";
 

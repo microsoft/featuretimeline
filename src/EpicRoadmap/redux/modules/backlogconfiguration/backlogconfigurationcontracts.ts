@@ -1,4 +1,4 @@
-import { BacklogConfiguration } from "TFS/Work/Contracts";
+import { BacklogConfiguration } from "azure-devops-extension-api/Work";
 
 export type BacklogConfigurationMap = { [projectId: string]: BacklogConfiguration }
 

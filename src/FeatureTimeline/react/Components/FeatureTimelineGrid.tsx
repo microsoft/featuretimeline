@@ -10,7 +10,7 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { connect, Provider } from 'react-redux';
 import SplitterLayout from 'react-splitter-layout';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
 import { IterationDropTarget } from '../../../Common/react/Components/DroppableIterationShadow';
 import { IterationRenderer } from '../../../Common/react/Components/IterationRenderer';
 import { ChildRowsSeparator } from '../../../Common/react/Components/WorkItem/ChildRowsSeparatorGap';

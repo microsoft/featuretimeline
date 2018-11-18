@@ -2,7 +2,7 @@ import { escapeStr } from '../../../Common/redux/Helpers/escape';
 
 import { all, call, put, select } from 'redux-saga/effects';
 import { WorkHttpClient } from 'TFS/Work/RestClient';
-import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
+import { WorkItemTrackingRestClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
 import { restoreOverriddenIterations } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationsSaga';
@@ -19,8 +19,8 @@ import { teamSettingsIterationReceived } from '../store/teamiterations/actionCre
 import { teamSettingsReceived } from '../store/teamSettings/actionCreators';
 import { workItemLinksReceived, workItemsReceived } from '../store/workitems/actionCreators';
 import { restoreSettings } from '../../../Common/redux/modules/SettingsState/SettingsStateSagas';
-import Contracts = require('TFS/Work/Contracts');
-import WitContracts = require('TFS/WorkItemTracking/Contracts');
+import Contracts = require('azure-devops-extension-api/Work');
+import WitContracts = require('azure-devops-extension-api/WorkItemTracking');
 import TFS_Core_Contracts = require('TFS/Core/Contracts');
 import { fetchIterationDisplayOptions } from '../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSaga';
 import { ISettingsState } from '../../../Common/redux/modules/SettingsState/SettingsStateContracts';
@@ -53,9 +53,9 @@ export function* handleInitialize(action: InitializeAction) {
         projectId
     } as TFS_Core_Contracts.TeamContext;
 
-    const workHttpClient = VSS_Service.getClient(WorkHttpClient);
+    const workHttpClient = getClient(WorkHttpClient);
     const metadataService = WorkItemMetadataService.getInstance();
-    const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
+    const witHttpClient = getClient(WorkItemTrackingRestClient);
     if (!workHttpClient.getBacklogConfigurations) {
         yield put(genericError("This extension is supported on Team Foundation Server 2018 or above."));
         return;
@@ -301,7 +301,7 @@ async function _runChildWorkItemQuery(
          AND ([System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Forward')
          AND (Target.[System.TeamProject] = @project and ${workItemTypeAndStatesClause})  
      MODE (MayContain)`;
-    const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
+    const witHttpClient = getClient(WorkItemTrackingRestClient);
     return witHttpClient.queryByWiql({ query: wiql }, project);
 }
 
@@ -323,7 +323,7 @@ async function _runParentWorkItemQuery(
          AND ([System.Links.LinkType] = 'System.LinkTypes.Hierarchy-Reverse')
          AND (Target.[System.TeamProject] = @project and Target.[System.WorkItemType] in (${witClause}))  
      MODE (MayContain)`;
-    const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
+    const witHttpClient = getClient(WorkItemTrackingRestClient);
     return witHttpClient.queryByWiql({ query: wiql }, project);
 }
 

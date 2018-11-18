@@ -1,7 +1,7 @@
 import "./IterationDuration.scss";
 import * as React from "react";
 import { IIterationDuration, IterationDurationKind } from "../../../redux/Contracts/IIterationDuration";
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { ComboBox, IComboBoxOption } from "office-ui-fabric-react/lib/ComboBox";
 import { Button, PrimaryButton } from "office-ui-fabric-react/lib/Button";
 

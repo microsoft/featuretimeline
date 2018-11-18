@@ -1,4 +1,5 @@
-import { WorkItemType, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
+import { WorkItemType, WorkItemStateColor } from "azure-devops-extension-api/WorkItemTracking";
+import { IDictionaryStringTo } from "../../../../Common/redux/Contracts/types";
 
 export interface IWorkItemMetadata {
     workItemTypes: WorkItemType[];

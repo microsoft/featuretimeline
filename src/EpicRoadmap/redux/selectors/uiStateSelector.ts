@@ -2,9 +2,9 @@ import { createSelector } from "reselect";
 import { IEpicRoadmapState } from "../contracts";
 import { UIStatus } from "../../../Common/redux/Contracts/types";
 import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { getPagedWorkItems } from "./workItemSelector";
-import { WorkItem } from "TFS/WorkItemTracking/Contracts";
+import { WorkItem } from "azure-devops-extension-api/WorkItemTracking";
 import { backogIterationsSelector } from "../modules/teamsettings/teamsettingsselector";
 export function getEpicRoadmapState(state: IEpicRoadmapState) {
     return state;

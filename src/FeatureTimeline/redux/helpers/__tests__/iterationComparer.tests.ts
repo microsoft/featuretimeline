@@ -1,4 +1,4 @@
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { getCurrentIterationIndex } from "../../../../Common/redux/Helpers/iterationComparer";
 declare var it, expect;
 

@@ -1,4 +1,4 @@
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
 export interface IIterationDuration {
     startIteration: TeamSettingsIteration;
     endIteration: TeamSettingsIteration;

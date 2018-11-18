@@ -1,6 +1,6 @@
 import { ActionCreator } from 'redux';
-import { TeamSettingsIteration, WorkItemTypeStateInfo } from 'TFS/Work/Contracts';
-import { WorkItem, WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
+import { TeamSettingsIteration, WorkItemTypeStateInfo } from 'azure-devops-extension-api/Work';
+import { WorkItem, WorkItemLink } from 'azure-devops-extension-api/WorkItemTracking';
 import { ChangeParentAction, ChangeParentActionType, StartMarkInProgressAction, StartMarkInProgressActionType, WorkItemLinksReceivedAction, WorkItemLinksReceivedActionType, WorkItemsReceivedAction, WorkItemsReceivedActionType } from './actions';
 
 

@@ -1,6 +1,6 @@
 import { call, put, select } from "redux-saga/effects";
-import { BacklogConfiguration, WorkItemTypeStateInfo } from 'TFS/Work/Contracts';
-import { WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
+import { BacklogConfiguration, WorkItemTypeStateInfo } from 'azure-devops-extension-api/Work';
+import { WorkItemTrackingRestClient } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { ActionWithPayload } from "../../../Common/redux/Helpers/ActionHelper";
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
@@ -10,7 +10,7 @@ import { getProjectId } from '../../../Common/redux/Selectors/CommonSelectors';
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { WorkItemsActionCreator } from '../modules/workItems/workItemActions';
 import { getCommonFields } from "./getCommonFields";
-import WitContracts = require('TFS/WorkItemTracking/Contracts');
+import WitContracts = require('azure-devops-extension-api/WorkItemTracking');
 import { escapeStr } from "../../../Common/redux/Helpers/escape";
 
 export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic", number>) {
@@ -42,7 +42,7 @@ export function* fetchEpicRoadmap(action: ActionWithPayload<"@@common/selectepic
                     AND Target.[System.TeamProject] = @project
                     AND Target.[System.WorkItemType] <> '' mode(Recursive)`;
 
-        const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
+        const witHttpClient = getClient(WorkItemTrackingRestClient);
         const parentChildQueryResults: WitContracts.WorkItemQueryResult = yield call([witHttpClient, witHttpClient.queryByWiql], { query: parentChildWiql }, projectId, /* team */ undefined, /*timePrecision? */ undefined, /* top */ 19999);
 
         yield put(WorkItemsActionCreator.epicHierarchyReceived(parentChildQueryResults.workItemRelations));

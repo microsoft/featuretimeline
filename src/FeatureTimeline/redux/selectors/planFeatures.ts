@@ -1,4 +1,4 @@
-import { BacklogConfiguration } from "TFS/Work/Contracts";
+import { BacklogConfiguration } from "azure-devops-extension-api/Work";
 import { IWorkItemListItem } from "../../../Common/react/Components/WorkItemList";
 import { getDefaultInProgressState } from "../../../Common/redux/Helpers/getWorkItemStateCategory";
 import { IFeatureTimelineRawState } from "../store/types";

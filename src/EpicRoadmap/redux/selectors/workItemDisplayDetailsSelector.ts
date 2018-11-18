@@ -1,8 +1,8 @@
 import { createSelector } from "reselect";
-import { BacklogConfiguration, TeamSettingsIteration } from "TFS/Work/Contracts";
-import { WorkItem, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
+import { BacklogConfiguration, TeamSettingsIteration } from "azure-devops-extension-api/Work";
+import { WorkItem, WorkItemStateColor } from "azure-devops-extension-api/WorkItemTracking";
 import { IWorkItemDisplayDetails } from "../../../Common/redux/Contracts/GridViewContracts";
-import { StateCategory } from "../../../Common/redux/Contracts/types";
+import { StateCategory, IDictionaryNumberTo } from "../../../Common/redux/Contracts/types";
 import { getWorkItemStateCategory } from "../../../Common/redux/Helpers/getWorkItemStateCategory";
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { teamIterationsSelector } from "../modules/teamIterations/teamIterationSelector";

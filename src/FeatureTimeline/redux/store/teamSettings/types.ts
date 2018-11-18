@@ -1,4 +1,5 @@
-import { TeamSetting } from "TFS/Work/Contracts";
+import { TeamSetting } from "azure-devops-extension-api/Work";
+import { IDictionaryStringTo } from "../../../../Common/redux/Contracts/types";
 
 export interface ITeamSettingState {
     // project -> team -> TeamSetting

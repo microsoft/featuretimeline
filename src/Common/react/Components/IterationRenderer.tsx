@@ -1,6 +1,6 @@
 import "./IterationRenderer.scss";
 import * as React from "react";
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { isCurrentIteration } from "../../redux/Helpers/iterationComparer";
 
 export interface IIterationRendererProps {

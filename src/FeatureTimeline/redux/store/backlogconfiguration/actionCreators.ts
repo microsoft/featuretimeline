@@ -1,6 +1,6 @@
 import { ActionCreator } from 'redux';
 import { BacklogConfigurationReceivedAction, BacklogConfigurationReceivedType } from './actions';
-import { BacklogConfiguration } from 'TFS/Work/Contracts';
+import { BacklogConfiguration } from 'azure-devops-extension-api/Work';
 
 export const backlogConfigurationReceived: ActionCreator<BacklogConfigurationReceivedAction> =
     (projectId: string, teamId: string, backlogConfiguration: BacklogConfiguration) => ({

@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { TeamSetting } from "TFS/Work/Contracts";
+import { TeamSetting } from "azure-devops-extension-api/Work";
 
 export const TeamSettingReceivedType = "@@teamSetting/TeamSettingReceived";
 

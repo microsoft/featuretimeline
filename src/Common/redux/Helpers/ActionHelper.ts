@@ -1,4 +1,5 @@
 import { Action } from "redux";
+import { IDictionaryStringTo } from "../Contracts/types";
 
 /**
  * A better typing for the Redux Action

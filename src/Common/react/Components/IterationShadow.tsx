@@ -1,7 +1,7 @@
 import './IterationShadow.scss';
 
 import * as React from 'react';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
 import { getRowColumnStyle } from '../../redux/Helpers/gridhelper';
 import { IGridIteration } from '../../redux/Contracts/GridViewContracts';
 

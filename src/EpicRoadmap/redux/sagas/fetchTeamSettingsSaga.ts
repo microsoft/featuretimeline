@@ -9,7 +9,7 @@ import { TeamSettingsActionCreator } from '../modules/teamsettings/teamsettingsa
 export function* fetchTeamIterations() {
     const projectId = getProjectId();
     const teamId = getTeamId();
-    const workHttpClient = VSS_Service.getClient(WorkHttpClient);
+    const workHttpClient = getClient(WorkHttpClient);
     const teamContext = { project: projectId, team: teamId };
     const teamIterations = yield call([workHttpClient, workHttpClient.getTeamIterations], teamContext);
     yield put(TeamIterationsActionCreator.teamIterationsReceived(teamId, teamIterations));
@@ -18,7 +18,7 @@ export function* fetchTeamIterations() {
 export function* fetchTeamSettings() {
     const projectId = getProjectId();
     const teamId = getTeamId();
-    const workHttpClient = VSS_Service.getClient(WorkHttpClient);
+    const workHttpClient = getClient(WorkHttpClient);
     const teamContext = { project: projectId, team: teamId };
     const teamSettings = yield call([workHttpClient, workHttpClient.getTeamSettings], teamContext);
     yield put(TeamSettingsActionCreator.teamSettingsReceived(teamId, teamSettings));

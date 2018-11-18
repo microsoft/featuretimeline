@@ -1,5 +1,5 @@
 import { IFeatureTimelineRawState } from "../store/types";
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { UIStatus } from "../../../Common/redux/Contracts/types";
 
 export function getTeamIterations(

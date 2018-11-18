@@ -1,5 +1,5 @@
 import { ActionsUnion, createAction } from "../../../../Common/redux/Helpers/ActionHelper";
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 
 export const TeamIterationsReceivedType = "@@teamiterations/TeamIterationsReceived";
 export const TeamIterationsActionCreator = {

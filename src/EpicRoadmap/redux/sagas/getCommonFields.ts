@@ -1,4 +1,4 @@
-import { BacklogConfiguration } from 'TFS/Work/Contracts';
+import { BacklogConfiguration } from 'azure-devops-extension-api/Work';
 export function getCommonFields(backlogConfiguration: BacklogConfiguration) {
     const stackRankFieldRefName = backlogConfiguration.backlogFields.typeFields["Order"];
     const effortsFieldRefName = backlogConfiguration.backlogFields.typeFields["Effort"];

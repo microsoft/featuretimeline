@@ -1,6 +1,5 @@
-import { WorkItem } from "TFS/WorkItemTracking/Contracts";
-import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
-import * as VSS_Service from 'VSS/Service';
+import { WorkItem, WorkItemTrackingRestClient } from "azure-devops-extension-api/WorkItemTracking";
+import { getClient } from "azure-devops-extension-api";
 
 export class PageWorkItemHelper {
 
@@ -8,7 +7,7 @@ export class PageWorkItemHelper {
      * Pages work items with given id
      * Considers the length of the constructed url and does paging based in the lenght of the url + max page size
      */
-    public static pageWorkItems(ids: number[], projectName?: string, fields?: string[]): IPromise<WorkItem[]> {
+    public static pageWorkItems(ids: number[], projectName?: string, fields?: string[]): Promise<WorkItem[]> {
         const pwh = PageWorkItemHelper;
         fields = fields.filter(f => !!f);
         ids = ids.filter(i => !!i);
@@ -20,7 +19,7 @@ export class PageWorkItemHelper {
         const allowedLength = maxUrlLength - urlPrefixLength - fieldLength;
 
         const maxPageSize = 200;
-        const promises: IPromise<WorkItem[]>[] = [];
+        const promises: Promise<WorkItem[]>[] = [];
 
         let pageIds: number[] = [];
         let currentLength = 0;
@@ -54,20 +53,18 @@ export class PageWorkItemHelper {
 
     }
 
-    private static _pageWorkItems(ids: number[], projectName?: string, fieldRefNames?: string[]): IPromise<WorkItem[]> {
+    private static _pageWorkItems(ids: number[], projectName?: string, fieldRefNames?: string[]): Promise<WorkItem[]> {
         const witHttpClient = PageWorkItemHelper._getHttpClient();
-        return witHttpClient.getWorkItems(ids,
-            fieldRefNames,
-            null, // asof
-            null, // expand
-            null, // error policy
-            projectName
+        return witHttpClient.getWorkItems(
+            ids,
+            projectName,
+            fieldRefNames
         );
     }
 
-    private static _getHttpClient(): WorkItemTrackingHttpClient {
+    private static _getHttpClient(): WorkItemTrackingRestClient {
         
-        return VSS_Service.getClient(WorkItemTrackingHttpClient);;
+        return getClient(WorkItemTrackingRestClient);;
     }
 
 }

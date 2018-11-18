@@ -1,4 +1,4 @@
-import { WorkItemTypeStateInfo } from "TFS/Work/Contracts";
+import { WorkItemTypeStateInfo } from "azure-devops-extension-api/Work";
 import { StateCategory } from "../Contracts/types";
 
 export function getWorkItemStateCategory(

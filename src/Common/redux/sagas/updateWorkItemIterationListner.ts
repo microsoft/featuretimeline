@@ -1,5 +1,5 @@
 import { call, put } from "redux-saga/effects";
-import { WorkItemTrackingHttpClient3_2 } from 'TFS/WorkItemTracking/RestClient';
+import { WorkItemTrackingRestClient3_2 } from 'TFS/WorkItemTracking/RestClient';
 import * as VSS_Service from 'VSS/Service';
 import { JsonPatchDocument } from 'VSS/WebApi/Contracts';
 import { StartUpdateWorkitemIterationAction } from "../actions/StartUpdateWorkitemIterationAction";
@@ -8,7 +8,7 @@ import { IWorkItemOverrideIteration } from '../modules/OverrideIterations/overri
 import { OverriddenIterationsActionCreator } from '../modules/OverrideIterations/overrideIterationsActions';
 
 export function* updateWorkItemIteration(action: StartUpdateWorkitemIterationAction) {
-    const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient3_2);
+    const witHttpClient = getClient(WorkItemTrackingRestClient3_2);
     const {
         payload
     } = action;

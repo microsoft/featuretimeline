@@ -1,7 +1,7 @@
 import { createSelector } from "reselect";
-import { BacklogConfiguration, TeamSettingsIteration } from "TFS/Work/Contracts";
+import { BacklogConfiguration, TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { IGridItem, IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/redux/Contracts/GridViewContracts";
-import { CropWorkItem, IDimension, UIStatus } from "../../../Common/redux/Contracts/types";
+import { CropWorkItem, IDimension, UIStatus, IDictionaryStringTo } from "../../../Common/redux/Contracts/types";
 import { getIterationDisplayDetails } from "../../../Common/redux/Helpers/getIterationDisplayDetails";
 import { getCurrentIterationIndex } from '../../../Common/redux/Helpers/iterationComparer';
 import { getProgress } from "../../../Common/redux/Helpers/ProgressHelpers";

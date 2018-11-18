@@ -23,6 +23,7 @@ import { showHideDetailsReducer } from '../../../Common/redux/modules/ShowHideDe
 import { IShowWorkItemInfoAwareState } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsContracts';
 import { IIterationDisplayOptionsAwareState } from '../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsContracts';
 import { iterationDisplayOptionsReducer } from '../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsReducer';
+import { IDictionaryStringTo } from '../../../Common/redux/Contracts/types';
 
 export interface IPlanFeaturesState {
     show: boolean;

@@ -10,6 +10,14 @@ export interface IContributionContext {
     };
 }
 
+export interface IDictionaryStringTo<T> {
+    [key: string]: T;
+}
+
+export interface IDictionaryNumberTo<T> {
+    [key: number: T;
+}
+
 export enum UIStatus {
     Default,
     Loading,

@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { IDependenciesTree, INormalizedDependencyTree } from '../modules/workItems/workItemContracts';
-import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItemLink, WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { getEpicDependenciesLinks } from './workItemSelector';
 import { normalizedEpicTreeSelector, IEpicTree } from './epicTreeSelector';
 import { outOfScopeWorkItems } from './uiStateSelector';

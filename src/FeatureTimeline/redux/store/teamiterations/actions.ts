@@ -1,5 +1,5 @@
 import { Action } from "redux";
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { DisplayAllIterationsAction, ChangeDisplayIterationCountAction, ShiftDisplayIterationLeftAction, 
     ShiftDisplayIterationRightAction, RestoreDisplayIterationCountAction } from "../../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions";
 

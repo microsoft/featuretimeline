@@ -1,6 +1,6 @@
 import { call, put, select } from "redux-saga/effects";
-import { BacklogConfiguration } from "TFS/Work/Contracts";
-import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
+import { BacklogConfiguration } from "azure-devops-extension-api/Work";
+import { WorkItemTrackingRestClient } from "TFS/WorkItemTracking/RestClient";
 import * as VSS_Service from 'VSS/Service';
 import { escapeStr } from "../../../Common/redux/Helpers/escape";
 import { PageWorkItemHelper } from '../../../Common/redux/Helpers/PageWorkItemHelper';
@@ -9,8 +9,8 @@ import { getProjectId, getTeamId } from "../../../Common/redux/Selectors/CommonS
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
 import { EpicsAvailableCreator } from "../modules/EpicsAvailable/EpicsAvailable";
 import { getCommonFields } from './getCommonFields';
-import Contracts = require('TFS/Work/Contracts');
-import WitContracts = require('TFS/WorkItemTracking/Contracts');
+import Contracts = require('azure-devops-extension-api/Work');
+import WitContracts = require('azure-devops-extension-api/WorkItemTracking');
 import { getSettingsState } from "../../../Common/redux/modules/SettingsState/SettingsStateSelector";
 import { ISettingsState } from "../../../Common/redux/modules/SettingsState/SettingsStateContracts";
 import { selectEpic } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
@@ -20,7 +20,7 @@ export function* FetchEpicsSaga() {
     yield put(ProgressAwareActionCreator.setLoading(true));
     const projectId = getProjectId();
     const teamId = getTeamId();
-    const workHttpClient = VSS_Service.getClient(WorkHttpClient);
+    const workHttpClient = getClient(WorkHttpClient);
     const teamContext = { project: projectId, team: teamId };
 
     const teamFieldValues = yield call(workHttpClient.getTeamFieldValues.bind(workHttpClient), teamContext);
@@ -50,7 +50,7 @@ export function* FetchEpicsSaga() {
     })
     .join(" OR ");
     
-    const witHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
+    const witHttpClient = getClient(WorkItemTrackingRestClient);
     const wiql = `SELECT [System.Id] 
     FROM WorkItems 
     WHERE ${workItemTypeAndStatesClause} AND ${teamFieldClause}`;

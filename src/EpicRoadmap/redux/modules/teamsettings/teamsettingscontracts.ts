@@ -1,4 +1,4 @@
-import {TeamSetting } from "TFS/Work/Contracts";
+import {TeamSetting } from "azure-devops-extension-api/Work";
 
 export type TeamSettingsMap = { [teamId: string]: TeamSetting }
 

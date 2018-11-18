@@ -1,6 +1,6 @@
 import { css } from '@uifabric/utilities/lib';
 import * as React from 'react';
-import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import './PredecessorSuccessorIcon.scss';
 import { Callout } from 'office-ui-fabric-react/lib/Callout';
 import { Label } from 'office-ui-fabric-react/lib/Label';

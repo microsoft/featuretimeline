@@ -1,6 +1,7 @@
 import produce from "immer";
 import { RestoreOverrideIterationType, OverriddenIterationActions, SetOverrideIterationType, ClearOverrideIterationType } from './overrideIterationsActions';
 import { IOverriddenIterationDuration } from './overriddenIterationContracts';
+import { IDictionaryNumberTo } from "../../Contracts/types";
 
 export function savedOverrideIterationsReducer(
     state: IDictionaryNumberTo<IOverriddenIterationDuration>,

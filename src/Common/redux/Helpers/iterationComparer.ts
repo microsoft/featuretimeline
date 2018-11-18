@@ -1,4 +1,4 @@
-import { TeamSettingsIteration, TimeFrame } from "TFS/Work/Contracts";
+import { TeamSettingsIteration, TimeFrame } from "azure-devops-extension-api/Work";
 
 export function compareIteration(i1: TeamSettingsIteration, i2: TeamSettingsIteration): number {
     if (hasDates(i1) && !hasDates(i2)) {

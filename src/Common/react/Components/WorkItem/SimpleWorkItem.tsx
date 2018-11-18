@@ -1,6 +1,6 @@
 import { Link } from "office-ui-fabric-react/lib/Link";
 import * as React from "react";
-import { WorkItem } from "TFS/WorkItemTracking/Contracts";
+import { WorkItem } from "azure-devops-extension-api/WorkItemTracking";
 import "./SimpleWorkItem.scss";
 
 export interface ISimpleWorkItemProps {

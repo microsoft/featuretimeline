@@ -1,13 +1,14 @@
 import { call } from "redux-saga/effects";
-import { IWorkItemFormNavigationService, WorkItemFormNavigationService } from "TFS/WorkItemTracking/Services";
 import { LaunchWorkItemFormAction } from "../../../Common/redux/actions/launchWorkItemForm";
+import { IHostNavigationService } from "azure-devops-extension-api/Common";
+
 // import { getProjectId, getTeamId } from "../../../Common/redux/Selectors/CommonSelectors";
 // import { getBacklogLevel } from "../selectors";
 //import { createInitialize, resetAllData } from "../store/common/actioncreators";
 
 
 export function* launchWorkItemFormSaga(action: LaunchWorkItemFormAction) {
-    const workItemNavSvc: IWorkItemFormNavigationService = yield call(WorkItemFormNavigationService.getService);
+    const workItemNavSvc = yield call(WorkItemFormNavigationService.getService);
     yield call(workItemNavSvc.openWorkItem.bind(workItemNavSvc), action.payload.workItemId);
 
     // TODO: At this point the workitem returned after the update does not have

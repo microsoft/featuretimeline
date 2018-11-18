@@ -1,4 +1,4 @@
-import { BacklogConfiguration } from "TFS/Work/Contracts";
+import { BacklogConfiguration } from "azure-devops-extension-api/Work";
 import { createAction, ActionsUnion } from '../../../../Common/redux/Helpers/ActionHelper';
 
 export const ProjectBacklogConfigurationReceivedType = "@@backlogconfiguration/ProjectBacklogConfigurationReceived";

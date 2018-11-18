@@ -1,5 +1,5 @@
 import { createRawEpicTree } from "../../../selectors/epicTreeSelector";
-import { WorkItemLink } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItemLink } from 'azure-devops-extension-api/WorkItemTracking';
 declare var test, expect;
 function wit(id: number) {
     return {

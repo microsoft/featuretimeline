@@ -1,4 +1,4 @@
-import { WorkItem } from "TFS/WorkItemTracking/Contracts";
+import { WorkItem } from "azure-devops-extension-api/WorkItemTracking";
 import { Action } from "redux";
 import { StateCategory } from "../../../../Common/redux/Contracts/types";
 
@@ -17,7 +17,7 @@ export interface IWorkItemInfo {
 }
 
 export interface IWorkItemsState {
-    workItemInfos: IDictionaryNumberTo<IWorkItemInfo>;
+    workItemInfos: {[key: number]: IWorkItemInfo};
 }
 
 export interface TrackableAction extends Action {

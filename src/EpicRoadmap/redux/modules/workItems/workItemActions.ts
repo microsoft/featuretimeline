@@ -1,6 +1,6 @@
-import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItemLink, WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { ActionsUnion, createAction } from '../../../../Common/redux/Helpers/ActionHelper';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
 import { StartUpdateWorkitemIterationActionType } from '../../../../Common/redux/actions/StartUpdateWorkitemIterationAction';
 
 export const EpicHierarchyReceivedType = "@@workitems/EpicHierarchyReceived";

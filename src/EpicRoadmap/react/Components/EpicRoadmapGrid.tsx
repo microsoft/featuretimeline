@@ -6,7 +6,7 @@ import * as React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
 import { IterationDropTarget } from '../../../Common/react/Components/DroppableIterationShadow';
 import { IterationRenderer } from '../../../Common/react/Components/IterationRenderer';
 import { TeamFieldCard } from '../../../Common/react/Components/TeamField/TeamFieldCard';

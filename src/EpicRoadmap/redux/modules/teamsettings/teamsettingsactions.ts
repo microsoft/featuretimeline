@@ -1,4 +1,4 @@
-import { TeamSetting } from "TFS/Work/Contracts";
+import { TeamSetting } from "azure-devops-extension-api/Work";
 import { createAction, ActionsUnion } from '../../../../Common/redux/Helpers/ActionHelper';
 
 export const TeamSettingsReceivedType = "@@teamsettings/TeamSettingsReceived";

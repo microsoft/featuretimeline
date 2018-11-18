@@ -1,6 +1,6 @@
 import './State.scss';
 import * as React from 'react';
-import { WorkItemStateColor } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItemStateColor } from 'azure-devops-extension-api/WorkItemTracking';
 
 export interface IStateProps {
     workItemStateColor: WorkItemStateColor;

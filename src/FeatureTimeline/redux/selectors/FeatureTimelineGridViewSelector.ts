@@ -1,4 +1,4 @@
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
 import { IGridView, IGridWorkItem, IIterationDisplayOptions, IWorkItemDisplayDetails } from "../../../Common/redux/Contracts/GridViewContracts";
 import { CropWorkItem, IDimension, UIStatus } from "../../../Common/redux/Contracts/types";
 import { getIterationDisplayDetails } from "../../../Common/redux/Helpers/getIterationDisplayDetails";

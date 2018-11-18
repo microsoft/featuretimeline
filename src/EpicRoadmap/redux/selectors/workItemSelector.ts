@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { IEpicRoadmapState } from '../contracts';
 
 export function getEpicHierarchyLinks(state: IEpicRoadmapState) {

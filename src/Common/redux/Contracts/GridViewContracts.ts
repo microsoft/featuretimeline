@@ -1,5 +1,5 @@
-import { TeamSettingsIteration } from "TFS/Work/Contracts";
-import { WorkItem, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
+import { TeamSettingsIteration } from "azure-devops-extension-api/Work";
+import { WorkItem, WorkItemStateColor } from "azure-devops-extension-api/WorkItemTracking";
 import { IIterationDuration } from "./IIterationDuration";
 import { CropWorkItem, IDimension } from "./types";
 import { ISettingsState } from "../modules/SettingsState/SettingsStateContracts";

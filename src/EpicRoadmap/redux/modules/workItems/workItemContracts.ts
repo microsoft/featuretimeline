@@ -1,5 +1,6 @@
-import { TeamSettingsIteration } from 'TFS/Work/Contracts';
-import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { TeamSettingsIteration } from 'azure-devops-extension-api/Work';
+import { WorkItemLink, WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
+import { IDictionaryNumberTo } from '../../../../Common/redux/Contracts/types';
 
 export type TeamIterationsMap = { [teamId: string]: TeamSettingsIteration[] }
 

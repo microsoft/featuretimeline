@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect';
-import { WorkItemLink, WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItemLink, WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { backlogConfigurationForProjectSelector } from '../modules/backlogconfiguration/backlogconfigurationselector';
-import { BacklogConfiguration, BacklogLevelConfiguration } from 'TFS/Work/Contracts';
+import { BacklogConfiguration, BacklogLevelConfiguration } from 'azure-devops-extension-api/Work';
 import { getEpicHierarchyLinks, pagedWorkItemsMapSelector } from './workItemSelector';
 import { outOfScopeWorkItems } from './uiStateSelector';
+import { IDictionaryNumberTo, IDictionaryStringTo } from '../../../Common/redux/Contracts/types';
 export interface IEpicTree {
     parentToChildrenMap: IDictionaryNumberTo<number[]>;
     childToParentMap: IDictionaryNumberTo<number>;

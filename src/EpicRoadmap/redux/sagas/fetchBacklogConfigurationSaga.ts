@@ -7,7 +7,7 @@ import { ProjectBacklogConfigurationActionCreator } from '../modules/backlogconf
 
 export function* fetchBacklogConfiguration() {
     const projectId = getProjectId();    
-    const workHttpClient = VSS_Service.getClient(WorkHttpClient);
+    const workHttpClient = getClient(WorkHttpClient);
     const teamContext = { project: projectId };
     const backlogConfiguration = yield call([workHttpClient, workHttpClient.getBacklogConfigurations], teamContext);
     yield put(ProjectBacklogConfigurationActionCreator.backlogConfigurationReceived(projectId, backlogConfiguration));

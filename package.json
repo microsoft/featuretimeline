@@ -44,7 +44,8 @@
     "redux": "^4.0.0",
     "redux-saga": "^0.16.0",
     "reselect": "^3.0.1",
-    "vss-web-extension-sdk": "^5.134.0"
+    "azure-devops-extension-api": "~1.143.0",
+    "azure-devops-extension-sdk": "~2.0.3"
   },
   "devDependencies": {
     "@types/jest": "^22.2.2",
@@ -91,12 +92,7 @@
       "node"
     ],
     "moduleDirectories": [
-      "node_modules",
-      "node_modules/vss-web-extension-sdk/lib"
-    ],
-    "moduleNameMapper": {
-      "^VSS(.*)$": "<rootDir>/node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js",
-      "^TFS(.*)$": "<rootDir>/node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js"
-    }
+      "node_modules"
+    ]
   }
 }

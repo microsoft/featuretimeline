@@ -1,6 +1,5 @@
-import { WorkItemType, WorkItemStateColor } from "TFS/WorkItemTracking/Contracts";
-import { getClient } from "VSS/Service";
-import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
+import { WorkItemType, WorkItemStateColor, WorkItemTrackingRestClient } from "azure-devops-extension-api/WorkItemTracking";
+import { getClient } from "azure-devops-extension-api";
 
 export class WorkItemMetadataService {
     private static _instance: WorkItemMetadataService;
@@ -19,22 +18,22 @@ export class WorkItemMetadataService {
             return this._workItemTypes;
         }
 
-        const witHttpClient = getClient(WorkItemTrackingHttpClient);
+        const witHttpClient = getClient(WorkItemTrackingRestClient);
         this._workItemTypes = await witHttpClient.getWorkItemTypes(projectId);
 
         return this._workItemTypes;
     }
 
-    private _states: IDictionaryStringTo<WorkItemStateColor[]> = null;
+    private _states: { [key: string]: WorkItemStateColor[]} = null;
 
-    public async getStates(projectId, workItemTypeNames: string[]): Promise<IDictionaryStringTo<WorkItemStateColor[]>> {
+    public async getStates(projectId, workItemTypeNames: string[]): Promise<{ [key: string]: WorkItemStateColor[]}> {
         if (this._states) {
             return this._states;
         }
 
         const map = {};
         const promises = [];
-        const witHttpClient = getClient(WorkItemTrackingHttpClient);
+        const witHttpClient = getClient(WorkItemTrackingRestClient);
         if (witHttpClient.getWorkItemTypeStates) {
             for (const wit of workItemTypeNames) {
                 promises.push(this.getStatusForWit(projectId, wit, map));
@@ -46,7 +45,7 @@ export class WorkItemMetadataService {
     }
 
     private async getStatusForWit(projectId, wit, map) {
-        const witHttpClient = getClient(WorkItemTrackingHttpClient);
+        const witHttpClient = getClient(WorkItemTrackingRestClient);
         return witHttpClient.getWorkItemTypeStates(projectId, wit)
             .then((states) => {
                 map[wit] = states;

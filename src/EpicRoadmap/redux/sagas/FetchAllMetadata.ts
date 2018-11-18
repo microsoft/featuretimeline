@@ -6,7 +6,7 @@ import { fetchTeamIterations, fetchTeamSettings } from "./fetchTeamSettingsSaga"
 import { restoreSettings } from "../../../Common/redux/modules/SettingsState/SettingsStateSagas";
 import { fetchIterationDisplayOptions } from "../../../Common/redux/modules/IterationDisplayOptions/iterationDisplayOptionsSaga";
 import { backlogConfigurationForProjectSelector } from "../modules/backlogconfiguration/backlogconfigurationselector";
-import { BacklogConfiguration } from "TFS/Work/Contracts";
+import { BacklogConfiguration } from "azure-devops-extension-api/Work";
 import { WorkItemMetadataService } from "../../../Services/WorkItemMetadataService";
 import { workItemTypesReceived, workItemStateColorsReceived } from "../modules/workItemMetadata/workItemMetadataActionCreators";
 import { EpicsMetadataAvailable } from "../contracts";

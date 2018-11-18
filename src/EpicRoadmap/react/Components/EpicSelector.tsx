@@ -1,7 +1,7 @@
 import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { WorkItem } from 'azure-devops-extension-api/WorkItemTracking';
 import { selectEpic } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
 import { IEpicRoadmapState } from '../../redux/contracts';
 import './EpicSelector.scss';
