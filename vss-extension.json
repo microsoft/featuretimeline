@@ -6,7 +6,7 @@
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",
     "targets": [{
-            "id": "Microsoft.VisualStudio.Services.Cloud"
+            "id": "Microsoft.VisualStudio.Services"
         },
         {
             "id": "Microsoft.TeamFoundation.Server",
@@ -31,9 +31,30 @@
     ],
     "files": [
         {
-            "path": "dist",
+            "path": "dist/index.html",
+            "addressable": true,
+            "contentType": "text/html"
+        },
+        {
+            "path": "dist/libs/VSS.SDK.min.js",
             "addressable": true
-        }        
+        },
+        {
+            "path": "dist/bundle.js",
+            "addressable": true
+        },
+        {
+            "path": "dist/react.js",
+            "addressable": true
+        },
+        {
+            "path": "dist/react-dom.js",
+            "addressable": true
+        },
+        {
+            "path": "dist/images",
+            "addressable": true
+        }
     ],
     "categories": ["Plan and track"],
     "contributions": [{
