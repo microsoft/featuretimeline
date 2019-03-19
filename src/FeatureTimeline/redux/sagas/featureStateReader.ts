@@ -3,12 +3,13 @@ import { put } from "redux-saga/effects";
 export function* initializeFeatureState() {
     const enabledFeatures = getFeatureCookies();
     for (const feature of enabledFeatures) {
-        console.log("enabling feautre", feature);
+        console.log("enabling features", feature);
         yield put(toggleFeatureState(feature.replace("_feature_", ""), true));
     }
 }
 
 export function getFeatureCookies(): string[] {
+    try{
     const features = [];
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookies: string[] = decodedCookie.split(';');
@@ -21,4 +22,8 @@ export function getFeatureCookies(): string[] {
         }
     }
     return features;
+    } catch (error) {
+        console.log("Can not read feature cookies", error);
+    }
+    return [];
 }
