@@ -257,6 +257,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
                     title={w.workItem.title}
                     color={w.workItem.color}
                     isRoot={w.workItem.isRoot}
+                    assignedTo={w.workItem.workItem.fields["System.AssignedTo"]}
                     iterationDuration={w.workItem.iterationDuration}
                     dimension={w.dimension}
                     onClick={id => this.props.launchWorkItemForm(id)}

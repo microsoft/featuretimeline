@@ -339,7 +339,8 @@ async function _pageWorkItemFields(
         "System.Title",
         "System.State",
         "System.WorkItemType",
-        "System.IterationPath"
+        "System.IterationPath",
+        "System.AssignedTo"
     ];
     commonFields.push(...fields);
     return PageWorkItemHelper.pageWorkItems(ids, /* projectName */ null, commonFields);

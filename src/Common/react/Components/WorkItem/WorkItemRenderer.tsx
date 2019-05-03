@@ -17,9 +17,17 @@ import { IWorkItemOverrideIteration } from '../../../redux/modules/OverrideItera
 import { IProgressIndicator } from '../../../redux/Contracts/GridViewContracts';
 import { ISettingsState, ProgressTrackingCriteria } from '../../../redux/modules/SettingsState/SettingsStateContracts';
 import { PredecessorSuccessorIcon } from '../PredecessorSuccessorIcon/PredecessorSuccessorIcon';
+
+interface IIdentity {
+    displayName: string;
+    uniqueName: string;
+    imageUrl: string;
+}
+
 export interface IWorkItemRendererProps {
     id: number;
     title: string;
+    assignedTo: IIdentity;
     workItemStateColor: WorkItemStateColor;
     color: string;
     isRoot: boolean;
@@ -195,6 +203,18 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
         let secondRow = null;
 
         if (settingsState.showWorkItemDetails) {
+            let assignedToDiv = null;
+            const {assignedTo} = this.props;
+
+            if(assignedTo) {
+                assignedToDiv = ( 
+                    <TooltipHost content={assignedTo.displayName}>
+                        <div className="assigned-to">
+                            <img src={ assignedTo.imageUrl } />
+                        </div>
+                    </TooltipHost>
+                );
+            }
             let stateIndicator = null;
 
             if (workItemStateColor && !isRoot) {
@@ -247,6 +267,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
 
             secondRow = (
                 <div className="work-item-detail-row secondary-row">
+                    {assignedToDiv}
                     {stateIndicator}
                     {progressDetails}
                     {warning}
@@ -285,7 +306,7 @@ export class WorkItemRenderer extends React.Component<IWorkItemRendererProps, IW
                     teamFieldName={teamFieldName}
                 />
             );
-        }
+        }        
 
         const item = (
             <div
