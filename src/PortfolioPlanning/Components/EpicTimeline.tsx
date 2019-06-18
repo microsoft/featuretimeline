@@ -40,7 +40,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps> {
     private _mapEpicToTimelineItem(epic: IEpic): ITimelineItem {
         return {
             id: epic.id,
-            group: 1,
+            group: epic.project,
             title: epic.title,
             start_time: moment(epic.startDate),
             end_time: moment(epic.endDate)

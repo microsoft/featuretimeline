@@ -20,7 +20,7 @@ export interface ITimelineGroup {
 
 export interface ITimelineItem {
     id: number;
-    group: number;
+    group: string;
     title: string;
     start_time: moment.Moment;
     end_time: moment.Moment;
