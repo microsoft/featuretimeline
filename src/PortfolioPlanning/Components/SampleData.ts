@@ -16,7 +16,7 @@ export const Projects: IProject[] = [
 export const Epics: IEpic[] = [
     {
         id: 1,
-        project: firstProjectName,
+        project: firstProjectId,
         title: "Epic 1",
         startDate: new Date(2019, 5, 1),
         endDate: new Date(2019, 6, 1)

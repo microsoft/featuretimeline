@@ -30,6 +30,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps> {
                     items={timelineItems}
                     defaultTimeStart={moment().add(-6, "month")}
                     defaultTimeEnd={moment().add(6, "month")}
+                    stackItems={true}
                 />
             </div>
         );
