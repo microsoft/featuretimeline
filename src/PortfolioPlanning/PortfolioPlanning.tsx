@@ -5,7 +5,7 @@ import { iePollyfill } from "../polyfill";
 export function initialize(): void {
     if (!isBackground()) {
         iePollyfill();
-        ReactDOM.render(<div>Hello world</div>, document.getElementById("root"));
+        ReactDOM.render(<div>Hello world again</div>, document.getElementById("root"));
     }
 }
 
