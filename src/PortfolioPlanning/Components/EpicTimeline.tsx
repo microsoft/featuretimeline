@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as moment from "moment";
 import { IProject, IEpic, ITimelineGroup, ITimelineItem } from "../Contracts";
+import { Timeline } from "react-calendar-timeline";
+import "react-calendar-timeline/lib/Timeline.css";
 
 interface IEpicTimelineProps {
     projects: IProject[];
@@ -22,10 +24,16 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps> {
 
         return (
             <div>
-                <ul>
+                {/* <ul>
                     {timelineGroups.map(group => <li>{group.id}</li>)}
                     {timelineItems.map(item => <li>{item.id}</li>)}
-                </ul>
+                </ul> */}
+                <Timeline
+                    groups={timelineGroups}
+                    items={timelineItems}
+                    defaultTimeStart={moment().add(-6, "month")}
+                    defaultTImeEnd={moment().add(6, "month")}
+                />
             </div>
         );
     }
