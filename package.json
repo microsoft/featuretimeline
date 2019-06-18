@@ -8,6 +8,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "clean": "rimraf dist *.vsix vss-extension-release.json src/*js libs",
+    "dev:webpack": "webpack --watch",
     "dev": "webpack-dev-server --hot --progress --colors --content-base ./dist --https --port 8888",
     "dev:http": "webpack-dev-server --progress --colors --content-base ./ --port 8888",
     "package:dev": "node ./scripts/packageDev",
