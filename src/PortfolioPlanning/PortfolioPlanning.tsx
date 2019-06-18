@@ -1,11 +1,16 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { iePollyfill } from "../polyfill";
+import { EpicTimeline } from "./Components/EpicTimeline";
+import { Projects, Epics } from "./Components/SampleData";
 
 export function initialize(): void {
     if (!isBackground()) {
         iePollyfill();
-        ReactDOM.render(<div>Hello world again</div>, document.getElementById("root"));
+        ReactDOM.render(
+            <EpicTimeline projects={Projects} epics={Epics} />,
+            document.getElementById("root")
+        );
     }
 }
 
