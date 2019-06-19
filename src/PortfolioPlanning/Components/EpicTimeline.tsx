@@ -3,11 +3,9 @@ import * as moment from "moment";
 import { IProject, IEpic, ITimelineGroup, ITimelineItem } from "../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
-import {
-    IPortfolioPlanningState,
-    getMessage,
-    PortfolioPlanningActions
-} from "../Redux/PortfolioPlanningStore";
+import { IPortfolioPlanningState } from "../Redux/Contracts";
+import { getMessage } from "../Redux/Selectors/EpicTimelineSelectors";
+import { PortfolioPlanningActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
