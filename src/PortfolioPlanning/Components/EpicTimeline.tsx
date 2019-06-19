@@ -5,18 +5,28 @@ import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
 import {
     IPortfolioPlanningState,
-    getMessage
+    getMessage,
+    PortfolioPlanningActions
 } from "../Redux/PortfolioPlanningStore";
 import { connect } from "react-redux";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
-interface IEpicTimelineProps {
+interface IEpicTimelineOwnProps {}
+
+interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
     message: string;
 }
 
-export class EpicTimeline extends React.Component<IEpicTimelineProps> {
+export type IEpicTimelineProps = IEpicTimelineOwnProps &
+    IEpicTimelineMappedProps &
+    typeof Actions;
+
+export class EpicTimeline extends React.Component<
+    IEpicTimelineProps,
+    IPortfolioPlanningState
+> {
     constructor() {
         super();
     }
@@ -60,7 +70,9 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps> {
     }
 }
 
-function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineProps {
+function mapStateToProps(
+    state: IPortfolioPlanningState
+): IEpicTimelineMappedProps {
     return {
         projects: state.projects,
         epics: state.epics,
@@ -68,7 +80,9 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineProps {
     };
 }
 
-const Actions = {};
+const Actions = {
+    onUpdateMessage: PortfolioPlanningActions.updateMessage
+};
 
 export const ConnectedEpicTimeline = connect(
     mapStateToProps,
