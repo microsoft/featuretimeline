@@ -2,12 +2,17 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { iePollyfill } from "../polyfill";
 import { ConnectedEpicTimeline } from "./Components/EpicTimeline";
+import configurePortfolioPlanningStore from "./Redux/PortfolioPlanningStore";
+import { Provider } from "react-redux";
 
 export function initialize(): void {
     if (!isBackground()) {
         iePollyfill();
+        const store = configurePortfolioPlanningStore();
         ReactDOM.render(
-            <ConnectedEpicTimeline />,
+            <Provider store={store}>
+                <ConnectedEpicTimeline />
+            </Provider>,
             document.getElementById("root")
         );
     }

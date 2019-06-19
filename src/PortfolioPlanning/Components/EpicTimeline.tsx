@@ -48,9 +48,15 @@ export class EpicTimeline extends React.Component<
                     defaultTimeEnd={moment().add(6, "month")}
                     stackItems={true}
                 />
+                <div>{this.props.message}</div>
+                <button onClick={this._onButtonClick} />
             </div>
         );
     }
+
+    private _onButtonClick = (): void => {
+        this.props.onUpdateMessage(this.props.message + ".");
+    };
 
     private _mapProjectToTimelineGroups(project: IProject): ITimelineGroup {
         return {

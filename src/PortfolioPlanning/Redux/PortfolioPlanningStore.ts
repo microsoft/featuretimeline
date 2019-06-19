@@ -23,10 +23,12 @@ function getDefaultState(): IPortfolioPlanningState {
 }
 
 // Store
-export default function configurePortfolioPlanningStore(
-    initialState: IPortfolioPlanningState
-): Store<IPortfolioPlanningState> {
-    const store = createStore(portfolioPlanningReducer, initialState);
+export default function configurePortfolioPlanningStore(): Store<
+// initialState: IPortfolioPlanningState
+    IPortfolioPlanningState
+> {
+    // const store = createStore(portfolioPlanningReducer, initialState);
+    const store = createStore(portfolioPlanningReducer, getDefaultState());
 
     return store;
 }
