@@ -6,27 +6,12 @@
         "jsx": "react",
         "experimentalDecorators": true,
         "noFallthroughCasesInSwitch": true,
-        "lib": [
-            "es2015",
-            "es2015.promise",
-            "dom"
-        ],
+        "lib": ["es2015", "es2015.promise", "dom"],
         "target": "es5",
         "moduleResolution": "node",
-        "types": [
-            "requirejs",
-            "react",
-            "react-dom",
-            "vss-web-extension-sdk"
-        ],
-        "typeRoots": [
-            "../node_modules/@types"
-        ]
+        "types": ["requirejs", "react", "react-dom", "vss-web-extension-sdk"],
+        "typeRoots": ["../node_modules/@types"]
     },
-    "include": [
-        "./src/**/*"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+    "include": ["./src/**/*", "src/PortfolioPlanning/Components/.tsx"],
+    "exclude": ["node_modules"]
 }

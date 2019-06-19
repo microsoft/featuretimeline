@@ -1,5 +1,5 @@
-const webpack = require('webpack');
-const path = require('path');
+const webpack = require("webpack");
+const path = require("path");
 //const PrettierPlugin = require("prettier-webpack-plugin");
 
 /*
@@ -10,9 +10,10 @@ const path = require('path');
  *
  */
 
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+    .BundleAnalyzerPlugin;
 
 /*
  * We've enabled ExtractTextPlugin for you. This allows your app to
@@ -27,59 +28,62 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const mode = process.env.NODE_ENV || "development";
 const sourcemap = mode === "development";
 const plugins = [
-    new CopyWebpackPlugin([{
-        from: "./node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js",
-        to: "libs/VSS.SDK.min.js"
-    },
-    {
-        from: "./node_modules/react/umd/react.production.min.js",
-        to: "react.js"
-    },
-    {
-        from: "./node_modules/react-dom/umd/react-dom.production.min.js",
-        to: "react-dom.js"
-    },
-    {
-        from: "./src/FeatureTimeline/featuretimeline.html",
-        to: "./"
-    },
-    {
-        from: "./src/EpicRoadmap/EpicRoadmap.html",
-        to: "./"
-    },
-    {
-        from: "./src/PortfolioPlanning/PortfolioPlanning.html",
-        to: "./"
-    },
-    {
-        from: "./images",
-        to: "./images"
-    },
-    {
-        from: "./details.md",
-        to: "details.md"
-    }
+    new CopyWebpackPlugin([
+        {
+            from: "./node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js",
+            to: "libs/VSS.SDK.min.js"
+        },
+        {
+            from: "./node_modules/react/umd/react.production.min.js",
+            to: "react.js"
+        },
+        {
+            from: "./node_modules/react-dom/umd/react-dom.production.min.js",
+            to: "react-dom.js"
+        },
+        {
+            from: "./src/FeatureTimeline/featuretimeline.html",
+            to: "./"
+        },
+        {
+            from: "./src/EpicRoadmap/EpicRoadmap.html",
+            to: "./"
+        },
+        {
+            from: "./src/PortfolioPlanning/PortfolioPlanning.html",
+            to: "./"
+        },
+        {
+            from: "./images",
+            to: "./images"
+        },
+        {
+            from: "./details.md",
+            to: "details.md"
+        }
     ])
 ];
 
 if (mode !== "development") {
     plugins.unshift(new UglifyJSPlugin());
-    plugins.unshift(new BundleAnalyzerPlugin({
-        analyzerMode: "static",
-        generateStatsFile: true
-    }));
+    plugins.unshift(
+        new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            generateStatsFile: true
+        })
+    );
     //plugins.unshift(new PrettierPlugin());
 }
 module.exports = {
     entry: {
-        FeatureTimeline: './src/FeatureTimeline/FeatureTimeline.tsx',
-        EpicRoadmap: './src/EpicRoadmap/EpicRoadmap.tsx',
-        PortfolioPlanning: './src/PortfolioPlanning/PortfolioPlanning.tsx',
+        FeatureTimeline: "./src/FeatureTimeline/FeatureTimeline.tsx",
+        EpicRoadmap: "./src/EpicRoadmap/EpicRoadmap.tsx",
+        PortfolioPlanning: "./src/PortfolioPlanning/PortfolioPlanning.tsx"
     },
     output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, 'dist'),
-        libraryTarget: 'umd',
+        filename: "[name].js",
+        path: path.resolve(__dirname, "dist"),
+        libraryTarget: "umd",
         library: "[name]"
     },
     devtool: "source-map",
@@ -88,55 +92,64 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js", ".json"]
     },
     module: {
-        rules: [{
-            test: /\.tsx?$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: "ts-loader"
-            }]
-        },
-        {
-            enforce: "pre",
-            test: /\.js$/,
-            use: [{
-                loader: "source-map-loader"
-            }]
-        },
-        {
-            test: /\.css$/,
-            use: [{
-                loader: 'style-loader!css-loader?modules'
-            }]
-        },
-        {
-            test: /\.(scss)$/,
-
-            use: [{
-                loader: 'style-loader',
-                options: {
-                    sourcemap: sourcemap
-                }
-            }, {
-                loader: 'css-loader',
-                options: {
-                    sourcemap: sourcemap
-                }
+        rules: [
+            {
+                test: /\.tsx?$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: "ts-loader"
+                    }
+                ]
             },
             {
-                loader: 'sass-loader',
-                options: {
-                    sourcemap: sourcemap
-                }
-            }
-            ]
-        }
+                enforce: "pre",
+                test: /\.js$/,
+                use: [
+                    {
+                        loader: "source-map-loader"
+                    }
+                ]
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: "style-loader!css-loader?modules"
+                    }
+                ]
+            },
+            {
+                test: /\.(scss)$/,
 
+                use: [
+                    {
+                        loader: "style-loader",
+                        options: {
+                            sourcemap: sourcemap
+                        }
+                    },
+                    {
+                        loader: "css-loader",
+                        options: {
+                            sourcemap: sourcemap
+                        }
+                    },
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            sourcemap: sourcemap
+                        }
+                    }
+                ]
+            }
         ]
     },
-    externals: [{
-        "react": true,
-        "react-dom": true,
-    },
+    externals: [
+        {
+            react: true,
+            "react-dom": true
+        },
         /^VSS\//,
         /^TFS\//
     ],
