@@ -3,14 +3,35 @@ import * as moment from "moment";
 import { IProject, IEpic, ITimelineGroup, ITimelineItem } from "../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
+import {
+    IEpicTimelineState,
+    IPortfolioPlanningState
+} from "../Redux/Contracts";
+import {
+    getMessage,
+    getEpics,
+    getProjects
+} from "../Redux/Selectors/EpicTimelineSelectors";
+import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
+import { connect } from "react-redux";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
-interface IEpicTimelineProps {
+interface IEpicTimelineOwnProps {}
+
+interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
+    message: string;
 }
 
-export class EpicTimeline extends React.Component<IEpicTimelineProps> {
+export type IEpicTimelineProps = IEpicTimelineOwnProps &
+    IEpicTimelineMappedProps &
+    typeof Actions;
+
+export class EpicTimeline extends React.Component<
+    IEpicTimelineProps,
+    IEpicTimelineState
+> {
     constructor() {
         super();
     }
@@ -32,9 +53,15 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps> {
                     defaultTimeEnd={moment().add(6, "month")}
                     stackItems={true}
                 />
+                <div>{this.props.message}</div>
+                <button onClick={this._onButtonClick} />
             </div>
         );
     }
+
+    private _onButtonClick = (): void => {
+        this.props.onUpdateMessage(this.props.message + ".");
+    };
 
     private _mapProjectToTimelineGroups(project: IProject): ITimelineGroup {
         return {
@@ -53,3 +80,22 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps> {
         };
     }
 }
+
+function mapStateToProps(
+    state: IPortfolioPlanningState
+): IEpicTimelineMappedProps {
+    return {
+        projects: getProjects(state.epicTimelineState),
+        epics: getEpics(state.epicTimelineState),
+        message: getMessage(state.epicTimelineState)
+    };
+}
+
+const Actions = {
+    onUpdateMessage: EpicTimelineActions.updateMessage
+};
+
+export const ConnectedEpicTimeline = connect(
+    mapStateToProps,
+    Actions
+)(EpicTimeline);

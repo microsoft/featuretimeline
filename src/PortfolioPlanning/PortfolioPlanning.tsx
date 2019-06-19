@@ -1,14 +1,21 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { iePollyfill } from "../polyfill";
-import { EpicTimeline } from "./Components/EpicTimeline";
-import { Projects, Epics } from "./Components/SampleData";
+import { ConnectedEpicTimeline } from "./Components/EpicTimeline";
+import configurePortfolioPlanningStore from "./Redux/PortfolioPlanningStore";
+import { Provider } from "react-redux";
+import { getDefaultState } from "./Redux/Reducers/EpicTimelineReducer";
 
 export function initialize(): void {
     if (!isBackground()) {
         iePollyfill();
+        const store = configurePortfolioPlanningStore({
+            epicTimelineState: getDefaultState()
+        });
         ReactDOM.render(
-            <EpicTimeline projects={Projects} epics={Epics} />,
+            <Provider store={store}>
+                <ConnectedEpicTimeline />
+            </Provider>,
             document.getElementById("root")
         );
     }
