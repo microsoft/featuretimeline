@@ -12,3 +12,7 @@ export function getEpics(state: IEpicTimelineState): IEpic[] {
 export function getMessage(state: IEpicTimelineState): string {
     return state.message;
 }
+
+export function getAddEpicDialogOpen(state: IEpicTimelineState): boolean {
+    return state.addEpicDialogOpen;
+}

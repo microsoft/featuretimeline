@@ -10,10 +10,12 @@ import {
 import {
     getMessage,
     getEpics,
-    getProjects
+    getProjects,
+    getAddEpicDialogOpen
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
+import { AddEpicDialog } from "./AddEpicDialog";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
 interface IEpicTimelineOwnProps {}
@@ -22,6 +24,7 @@ interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
     message: string;
+    addEpicDialogOpen: boolean;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps &
@@ -55,6 +58,8 @@ export class EpicTimeline extends React.Component<
                 />
                 <div>{this.props.message}</div>
                 <button onClick={this._onButtonClick} />
+                <button onClick={this._onAddEpicClick}>Add Epic</button>
+                {this._renderAddEpicDialog()}
             </div>
         );
     }
@@ -62,6 +67,16 @@ export class EpicTimeline extends React.Component<
     private _onButtonClick = (): void => {
         this.props.onUpdateMessage(this.props.message + ".");
     };
+
+    private _onAddEpicClick = (): void => {
+        this.props.onOpenAddEpicDialog();
+    }
+
+    private _renderAddEpicDialog(): JSX.Element {
+        if(this.props.addEpicDialogOpen) {
+            return <AddEpicDialog onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}/>
+        }
+    }
 
     private _mapProjectToTimelineGroups(project: IProject): ITimelineGroup {
         return {
@@ -87,12 +102,15 @@ function mapStateToProps(
     return {
         projects: getProjects(state.epicTimelineState),
         epics: getEpics(state.epicTimelineState),
-        message: getMessage(state.epicTimelineState)
+        message: getMessage(state.epicTimelineState),
+        addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState)
     };
 }
 
 const Actions = {
-    onUpdateMessage: EpicTimelineActions.updateMessage
+    onUpdateMessage: EpicTimelineActions.updateMessage,
+    onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
+    onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog
 };
 
 export const ConnectedEpicTimeline = connect(

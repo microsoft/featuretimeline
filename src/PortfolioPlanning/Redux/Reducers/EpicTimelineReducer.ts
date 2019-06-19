@@ -17,6 +17,14 @@ export function epicTimelineReducer(
 
                 break;
             }
+            case EpicTimelineActionTypes.OpenAddEpicDialog: {
+                draft.addEpicDialogOpen = true;
+                break;
+            }
+            case EpicTimelineActionTypes.CloseAddEpicDialog: {
+                draft.addEpicDialogOpen = false;
+                break;
+            }
         }
     });
 }
@@ -25,6 +33,7 @@ export function getDefaultState(): IEpicTimelineState {
     return {
         projects: Projects,
         epics: Epics,
-        message: "Initial message"
+        message: "Initial message",
+        addEpicDialogOpen: false
     };
 }

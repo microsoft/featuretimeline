@@ -8,4 +8,5 @@ export interface IEpicTimelineState {
     projects: IProject[];
     epics: IEpic[];
     message: string;
+    addEpicDialogOpen: boolean;
 }
