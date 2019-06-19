@@ -1,30 +1,27 @@
-import { IPortfolioPlanningState } from "../Contracts";
+import { IEpicTimelineState } from "../Contracts";
 import { Projects, Epics } from "../SampleData";
 import {
-    PortofolioPlanningActions,
-    PortfolioPlanningActionTypes
+    EpicTimelineActions,
+    EpicTimelineActionTypes
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
 
-export function portfolioPlanningReducer(
-    state: IPortfolioPlanningState,
-    action: PortofolioPlanningActions
-): IPortfolioPlanningState {
-    return produce(
-        state || getDefaultState(),
-        (draft: IPortfolioPlanningState) => {
-            switch (action.type) {
-                case PortfolioPlanningActionTypes.UpdateMessage: {
-                    draft.message = action.payload.message;
+export function epicTimelineReducer(
+    state: IEpicTimelineState,
+    action: EpicTimelineActions
+): IEpicTimelineState {
+    return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
+        switch (action.type) {
+            case EpicTimelineActionTypes.UpdateMessage: {
+                draft.message = action.payload.message;
 
-                    break;
-                }
+                break;
             }
         }
-    );
+    });
 }
 
-export function getDefaultState(): IPortfolioPlanningState {
+export function getDefaultState(): IEpicTimelineState {
     return {
         projects: Projects,
         epics: Epics,

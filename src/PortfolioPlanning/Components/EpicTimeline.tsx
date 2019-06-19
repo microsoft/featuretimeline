@@ -3,9 +3,16 @@ import * as moment from "moment";
 import { IProject, IEpic, ITimelineGroup, ITimelineItem } from "../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
-import { IPortfolioPlanningState } from "../Redux/Contracts";
-import { getMessage } from "../Redux/Selectors/EpicTimelineSelectors";
-import { PortfolioPlanningActions } from "../Redux/Actions/EpicTimelineActions";
+import {
+    IEpicTimelineState,
+    IPortfolioPlanningState
+} from "../Redux/Contracts";
+import {
+    getMessage,
+    getEpics,
+    getProjects
+} from "../Redux/Selectors/EpicTimelineSelectors";
+import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
@@ -23,7 +30,7 @@ export type IEpicTimelineProps = IEpicTimelineOwnProps &
 
 export class EpicTimeline extends React.Component<
     IEpicTimelineProps,
-    IPortfolioPlanningState
+    IEpicTimelineState
 > {
     constructor() {
         super();
@@ -78,14 +85,14 @@ function mapStateToProps(
     state: IPortfolioPlanningState
 ): IEpicTimelineMappedProps {
     return {
-        projects: state.projects,
-        epics: state.epics,
-        message: getMessage(state)
+        projects: getProjects(state.epicTimelineState),
+        epics: getEpics(state.epicTimelineState),
+        message: getMessage(state.epicTimelineState)
     };
 }
 
 const Actions = {
-    onUpdateMessage: PortfolioPlanningActions.updateMessage
+    onUpdateMessage: EpicTimelineActions.updateMessage
 };
 
 export const ConnectedEpicTimeline = connect(

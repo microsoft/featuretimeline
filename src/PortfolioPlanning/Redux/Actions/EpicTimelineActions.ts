@@ -3,17 +3,15 @@ import {
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
 
-export const enum PortfolioPlanningActionTypes {
-    UpdateMessage = "PortfolioPlanning/UpdateMessage"
+export const enum EpicTimelineActionTypes {
+    UpdateMessage = "EpicTimeline/UpdateMessage"
 }
 
-export const PortfolioPlanningActions = {
+export const EpicTimelineActions = {
     updateMessage: (message: string) =>
-        createAction(PortfolioPlanningActionTypes.UpdateMessage, {
+        createAction(EpicTimelineActionTypes.UpdateMessage, {
             message
         })
 };
 
-export type PortofolioPlanningActions = ActionsUnion<
-    typeof PortfolioPlanningActions
->;
+export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
