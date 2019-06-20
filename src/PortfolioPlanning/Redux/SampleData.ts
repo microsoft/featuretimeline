@@ -57,3 +57,27 @@ export const Epics: IEpic[] = [
         endDate: new Date(2019, 6, 30)
     }
 ];
+
+export const OtherEpics: IEpic[] = [
+    {
+        id: 7,
+        project: firstProjectId,
+        title: "Epic 7",
+        startDate: new Date(2019, 2, 1),
+        endDate: new Date(2019, 6, 1)
+    },
+    {
+        id: 8,
+        project: firstProjectId,
+        title: "Epic 8",
+        startDate: new Date(2019, 3, 1),
+        endDate: new Date(2019, 7, 15)
+    },
+    {
+        id: 9,
+        project: secondProjectId,
+        title: "Epic 9",
+        startDate: new Date(2019, 5, 15),
+        endDate: new Date(2019, 9, 30)
+    }
+];

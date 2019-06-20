@@ -9,6 +9,10 @@ export function getEpics(state: IEpicTimelineState): IEpic[] {
     return state.epics;
 }
 
+export function getOtherEpics(state: IEpicTimelineState): IEpic[] {
+    return state.otherEpics;
+}
+
 export function getMessage(state: IEpicTimelineState): string {
     return state.message;
 }
