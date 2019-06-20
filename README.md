@@ -5,6 +5,8 @@ Portfolio level work items are worked for multiple sprints and this tool helps y
 
 
 ## Get started
+**Warning**: The code was written as part of a Hackathon. And the code quality is of Hackathon :). The features were added too quickly and never got time to fix the engineering backlog.
+
 Building and testing the extension requires following.
 
 1) [Download and install nodejs](http://nodejs.org "nodejs")
