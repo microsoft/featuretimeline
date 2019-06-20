@@ -15,6 +15,7 @@ import "./AddEpicDialog.scss";
 export interface IAddEpicDialogProps {
   onCloseAddEpicDialog: () => void;
   otherEpics: IEpic[];
+  onAddEpics: (epicsToAdd: IEpic[]) => void;
 }
 
 interface IAddEpicDialogState {
@@ -48,7 +49,7 @@ export class AddEpicDialog extends React.Component<
         {this._renderListOfEpicsToAdd()}
         <DialogFooter>
           <PrimaryButton
-            onClick={() => this.props.onCloseAddEpicDialog()}
+            onClick={() => this._onAddEpics()}
             text="Add"
           />
           <DefaultButton
@@ -110,4 +111,9 @@ export class AddEpicDialog extends React.Component<
     });
     this.setState({ epicsToAdd: epicsToAdd });
   };
+
+  private _onAddEpics = (): void => {
+      this.props.onAddEpics(this.state.epicsToAdd);
+      this.props.onCloseAddEpicDialog()
+  }
 }

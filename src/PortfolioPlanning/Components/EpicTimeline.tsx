@@ -85,6 +85,7 @@ export class EpicTimeline extends React.Component<
         <AddEpicDialog
           onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
           otherEpics={this.props.otherEpics}
+          onAddEpics={this.props.onAddEpics}
         />
       );
     }
@@ -123,7 +124,8 @@ function mapStateToProps(
 const Actions = {
   onUpdateMessage: EpicTimelineActions.updateMessage,
   onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
-  onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog
+  onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog,
+  onAddEpics: EpicTimelineActions.addEpics
 };
 
 export const ConnectedEpicTimeline = connect(

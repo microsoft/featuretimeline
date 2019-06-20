@@ -25,6 +25,10 @@ export function epicTimelineReducer(
                 draft.addEpicDialogOpen = false;
                 break;
             }
+            case EpicTimelineActionTypes.AddEpics: {
+                draft.epics.push(...action.payload.epicsToAdd);
+                break;
+            }
         }
     });
 }
