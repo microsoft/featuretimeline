@@ -22,6 +22,7 @@ import { AddItemPanel } from "./AddItemPanel";
 import { DetailsDialog } from "./DetailsDialog";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { Link } from "azure-devops-ui/Link";
+import { DeletePlanDialog } from "./DeletePlanDialog";
 
 interface IPlanPageMappedProps {
     plan: PortfolioPlanningMetadata;
@@ -36,6 +37,7 @@ interface IPlanPageMappedProps {
     exceptionMessage: string;
     planLoadingStatus: LoadingStatus;
     isNewPlanExperience: boolean;
+    deletePlanDialogHidden: boolean;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -53,6 +55,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                 {this._renderAddItemPanel()}
                 {this._renderItemDetailsDialog()}
                 {this._renderPlanSettingsPanel()}
+                {this._renderDeletePlanDialog()}
             </Page>
         );
     }
@@ -70,6 +73,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
                     onBackButtonClicked={this._backButtonClicked}
                     onSettingsButtonClicked={this._settingsButtonClicked}
+                    onDeletePlanButonClicked={() => this.props.toggleDeletePlanDialogHidden(false)}
                 />
                 <PlanSummary
                     projectNames={this.props.projectNames}
@@ -161,10 +165,20 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     selectedItem={this.props.selectedItem}
                     progressTrackingCriteria={this.props.progressTrackingCriteria}
                     onProgressTrackingCriteriaChanged={this.props.onToggleProgressTrackingCriteria}
-                    onDeletePlanClicked={this._deletePlanButtonClicked}
                     onClosePlanSettingsPanel={() => {
                         this.props.onTogglePlanSettingsPanelOpen(false);
                     }}
+                />
+            );
+        }
+    };
+
+    private _renderDeletePlanDialog = (): JSX.Element => {
+        if (!this.props.deletePlanDialogHidden) {
+            return (
+                <DeletePlanDialog
+                    onDismiss={() => this.props.toggleDeletePlanDialogHidden(true)}
+                    onDeleteClicked={this._deletePlanButtonClicked}
                 />
             );
         }
@@ -177,6 +191,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
 
     private _deletePlanButtonClicked = (): void => {
         this.props.deletePlan(this.props.plan.id);
+        this.props.toggleDeletePlanDialogHidden(true);
         this.props.resetPlanState();
     };
 
@@ -205,7 +220,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen,
         exceptionMessage: state.epicTimelineState.exceptionMessage,
         planLoadingStatus: state.epicTimelineState.planLoadingStatus,
-        isNewPlanExperience: state.epicTimelineState.isNewPlanExperience
+        isNewPlanExperience: state.epicTimelineState.isNewPlanExperience,
+        deletePlanDialogHidden: state.epicTimelineState.deletePlanDialogHidden
     };
 }
 
@@ -221,7 +237,8 @@ const Actions = {
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
-    onTogglePlanSettingsPanelOpen: EpicTimelineActions.togglePlanSettingsPanelOpen
+    onTogglePlanSettingsPanelOpen: EpicTimelineActions.togglePlanSettingsPanelOpen,
+    toggleDeletePlanDialogHidden: EpicTimelineActions.toggleDeletePlanDialogHidden
 };
 
 export const ConnectedPlanPage = connect(

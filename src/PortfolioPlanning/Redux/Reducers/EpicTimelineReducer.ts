@@ -105,6 +105,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.projects = [];
                 draft.teams = {};
                 draft.isNewPlanExperience = false;
+                draft.deletePlanDialogHidden = true;
 
                 break;
             }
@@ -127,6 +128,10 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.isNewPlanExperience = action.payload.isNewPlanExperience;
                 break;
             }
+            case EpicTimelineActionTypes.ToggleDeletePlanDialogHidden: {
+                draft.deletePlanDialogHidden = action.payload.hidden;
+                break;
+            }
         }
     });
 }
@@ -147,7 +152,8 @@ export function getDefaultState(): IEpicTimelineState {
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
         visibleTimeStart: null,
         visibleTimeEnd: null,
-        isNewPlanExperience: false
+        isNewPlanExperience: false,
+        deletePlanDialogHidden: true
     };
 }
 

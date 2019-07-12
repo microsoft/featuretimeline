@@ -22,6 +22,7 @@ export interface IEpicTimelineState {
     visibleTimeStart: number;
     visibleTimeEnd: number;
     isNewPlanExperience: boolean;
+    deletePlanDialogHidden: boolean;
 }
 
 export interface IPlanDirectoryState {
