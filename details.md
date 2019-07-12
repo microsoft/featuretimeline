@@ -54,7 +54,7 @@ Getting started is easy. First, create a new plan. Then, select a project and ad
 
 ## Track the progress of work in flight
 
-Once all the portfolio items are pulled in, visualize the work in a gantt chart calendar view. You can drag and drop to adjust the dates. Additionally, you can view the rollup of progress for each item. In settings, select whether you want to track progress using completed count or effort.
+Once all the portfolio items are pulled in, visualize the work in a gantt chart calendar view. You can drag and drop to adjust the dates. Additionally, you can view the rollup of progress for each item. In settings, select whether you want to track progress using completed count or effort. Drill down to Epic Roadmap on a specific item to see its details. Zoom in and out to focus on the items you want using "alt" + scroll wheel.
 
 ![Plan timeline](dist/images/portfolio-plans-timeline.png "Plan timeline")
 
