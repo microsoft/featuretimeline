@@ -63,5 +63,17 @@
             "uri": "dist/EpicRoadmap.html",
             "dynamic": true
         }
+    },
+    {
+        "id": "workitem-portfolio-planning",
+        "type": "ms.vss-web.hub",
+        "description": "Portfolio planning.",
+        "targets": ["ms.vss-work-web.work-hub-group"],
+        "properties": {
+            "name": "Portfolio Plans",
+            "uri": "dist/PortfolioPlanning.html",
+            "dynamic": true,
+            "icon": "dist/images/icon.png"
+        }
     }]
 }
