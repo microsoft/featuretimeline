@@ -1,10 +1,10 @@
 {
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
-    "version": "0.0.343",
+    "version": "0.0.346",
     "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
-    "publisher": "ms-devlabs",
+    "publisher": "sthutchi",
     "targets": [{
             "id": "Microsoft.VisualStudio.Services.Cloud"
         },
@@ -27,7 +27,8 @@
     },
     "scopes": [
         "vso.work",
-        "vso.work_write"
+        "vso.work_write",
+        "vso.analytics"
     ],
     "files": [
         {
