@@ -4,7 +4,7 @@
     "version": "0.0.346",
     "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
-    "publisher": "sthutchi",
+    "publisher": "ms-devlabs",
     "targets": [{
             "id": "Microsoft.VisualStudio.Services.Cloud"
         },
