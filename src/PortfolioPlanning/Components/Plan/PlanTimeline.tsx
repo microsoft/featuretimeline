@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as moment from "moment";
 import { ITimelineGroup, ITimelineItem, ITeam } from "../../Contracts";
-import Timeline, { TimelineHeaders, SidebarHeader, DateHeader } from "react-calendar-timeline";
+import Timeline, { TimelineHeaders, DateHeader } from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
 import { getTimelineGroups, getTimelineItems } from "../../Redux/Selectors/EpicTimelineSelectors";
@@ -80,11 +80,6 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                         groupRenderer={group => this._renderGroup(group.group)}
                     >
                         <TimelineHeaders>
-                            <SidebarHeader>
-                                {({ getRootProps }) => {
-                                    return <div {...getRootProps()} />;
-                                }}
-                            </SidebarHeader>
                             <DateHeader unit="primaryHeader" />
                             <DateHeader
                                 labelFormat={this._renderDateHeader}
