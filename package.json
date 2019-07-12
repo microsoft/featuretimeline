@@ -67,7 +67,7 @@
     "sass-loader": "^6.0.7",
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.16.1",
-    "tfx-cli": "^0.7.8",
+    "tfx-cli": "^0.5.14",
     "ts-jest": "^22.4.2",
     "ts-loader": "^4.4.2",
     "tslint": "^5.11.0",

@@ -1,10 +1,10 @@
 {
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
-    "version": "0.0.345",
+    "version": "0.0.343",
     "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
-    "publisher": "sthutchi",
+    "publisher": "ms-devlabs",
     "targets": [{
             "id": "Microsoft.VisualStudio.Services.Cloud"
         },
@@ -36,7 +36,7 @@
             "addressable": true
         }        
     ],
-    "categories": ["Azure Boards"],
+    "categories": ["Plan and track"],
     "contributions": [{
         "id": "workitem-feature-timeline",
         "type": "ms.vss-web.tab",
