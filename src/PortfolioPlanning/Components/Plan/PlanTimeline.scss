@@ -4,6 +4,7 @@
 .plan-timeline-container {
     height: 100%;
     background-color: $neutral-2;
+    padding-top: $spacing-32;
 
     .secondary-date-header {
         @extend .font-weight-semibold;
