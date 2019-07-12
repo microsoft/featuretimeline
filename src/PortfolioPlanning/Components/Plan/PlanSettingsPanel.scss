@@ -1,0 +1,34 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .settings-item {
+        margin-bottom: $spacing-16;
+    }
+
+    .progress-options {
+        display: flex;
+        align-items: baseline;
+    }
+
+    .progress-options-label {
+        @extend .body-m;
+    }
+
+    .progress-options-dropdown {
+        margin: 5px;
+    }
+
+    .delete-plan {
+        display: flex;
+        flex-direction: column;
+
+        .delete-message {
+            margin-bottom: $spacing-8;
+        }
+    }
+}

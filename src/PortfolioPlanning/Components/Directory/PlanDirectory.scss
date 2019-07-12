@@ -1,0 +1,23 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+
+.plan-directory-page-content {
+    height: 100%;
+    overflow: auto;
+    margin-top: 24px;
+    background-color: $neutral-2;
+
+    .exception-message-card {
+        margin: 16px;
+    }
+}
+
+.plan-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.directory-loading-spinner {
+    height: 100%;
+    width: 100%;
+}
