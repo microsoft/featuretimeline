@@ -136,8 +136,15 @@ module.exports = {
 						}
 					}
 				]
-			}
-
+			},
+            {
+                test: /\.woff$/,
+                use: [
+                    {
+                        loader: "base64-inline-loader"
+                    }
+                ]
+            }
 		]
 	},
 	externals: [{
