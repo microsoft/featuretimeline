@@ -73,7 +73,7 @@
             "name": "Portfolio Plans",
             "uri": "dist/PortfolioPlanning.html",
             "dynamic": true,
-            "icon": "dist/images/icon.png"
+            "icon": "dist/images/portfolio-plans-icon.png"
         }
     }]
 }
