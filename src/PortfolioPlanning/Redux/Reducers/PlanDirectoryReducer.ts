@@ -2,6 +2,7 @@ import { IPlanDirectoryState } from "../Contracts";
 import produce from "immer";
 import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
 import { LoadingStatus } from "../../Contracts";
+import { caseInsensitiveComparer } from "../../Common/Utilities/String";
 
 export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDirectoryActions): IPlanDirectoryState {
     return produce(state || getDefaultState(), (draft: IPlanDirectoryState) => {
@@ -12,6 +13,7 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
                 draft.directoryLoadingStatus = LoadingStatus.Loaded;
                 draft.exceptionMessage = directoryData.exceptionMessage;
                 draft.plans = directoryData.entries;
+                draft.plans.sort((a, b) => caseInsensitiveComparer(a.name, b.name));
 
                 break;
             }
@@ -19,6 +21,7 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
                 const { newPlan } = action.payload;
 
                 draft.plans.push(newPlan);
+                draft.plans.sort((a, b) => caseInsensitiveComparer(a.name, b.name));
                 draft.newPlanDialogVisible = false;
 
                 break;
