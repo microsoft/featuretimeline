@@ -10,9 +10,14 @@ import { BacklogConfiguration } from "TFS/Work/Contracts";
 import { WorkItemMetadataService } from "../../../Services/WorkItemMetadataService";
 import { workItemTypesReceived, workItemStateColorsReceived } from "../modules/workItemMetadata/workItemMetadataActionCreators";
 import { EpicsMetadataAvailable } from "../contracts";
+import { selectEpic } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
 
 export function* FetchAllMetadata() {
     yield put(ProgressAwareActionCreator.setLoading(true));
+
+    const navigationService : IHostNavigationService = yield call([VSS, VSS.getService], VSS.ServiceIds.Navigation);
+    const selectedWorkItemIdInUrl = yield call([navigationService, navigationService.getHash]);
+
     const projectId = getProjectId();
     const teamId = getTeamId();
     // get backlog configuration/ team settings and backlog iteration for the project/current team
@@ -42,4 +47,9 @@ export function* FetchAllMetadata() {
     yield put(workItemTypesReceived(projectId, wits));
     yield put(workItemStateColorsReceived(projectId, stateColors));
     yield put({ type: EpicsMetadataAvailable });
+
+    if(selectedWorkItemIdInUrl)
+    {
+        yield put(selectEpic(selectedWorkItemIdInUrl));
+    }
 }

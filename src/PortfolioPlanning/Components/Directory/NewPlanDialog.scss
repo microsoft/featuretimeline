@@ -1,0 +1,16 @@
+.new-plan-dialog {
+    .text-field-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .text-field {
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+
+    .buttons {
+        justify-content: flex-end;
+    }
+}

@@ -40,5 +40,28 @@ Select an epic owned by a team and track feature work done under different areas
 
 ![Epic roadmap](dist/images/epic-roadmap.png "Epic roadmap")
 
- 
-Give it a try. Looking forward to hearing your feedback.
+
+# Portfolio Plans (Preview)
+
+## Portfolio Plans
+**View portfolio level work items across projects.** Portfolio Plans is an organizational tool that allows you to pull Epics from any project and team within organization and plots on them on an easy to read timeline view. This helps teams drive cross-project visibility and alignment by tracking portfolio level work.
+
+## Hand-pick portfolio items to track
+
+Getting started is easy. First, create a new plan. Then, select a project and add the item(s) you wish to track on the plan. You may add as many work items as you want and from multiple projects.
+
+![Add items to plan](dist/images/portfolio-plans-add-items.png "Add items to plan")
+
+## Track the progress of work in flight
+
+Once all the portfolio items are pulled in, visualize the work in a gantt chart calendar view. You can drag and drop to adjust the dates. Additionally, you can view the rollup of progress for each item. In settings, select whether you want to track progress using completed count or effort. Drill down to Epic Roadmap on a specific item to see its details. Zoom in and out to focus on the items you want using "alt" + scroll wheel.
+
+![Plan timeline](dist/images/portfolio-plans-timeline.png "Plan timeline")
+
+## Create multiple plans
+
+Need more than one plan for your organization? Create multiple plans to track new initiatives.
+
+![Plan directory](dist/images/portfolio-plans-directory.png "Plan directory")
+
+We are always happy to hear feedback. Please reach out to us using the Q&A or review sections. 

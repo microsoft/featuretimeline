@@ -27,7 +27,8 @@
     },
     "scopes": [
         "vso.work",
-        "vso.work_write"
+        "vso.work_write",
+        "vso.analytics"
     ],
     "files": [
         {
@@ -62,6 +63,18 @@
             "order": 100,
             "uri": "dist/EpicRoadmap.html",
             "dynamic": true
+        }
+    },
+    {
+        "id": "workitem-portfolio-planning",
+        "type": "ms.vss-web.hub",
+        "description": "Portfolio planning.",
+        "targets": ["ms.vss-work-web.work-hub-group"],
+        "properties": {
+            "name": "Portfolio Plans",
+            "uri": "dist/PortfolioPlanning.html",
+            "dynamic": true,
+            "icon": "dist/images/portfolio-plans-icon.png"
         }
     }]
 }

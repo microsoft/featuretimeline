@@ -1,0 +1,67 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.plan-card-container {
+    margin: 16px 16px;
+}
+
+.plan-card {
+    width: 260px;
+    height: 300px;
+    background-color: $white;
+    @extend .font-weight-semibold;
+
+    .plan-card-details {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .summary {
+            overflow: hidden;
+        }
+
+        .name {
+            @extend .title-s;
+            height: 100%;
+        }
+
+        .description {
+            @extend .body-m;
+            color: $secondary-text;
+            height: 100%;
+        }
+
+        .projects-container,
+        .teams-container {
+            display: flex;
+            flex-direction: column;
+            margin-top: $spacing-8;
+
+            .projects-label,
+            .teams-label {
+                @extend .body-s;
+            }
+
+            .projects-list,
+            .teams-list {
+                @extend .body-m;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        .owner-container {
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            margin-top: $spacing-8;
+
+            .display-name {
+                margin-left: $spacing-8;
+            }
+        }
+    }
+}

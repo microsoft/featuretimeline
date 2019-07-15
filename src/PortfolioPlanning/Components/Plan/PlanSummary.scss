@@ -1,0 +1,37 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.plan-summary {
+    display: flex;
+    margin-left: $spacing-32;
+
+    .owner {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+
+        .display-name {
+            @extend .title-s;
+            margin-left: $spacing-8;
+        }
+
+        padding-right: $spacing-32;
+    }
+
+    .summary-item {
+        padding-right: $spacing-32;
+        flex: 0 1 auto;
+        overflow: auto;
+    }
+
+    .projects-teams-label {
+        @extend .title-xs;
+        color: $secondary-text;
+    }
+    .projects-teams-content {
+        @extend .title-s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

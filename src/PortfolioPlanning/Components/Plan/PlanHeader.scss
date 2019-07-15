@@ -1,0 +1,13 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+
+.plan-header-command-bar {
+    .bolt-header-command-item-button {
+        .icon-only {
+            background-color: transparent;
+
+            &:hover {
+                background-color: $transblack-6;
+            }
+        }
+    }
+}
