@@ -27,146 +27,179 @@ export function* epicTimelineSaga(): SagaIterator {
 function* onUpdateStartDate(
     action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateStartDate>
 ): SagaIterator {
-    const epicId = action.payload.epicId;
-    yield effects.call(saveDatesToServer, epicId);
+    try {
+        const epicId = action.payload.epicId;
+        yield effects.call(saveDatesToServer, epicId);
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    }
 }
 
 function* onUpdateEndDate(
     action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateEndDate>
 ): SagaIterator {
-    const epicId = action.payload.epicId;
-    yield effects.call(saveDatesToServer, epicId);
+    try {
+        const epicId = action.payload.epicId;
+        yield effects.call(saveDatesToServer, epicId);
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    }
 }
 
 function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ShiftItem>): SagaIterator {
-    const epicId = action.payload.itemId;
-    yield effects.call(saveDatesToServer, epicId);
+    try {
+        const epicId = action.payload.itemId;
+        yield effects.call(saveDatesToServer, epicId);
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    }
 }
 function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {
-    const {
-        planId,
-        projectId,
-        itemIdsToAdd: epicsToAdd,
-        //  TODO    Once "Add Epic Dialog" uses redux, project configuration will be available in the state,
-        //          so there won't be a need to pass these values when adding epics.
-        workItemType,
-        requirementWorkItemType,
-        effortWorkItemFieldRefName
-        //  END of TODO
-    } = action.payload;
-
-    //  TODO    sanitize input epics ids (unique ids only)
-
-    const portfolioService = PortfolioPlanningDataService.getInstance();
-    const projectIdLowerCase = projectId.toLowerCase();
-
-    //  Check if we have project configuration information from this project already.
-    let projectConfig: IProjectConfiguration = yield effects.select(getProjectConfigurationById, projectIdLowerCase);
-
-    if (!projectConfig) {
-        //  Find out OData column name for this project. We don't have the project config in the state, which means
-        //  this is the first time we see this project.
-        const effortODataColumnName = yield effects.call(
-            [portfolioService, portfolioService.getODataColumnNameFromWorkItemFieldReferenceName],
+    try {
+        const {
+            planId,
+            projectId,
+            itemIdsToAdd: epicsToAdd,
+            //  TODO    Once "Add Epic Dialog" uses redux, project configuration will be available in the state,
+            //          so there won't be a need to pass these values when adding epics.
+            workItemType,
+            requirementWorkItemType,
             effortWorkItemFieldRefName
+            //  END of TODO
+        } = action.payload;
+
+        //  TODO    sanitize input epics ids (unique ids only)
+
+        const portfolioService = PortfolioPlanningDataService.getInstance();
+        const projectIdLowerCase = projectId.toLowerCase();
+
+        //  Check if we have project configuration information from this project already.
+        let projectConfig: IProjectConfiguration = yield effects.select(
+            getProjectConfigurationById,
+            projectIdLowerCase
         );
 
-        projectConfig = {
-            id: projectIdLowerCase,
-            defaultEpicWorkItemType: workItemType,
-            defaultRequirementWorkItemType: requirementWorkItemType,
-            effortWorkItemFieldRefName: effortWorkItemFieldRefName,
-            effortODataColumnName: effortODataColumnName
-        };
-    }
+        if (!projectConfig) {
+            //  Find out OData column name for this project. We don't have the project config in the state, which means
+            //  this is the first time we see this project.
+            const effortODataColumnName = yield effects.call(
+                [portfolioService, portfolioService.getODataColumnNameFromWorkItemFieldReferenceName],
+                effortWorkItemFieldRefName
+            );
 
-    //  Updating plan data first.
-    const storedPlan: PortfolioPlanning = yield effects.call(
-        [portfolioService, portfolioService.GetPortfolioPlanById],
-        planId
-    );
+            projectConfig = {
+                id: projectIdLowerCase,
+                defaultEpicWorkItemType: workItemType,
+                defaultRequirementWorkItemType: requirementWorkItemType,
+                effortWorkItemFieldRefName: effortWorkItemFieldRefName,
+                effortODataColumnName: effortODataColumnName
+            };
+        }
 
-    if (!storedPlan.projects[projectIdLowerCase]) {
-        storedPlan.projects[projectIdLowerCase] = {
-            ProjectId: projectConfig.id,
-            PortfolioWorkItemType: projectConfig.defaultEpicWorkItemType,
-            RequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
-            EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
-            EffortODataColumnName: projectConfig.effortODataColumnName,
-            WorkItemIds: epicsToAdd
-        };
-    } else {
-        //  TODO    Check work item ids are not duplicated.
-        storedPlan.projects[projectIdLowerCase].WorkItemIds.push(...epicsToAdd);
-    }
+        //  Updating plan data first.
+        const storedPlan: PortfolioPlanning = yield effects.call(
+            [portfolioService, portfolioService.GetPortfolioPlanById],
+            planId
+        );
 
-    //  Save plan with new epics added.
-    yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
-
-    const portfolioQueryInput: PortfolioPlanningQueryInput = {
-        WorkItems: [
-            {
-                projectId: projectId,
-                WorkItemTypeFilter: projectConfig.defaultEpicWorkItemType,
-                DescendantsWorkItemTypeFilter: projectConfig.defaultRequirementWorkItemType,
+        if (!storedPlan.projects[projectIdLowerCase]) {
+            storedPlan.projects[projectIdLowerCase] = {
+                ProjectId: projectConfig.id,
+                PortfolioWorkItemType: projectConfig.defaultEpicWorkItemType,
+                RequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
                 EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
                 EffortODataColumnName: projectConfig.effortODataColumnName,
-                workItemIds: epicsToAdd
-            }
-        ]
-    };
+                WorkItemIds: epicsToAdd
+            };
+        } else {
+            //  TODO    Check work item ids are not duplicated.
+            storedPlan.projects[projectIdLowerCase].WorkItemIds.push(...epicsToAdd);
+        }
 
-    const queryResult: PortfolioPlanningFullContentQueryResult = yield effects.call(
-        [portfolioService, portfolioService.loadPortfolioContent],
-        portfolioQueryInput
-    );
+        //  Save plan with new epics added.
+        yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
 
-    yield effects.call(SetDefaultDatesForEpics, queryResult);
+        const portfolioQueryInput: PortfolioPlanningQueryInput = {
+            WorkItems: [
+                {
+                    projectId: projectId,
+                    WorkItemTypeFilter: projectConfig.defaultEpicWorkItemType,
+                    DescendantsWorkItemTypeFilter: projectConfig.defaultRequirementWorkItemType,
+                    EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
+                    EffortODataColumnName: projectConfig.effortODataColumnName,
+                    workItemIds: epicsToAdd
+                }
+            ]
+        };
 
-    //  Add new epics selected by customer to existing ones in the plan.
-    queryResult.mergeStrategy = MergeType.Add;
+        const queryResult: PortfolioPlanningFullContentQueryResult = yield effects.call(
+            [portfolioService, portfolioService.loadPortfolioContent],
+            portfolioQueryInput
+        );
 
-    yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
+        yield effects.call(SetDefaultDatesForEpics, queryResult);
+
+        //  Add new epics selected by customer to existing ones in the plan.
+        queryResult.mergeStrategy = MergeType.Add;
+
+        yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    }
 }
 
 function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.RemoveItems>): SagaIterator {
-    const { planId, itemIdToRemove } = action.payload;
+    try {
+        const { planId, itemIdToRemove } = action.payload;
 
-    const epic: IEpic = yield effects.select(getEpicById, itemIdToRemove);
+        const epic: IEpic = yield effects.select(getEpicById, itemIdToRemove);
 
-    const portfolioService = PortfolioPlanningDataService.getInstance();
-    const projectIdLowerCase = epic.project.toLowerCase();
+        const portfolioService = PortfolioPlanningDataService.getInstance();
+        const projectIdLowerCase = epic.project.toLowerCase();
 
-    const storedPlan: PortfolioPlanning = yield effects.call(
-        [portfolioService, portfolioService.GetPortfolioPlanById],
-        planId
-    );
-
-    if (storedPlan.projects[projectIdLowerCase]) {
-        const updatedEpics = storedPlan.projects[projectIdLowerCase].WorkItemIds.filter(
-            current => current !== itemIdToRemove
+        const storedPlan: PortfolioPlanning = yield effects.call(
+            [portfolioService, portfolioService.GetPortfolioPlanById],
+            planId
         );
 
-        if (updatedEpics.length > 0) {
-            storedPlan.projects[projectIdLowerCase].WorkItemIds = updatedEpics;
-        } else {
-            delete storedPlan.projects[projectIdLowerCase];
+        if (storedPlan.projects[projectIdLowerCase]) {
+            const updatedEpics = storedPlan.projects[projectIdLowerCase].WorkItemIds.filter(
+                current => current !== itemIdToRemove
+            );
+
+            if (updatedEpics.length > 0) {
+                storedPlan.projects[projectIdLowerCase].WorkItemIds = updatedEpics;
+            } else {
+                delete storedPlan.projects[projectIdLowerCase];
+            }
+
+            //  Save plan with epic removed.
+            yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
         }
 
-        //  Save plan with epic removed.
-        yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
+        yield put(EpicTimelineActions.portfolioItemDeleted(action.payload));
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
     }
-
-    yield put(EpicTimelineActions.portfolioItemDeleted(action.payload));
 }
 
 function* onToggleSelectedPlanId(
     action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.ToggleSelectedPlanId>
 ): SagaIterator {
-    const selectedPlanId = action.payload.id;
+    try {
+        const selectedPlanId = action.payload.id;
 
-    if (selectedPlanId) {
-        //  Only load portfolio when a valid plan id was provided.
-        yield effects.call(LoadPortfolio, selectedPlanId);
+        if (selectedPlanId) {
+            //  Only load portfolio when a valid plan id was provided.
+            yield effects.call(LoadPortfolio, selectedPlanId);
+        }
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
     }
 }

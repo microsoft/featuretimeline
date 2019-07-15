@@ -132,6 +132,14 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.deletePlanDialogHidden = action.payload.hidden;
                 break;
             }
+            case EpicTimelineActionTypes.HandleGeneralException: {
+                draft.exceptionMessage = action.payload.message;
+                break;
+            }
+            case EpicTimelineActionTypes.DismissErrorMessageCard: {
+                draft.exceptionMessage = "";
+                break;
+            }
         }
     });
 }
