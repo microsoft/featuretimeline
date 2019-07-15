@@ -16,7 +16,7 @@ import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
 import { SimpleWorkItem } from '../../../Common/react/Components/WorkItem/SimpleWorkItem';
 import { Callout } from 'office-ui-fabric-react/lib/Callout';
-import { MessageBarButton } from 'office-ui-fabric-react/lib/Button';
+import { PromotePortfolioPlans } from '../../../Common/react/Components/PromotePortfolioPlans';
 
 initializeIcons(/* optional base url */);
 
@@ -103,19 +103,6 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
             );
         }
 
-        const promotePortfolioPlans = (
-            <MessageBar
-                messageBarType={MessageBarType.info}
-                isMultiline={false}
-                actions={
-                    <div>
-                        <MessageBarButton onClick={this._navigateToPortfolioPlans}>Try it now!</MessageBarButton>
-                    </div>
-                }>
-                    <div>{"Track epics across projects and teams in the Portfolio Plans hub."}</div>
-            </MessageBar>
-        )
-
         if (uiState === UIStatus.Default || uiState === UIStatus.OutofScopeTeamIterations) {
             contents = <EpicRoadmapGrid />;
         }
@@ -127,26 +114,12 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
 
         return (
             <div className="epic-container">
+                <PromotePortfolioPlans />
                 {showSelector && <EpicSelector />}
                 {additionalMessage}
-                {promotePortfolioPlans}
                 {callout}
                 {contents}
             </div>
-        );
-    }
-
-    private _navigateToPortfolioPlans() {
-        const webContext = VSS.getWebContext();
-
-        const collectionUri = webContext.collection.uri;
-        const projectName = webContext.project.name;
-
-        const targerUrl = `${collectionUri}${projectName}/_apps/hub/ms-devlabs.workitem-feature-timeline-extension-dev.workitem-portfolio-planning`;
-
-        VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
-            client => client.navigate(targerUrl),
-            error => alert(error)
         );
     }
 

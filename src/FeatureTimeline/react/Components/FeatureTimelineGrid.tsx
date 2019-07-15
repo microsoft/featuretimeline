@@ -38,6 +38,7 @@ import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/
 import { startMarkInProgress } from '../../redux/store/workitems/actionCreators';
 import './FeatureTimelineGrid.scss';
 import { FeatureTimelineDialog } from './FeatureTimelineDialog';
+import { PromotePortfolioPlans } from '../../../Common/react/Components/PromotePortfolioPlans';
 
 initializeIcons(/* optional base url */);
 
@@ -511,6 +512,7 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         return (
             <div className="root-container">
+                <PromotePortfolioPlans />
                 {commands}
                 {<div className="header-gap"></div>}
                 {contents}
