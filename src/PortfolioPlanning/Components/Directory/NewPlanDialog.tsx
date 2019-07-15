@@ -16,8 +16,12 @@ export interface NewPlanDialogProps {
 }
 
 interface NewPlanDialogState {
-    errorMessage: string;
+    nameErrorMessage: string;
+    descriptionErrorMessage: string;
 }
+
+const nameMaxLength = 50;
+const descriptionMaxLength = 100;
 
 export default class NewPlanDialog extends React.Component<NewPlanDialogProps, NewPlanDialogState> {
     private nameObservable = new ObservableValue<string>("");
@@ -27,7 +31,7 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
     constructor(props) {
         super(props);
 
-        this.state = { errorMessage: "" };
+        this.state = { nameErrorMessage: "", descriptionErrorMessage: "" };
     }
 
     public componentDidMount() {
@@ -49,7 +53,7 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
                 </CustomHeader>
                 <PanelContent>
                     <div className="text-field-container">
-                        <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                        <FormItem message={this.state.nameErrorMessage} error={this.state.nameErrorMessage !== ""}>
                             <TextField
                                 ref={this._setNameTextFieldRef}
                                 className="text-field name-text-field"
@@ -60,15 +64,20 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
                                 autoFocus={true}
                             />
                         </FormItem>
-                        <TextField
-                            className="text-field"
-                            value={this.descriptionObservable}
-                            onChange={(e, newValue) => (this.descriptionObservable.value = newValue)}
-                            multiline
-                            rows={4}
-                            width={TextFieldWidth.auto}
-                            placeholder="Add your plan description..."
-                        />
+                        <FormItem
+                            message={this.state.descriptionErrorMessage}
+                            error={this.state.descriptionErrorMessage !== ""}
+                        >
+                            <TextField
+                                className="text-field"
+                                value={this.descriptionObservable}
+                                onChange={this._onDescriptionChange}
+                                multiline
+                                rows={3}
+                                width={TextFieldWidth.auto}
+                                placeholder="Add your plan description..."
+                            />
+                        </FormItem>
                     </div>
                 </PanelContent>
                 <PanelFooter>
@@ -83,7 +92,11 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
                                     this.descriptionObservable.value.trim()
                                 );
                             }}
-                            disabled={this.nameObservable.value === "" || this.state.errorMessage !== ""}
+                            disabled={
+                                this.nameObservable.value === "" ||
+                                this.state.nameErrorMessage !== "" ||
+                                this.state.descriptionErrorMessage !== ""
+                            }
                         />
                     </ButtonGroup>
                 </PanelFooter>
@@ -94,15 +107,31 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
     private _onNameChange = (e, newValue: string): void => {
         const trimmedName = newValue.trim().toLowerCase();
 
-        if (this.props.existingPlanNames.some(name => name.toLowerCase() === trimmedName)) {
+        if (newValue.length > nameMaxLength) {
             this.setState({
-                errorMessage: `The plan "${newValue}" already exists.`
+                nameErrorMessage: `Name can't be longer than ${nameMaxLength} characters.`
+            });
+        } else if (this.props.existingPlanNames.some(name => name.toLowerCase() === trimmedName)) {
+            this.setState({
+                nameErrorMessage: `The plan "${newValue}" already exists.`
             });
         } else {
-            this.setState({ errorMessage: "" });
+            this.setState({ nameErrorMessage: "" });
         }
 
         this.nameObservable.value = newValue;
+    };
+
+    private _onDescriptionChange = (e, newValue: string): void => {
+        if (newValue.length > descriptionMaxLength) {
+            this.setState({
+                descriptionErrorMessage: `Description can't be longer than ${descriptionMaxLength} characters.`
+            });
+        } else {
+            this.setState({ descriptionErrorMessage: "" });
+        }
+
+        this.descriptionObservable.value = newValue;
     };
 
     private _setNameTextFieldRef = (textField: ITextField): void => {

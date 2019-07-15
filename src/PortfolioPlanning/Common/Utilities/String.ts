@@ -35,6 +35,23 @@ export function defaultComparer(a: string, b: string): number {
     }
 }
 
+export function caseInsensitiveComparer(a: string, b: string): number {
+    if (a === b) {
+        return 0;
+    }
+
+    const a1 = convertToString(a, true, false);
+    const b1 = convertToString(b, true, false);
+
+    if (a1 === b1) {
+        return 0;
+    } else if (a1 > b1) {
+        return 1;
+    } else {
+        return -1;
+    }
+}
+
 export function startsWith(
     str: string,
     prefix: string,

@@ -1,6 +1,4 @@
-import {
-    PortfolioPlanningFullContentQueryResult
-} from "../../Models/PortfolioPlanningQueryModels";
+import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";
 import { JsonPatchDocument } from "VSS/WebApi/Contracts";
 import { IEpic } from "../../Contracts";
 import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
@@ -9,7 +7,6 @@ import { effects, SagaIterator } from "redux-saga";
 import { getEpicById } from "../Selectors/EpicTimelineSelectors";
 
 export function* SetDefaultDatesForEpics(queryResult: PortfolioPlanningFullContentQueryResult) {
-
     let epicsWithoutDates: number[] = [];
     let now, oneMonthFromNow;
 

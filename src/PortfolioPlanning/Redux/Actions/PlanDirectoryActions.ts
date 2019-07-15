@@ -9,7 +9,9 @@ export const enum PlanDirectoryActionTypes {
     DeletePlan = "PlanDirectory/DeletePlan",
     UpdateProjectsAndTeamsMetadata = "PlanDirectory/UpdateProjectsAndTeamsMetadata",
     ToggleSelectedPlanId = "PlanDirectory/SelectPlan",
-    ToggleNewPlanDialogVisible = "PlanDirectory/ToggleNewPlanDialogVisible"
+    ToggleNewPlanDialogVisible = "PlanDirectory/ToggleNewPlanDialogVisible",
+    HandleGeneralException = "PlanDirectory/HandleGeneralException",
+    DismissErrorMessageCard = "PlanDirectory/DismissErrorMessageCard"
 }
 
 export const PlanDirectoryActions = {
@@ -38,7 +40,9 @@ export const PlanDirectoryActions = {
     toggleNewPlanDialogVisible: (visible: boolean) =>
         createAction(PlanDirectoryActionTypes.ToggleNewPlanDialogVisible, {
             visible
-        })
+        }),
+    handleGeneralException: exception => createAction(PlanDirectoryActionTypes.HandleGeneralException, { exception }),
+    dismissErrorMessageCard: () => createAction(PlanDirectoryActionTypes.DismissErrorMessageCard)
 };
 
 export type PlanDirectoryActions = ActionsUnion<typeof PlanDirectoryActions>;

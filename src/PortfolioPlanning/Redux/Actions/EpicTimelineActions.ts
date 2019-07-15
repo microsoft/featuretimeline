@@ -24,7 +24,9 @@ export const enum EpicTimelineActionTypes {
     UpdateVisibleTimeStart = "EpicTimeline/UpdateVisibleTimeStart",
     UpdateVisibleTimeEnd = "EpicTimeline/UpdateVisibleTimeEnd",
     ToggleIsNewPlanExperience = "EpicTimeline/IsNewPlanExperience",
-    ToggleDeletePlanDialogHidden = "EpicTimeline/ToggleDeletePlanDialogHidden"
+    ToggleDeletePlanDialogHidden = "EpicTimeline/ToggleDeletePlanDialogHidden",
+    HandleGeneralException = "EpicTimeline/HandleGeneralException",
+    DismissErrorMessageCard = "EpicTimeline/DismissErrorMessageCard"
 }
 
 export const EpicTimelineActions = {
@@ -73,7 +75,10 @@ export const EpicTimelineActions = {
     toggleIsNewPlanExperience: (isNewPlanExperience: boolean) =>
         createAction(EpicTimelineActionTypes.ToggleIsNewPlanExperience, { isNewPlanExperience }),
     toggleDeletePlanDialogHidden: (hidden: boolean) =>
-        createAction(EpicTimelineActionTypes.ToggleDeletePlanDialogHidden, { hidden })
+        createAction(EpicTimelineActionTypes.ToggleDeletePlanDialogHidden, { hidden }),
+    handleGeneralException: (exception: Error) =>
+        createAction(EpicTimelineActionTypes.HandleGeneralException, exception),
+    dismissErrorMessageCard: () => createAction(EpicTimelineActionTypes.DismissErrorMessageCard)
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
