@@ -50,21 +50,28 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
     }
 
     private _renderDirectoryContent = (): JSX.Element => {
+        const exceptionMessageCard = (
+            <MessageCard
+                className="flex-self-stretch exception-message-card"
+                severity={MessageCardSeverity.Error}
+                onDismiss={this.props.dismissErrorMessageCard}
+            >
+                {this.props.exceptionMessage}
+            </MessageCard>
+        );
+
         if (this.props.directoryLoadingStatus === LoadingStatus.NotLoaded) {
             return (
-                <Spinner
-                    className="page-content directory-loading-spinner"
-                    label="Loading..."
-                    size={SpinnerSize.large}
-                />
+                <>
+                    {this.props.exceptionMessage && exceptionMessageCard}
+                    <Spinner
+                        className="page-content directory-loading-spinner"
+                        label="Loading..."
+                        size={SpinnerSize.large}
+                    />
+                </>
             );
         } else {
-            const exceptionMessageCard = (
-                <MessageCard className="flex-self-stretch exception-message-card" severity={MessageCardSeverity.Error}>
-                    {this.props.exceptionMessage}
-                </MessageCard>
-            );
-
             let content =
                 this.props.plans.length > 0 ? (
                     <div className="plan-cards-container">
@@ -131,7 +138,8 @@ const Actions = {
     toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
     toggleNewPlanDialogVisible: PlanDirectoryActions.toggleNewPlanDialogVisible,
     togglePlanLoadingStatus: EpicTimelineActions.toggleLoadingStatus,
-    resetPlanState: EpicTimelineActions.resetPlanState
+    resetPlanState: EpicTimelineActions.resetPlanState,
+    dismissErrorMessageCard: PlanDirectoryActions.dismissErrorMessageCard
 };
 
 export const ConnectedPlanDirectory = connect(

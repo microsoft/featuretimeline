@@ -61,6 +61,18 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
 
                 break;
             }
+            case PlanDirectoryActionTypes.HandleGeneralException: {
+                const { exception } = action.payload;
+
+                draft.exceptionMessage = exception.message;
+
+                break;
+            }
+            case PlanDirectoryActionTypes.DismissErrorMessageCard: {
+                draft.exceptionMessage = "";
+
+                break;
+            }
         }
     });
 }

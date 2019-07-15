@@ -5,10 +5,10 @@
     overflow: auto;
     margin-top: 24px;
     background-color: $neutral-2;
+}
 
-    .exception-message-card {
-        margin: 16px;
-    }
+.exception-message-card {
+    margin: $spacing-16;
 }
 
 .plan-cards-container {

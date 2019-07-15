@@ -21,22 +21,27 @@ export function* planDirectorySaga(): SagaIterator {
 }
 
 export function* initializePlanDirectory(): SagaIterator {
-    const service = PortfolioPlanningDataService.getInstance();
+    try {
+        const service = PortfolioPlanningDataService.getInstance();
 
-    const allPlans: PortfolioPlanningDirectory = yield effects.call([service, service.GetAllPortfolioPlans]);
+        const allPlans: PortfolioPlanningDirectory = yield effects.call([service, service.GetAllPortfolioPlans]);
 
-    yield effects.put(PlanDirectoryActions.initialize(allPlans));
+        yield effects.put(PlanDirectoryActions.initialize(allPlans));
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(PlanDirectoryActions.handleGeneralException(exception));
+    }
 }
 
 function* createPlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.CreatePlan>) {
-    const { name, description } = action.payload;
-
-    const owner = getCurrentUser();
-    owner._links = undefined;
-
-    const service = PortfolioPlanningDataService.getInstance();
-
     try {
+        const { name, description } = action.payload;
+
+        const owner = getCurrentUser();
+        owner._links = undefined;
+
+        const service = PortfolioPlanningDataService.getInstance();
+
         const newPlan: PortfolioPlanning = yield effects.call(
             [service, service.AddPortfolioPlan],
             name,
@@ -52,35 +57,45 @@ function* createPlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryAc
 }
 
 function* deletePlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.DeletePlan>): SagaIterator {
-    const { id } = action.payload;
-
-    const service = PortfolioPlanningDataService.getInstance();
-
-    yield effects.call([service, service.DeletePortfolioPlan], id);
-}
-
-function* updateProjectsAndTeamsMetadata(): SagaIterator {
-    const exceptionMessage = yield effects.select(getExceptionMessage);
-
-    if (!exceptionMessage) {
-        const planId = yield effects.select(getSelectedPlanId);
-        const projectNames = yield effects.select(getProjectNames);
-        const teamNames = yield effects.select(getTeamNames);
+    try {
+        const { id } = action.payload;
 
         const service = PortfolioPlanningDataService.getInstance();
 
-        const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
-            [service, service.GetPortfolioPlanDirectoryEntry],
-            planId
-        );
+        yield effects.call([service, service.DeletePortfolioPlan], id);
+    } catch (exception) {
+        console.log(exception);
+        yield effects.put(PlanDirectoryActions.handleGeneralException(exception));
+    }
+}
 
-        planToUpdate.projectNames = projectNames;
-        planToUpdate.teamNames = teamNames;
+function* updateProjectsAndTeamsMetadata(): SagaIterator {
+    try {
+        const exceptionMessage = yield effects.select(getExceptionMessage);
 
-        yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+        if (!exceptionMessage) {
+            const planId = yield effects.select(getSelectedPlanId);
+            const projectNames = yield effects.select(getProjectNames);
+            const teamNames = yield effects.select(getTeamNames);
 
-        yield effects.put(
-            PlanDirectoryActions.updateProjectsAndTeamsMetadata(planToUpdate.projectNames, planToUpdate.teamNames)
-        );
+            const service = PortfolioPlanningDataService.getInstance();
+
+            const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
+                [service, service.GetPortfolioPlanDirectoryEntry],
+                planId
+            );
+
+            planToUpdate.projectNames = projectNames;
+            planToUpdate.teamNames = teamNames;
+
+            yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+
+            yield effects.put(
+                PlanDirectoryActions.updateProjectsAndTeamsMetadata(planToUpdate.projectNames, planToUpdate.teamNames)
+            );
+        }
+    } catch (exception) {
+        console.log(exception);
+        yield effects.put(PlanDirectoryActions.handleGeneralException(exception));
     }
 }
