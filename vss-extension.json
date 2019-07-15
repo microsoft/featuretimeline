@@ -5,13 +5,15 @@
     "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",
-    "targets": [{
+    "targets": [
+        {
             "id": "Microsoft.VisualStudio.Services.Cloud"
         },
         {
             "id": "Microsoft.TeamFoundation.Server",
             "version": "[15.2,)"
-        }],
+        }
+    ],
     "icons": {
         "default": "dist/images/icon.png"
     },
@@ -25,56 +27,50 @@
         "type": "git",
         "uri": "https://github.com/microsoft/featuretimeline"
     },
-    "scopes": [
-        "vso.work",
-        "vso.work_write",
-        "vso.analytics"
-    ],
+    "scopes": ["vso.work", "vso.work_write", "vso.analytics"],
     "files": [
         {
             "path": "dist",
             "addressable": true
-        }        
+        }
     ],
     "categories": ["Plan and track"],
-    "contributions": [{
-        "id": "workitem-feature-timeline",
-        "type": "ms.vss-web.tab",
-        "description": "Feature timeline of your in-progress features.",
-        "targets": [
-            "ms.vss-work-web.product-backlog-tabs"
-        ],
-        "properties": {
-            "name": "Feature Timeline",
-            "order": 99,
-            "uri": "dist/featuretimeline.html",
-            "dynamic": true
+    "contributions": [
+        {
+            "id": "workitem-feature-timeline",
+            "type": "ms.vss-web.tab",
+            "description": "Feature timeline of your in-progress features.",
+            "targets": ["ms.vss-work-web.product-backlog-tabs"],
+            "properties": {
+                "name": "Feature Timeline",
+                "order": 99,
+                "uri": "dist/featuretimeline.html",
+                "dynamic": true
+            }
+        },
+        {
+            "id": "workitem-epic-roadmap",
+            "type": "ms.vss-web.tab",
+            "description": "Epic roadmap.",
+            "targets": ["ms.vss-work-web.product-backlog-tabs"],
+            "properties": {
+                "name": "Epic Roadmap",
+                "order": 100,
+                "uri": "dist/EpicRoadmap.html",
+                "dynamic": true
+            }
+        },
+        {
+            "id": "workitem-portfolio-planning",
+            "type": "ms.vss-web.hub",
+            "description": "Portfolio planning.",
+            "targets": ["ms.vss-work-web.work-hub-group"],
+            "properties": {
+                "name": "Portfolio Plans (Beta)",
+                "uri": "dist/PortfolioPlanning.html",
+                "dynamic": true,
+                "icon": "dist/images/portfolio-plans-icon.png"
+            }
         }
-    },
-    {
-        "id": "workitem-epic-roadmap",
-        "type": "ms.vss-web.tab",
-        "description": "Epic roadmap.",
-        "targets": [
-            "ms.vss-work-web.product-backlog-tabs"
-        ],
-        "properties": {
-            "name": "Epic Roadmap",
-            "order": 100,
-            "uri": "dist/EpicRoadmap.html",
-            "dynamic": true
-        }
-    },
-    {
-        "id": "workitem-portfolio-planning",
-        "type": "ms.vss-web.hub",
-        "description": "Portfolio planning.",
-        "targets": ["ms.vss-work-web.work-hub-group"],
-        "properties": {
-            "name": "Portfolio Plans",
-            "uri": "dist/PortfolioPlanning.html",
-            "dynamic": true,
-            "icon": "dist/images/portfolio-plans-icon.png"
-        }
-    }]
+    ]
 }
