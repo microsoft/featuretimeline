@@ -17,7 +17,7 @@
     "icons": {
         "default": "dist/images/icon.png"
     },
-    "tags": ["work item", "timeline", "feature", "epic", "roadmap"],
+    "tags": ["work item", "timeline", "feature", "portfolio", "roadmap"],
     "content": {
         "details": {
             "path": "dist/details.md"
