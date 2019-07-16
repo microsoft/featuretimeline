@@ -2,11 +2,16 @@ import * as React from "react";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react/lib/MessageBar";
 import { MessageBarButton } from "office-ui-fabric-react/lib/Button";
 
-export const PromotePortfolioPlans = () => {
+export interface IPromotePortfolioPlansBanner {
+    onDismiss: () => void;
+}
+
+export const PromotePortfolioPlansBanner = (props: IPromotePortfolioPlansBanner) => {
     return (
         <MessageBar
             messageBarType={MessageBarType.info}
             isMultiline={false}
+            onDismiss={props.onDismiss}
             actions={
                 <div>
                     <MessageBarButton
@@ -22,6 +27,8 @@ export const PromotePortfolioPlans = () => {
                                 client => client.navigate(targerUrl),
                                 error => alert(error)
                             );
+
+                            props.onDismiss();
                         }}
                     >
                         Try it now!

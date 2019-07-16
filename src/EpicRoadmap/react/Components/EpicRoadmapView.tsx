@@ -1,6 +1,5 @@
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
-//import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import * as React from 'react';
 import { connect, Provider } from 'react-redux';
@@ -16,7 +15,8 @@ import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { launchWorkItemForm } from '../../../Common/redux/actions/launchWorkItemForm';
 import { SimpleWorkItem } from '../../../Common/react/Components/WorkItem/SimpleWorkItem';
 import { Callout } from 'office-ui-fabric-react/lib/Callout';
-import { PromotePortfolioPlans } from '../../../Common/react/Components/PromotePortfolioPlans';
+import { PromotePortfolioPlansBanner } from '../../../Common/react/Components/PromotePortfolioPlans';
+import { dismissPortfolioPlansBanner } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
 
 initializeIcons(/* optional base url */);
 
@@ -26,6 +26,8 @@ export interface IEpicRoadmapViewProps {
     uiState: UIStatus;
     outOfScopeWorkItems: WorkItem[];
     launchWorkItemForm: (id: number) => void;
+    portfolioPlansBannerDismissed: boolean;
+    dismissPortfolioPlansBanner: () => void;
 }
 
 export interface IEpicRoadmapViewContentState {
@@ -113,13 +115,16 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
         }
 
         return (
-            <div className="epic-container">
-                <PromotePortfolioPlans />
-                {showSelector && <EpicSelector />}
-                {additionalMessage}
-                {callout}
-                {contents}
-            </div>
+            <>
+                {!this.props.portfolioPlansBannerDismissed &&
+                <PromotePortfolioPlansBanner onDismiss={this.props.dismissPortfolioPlansBanner}/>}
+                <div className="epic-container">
+                    {showSelector && <EpicSelector />}
+                    {additionalMessage}
+                    {callout}
+                    {contents}
+                </div>
+            </>
         );
     }
 
@@ -174,7 +179,8 @@ const makeMapStateToProps = () => {
             projectId: getProjectId(),
             teamId: getTeamId(),
             uiState: uiStateSelector(state),
-            outOfScopeWorkItems: outOfScopeWorkItems(state)
+            outOfScopeWorkItems: outOfScopeWorkItems(state),
+            portfolioPlansBannerDismissed: state.settingsState.dismissedPortfolioPlansBanner
         }
     }
 }
@@ -186,6 +192,9 @@ const mapDispatchToProps = () => {
                 if (id) {
                     dispatch(launchWorkItemForm(id));
                 }
+            },
+            dismissPortfolioPlansBanner: () => {
+                dispatch(dismissPortfolioPlansBanner())
             }
         }
     }
