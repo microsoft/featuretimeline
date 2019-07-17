@@ -1,5 +1,6 @@
 import { IProject, IEpic, ProgressTrackingCriteria, ITeam, IProjectConfiguration, LoadingStatus } from "../Contracts";
 import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
+import { ExtendedSinglePlanTelemetry } from "../Models/TelemetryModels";
 
 export interface IPortfolioPlanningState {
     planDirectoryState: IPlanDirectoryState;
@@ -23,6 +24,7 @@ export interface IEpicTimelineState {
     visibleTimeEnd: number;
     isNewPlanExperience: boolean;
     deletePlanDialogHidden: boolean;
+    planTelemetry: ExtendedSinglePlanTelemetry;
 }
 
 export interface IPlanDirectoryState {

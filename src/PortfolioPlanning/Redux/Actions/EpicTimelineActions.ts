@@ -3,6 +3,7 @@ import { ProgressTrackingCriteria, IAddItems, IRemoveItem, LoadingStatus } from 
 import moment = require("moment");
 import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";
 import { Action } from "redux";
+import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 
 export const enum EpicTimelineActionTypes {
     // TODO: May update these date change actions to be single actio
@@ -30,18 +31,24 @@ export const enum EpicTimelineActionTypes {
 }
 
 export const EpicTimelineActions = {
-    updateStartDate: (epicId: number, startDate: moment.Moment) =>
-        createAction(EpicTimelineActionTypes.UpdateStartDate, {
+    updateStartDate: (epicId: number, startDate: moment.Moment) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateStartDate);
+        return createAction(EpicTimelineActionTypes.UpdateStartDate, {
             epicId,
             startDate
-        }),
-    updateEndDate: (epicId: number, endDate: moment.Moment) =>
-        createAction(EpicTimelineActionTypes.UpdateEndDate, {
+        });
+    },
+    updateEndDate: (epicId: number, endDate: moment.Moment) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateEndDate);
+        return createAction(EpicTimelineActionTypes.UpdateEndDate, {
             epicId,
             endDate
-        }),
-    shiftItem: (itemId: number, startDate: moment.Moment) =>
-        createAction(EpicTimelineActionTypes.ShiftItem, { itemId, startDate }),
+        });
+    },
+    shiftItem: (itemId: number, startDate: moment.Moment) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.ShiftItem);
+        return createAction(EpicTimelineActionTypes.ShiftItem, { itemId, startDate });
+    },
     toggleItemDetailsDialogHidden: (hidden: boolean) =>
         createAction(EpicTimelineActionTypes.ToggleItemDetailsDialogHidden, {
             hidden
@@ -51,10 +58,20 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
     portfolioItemDeleted: (itemDeleted: IRemoveItem) =>
         createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
-    openAddItemPanel: () => createAction(EpicTimelineActionTypes.OpenAddItemPanel),
+    openAddItemPanel: () => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.OpenAddItemPanel);
+        return createAction(EpicTimelineActionTypes.OpenAddItemPanel);
+    },
     closeAddItemPanel: () => createAction(EpicTimelineActionTypes.CloseAddItemPanel),
-    addItems: (itemsToAdd: IAddItems) => createAction(EpicTimelineActionTypes.AddItems, itemsToAdd),
-    removeItems: (itemToRemove: IRemoveItem) => createAction(EpicTimelineActionTypes.RemoveItems, itemToRemove),
+    addItems: (itemsToAdd: IAddItems) => {
+        const count = itemsToAdd && itemsToAdd.itemIdsToAdd ? itemsToAdd.itemIdsToAdd.length : 0;
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.OpenAddItemPanel, { ["Count"]: count });
+        return createAction(EpicTimelineActionTypes.AddItems, itemsToAdd);
+    },
+    removeItems: (itemToRemove: IRemoveItem) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.RemoveItems);
+        return createAction(EpicTimelineActionTypes.RemoveItems, itemToRemove);
+    },
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
@@ -62,22 +79,34 @@ export const EpicTimelineActions = {
     toggleLoadingStatus: (status: LoadingStatus) =>
         createAction(EpicTimelineActionTypes.ToggleLoadingStatus, { status }),
     resetPlanState: () => createAction(EpicTimelineActionTypes.ResetPlanState),
-    togglePlanSettingsPanelOpen: (isOpen: boolean) =>
-        createAction(EpicTimelineActionTypes.TogglePlanSettingsPanelOpen, { isOpen }),
-    updateVisibleTimeStart: (visibleTimeStart: number) =>
-        createAction(EpicTimelineActionTypes.UpdateVisibleTimeStart, {
+    togglePlanSettingsPanelOpen: (isOpen: boolean) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.TogglePlanSettingsPanelOpen, {
+            ["isOpen"]: isOpen
+        });
+        return createAction(EpicTimelineActionTypes.TogglePlanSettingsPanelOpen, { isOpen });
+    },
+    updateVisibleTimeStart: (visibleTimeStart: number) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateVisibleTimeStart);
+        return createAction(EpicTimelineActionTypes.UpdateVisibleTimeStart, {
             visibleTimeStart
-        }),
-    updateVisibleTimeEnd: (visibleTimeEnd: number) =>
-        createAction(EpicTimelineActionTypes.UpdateVisibleTimeEnd, {
+        });
+    },
+    updateVisibleTimeEnd: (visibleTimeEnd: number) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateVisibleTimeEnd);
+        return createAction(EpicTimelineActionTypes.UpdateVisibleTimeEnd, {
             visibleTimeEnd
-        }),
+        });
+    },
     toggleIsNewPlanExperience: (isNewPlanExperience: boolean) =>
         createAction(EpicTimelineActionTypes.ToggleIsNewPlanExperience, { isNewPlanExperience }),
-    toggleDeletePlanDialogHidden: (hidden: boolean) =>
-        createAction(EpicTimelineActionTypes.ToggleDeletePlanDialogHidden, { hidden }),
-    handleGeneralException: (exception: Error) =>
-        createAction(EpicTimelineActionTypes.HandleGeneralException, exception),
+    toggleDeletePlanDialogHidden: (hidden: boolean) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.ToggleDeletePlanDialogHidden);
+        return createAction(EpicTimelineActionTypes.ToggleDeletePlanDialogHidden, { hidden });
+    },
+    handleGeneralException: (exception: Error) => {
+        PortfolioTelemetry.getInstance().TrackException(exception);
+        return createAction(EpicTimelineActionTypes.HandleGeneralException, exception);
+    },
     dismissErrorMessageCard: () => createAction(EpicTimelineActionTypes.DismissErrorMessageCard)
 };
 

@@ -28,6 +28,8 @@
     "work item"
   ],
   "dependencies": {
+    "@microsoft/applicationinsights-react-js": "^2.1.1",
+    "@microsoft/applicationinsights-web": "^2.1.0",
     "azure-devops-ui": "^1.154.1",
     "base64-inline-loader": "^1.1.1",
     "es6-promise": "^4.2.4",
@@ -43,6 +45,7 @@
     "react-dnd-html5-backend": "^2.6.0",
     "react-dom": "^16.8.6",
     "react-redux": "^5.0.7",
+    "react-router-dom": "^5.0.1",
     "react-splitter-layout": "^3.0.0",
     "redux": "^4.0.0",
     "redux-saga": "^0.16.0",

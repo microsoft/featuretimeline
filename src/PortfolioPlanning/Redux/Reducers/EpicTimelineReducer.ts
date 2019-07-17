@@ -161,7 +161,8 @@ export function getDefaultState(): IEpicTimelineState {
         visibleTimeStart: null,
         visibleTimeEnd: null,
         isNewPlanExperience: false,
-        deletePlanDialogHidden: true
+        deletePlanDialogHidden: true,
+        planTelemetry: null
     };
 }
 
