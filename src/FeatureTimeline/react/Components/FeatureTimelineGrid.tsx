@@ -26,7 +26,7 @@ import { changeDisplayIterationCount, displayAllIterations, shiftDisplayIteratio
 import { saveOverrideIteration, endOverrideIteration, overrideHoverOverIteration, startOverrideIteration } from '../../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressActionCreators';
 import { IWorkItemOverrideIteration } from '../../../Common/redux/modules/OverrideIterations/overriddenIterationContracts';
 import { OverriddenIterationsActionCreator } from '../../../Common/redux/modules/OverrideIterations/overrideIterationsActions';
-import { changeProgressTrackingCriteria, changeShowClosedSinceDays, toggleShowWorkItemDetails } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
+import { changeProgressTrackingCriteria, changeShowClosedSinceDays, toggleShowWorkItemDetails, dismissPortfolioPlansBanner } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
 import { ISettingsState, ProgressTrackingCriteria } from "../../../Common/redux/modules/SettingsState/SettingsStateContracts";
 import { getSettingsState } from '../../../Common/redux/modules/SettingsState/SettingsStateSelector';
 import { closeDetails, showDetails } from '../../../Common/redux/modules/ShowHideDetails/ShowHideDetailsActions';
@@ -38,6 +38,7 @@ import { IFeatureTimelineRawState, IPlanFeaturesState } from '../../redux/store/
 import { startMarkInProgress } from '../../redux/store/workitems/actionCreators';
 import './FeatureTimelineGrid.scss';
 import { FeatureTimelineDialog } from './FeatureTimelineDialog';
+import { PromotePortfolioPlansBanner } from '../../../Common/react/Components/PromotePortfolioPlans';
 
 initializeIcons(/* optional base url */);
 
@@ -69,6 +70,7 @@ export interface IFeatureTimelineGridProps {
     toggleShowWorkItemDetails: (show: boolean) => void;
     changeProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) => void;
     changeShowClosedSinceDays: (days: number) => void;
+    dismissPortfolioPlansBanner: () => void;
 }
 
 const makeMapStateToProps = () => {
@@ -146,6 +148,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         resizePlanFeaturesPane: (width: number) => {
             dispatch(changePlanFeaturesWidth(width));
+        },
+        dismissPortfolioPlansBanner: () => {
+            dispatch(dismissPortfolioPlansBanner())
         }
     };
 };
@@ -511,6 +516,8 @@ export class FeatureTimelineGrid extends React.Component<IFeatureTimelineGridPro
 
         return (
             <div className="root-container">
+                {!this.props.settingsState.dismissedPortfolioPlansBanner && 
+                <PromotePortfolioPlansBanner onDismiss={this.props.dismissPortfolioPlansBanner}/>}
                 {commands}
                 {<div className="header-gap"></div>}
                 {contents}
