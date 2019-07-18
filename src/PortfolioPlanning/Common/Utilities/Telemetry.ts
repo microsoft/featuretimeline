@@ -1,21 +1,51 @@
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import { SinglePlanTelemetry, ExtendedSinglePlanTelemetry } from "../../Models/TelemetryModels";
 
+interface ExtensionContext {
+    PublisherId: string;
+    Version: string;
+    Id: string;
+}
+
+interface TelemetryEventContext {
+    VSID: string;
+    HostId: string;
+    Extension: ExtensionContext;
+}
+
 export class PortfolioTelemetry {
     private static _instance: PortfolioTelemetry;
-    private _vsid: string;
-    private _hostId: string;
+    private _telemetryEventContext: TelemetryEventContext;
 
     private constructor() {
         try {
-            this._vsid = VSS.getWebContext().user.id;
-            this._hostId = VSS.getWebContext().host.id;
+            const webContext = VSS.getWebContext();
+            const extensionContext = VSS.getExtensionContext();
+
+            this._telemetryEventContext = {
+                VSID: webContext.user.id,
+                HostId: webContext.host.id,
+                Extension: {
+                    Id: extensionContext.extensionId,
+                    Version: extensionContext.version,
+                    PublisherId: extensionContext.publisherId
+                }
+            };
         } catch (error) {
             console.log(JSON.stringify(error, null, "    "));
         } finally {
             //  set default values.
-            this._vsid = this._vsid || "UnknownVSID";
-            this._hostId = this._hostId || "UnknownHostId";
+            if (!this._telemetryEventContext) {
+                this._telemetryEventContext = {
+                    VSID: "Unknown",
+                    HostId: "Unknown",
+                    Extension: {
+                        Id: "Unknown",
+                        Version: "Unknown",
+                        PublisherId: "Unknown"
+                    }
+                };
+            }
         }
     }
 
@@ -84,10 +114,9 @@ export class PortfolioTelemetry {
         }
     }
 
-    private getCommonPayload(): { [key: string]: string } {
+    private getCommonPayload(): { [key: string]: any } {
         return {
-            ["VSID"]: this._vsid,
-            ["HostId"]: this._hostId
+            ["Context"]: this._telemetryEventContext
         };
     }
 }
