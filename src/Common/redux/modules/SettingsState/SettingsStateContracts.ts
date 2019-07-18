@@ -8,6 +8,7 @@ export interface ISettingsState {
     progressTrackingCriteria: ProgressTrackingCriteria;
     showClosedSinceDays: number;
     lastEpicSelected?: number;
+    dismissedPortfolioPlansBanner: boolean;
 }
 
 export interface ISettingsAwareState {

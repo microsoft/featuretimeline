@@ -7,6 +7,7 @@ export const ChangeProgressTrackingCriteriaType = "@@common/changeprogresstracki
 export const ChangeShowClosedSinceDaysType = "@@common/changeshowclosedsincedays";
 export const RestoreSettingsType = "@@common/restoresettings";
 export const SelectEpicType = "@@common/selectepic";
+export const DismissPortfolioPlansBannerType = "@@common/dismissportfolioplansbanner";
 
 export interface ToggleShowWorkItemDetailsAction extends Action {
     type: "@@common/toggleshowworkitemdetails",
@@ -31,9 +32,13 @@ export interface SelectEpicAction extends Action {
     type: "@@common/selectepic",
     payload: number;
 }
+export interface DismissPortfolioPlansBannerAction extends Action {
+    type: "@@common/dismissportfolioplansbanner"
+    payload: undefined;
+}
 
 export type SettingsActions = ToggleShowWorkItemDetailsAction | ChangeProgressTrackingCriteriaAction
-    | RestoreSettingsAction | ChangeShowClosedSinceDaysAction | SelectEpicAction;
+    | RestoreSettingsAction | ChangeShowClosedSinceDaysAction | SelectEpicAction | DismissPortfolioPlansBannerAction;
 
 export const toggleShowWorkItemDetails: ActionCreator<ToggleShowWorkItemDetailsAction> = (show: boolean) => ({
     type: ToggleShowWorkitemDetailsType,
@@ -60,3 +65,8 @@ export const restoreSettingsState: ActionCreator<RestoreSettingsAction> = (state
     type: RestoreSettingsType,
     payload: state
 });
+
+export const dismissPortfolioPlansBanner: ActionCreator<DismissPortfolioPlansBannerAction> = () => ({
+    type: DismissPortfolioPlansBannerType,
+    payload: undefined
+})

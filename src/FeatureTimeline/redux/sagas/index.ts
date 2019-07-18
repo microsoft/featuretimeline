@@ -16,7 +16,7 @@ import { ClearOverrideIterationType } from '../../../Common/redux/modules/Overri
 import { LaunchWorkItemFormActionType } from "../../../Common/redux/actions/launchWorkItemForm";
 import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressActions";
 import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType } from "../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions";
-import { ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
+import { ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType, DismissPortfolioPlansBannerType } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
 
 export function* watchSagaActions() {
     yield takeEvery(ClearOverrideIterationType, launchClearOverrideIteration);
@@ -37,6 +37,7 @@ export function* watchSagaActions() {
     yield takeLatest(ToggleShowWorkitemDetailsType, saveSettings, "");
     yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings, "");
     yield takeLatest(ChangeShowClosedSinceDaysType, saveSettings, "");
+    yield takeLatest(DismissPortfolioPlansBannerType, saveSettings, "");
 
     yield takeLatest(TogglePlanFeaturesPaneType, savePlanFeaturesDisplayOptions);
     yield takeLatest(PlanFeaturesPaneFilterChangedType, savePlanFeaturesDisplayOptions);

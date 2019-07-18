@@ -2,7 +2,7 @@ import { takeEvery, takeLatest } from "redux-saga/effects";
 import { OverrideIterationEndType, SaveOverrideIterationActionType } from "../../../Common/redux/modules/overrideIterationProgress/overrideIterationProgressActions";
 import { launchOverrideWorkItemIteration, launchSaveOverrideIteration, launchClearOverrideIteration } from "../../../Common/redux/sagas/workItemOverrideIterationListner";
 import { DisplayAllIterationsActionType, ShiftDisplayIterationLeftActionType, ShiftDisplayIterationRightActionType, ChangeDisplayIterationCountActionType } from "../../../Common/redux/modules/IterationDisplayOptions/IterationDisplayOptionsActions";
-import { ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType, SelectEpicType } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
+import { ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType, SelectEpicType, DismissPortfolioPlansBannerType } from "../../../Common/redux/modules/SettingsState/SettingsStateActions";
 import { saveDisplayOptions } from "../../../Common/redux/sagas/displayOptionsSaga";
 import { saveSettings } from "../../../Common/redux/modules/SettingsState/SettingsStateSagas";
 import { LaunchWorkItemFormActionType } from "../../../Common/redux/actions/launchWorkItemForm";
@@ -31,6 +31,7 @@ export function* watchEpicRoadmapSagaActions() {
     yield takeLatest(ChangeProgressTrackingCriteriaType, saveSettings, "EpicRoadmap");
     yield takeLatest(ChangeShowClosedSinceDaysType, saveSettings, "EpicRoadmap");
     yield takeLatest(SelectEpicType, saveSettings, "EpicRoadmap");
+    yield takeLatest(DismissPortfolioPlansBannerType, saveSettings, "EpicRoadmap");
 
     yield takeLatest(EpicsMetadataAvailable, FetchEpicsSaga);
 }

@@ -1,5 +1,5 @@
 import produce from "immer";
-import { RestoreSettingsType, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType, SettingsActions, SelectEpicType } from "./SettingsStateActions";
+import { RestoreSettingsType, ToggleShowWorkitemDetailsType, ChangeProgressTrackingCriteriaType, ChangeShowClosedSinceDaysType, SettingsActions, SelectEpicType, DismissPortfolioPlansBannerType } from "./SettingsStateActions";
 import { ISettingsState, ProgressTrackingCriteria } from "./SettingsStateContracts";
 
 export const getDefaultSettingsState = (): ISettingsState => {
@@ -7,7 +7,8 @@ export const getDefaultSettingsState = (): ISettingsState => {
         showWorkItemDetails: false,
         progressTrackingCriteria: 0,
         showClosedSinceDays: 0,
-        lastEpicSelected: undefined
+        lastEpicSelected: undefined,
+        dismissedPortfolioPlansBanner: false
     };
 }
 export function settingsStateReducer(state: ISettingsState = getDefaultSettingsState(), action: SettingsActions): ISettingsState {
@@ -34,6 +35,9 @@ export function settingsStateReducer(state: ISettingsState = getDefaultSettingsS
                 break;
             case SelectEpicType:
                 draft.lastEpicSelected = payload as number;
+                break;
+            case DismissPortfolioPlansBannerType:
+                draft.dismissedPortfolioPlansBanner = true;
                 break;
         }
     });
