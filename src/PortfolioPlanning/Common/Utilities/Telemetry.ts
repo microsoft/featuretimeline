@@ -16,6 +16,7 @@ interface TelemetryEventContext {
 export class PortfolioTelemetry {
     private static _instance: PortfolioTelemetry;
     private _telemetryEventContext: TelemetryEventContext;
+    private _telemetryEventContextProps: { [name: string]: string };
 
     private constructor() {
         try {
@@ -114,10 +115,19 @@ export class PortfolioTelemetry {
         }
     }
 
-    private getCommonPayload(): { [key: string]: any } {
-        return {
-            ["Context"]: this._telemetryEventContext
-        };
+    private getCommonPayload(): { [key: string]: string } {
+        if (!this._telemetryEventContextProps) {
+            this._telemetryEventContextProps = {};
+            this._telemetryEventContextProps["HostId"] = this._telemetryEventContext.HostId;
+            this._telemetryEventContextProps["VSID"] = this._telemetryEventContext.VSID;
+            this._telemetryEventContextProps["Extension.Id"] = this._telemetryEventContext.Extension.Id;
+            this._telemetryEventContextProps[
+                "Extension.PublisherId"
+            ] = this._telemetryEventContext.Extension.PublisherId;
+            this._telemetryEventContextProps["Extension.Version"] = this._telemetryEventContext.Extension.Version;
+        }
+
+        return this._telemetryEventContextProps;
     }
 }
 
