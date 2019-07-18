@@ -1,5 +1,6 @@
 import { createAction, ActionsUnion } from "../Helpers";
 import { PortfolioPlanningDirectory, PortfolioPlanning } from "../../Models/PortfolioPlanningQueryModels";
+import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 
 export const enum PlanDirectoryActionTypes {
     Initialize = "PlanDirectory/Initialize",
@@ -17,31 +18,51 @@ export const enum PlanDirectoryActionTypes {
 export const PlanDirectoryActions = {
     initialize: (directoryData: PortfolioPlanningDirectory) =>
         createAction(PlanDirectoryActionTypes.Initialize, { directoryData }),
-    createPlan: (name: string, description: string) =>
-        createAction(PlanDirectoryActionTypes.CreatePlan, {
+    createPlan: (name: string, description: string) => {
+        PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.CreatePlan);
+        return createAction(PlanDirectoryActionTypes.CreatePlan, {
             name,
             description
-        }),
-    createPlanSucceeded: (newPlan: PortfolioPlanning) =>
-        createAction(PlanDirectoryActionTypes.CreatePlanSucceeded, {
+        });
+    },
+    createPlanSucceeded: (newPlan: PortfolioPlanning) => {
+        PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.CreatePlanSucceeded);
+        return createAction(PlanDirectoryActionTypes.CreatePlanSucceeded, {
             newPlan
-        }),
-    createPlanFailed: (message: string) =>
-        createAction(PlanDirectoryActionTypes.CreatePlanFailed, {
+        });
+    },
+    createPlanFailed: (message: string) => {
+        PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.CreatePlanFailed, {
+            ["message"]: message
+        });
+        return createAction(PlanDirectoryActionTypes.CreatePlanFailed, {
             message
-        }),
-    deletePlan: (id: string) => createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
+        });
+    },
+    deletePlan: (id: string) => {
+        PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.DeletePlan);
+        return createAction(PlanDirectoryActionTypes.DeletePlan, { id });
+    },
     updateProjectsAndTeamsMetadata: (projectNames: string[], teamNames: string[]) =>
         createAction(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, { projectNames, teamNames }),
-    toggleSelectedPlanId: (id: string) =>
-        createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
+    toggleSelectedPlanId: (id: string) => {
+        PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.ToggleSelectedPlanId);
+        return createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
             id
-        }),
-    toggleNewPlanDialogVisible: (visible: boolean) =>
-        createAction(PlanDirectoryActionTypes.ToggleNewPlanDialogVisible, {
+        });
+    },
+    toggleNewPlanDialogVisible: (visible: boolean) => {
+        PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.ToggleNewPlanDialogVisible, {
+            ["visible"]: visible
+        });
+        return createAction(PlanDirectoryActionTypes.ToggleNewPlanDialogVisible, {
             visible
-        }),
-    handleGeneralException: exception => createAction(PlanDirectoryActionTypes.HandleGeneralException, { exception }),
+        });
+    },
+    handleGeneralException: (exception: Error) => {
+        PortfolioTelemetry.getInstance().TrackException(exception);
+        return createAction(PlanDirectoryActionTypes.HandleGeneralException, { exception });
+    },
     dismissErrorMessageCard: () => createAction(PlanDirectoryActionTypes.DismissErrorMessageCard)
 };
 

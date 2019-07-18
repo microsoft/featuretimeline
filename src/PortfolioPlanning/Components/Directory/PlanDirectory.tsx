@@ -14,6 +14,9 @@ import { LoadingStatus } from "../../Contracts";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 import { ZeroDataActionType, ZeroData } from "azure-devops-ui/ZeroData";
+import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
+import { SinglePlanTelemetry } from "../../Models/TelemetryModels";
+import { getPlansTelemetry } from "../../Redux/Selectors/PlanDirectorySelectors";
 
 export interface IPlanDirectoryProps {}
 
@@ -23,6 +26,7 @@ interface IPlanDirectoryMappedProps {
     selectedPlanId: string;
     plans: PortfolioPlanningMetadata[];
     newPlanDialogVisible: boolean;
+    plansTelemetry: SinglePlanTelemetry[];
 }
 
 export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDirectoryMappedProps & typeof Actions> {
@@ -100,6 +104,8 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     />
                 );
 
+            PortfolioTelemetry.getInstance().TrackPlansLoaded(this.props.plansTelemetry);
+
             return (
                 <div className="page-content plan-directory-page-content">
                     {this.props.exceptionMessage && exceptionMessageCard}
@@ -128,7 +134,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanDirectoryMappedPr
         exceptionMessage: state.planDirectoryState.exceptionMessage,
         selectedPlanId: state.planDirectoryState.selectedPlanId,
         plans: state.planDirectoryState.plans,
-        newPlanDialogVisible: state.planDirectoryState.newPlanDialogVisible
+        newPlanDialogVisible: state.planDirectoryState.newPlanDialogVisible,
+        plansTelemetry: getPlansTelemetry(state.planDirectoryState)
     };
 }
 

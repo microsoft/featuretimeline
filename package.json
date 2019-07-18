@@ -28,6 +28,7 @@
     "work item"
   ],
   "dependencies": {
+    "@microsoft/applicationinsights-web": "^2.1.0",
     "azure-devops-ui": "^1.154.1",
     "base64-inline-loader": "^1.1.1",
     "es6-promise": "^4.2.4",
