@@ -6,6 +6,10 @@ var extensionId = manifest.id;
 
 // Package extension
 var command = `tfx extension create --overrides-file configs/devHttp.json --manifest-globs vss-extension.json --extension-id ${extensionId}-dev --no-prompt`;
-exec(command, function() {
-    console.log("Package created");
+exec(command, function (error) {
+    if (error) {
+        console.log(`Package create error: ${error}`);
+    } else {
+        console.log("Package created");
+    }
 });
