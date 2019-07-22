@@ -40,15 +40,17 @@ export class ODataClient {
         const projectSegment = projectName != null ? `${projectName}/` : "";
         const extensionId = VSS.getExtensionContext().extensionId;
 
-        if (extensionId.toLowerCase() !== ExtensionConstants.EXTENSION_ID.toLowerCase()) {
-            //  Local dev environment.
-            return `https://analytics.codedev.ms/${accountName}/${projectSegment}_odata/${
-                ODataClient.oDataVersion
-            }/`;
-        } else {
+        if (
+            extensionId.toLowerCase() === ExtensionConstants.EXTENSION_ID.toLowerCase() ||
+            extensionId.toLowerCase() === ExtensionConstants.EXTENSION_ID_BETA.toLowerCase()
+        ) {
+            //  Production environment (released or beta versions).
             return `https://analytics.dev.azure.com/${accountName}/${projectSegment}_odata/${
                 ODataClient.oDataVersion
             }/`;
+        } else {
+            //  Local dev environment.
+            return `https://analytics.codedev.ms/${accountName}/${projectSegment}_odata/${ODataClient.oDataVersion}/`;
         }
     }
 
