@@ -9,8 +9,11 @@ import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
-import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
-import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
+import { ProjectBacklogConfiguration, ProjectBacklogConfiguration2 } from "../../Models/ProjectBacklogModels";
+import {
+    BacklogConfigurationDataService,
+    BacklogConfigurationDataService2
+} from "../../Common/Services/BacklogConfigurationDataService";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 
@@ -25,7 +28,7 @@ interface IAddItemPanelState {
     epicsToAdd: IEpic[];
     projects: IListBoxItem[];
     selectedProject: IProject;
-    selectedProjectBacklogConfiguration: ProjectBacklogConfiguration;
+    selectedProjectBacklogConfiguration: ProjectBacklogConfiguration2;
     epics: IListBoxItem[];
     selectedEpics: number[];
     epicsLoaded: boolean;
@@ -252,8 +255,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
     private _getEpicsInProject = async (
         projectId: string
-    ): Promise<{ workItems: WorkItem[]; projectBacklogConfig: ProjectBacklogConfiguration }> => {
-        const projectConfig = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(
+    ): Promise<{ workItems: WorkItem[]; projectBacklogConfig: ProjectBacklogConfiguration2 }> => {
+        const projectConfig = await BacklogConfigurationDataService2.getInstance().getProjectBacklogConfiguration(
             projectId
         );
 
