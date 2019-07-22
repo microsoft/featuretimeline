@@ -82,3 +82,8 @@ export enum LoadingStatus {
     NotLoaded,
     Loaded
 }
+
+export class ExtensionConstants {
+    public static EXTENSION_ID: string = "workitem-feature-timeline-extension";
+    public static EXTENSION_ID_BETA: string = `${ExtensionConstants.EXTENSION_ID}-beta`;
+}

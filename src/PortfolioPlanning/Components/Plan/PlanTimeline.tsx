@@ -13,6 +13,7 @@ import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelecto
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
 import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
+import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -289,8 +290,14 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
 
                 const targerUrl = `${collectionUri}${projectName}/_backlogs/${VSS.getExtensionContext().publisherId}.${VSS.getExtensionContext().extensionId}.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
                 VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
-                    client => client.navigate(targerUrl),
-                    error => alert(error)
+                    client => {
+                        PortfolioTelemetry.getInstance().TrackAction("NavigateToEpicRoadMap");
+                        client.navigate(targerUrl);
+                    },
+                    error => {
+                        PortfolioTelemetry.getInstance().TrackException(error);
+                        alert(error);
+                    }
                 );
             });  
             // TODO: add error handling here when backlogLevel is null

@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rimraf dist *.vsix vss-extension-release.json src/*js libs",
     "dev:webpack": "webpack --watch",
-    "dev": "webpack-dev-server --hot --progress --colors --content-base ./dist --https --port 8888",
+    "dev": "webpack-dev-server --hot --progress --colors --content-base ./ --https --port 8888",
     "dev:http": "webpack-dev-server --progress --colors --content-base ./ --port 8888",
     "package:dev": "node ./scripts/packageDev",
     "package:dev:http": "node ./scripts/packageDevHttp",
@@ -28,6 +28,7 @@
     "work item"
   ],
   "dependencies": {
+    "@microsoft/applicationinsights-web": "^2.1.0",
     "azure-devops-ui": "^1.154.1",
     "base64-inline-loader": "^1.1.1",
     "es6-promise": "^4.2.4",

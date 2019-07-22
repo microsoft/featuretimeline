@@ -9,7 +9,8 @@ import {
     getProjectNames,
     getTeamNames,
     getSelectedItem,
-    getEpicIds
+    getEpicIds,
+    getPlanExtendedTelemetry
 } from "../../Redux/Selectors/EpicTimelineSelectors";
 import { getSelectedPlanMetadata } from "../../Redux/Selectors/PlanDirectorySelectors";
 import { connect } from "react-redux";
@@ -24,6 +25,8 @@ import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { Link } from "azure-devops-ui/Link";
 import { DeletePlanDialog } from "./DeletePlanDialog";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
+import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
+import { ExtendedSinglePlanTelemetry } from "../../Models/TelemetryModels";
 
 interface IPlanPageMappedProps {
     plan: PortfolioPlanningMetadata;
@@ -39,6 +42,7 @@ interface IPlanPageMappedProps {
     planLoadingStatus: LoadingStatus;
     isNewPlanExperience: boolean;
     deletePlanDialogHidden: boolean;
+    planTelemetry: ExtendedSinglePlanTelemetry;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -97,6 +101,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
 
             planContent = <Spinner className="plan-spinner" label={loadingLabel} size={SpinnerSize.large} />;
         } else {
+            PortfolioTelemetry.getInstance().TrackPlanOpened(this.props.planTelemetry);
             planContent = <ConnectedPlanTimeline />;
         }
 
@@ -239,7 +244,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         exceptionMessage: state.epicTimelineState.exceptionMessage,
         planLoadingStatus: state.epicTimelineState.planLoadingStatus,
         isNewPlanExperience: state.epicTimelineState.isNewPlanExperience,
-        deletePlanDialogHidden: state.epicTimelineState.deletePlanDialogHidden
+        deletePlanDialogHidden: state.epicTimelineState.deletePlanDialogHidden,
+        planTelemetry: getPlanExtendedTelemetry(state.epicTimelineState)
     };
 }
 

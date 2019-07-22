@@ -20,8 +20,9 @@ export const PromotePortfolioPlansBanner = (props: IPromotePortfolioPlansBanner)
 
                             const collectionUri = webContext.collection.uri;
                             const projectName = webContext.project.name;
+                            const extensionContext = VSS.getExtensionContext()
 
-                            const targerUrl = `${collectionUri}${projectName}/_apps/hub/ms-devlabs.workitem-feature-timeline-extension-dev.workitem-portfolio-planning`;
+                            const targerUrl = `${collectionUri}${projectName}/_apps/hub/${extensionContext.publisherId}.${extensionContext.extensionId}.workitem-portfolio-planning`;
 
                             VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
                                 client => client.navigate(targerUrl),

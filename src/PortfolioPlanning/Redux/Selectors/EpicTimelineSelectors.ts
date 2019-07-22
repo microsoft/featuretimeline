@@ -8,6 +8,7 @@ import {
     IProjectConfiguration
 } from "../../Contracts";
 import moment = require("moment");
+import { ExtendedSinglePlanTelemetry } from "../../Models/TelemetryModels";
 
 export function getProjects(state: IEpicTimelineState): IProject[] {
     return state.projects;
@@ -117,4 +118,36 @@ export function getProgressTrackingCriteria(state: IEpicTimelineState): Progress
 
 export function getExceptionMessage(state: IPortfolioPlanningState): string {
     return state.epicTimelineState.exceptionMessage;
+}
+
+export function getPlanExtendedTelemetry(state: IEpicTimelineState): ExtendedSinglePlanTelemetry {
+    const epicsPerProject = state.epics ? getEpicCountPerProject(state.epics) : {};
+    const epicsPerProjectCount: number[] = [];
+    Object.keys(epicsPerProject).forEach(projectId => {
+        epicsPerProjectCount.push(epicsPerProject[projectId]);
+    });
+
+    return {
+        teams: state.teams ? Object.keys(state.teams).length : 0,
+        projects: state.projects ? state.projects.length : 0,
+        epicsPerProject: epicsPerProjectCount
+    };
+}
+
+export function getEpicCountPerProject(epics: IEpic[]): { [projectId: string]: number } {
+    if (!epics) {
+        return {};
+    }
+
+    const result: { [projectId: string]: number } = {};
+    epics.forEach(epic => {
+        const projectIdKey = epic.project.toLowerCase();
+        if (!result[projectIdKey]) {
+            result[projectIdKey] = 0;
+        }
+
+        result[projectIdKey]++;
+    });
+
+    return result;
 }
