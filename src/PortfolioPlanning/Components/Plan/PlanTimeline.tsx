@@ -12,6 +12,7 @@ import { InfoIcon } from "../../Common/Components/InfoIcon";
 import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
+import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -279,17 +280,30 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         const collectionUri = VSS.getWebContext().collection.uri;
         const projectName = item.group;
         const teamId = item.teamId;
-        //  TODO    Need to get the backlog level somewhere....
-        const backlogLevel = "Epics";
         const workItemId = item.id;
 
-        const targerUrl = `${collectionUri}${projectName}/_backlogs/ms-devlabs.workitem-feature-timeline-extension-dev.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
+        this._getBacklogLevel(
+            projectName
+        ).then(
+            backlogLevel => {
 
-        VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
-            client => client.navigate(targerUrl),
-            error => alert(error)
-        );
+                const targerUrl = `${collectionUri}${projectName}/_backlogs/${VSS.getExtensionContext().publisherId}.${VSS.getExtensionContext().extensionId}.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
+                VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
+                    client => client.navigate(targerUrl),
+                    error => alert(error)
+                );
+            });  
+            // TODO: add error handling here when backlogLevel is null
     }
+    
+    private _getBacklogLevel = async (
+        projectId: string
+    ): Promise<string> => {
+        const projectConfig = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(
+            projectId
+        );
+        return projectConfig.backlogLevel;
+    };
 }
 
 function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedProps {
