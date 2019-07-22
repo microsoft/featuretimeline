@@ -158,7 +158,16 @@ export class AppInsightsClient {
         this._appInsights = new ApplicationInsights({
             config: config
         });
+
         this._appInsights.loadAppInsights();
+
+        try {
+            const webContext = VSS.getWebContext();
+            this._appInsights.setAuthenticatedUserContext(webContext.user.id, webContext.host.id);
+        } catch (error) {
+            console.log(`Failed to setAuthenticatedUserContext`);
+            console.log(error);
+        }
     }
 
     public static getInstance(): AppInsightsClient {
