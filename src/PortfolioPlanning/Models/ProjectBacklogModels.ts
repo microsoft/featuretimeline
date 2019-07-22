@@ -11,8 +11,6 @@ export interface ProjectBacklogConfiguration {
      */
     defaultRequirementWorkItemType: string;
 
-    backlogLevel?: string;
-
     /**
      * Work item field ref name containing effort data for project.
      * e.g.:
