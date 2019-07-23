@@ -83,6 +83,7 @@ export interface PortfolioPlanning extends PortfolioPlanningMetadata {
 export interface ProjectPortfolioPlanning {
     ProjectId: string;
     PortfolioWorkItemType: string;
+    PortfolioBacklogLevelName: string;
     RequirementWorkItemType: string;
     EffortODataColumnName: string;
     EffortWorkItemFieldRefName: string;

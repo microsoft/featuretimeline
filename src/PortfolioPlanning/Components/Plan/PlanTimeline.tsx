@@ -278,13 +278,15 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
 
     private navigateToEpicRoadmap(item: ITimelineItem) {
         const collectionUri = VSS.getWebContext().collection.uri;
+        const extensionContext = VSS.getExtensionContext();
         const projectName = item.group;
         const teamId = item.teamId;
-        //  TODO    Need to get the backlog level somewhere....
-        const backlogLevel = "Epics";
+        const backlogLevel = item.backlogLevel;
         const workItemId = item.id;
 
-        const targerUrl = `${collectionUri}${projectName}/_backlogs/ms-devlabs.workitem-feature-timeline-extension-dev.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
+        const targerUrl = `${collectionUri}${projectName}/_backlogs/${extensionContext.publisherId}.${
+            extensionContext.extensionId
+        }.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
 
         VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
             client => {
