@@ -74,12 +74,13 @@ export class PortfolioTelemetry {
         }
     }
 
-    public TrackPlanOpened(payload: ExtendedSinglePlanTelemetry) {
+    public TrackPlanOpened(planId: string, payload: ExtendedSinglePlanTelemetry) {
         try {
             AppInsightsClient.getAppInsightsInstance().trackEvent({
                 name: "PlansDirectory.PlanOpened",
                 properties: {
                     ...this.getCommonPayload(),
+                    ["PlanId"]: planId,
                     ["Plan"]: payload
                 }
             });
