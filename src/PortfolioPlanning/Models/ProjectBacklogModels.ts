@@ -2,6 +2,11 @@ export interface ProjectBacklogConfiguration {
     projectId: string;
 
     /**
+     * Name of the Epic backlog level. Used for navigation to epic roadmap.
+     */
+    epicBacklogLevelName: string;
+
+    /**
      * Default work item type associated to the Microsoft.EpicCategory portfolio backlog level for the project.
      */
     defaultEpicWorkItemType: string;

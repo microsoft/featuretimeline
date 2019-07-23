@@ -29,6 +29,7 @@ import { GUIDUtil } from "../Utilities/GUIDUtil";
 import { ProjectConfiguration } from "../../../PortfolioPlanning/Models/ProjectBacklogModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { defaultProjectComparer } from "../Utilities/Comparers";
+import { BacklogConfigurationDataService } from "./BacklogConfigurationDataService";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -114,19 +115,46 @@ export class PortfolioPlanningDataService {
     }
 
     public async loadPortfolioContent(
-        portfolioQueryInput: PortfolioPlanningQueryInput
+        portfolioQueryInput: PortfolioPlanningQueryInput,
+        backlogLevelNameByProject: { [projectId: string]: string }
     ): Promise<PortfolioPlanningFullContentQueryResult> {
         const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
             projectIds: portfolioQueryInput.WorkItems.map(workItems => workItems.projectId)
         };
 
+        if (!backlogLevelNameByProject) {
+            backlogLevelNameByProject = {};
+        }
+
+        const projectIdsWithNoBacklogLevelName: string[] = [];
+        Object.keys(backlogLevelNameByProject).forEach(projectId => {
+            if (!backlogLevelNameByProject[projectId]) {
+                projectIdsWithNoBacklogLevelName.push(projectId);
+            }
+        });
+
+        if (projectIdsWithNoBacklogLevelName && projectIdsWithNoBacklogLevelName.length > 0) {
+            //  Some stored plans don't have information for backlog level name.
+            const missingProjectConfigs = await Promise.all(
+                projectIdsWithNoBacklogLevelName.map(projectId =>
+                    BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(projectId)
+                )
+            );
+
+            missingProjectConfigs.forEach(projectConfig => {
+                backlogLevelNameByProject[projectConfig.projectId.toLowerCase()] = projectConfig.epicBacklogLevelName;
+            });
+        }
+
         const projectConfigurations: { [projectId: string]: ProjectConfiguration } = {};
         portfolioQueryInput.WorkItems.forEach(wi => {
             const projectKey = wi.projectId.toLowerCase();
+            const backlogLevelName = backlogLevelNameByProject[projectKey];
 
             if (!projectConfigurations[projectKey]) {
                 projectConfigurations[projectKey] = {
                     projectId: projectKey,
+                    epicBacklogLevelName: backlogLevelName,
                     defaultEpicWorkItemType: wi.WorkItemTypeFilter,
                     defaultRequirementWorkItemType: wi.DescendantsWorkItemTypeFilter,
                     effortFieldRefName: wi.EffortWorkItemFieldRefName,

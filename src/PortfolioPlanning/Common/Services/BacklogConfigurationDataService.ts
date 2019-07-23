@@ -1,5 +1,5 @@
 import { TeamContext } from "TFS/Core/Contracts";
-import { BacklogConfiguration } from "TFS/Work/Contracts";
+import { BacklogConfiguration, BacklogLevelConfiguration } from "TFS/Work/Contracts";
 import { getClient } from "VSS/Service";
 import { WorkHttpClient } from "TFS/Work/RestClient";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
@@ -32,43 +32,71 @@ export class BacklogConfigurationDataService {
                 ? projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
                 : null;
 
+        const epicPortfolioLevel = this.getEpicPortfolioLevelData(projectBacklogConfiguration);
+
         return {
             projectId,
 
-            defaultEpicWorkItemType: this.getDefaultWorkItemTypeForPortfolioBacklog(
-                projectBacklogConfiguration,
-                BacklogLevelCategory.Epic
-            ),
+            epicBacklogLevelName: epicPortfolioLevel.backlogLevelName,
 
-            defaultRequirementWorkItemType: this.getDefaultWorkItemTypeForPortfolioBacklog(
-                projectBacklogConfiguration,
-                BacklogLevelCategory.Requirement
+            defaultEpicWorkItemType: epicPortfolioLevel.defaultWorkItemType,
+
+            defaultRequirementWorkItemType: this.getDefaultWorkItemTypeForRequirementBacklog(
+                projectBacklogConfiguration
             ),
 
             effortFieldRefName: projectEfforFieldRefName
         };
     }
 
-    private getDefaultWorkItemTypeForPortfolioBacklog(
-        backlogConfiguration: BacklogConfiguration,
-        backlogLevelCategoryId: BacklogLevelCategory
-    ): string {
-        let result: string = null;
+    private getEpicPortfolioLevelData(
+        backlogConfiguration: BacklogConfiguration
+    ): {
+        defaultWorkItemType: string;
+        backlogLevelName: string;
+    } {
+        let result = {
+            defaultWorkItemType: null,
+            backlogLevelName: null
+        };
 
-        if (!backlogConfiguration) {
-            return result;
+        if (
+            backlogConfiguration &&
+            backlogConfiguration.portfolioBacklogs &&
+            backlogConfiguration.portfolioBacklogs.length > 0
+        ) {
+            const allPortfolios = backlogConfiguration.portfolioBacklogs;
+            let selectedLevel: BacklogLevelConfiguration = null;
+
+            if (allPortfolios.length === 1) {
+                selectedLevel = allPortfolios[0];
+            } else {
+                //  Sort by rank ascending.
+                allPortfolios.sort((a, b) => a.rank - b.rank);
+
+                //  Ignore first level.
+                allPortfolios.splice(0, 1);
+
+                selectedLevel = allPortfolios[0];
+            }
+
+            if (selectedLevel) {
+                result.defaultWorkItemType = selectedLevel.defaultWorkItemType
+                    ? selectedLevel.defaultWorkItemType.name
+                    : null;
+
+                result.backlogLevelName = selectedLevel.name;
+            }
         }
 
-        if (BacklogLevelCategory.Epic === backlogLevelCategoryId) {
-            const levelsFound = backlogConfiguration.portfolioBacklogs.filter(
-                level => level.id.toLowerCase() === backlogLevelCategoryId.toLowerCase()
-            );
+        return result;
+    }
 
-            if (levelsFound.length > 0 && levelsFound[0].defaultWorkItemType) {
-                result = levelsFound[0].defaultWorkItemType.name;
-            }
-        } else if (
-            BacklogLevelCategory.Requirement === backlogLevelCategoryId &&
+    private getDefaultWorkItemTypeForRequirementBacklog(backlogConfiguration: BacklogConfiguration): string {
+        let result: string = null;
+
+        if (
+            backlogConfiguration &&
             backlogConfiguration.requirementBacklog &&
             backlogConfiguration.requirementBacklog.defaultWorkItemType
         ) {
@@ -81,9 +109,4 @@ export class BacklogConfigurationDataService {
     private getWorkClient(): WorkHttpClient {
         return getClient(WorkHttpClient);
     }
-}
-
-export enum BacklogLevelCategory {
-    Requirement = "Microsoft.RequirementCategory",
-    Epic = "Microsoft.EpicCategory"
 }

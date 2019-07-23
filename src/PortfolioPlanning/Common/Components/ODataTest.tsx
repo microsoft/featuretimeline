@@ -139,6 +139,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                                         //  Update plan to include information for two projects.
                                         planRetrieved.projects["FBED1309-56DB-44DB-9006-24AD73EEE785"] = {
                                             ProjectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
+                                            PortfolioBacklogLevelName: "Epics",
                                             PortfolioWorkItemType: "Epic",
                                             RequirementWorkItemType: "User Story",
                                             EffortODataColumnName: "StoryPoints",
@@ -148,6 +149,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
 
                                         planRetrieved.projects["6974D8FE-08C8-4123-AD1D-FB830A098DFB"] = {
                                             ProjectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
+                                            PortfolioBacklogLevelName: "Epics",
                                             PortfolioWorkItemType: "Epic",
                                             RequirementWorkItemType: "User Story",
                                             EffortODataColumnName: "StoryPoints",

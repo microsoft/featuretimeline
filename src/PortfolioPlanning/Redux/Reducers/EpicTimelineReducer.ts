@@ -196,6 +196,7 @@ function handlePortfolioItemsReceived(
 
                 draft.projectConfiguration[projectIdKeyLowercase] = {
                     id: projectIdKeyLowercase,
+                    epicBacklogLevelName: projectConfig.epicBacklogLevelName,
                     defaultEpicWorkItemType: projectConfig.defaultEpicWorkItemType,
                     defaultRequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
                     effortWorkItemFieldRefName: projectConfig.effortFieldRefName,
@@ -210,8 +211,13 @@ function handlePortfolioItemsReceived(
                         ? teamAreas.teamsInArea[item.AreaId][0].teamId
                         : null;
 
+                const backlogLevelName: string = projects.projectConfigurations[item.ProjectId]
+                    ? projects.projectConfigurations[item.ProjectId].epicBacklogLevelName
+                    : null;
+
                 return {
                     id: item.WorkItemId,
+                    backlogLevel: backlogLevelName,
                     project: item.ProjectId,
                     teamId: teamIdValue,
                     title: item.Title,
@@ -257,6 +263,7 @@ function handlePortfolioItemsReceived(
 
                     draft.projectConfiguration[newProjectIdLowercase] = {
                         id: newProjectIdLowercase,
+                        epicBacklogLevelName: projectConfig.epicBacklogLevelName,
                         defaultEpicWorkItemType: projectConfig.defaultEpicWorkItemType,
                         defaultRequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
                         effortWorkItemFieldRefName: projectConfig.effortFieldRefName,
@@ -276,8 +283,13 @@ function handlePortfolioItemsReceived(
                             ? teamAreas.teamsInArea[newItemInfo.AreaId][0].teamId
                             : null;
 
+                    const backlogLevelName: string = projects.projectConfigurations[newItemInfo.ProjectId]
+                        ? projects.projectConfigurations[newItemInfo.ProjectId].epicBacklogLevelName
+                        : null;
+
                     draft.epics.push({
                         id: newItemInfo.WorkItemId,
+                        backlogLevel: backlogLevelName,
                         project: newItemInfo.ProjectId,
                         teamId: teamIdValue,
                         title: newItemInfo.Title,

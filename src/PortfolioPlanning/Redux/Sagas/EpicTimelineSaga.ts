@@ -66,6 +66,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
             //  TODO    Once "Add Epic Dialog" uses redux, project configuration will be available in the state,
             //          so there won't be a need to pass these values when adding epics.
             workItemType,
+            epicBacklogLevelName,
             requirementWorkItemType,
             effortWorkItemFieldRefName
             //  END of TODO
@@ -92,6 +93,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
 
             projectConfig = {
                 id: projectIdLowerCase,
+                epicBacklogLevelName: epicBacklogLevelName,
                 defaultEpicWorkItemType: workItemType,
                 defaultRequirementWorkItemType: requirementWorkItemType,
                 effortWorkItemFieldRefName: effortWorkItemFieldRefName,
@@ -108,6 +110,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
         if (!storedPlan.projects[projectIdLowerCase]) {
             storedPlan.projects[projectIdLowerCase] = {
                 ProjectId: projectConfig.id,
+                PortfolioBacklogLevelName: projectConfig.epicBacklogLevelName,
                 PortfolioWorkItemType: projectConfig.defaultEpicWorkItemType,
                 RequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
                 EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
@@ -137,7 +140,8 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
 
         const queryResult: PortfolioPlanningFullContentQueryResult = yield effects.call(
             [portfolioService, portfolioService.loadPortfolioContent],
-            portfolioQueryInput
+            portfolioQueryInput,
+            { [projectIdLowerCase]: projectConfig.epicBacklogLevelName }
         );
 
         yield effects.call(SetDefaultDatesForEpics, queryResult);

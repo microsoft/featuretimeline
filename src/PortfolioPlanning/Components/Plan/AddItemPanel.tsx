@@ -238,6 +238,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             projectId: this.state.selectedProject.id,
             itemIdsToAdd: this.state.selectedEpics,
             workItemType: this.state.selectedProjectBacklogConfiguration.defaultEpicWorkItemType,
+            epicBacklogLevelName: this.state.selectedProjectBacklogConfiguration.epicBacklogLevelName,
             requirementWorkItemType: this.state.selectedProjectBacklogConfiguration.defaultRequirementWorkItemType,
             effortWorkItemFieldRefName: this.state.selectedProjectBacklogConfiguration.effortFieldRefName
         });

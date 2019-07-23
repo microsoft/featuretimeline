@@ -7,6 +7,12 @@ export interface IProject {
 
 export interface IProjectConfiguration {
     id: string;
+
+    /**
+     * Name of the Epic backlog level. Used for navigation to epic roadmap.
+     */
+    epicBacklogLevelName: string;
+
     /**
      * Default work item type associated to the Microsoft.EpicCategory portfolio backlog level for the project.
      */
@@ -31,6 +37,7 @@ export interface IEpic {
     id: number;
     project: string;
     teamId: string;
+    backlogLevel: string;
     title: string;
     startDate?: Date;
     endDate?: Date;
@@ -50,6 +57,7 @@ export interface IAddItems {
     projectId: string;
     itemIdsToAdd: number[];
     workItemType: string;
+    epicBacklogLevelName: string;
     requirementWorkItemType: string;
     effortWorkItemFieldRefName: string;
 }
@@ -68,6 +76,7 @@ export interface ITimelineItem {
     id: number;
     group: string;
     teamId: string;
+    backlogLevel: string;
     title: string;
     start_time: moment.Moment;
     end_time: moment.Moment;
