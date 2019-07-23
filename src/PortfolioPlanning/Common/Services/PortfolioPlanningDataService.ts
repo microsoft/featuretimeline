@@ -770,6 +770,29 @@ export class ODataQueryBuilder {
     }
 
     /**
+     *  (
+                Project/ProjectId eq FBED1309-56DB-44DB-9006-24AD73EEE785
+            and WorkItemType eq 'Epic'
+        ) or (
+                Project/ProjectId eq 6974D8FE-08C8-4123-AD1D-FB830A098DFB
+            and WorkItemType eq 'Epic'
+        )
+     * @param input 
+     */
+    private static BuildODataDescendantsQueryFilter(input: PortfolioPlanningQueryInput): string {
+        const projectFilters = input.WorkItems.map(wi => {
+
+            const parts: string[] = [];
+            parts.push(`Project/ProjectId eq ${wi.projectId}`);
+            parts.push(`WorkItemType eq '${wi.DescendantsWorkItemTypeFilter}'`);
+
+            return `(${parts.join(" and ")})`;
+        });
+
+        return projectFilters.join(" or ");
+    }
+
+    /**
      * Descendants(
         $apply=
             filter(WorkItemType eq 'User Story' or WorkItemType eq 'Task')
@@ -793,11 +816,7 @@ export class ODataQueryBuilder {
         aggregationClauses: WorkItemTypeAggregationClauses;
     } {
         const aggregationClauses = this.BuildEffortSelectionConditional(input);
-
-        const descendantsWorkItemTypeFilters = Object.keys(aggregationClauses.allDescendantsWorkItemTypes).map(
-            key => aggregationClauses.allDescendantsWorkItemTypes[key]
-        );
-
+        const descendantsWorkItemTypeFilters = this.BuildODataDescendantsQueryFilter(input);
         const allAggregationClauses = Object.keys(aggregationClauses.allClauses);
 
         // prettier-ignore
@@ -805,7 +824,7 @@ export class ODataQueryBuilder {
             queryString: 
                 "Descendants(" +
                     "$apply=" +
-                        `filter(${descendantsWorkItemTypeFilters.join(" or ")})` +
+                        `filter(${descendantsWorkItemTypeFilters})` +
                         "/aggregate(" +
                             "$count as TotalCount," +
                             "iif(StateCategory eq 'Completed',1,0) with sum as CompletedCount," +
