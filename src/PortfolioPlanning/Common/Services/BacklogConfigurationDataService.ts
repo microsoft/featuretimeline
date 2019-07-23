@@ -7,7 +7,6 @@ import {
     ProjectBacklogConfiguration2,
     PortfolioLevel
 } from "../../Models/ProjectBacklogModels";
-import { backogIterationsSelector } from "../../../EpicRoadmap/redux/modules/teamsettings/teamsettingsselector";
 
 export class BacklogConfigurationDataService {
     private static readonly EffortTypeField: string = "Effort";
@@ -141,13 +140,24 @@ export class BacklogConfigurationDataService2 {
             let levels = backlogConfiguration.portfolioBacklogs;
 
             //  Sort by rank.
-            levels.sort((a, b) => b.rank - a.rank);
+            levels.sort((a, b) => a.rank - b.rank);
 
             //  If more than 2 levels, first one should be ignored - we don't want to show "Features"
             //  portfolio level.
             if (levels.length > 1) {
-                levels = levels.splice(0, 1);
+                levels.splice(0, 1);
             }
+
+            result = levels.map(level => {
+                return {
+                    id: level.id,
+                    name: level.name,
+                    rank: level.rank,
+                    defaultWorkItemType: level.defaultWorkItemType.name,
+                    orderedWorkItemTypes: level.workItemTypes.map(wi => wi.name),
+                    color: level.color
+                };
+            });
         }
 
         return result;

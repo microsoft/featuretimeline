@@ -7,15 +7,13 @@ import { Panel } from "azure-devops-ui/Panel";
 import { Dropdown, DropdownCallout } from "azure-devops-ui/Dropdown";
 import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
-import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
-import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
-import { ProjectBacklogConfiguration, ProjectBacklogConfiguration2 } from "../../Models/ProjectBacklogModels";
-import {
-    BacklogConfigurationDataService,
-    BacklogConfigurationDataService2
-} from "../../Common/Services/BacklogConfigurationDataService";
+//import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
+//import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
+import { ProjectBacklogConfiguration2 } from "../../Models/ProjectBacklogModels";
+import { BacklogConfigurationDataService2 } from "../../Common/Services/BacklogConfigurationDataService";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
+import { DetailsList } from "office-ui-fabric-react/lib/DetailsList";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -38,8 +36,8 @@ interface IAddItemPanelState {
 }
 
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
-    private selection = new ListSelection(true);
-    private _indexToWorkItemIdMap: { [index: number]: number } = {};
+    // private selection = new ListSelection(true);
+    // private _indexToWorkItemIdMap: { [index: number]: number } = {};
 
     constructor(props) {
         super(props);
@@ -184,22 +182,53 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             return (
                 <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
                     <div className="epics-label">Epics</div>
-                    {this.state.epics.length > 0 ? (
+                    {this._renderDetailsList()}
+                    {/* {this.state.epics.length > 0 ? (
                         <ScrollableList
                             className="item-list"
                             itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
                             renderRow={this.renderRow}
                             selection={this.selection}
                             onSelect={this._onSelectionChanged}
-                        />
+                        /> */}
                     ) : (
-                        <div>All epics are already added to plan.</div>
+                    <div>All epics are already added to plan.</div>
                     )}
                 </FormItem>
             );
         }
     };
 
+    private _renderDetailsList = (): JSX.Element => {
+        let result: JSX.Element = null;
+
+        if (this.state.epics.length > 0) {
+            const items: any[] = [];
+            this.state.epics.forEach(epic => {
+                items.push({
+                    key: "epic",
+                    name: epic.id,
+                    value: epic.text
+                });
+            });
+
+            const groups: any[] = [];
+            groups.push({
+                key: "epic",
+                name: "Epiczzzname"
+            });
+
+            const columns = [
+                { key: "name", name: "Name", fieldName: "name", minWidth: 100, maxWidth: 200, isResizable: true },
+                { key: "value", name: "Value", fieldName: "value", minWidth: 100, maxWidth: 200, isResizable: true }
+            ];
+
+            return <DetailsList items={items} groups={groups} columns={columns} />;
+        }
+
+        return result;
+    };
+    /*
     private renderRow = (
         index: number,
         epic: IListBoxItem,
@@ -234,13 +263,15 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             selectedEpics: newSelectedEpics
         });
     };
+*/
 
     private _onAddEpics = (): void => {
         this.props.onAddItems({
             planId: this.props.planId,
             projectId: this.state.selectedProject.id,
             itemIdsToAdd: this.state.selectedEpics,
-            workItemType: this.state.selectedProjectBacklogConfiguration.defaultEpicWorkItemType,
+            //workItemType: this.state.selectedProjectBacklogConfiguration.defaultEpicWorkItemType,
+            workItemType: this.state.selectedProjectBacklogConfiguration.orderedPortfolioLevels[0].defaultWorkItemType,
             requirementWorkItemType: this.state.selectedProjectBacklogConfiguration.defaultRequirementWorkItemType,
             effortWorkItemFieldRefName: this.state.selectedProjectBacklogConfiguration.effortFieldRefName
         });
@@ -262,7 +293,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
         const epics = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
             projectId,
-            projectConfig.defaultEpicWorkItemType
+            projectConfig.orderedPortfolioLevels[0].defaultWorkItemType
         );
 
         return {
