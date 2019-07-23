@@ -101,7 +101,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
 
             planContent = <Spinner className="plan-spinner" label={loadingLabel} size={SpinnerSize.large} />;
         } else {
-            PortfolioTelemetry.getInstance().TrackPlanOpened(this.props.planTelemetry);
+            PortfolioTelemetry.getInstance().TrackPlanOpened(this.props.plan.id, this.props.planTelemetry);
             planContent = <ConnectedPlanTimeline />;
         }
 
