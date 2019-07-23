@@ -107,7 +107,7 @@ export class BacklogConfigurationDataService {
             targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs[0];
         }
         else if (backlogConfiguration.portfolioBacklogs.length > 1) {
-            targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs.sort((a, b) => (a.rank - b.rank) ? 1 : -1)[1];
+            targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs.sort((a, b) => (a.rank - b.rank))[1];
         }
 
         if (targetPortfolioBacklog && targetPortfolioBacklog.id === backlogLevelCategoryId) {
