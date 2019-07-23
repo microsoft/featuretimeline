@@ -102,7 +102,7 @@ export class BacklogConfigurationDataService {
             return result;
         }
 
-        var targetPortfolioBacklog = null;
+        let targetPortfolioBacklog = null;
         if(backlogConfiguration.portfolioBacklogs.length === 1) {
             targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs[0];
         }
