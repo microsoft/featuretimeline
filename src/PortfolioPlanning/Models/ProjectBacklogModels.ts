@@ -20,6 +20,8 @@ export interface ProjectBacklogConfiguration {
      * Custom.MyEffortField
      */
     effortFieldRefName: string;
+
+    backlogLevelNameForNavigatingToRoadMap?: string;
 }
 
 export interface ProjectConfiguration extends ProjectBacklogConfiguration {

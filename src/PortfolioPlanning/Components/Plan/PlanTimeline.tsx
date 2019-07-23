@@ -13,6 +13,7 @@ import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelecto
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
+import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -280,22 +281,30 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         const collectionUri = VSS.getWebContext().collection.uri;
         const projectName = item.group;
         const teamId = item.teamId;
-        //  TODO    Need to get the backlog level somewhere....
-        const backlogLevel = "Epics";
         const workItemId = item.id;
 
-        const targerUrl = `${collectionUri}${projectName}/_backlogs/ms-devlabs.workitem-feature-timeline-extension-dev.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
+        BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(
+            projectName
+        ).then(projectConfig => {
+            const backlogLevel = projectConfig.backlogLevelNameForNavigatingToRoadMap;
+            const targerUrl = `${collectionUri}${projectName}/_backlogs/${VSS.getExtensionContext().publisherId}.${VSS.getExtensionContext().extensionId}.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
 
-        VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
-            client => {
-                PortfolioTelemetry.getInstance().TrackAction("NavigateToEpicRoadMap");
-                client.navigate(targerUrl);
-            },
-            error => {
-                PortfolioTelemetry.getInstance().TrackException(error);
-                alert(error);
-            }
-        );
+                VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
+                    client => {
+                        PortfolioTelemetry.getInstance().TrackAction("NavigateToEpicRoadMap");
+                        client.navigate(targerUrl);
+                    },
+                    error => {
+                        PortfolioTelemetry.getInstance().TrackException(error);
+                        alert(error);
+                    }
+                );
+        },
+        // TODO: Add error handling here when backlogLevel is null
+        error => {
+            PortfolioTelemetry.getInstance().TrackException(error);
+            alert(error);
+        });
     }
 }
 

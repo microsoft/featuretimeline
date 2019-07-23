@@ -45,7 +45,12 @@ export class BacklogConfigurationDataService {
                 BacklogLevelCategory.Requirement
             ),
 
-            effortFieldRefName: projectEfforFieldRefName
+            effortFieldRefName: projectEfforFieldRefName,
+
+            backlogLevelNameForNavigatingToRoadMap: this.getbacklogLevelNameForNavigatingToRoadMap(
+                projectBacklogConfiguration,
+                BacklogLevelCategory.Epic
+            )
         };
     }
 
@@ -58,8 +63,15 @@ export class BacklogConfigurationDataService {
         if (!backlogConfiguration) {
             return result;
         }
+        var targetPortfolioBacklog = null;
+        if(backlogConfiguration.portfolioBacklogs.length === 1) {
+            targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs[0];
+        }
+        else if (backlogConfiguration.portfolioBacklogs.length > 1) {
+            targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs.sort((a, b) => (a.rank > b.rank) ? 1 : -1)[1];
+        }
 
-        if (BacklogLevelCategory.Epic === backlogLevelCategoryId) {
+        if (targetPortfolioBacklog && targetPortfolioBacklog.id === backlogLevelCategoryId) {
             const levelsFound = backlogConfiguration.portfolioBacklogs.filter(
                 level => level.id.toLowerCase() === backlogLevelCategoryId.toLowerCase()
             );
@@ -75,6 +87,38 @@ export class BacklogConfigurationDataService {
             result = backlogConfiguration.requirementBacklog.defaultWorkItemType.name;
         }
 
+        return result;
+    }
+
+    // This function duplicates some logic from the getDefaultWorkItemTypeForPortfolioBacklog.
+    // Todo: Move the duplicate logic to a common place.
+    private getbacklogLevelNameForNavigatingToRoadMap(
+        backlogConfiguration: BacklogConfiguration,
+        backlogLevelCategoryId: BacklogLevelCategory
+    ): string {
+        let result: string = null;
+
+        if (!backlogConfiguration) {
+            return result;
+        }
+
+        var targetPortfolioBacklog = null;
+        if(backlogConfiguration.portfolioBacklogs.length === 1) {
+            targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs[0];
+        }
+        else if (backlogConfiguration.portfolioBacklogs.length > 1) {
+            targetPortfolioBacklog = backlogConfiguration.portfolioBacklogs.sort((a, b) => (a.rank > b.rank) ? 1 : -1)[1];
+        }
+
+        if (targetPortfolioBacklog && targetPortfolioBacklog.id === backlogLevelCategoryId) {
+            const levelsFound = backlogConfiguration.portfolioBacklogs.filter(
+                level => level.id.toLowerCase() === backlogLevelCategoryId.toLowerCase()
+            );
+
+            if (levelsFound.length > 0 && levelsFound[0].defaultWorkItemType) {
+                result = levelsFound[0].name;
+            }
+        }
         return result;
     }
 
