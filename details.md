@@ -67,6 +67,6 @@ We are always happy to hear feedback. Please reach out to us using the Q&A or re
 
 ## Requirements
 
-Portfolio Plans requires the new Azure DevOps Analytics services. This is supported in Azure DevOps Server 2019 and later.
+Portfolio Plans requires Azure DevOps Services.
 
 Users will need Analytics permissions. See https://go.microsoft.com/fwlink/?LinkId=786441 for details.
