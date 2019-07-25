@@ -21,7 +21,7 @@ export interface ICollapsiblePanelProps {
     isCollapsible: boolean;
 
     /** Callback when the control is collapsed/expanded */
-    onToggle?: (isExpanded: boolean) => void;
+    onToggle?: (contentKey: string, isExpanded: boolean) => void;
 
     /** Callback to render content */
     renderContent: (key: string) => JSX.Element;
@@ -164,7 +164,7 @@ export class CollapsiblePanel extends React.Component<ICollapsiblePanelProps, IC
         });
 
         if (this.props.onToggle) {
-            this.props.onToggle(!isExpanded);
+            this.props.onToggle(this.props.contentKey, !isExpanded);
         }
     }
 }

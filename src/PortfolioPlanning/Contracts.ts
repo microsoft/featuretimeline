@@ -1,4 +1,5 @@
 import moment = require("moment");
+import { IListBoxItem } from "azure-devops-ui/ListBox";
 
 export interface IProject {
     id: string;
@@ -55,11 +56,17 @@ export interface IEpic {
 export interface IAddItems {
     planId: string;
     projectId: string;
-    itemIdsToAdd: number[];
+    itemIdsToAdd: IAddItem[];
     workItemType: string;
     epicBacklogLevelName: string;
     requirementWorkItemType: string;
     effortWorkItemFieldRefName: string;
+}
+
+export interface IAddItem {
+    id: number;
+    workItemType: string;
+    backlogLevelName: string;
 }
 
 export interface IRemoveItem {
@@ -89,10 +96,29 @@ export enum ProgressTrackingCriteria {
 
 export enum LoadingStatus {
     NotLoaded,
-    Loaded
+    Loaded,
+    Loading
 }
 
 export class ExtensionConstants {
     public static EXTENSION_ID: string = "workitem-feature-timeline-extension";
     public static EXTENSION_ID_BETA: string = `${ExtensionConstants.EXTENSION_ID}-beta`;
+}
+
+export class IAddItemPanelProjectItems {
+    [workItemTypeKey: string]: {
+        workItemTypeDisplayName: string;
+        loadingStatus: LoadingStatus;
+        loadingErrorMessage: string;
+        /**
+         * Contains work items that should be displayed in the panel. i.e. work items found in
+         * project, except those that are already part of the plan.
+         */
+        items: IListBoxItem[];
+
+        /**
+         * Count of all work items of this type found in the project.
+         */
+        workItemsFoundInProject: number;
+    };
 }

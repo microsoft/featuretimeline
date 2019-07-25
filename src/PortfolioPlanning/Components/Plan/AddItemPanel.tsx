@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./AddItemPanel.scss";
-import { Project, WorkItem } from "../../Models/PortfolioPlanningQueryModels";
-import { IEpic, IProject, IAddItems } from "../../Contracts";
+import { Project } from "../../Models/PortfolioPlanningQueryModels";
+import { IEpic, IProject, IAddItems, IAddItemPanelProjectItems, LoadingStatus, IAddItem } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { Panel } from "azure-devops-ui/Panel";
 import { Dropdown, DropdownCallout } from "azure-devops-ui/Dropdown";
@@ -10,10 +10,12 @@ import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
-import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
+import { Icon, IconSize } from "azure-devops-ui/Icon";
+import { MessageBar, MessageBarType } from "office-ui-fabric-react/lib/MessageBar";
+import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -27,17 +29,21 @@ interface IAddItemPanelState {
     projects: IListBoxItem[];
     selectedProject: IProject;
     selectedProjectBacklogConfiguration: ProjectBacklogConfiguration;
-    epics: IListBoxItem[];
-    selectedEpics: number[];
-    epicsLoaded: boolean;
+    /**
+     * Map of work items to display, grouped by backlog level.
+     */
+    workItemsByLevel: IAddItemPanelProjectItems;
+
+    selectedWorkItems: { [workItemId: number]: IAddItem };
     loadingProjects: boolean;
-    loadingEpics: boolean;
+    loadingProjectConfiguration: boolean;
     errorMessage: string;
 }
 
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
     private selection = new ListSelection(true);
     private _indexToWorkItemIdMap: { [index: number]: number } = {};
+    private _projectConfigurationsCache: { [projectIdKey: string]: ProjectBacklogConfiguration } = {};
 
     constructor(props) {
         super(props);
@@ -46,11 +52,10 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             projects: [],
             selectedProject: null,
             selectedProjectBacklogConfiguration: null,
-            epics: [],
-            selectedEpics: [],
-            epicsLoaded: false,
+            workItemsByLevel: {},
+            selectedWorkItems: [],
             loadingProjects: true,
-            loadingEpics: false,
+            loadingProjectConfiguration: false,
             errorMessage: ""
         };
 
@@ -91,7 +96,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                         text: "Add",
                         primary: true,
                         onClick: () => this._onAddEpics(),
-                        disabled: this.state.selectedEpics.length === 0
+                        disabled: Object.keys(this.state.selectedWorkItems).length === 0
                     }
                 ]}
             >
@@ -116,7 +121,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                         className="project-picker"
                         placeholder="Select a project"
                         items={this.state.projects}
-                        onSelect={this.onSelect}
+                        disabled={this.state.loadingProjectConfiguration}
+                        onSelect={this._onProjectSelected}
                         renderCallout={props => (
                             <DropdownCallout
                                 {...props}
@@ -136,125 +142,224 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         }
     };
 
-    private onSelect = (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<{}>) => {
+    private _onProjectSelected = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<{}>) => {
         this.setState({
             selectedProject: {
                 id: item.id,
                 title: item.text
             },
-            loadingEpics: true
+            loadingProjectConfiguration: true
         });
 
-        this._getEpicsInProject(item.id).then(
-            epics => {
-                const allEpics: IListBoxItem[] = [];
-                epics.workItems.forEach(epic => {
-                    //  Only show Epics not yet included in the plan.
-                    if (!this.props.epicsInPlan[epic.WorkItemId]) {
-                        allEpics.push({
-                            id: epic.WorkItemId.toString(),
-                            text: epic.Title
+        let errorMessage: string = null;
+
+        try {
+            const projectBacklogConfiguration = await this._getProjectConfiguration(item.id);
+            const firstWorkItemType = projectBacklogConfiguration.orderedWorkItemTypes[0];
+            const firstWorkItemTypeKey = firstWorkItemType.toLowerCase();
+            const workItemsOfType = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
+                item.id,
+                firstWorkItemType
+            );
+
+            const projectItems: IAddItemPanelProjectItems = {};
+
+            //  Adding all work item types in project.
+            projectBacklogConfiguration.orderedWorkItemTypes.forEach(wiType => {
+                const wiTypeKey = wiType.toLowerCase();
+                projectItems[wiTypeKey] = {
+                    workItemTypeDisplayName: wiType,
+                    loadingStatus: LoadingStatus.Loaded,
+                    loadingErrorMessage: null,
+                    items: null,
+                    workItemsFoundInProject: 0
+                };
+            });
+
+            //  Populating work items for first type.
+            const items: IListBoxItem[] = [];
+            if (workItemsOfType.exceptionMessage && workItemsOfType.exceptionMessage.length > 0) {
+                projectItems[firstWorkItemTypeKey] = {
+                    workItemTypeDisplayName: firstWorkItemType,
+                    loadingStatus: LoadingStatus.Loaded,
+                    loadingErrorMessage: workItemsOfType.exceptionMessage,
+                    items: null,
+                    workItemsFoundInProject: 0
+                };
+            } else {
+                workItemsOfType.workItems.forEach(workItem => {
+                    //  Only show work items not yet included in the plan.
+                    if (!this.props.epicsInPlan[workItem.WorkItemId]) {
+                        items.push({
+                            id: workItem.WorkItemId.toString(),
+                            text: workItem.Title,
+                            iconProps: {
+                                iconName: workItem.WorkItemIconName,
+                                size: IconSize.small,
+                                style: {
+                                    color: `#${workItem.WorkItemColor}`
+                                }
+                            }
                         });
                     }
                 });
-                this.setState({
-                    epics: allEpics,
-                    epicsLoaded: true,
-                    loadingEpics: false,
-                    selectedProjectBacklogConfiguration: epics.projectBacklogConfig,
-                    errorMessage: ""
-                });
-            },
-            error =>
-                this.setState({
-                    errorMessage: JSON.stringify(error, null, "   "),
-                    loadingEpics: false
-                })
-        );
-    };
-    /*
-    private _renderEpics = () => {
-        const { loadingEpics, epicsLoaded } = this.state;
 
-        if (loadingEpics) {
-            return <Spinner label="Loading Epics..." size={SpinnerSize.large} className="loading-epics" />;
-        } else if (epicsLoaded) {
-            return (
-                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
-                    <div className="epics-label">Epics</div>
-                    {this.state.epics.length > 0 ? (
-                        <ScrollableList
-                            className="item-list"
-                            itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
-                            renderRow={this.renderRow}
-                            selection={this.selection}
-                            onSelect={this._onSelectionChanged}
-                        />
-                    ) : (
-                        <div>All epics are already added to plan.</div>
-                    )}
-                </FormItem>
-            );
+                projectItems[firstWorkItemTypeKey] = {
+                    workItemTypeDisplayName: firstWorkItemType,
+                    loadingStatus: LoadingStatus.Loaded,
+                    loadingErrorMessage: null,
+                    items,
+                    workItemsFoundInProject: workItemsOfType.workItems.length
+                };
+            }
+
+            this.setState({
+                workItemsByLevel: projectItems,
+                loadingProjectConfiguration: false,
+                selectedProjectBacklogConfiguration: projectBacklogConfiguration,
+                errorMessage: null
+            });
+        } catch (error) {
+            errorMessage = JSON.stringify(error, null, "   ");
+            console.log(errorMessage);
+        } finally {
+            this.setState({
+                errorMessage,
+                loadingProjectConfiguration: false
+            });
         }
     };
-*/
 
-    private _renderItemsForType = (): JSX.Element => {
-        return this.state.epics.length > 0 ? (
-            <ScrollableList
-                className="item-list"
-                itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
-                renderRow={this.renderRow}
-                selection={this.selection}
-                onSelect={this._onSelectionChanged}
-            />
-        ) : (
-            <div>All epics are already added to plan.</div>
-        );
+    private _renderItemsForType = (workItemType: string): JSX.Element => {
+        const { workItemsByLevel } = this.state;
+        const workItemTypeKey = workItemType.toLowerCase();
+        const content = workItemsByLevel[workItemTypeKey];
+
+        //  No-op when LoadingStatus.NotLoaded, which means users has not clicked on the section yet to expand it.
+
+        if (content.loadingStatus === LoadingStatus.Loading) {
+            return <Spinner label="Loading work items..." size={SpinnerSize.large} className="loading-workitems" />;
+        } else {
+            if (content.loadingErrorMessage && content.loadingErrorMessage.length > 0) {
+                return (
+                    <MessageBar messageBarType={MessageBarType.error} isMultiline={true}>
+                        {content.loadingErrorMessage}
+                    </MessageBar>
+                );
+            } else if (content.workItemsFoundInProject === 0) {
+                return <div>No work items of this type were found in the project.</div>;
+            } else if (content.items.length === 0) {
+                return <div>All work items are already added to plan.</div>;
+            } else {
+                return (
+                    <ScrollableList
+                        className="item-list"
+                        itemProvider={new ArrayItemProvider<IListBoxItem>(content.items)}
+                        renderRow={this.renderRow}
+                        selection={this.selection}
+                        onSelect={this._onSelectionChanged}
+                    />
+                );
+            }
+        }
     };
 
     private _renderEpics2 = () => {
-        const { loadingEpics, epicsLoaded } = this.state;
+        const { loadingProjectConfiguration, workItemsByLevel } = this.state;
 
-        if (loadingEpics) {
-            return <Spinner label="Loading Epics..." size={SpinnerSize.large} className="loading-epics" />;
-        } else if (epicsLoaded) {
-            const sections: { eventKey: string; workItemType: string; content: JSX.Element }[] = [
-                {
-                    eventKey: "0",
-                    workItemType: "Epic",
-                    content: <div>content</div>
-                },
-                {
-                    eventKey: "1",
-                    workItemType: "Epic2",
-                    content: this._renderItemsForType()
-                }
-            ];
+        if (loadingProjectConfiguration) {
+            return (
+                <Spinner label="Loading Project Data..." size={SpinnerSize.large} className="loading-project-data" />
+            );
+        } else {
+            const workItemTypeSections = Object.keys(workItemsByLevel).map(workItemTypeKey => {
+                const content = workItemsByLevel[workItemTypeKey];
 
-            const test = sections.map(section => (
-                <CollapsiblePanel
-                    contentKey={section.workItemType}
-                    animate={false}
-                    headerLabel={section.workItemType}
-                    headerClassName={"workItemTypeHeader"}
-                    renderContent={this._renderContent}
-                    isCollapsible={true}
-                    initialIsExpanded={true}
-                    alwaysRenderContents={true}
-                />
-            ));
+                return (
+                    <CollapsiblePanel
+                        contentKey={workItemTypeKey}
+                        animate={false}
+                        headerLabel={content.workItemTypeDisplayName}
+                        headerClassName={"workItemTypeHeader"}
+                        renderContent={this._renderItemsForType}
+                        isCollapsible={true}
+                        //  Initially expand sections loaded or currently loading.
+                        initialIsExpanded={
+                            content.loadingStatus === LoadingStatus.Loaded ||
+                            content.loadingStatus === LoadingStatus.Loading
+                        }
+                        alwaysRenderContents={false}
+                        onToggle={this._onWorkItemTypeToggle}
+                    />
+                );
+            });
 
             return (
                 <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
-                    {test}
+                    {workItemTypeSections}
                 </FormItem>
             );
         }
     };
 
-    private _renderContent = (workItemType: string): JSX.Element => {
-        return this._renderItemsForType();
+    private _onWorkItemTypeToggle = async (workItemTypeKey: string, isExpanded: boolean) => {
+        const { selectedProject, workItemsByLevel } = this.state;
+
+        const content = workItemsByLevel[workItemTypeKey];
+
+        if (isExpanded && content.loadingStatus === LoadingStatus.NotLoaded) {
+            //  Expanding for the first time, need to load work items.
+            content.loadingStatus = LoadingStatus.Loading;
+
+            this.setState({
+                workItemsByLevel
+            });
+
+            //  Load work items for this type.
+            let errorMessage: string = null;
+            let items: IListBoxItem[] = null;
+            let workItemsFoundInProject = 0;
+
+            try {
+                const workItemsOfType = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
+                    selectedProject.id,
+                    content.workItemTypeDisplayName
+                );
+
+                if (workItemsOfType.exceptionMessage && workItemsOfType.exceptionMessage.length > 0) {
+                    errorMessage = workItemsOfType.exceptionMessage;
+                } else {
+                    workItemsOfType.workItems.forEach(workItem => {
+                        //  Only show work items not yet included in the plan.
+                        if (!this.props.epicsInPlan[workItem.WorkItemId]) {
+                            items.push({
+                                id: workItem.WorkItemId.toString(),
+                                text: workItem.Title,
+                                iconProps: {
+                                    iconName: workItem.WorkItemIconName,
+                                    size: IconSize.small,
+                                    style: {
+                                        color: `#${workItem.WorkItemColor}`
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            } catch (error) {
+                errorMessage = JSON.stringify(error, null, "   ");
+                console.log(errorMessage);
+            } finally {
+                content.loadingErrorMessage = errorMessage;
+                content.items = items;
+                content.workItemsFoundInProject = workItemsFoundInProject;
+                content.loadingStatus = LoadingStatus.Loaded;
+
+                this.setState({
+                    workItemsByLevel
+                });
+            }
+        }
     };
 
     private renderRow = (
@@ -267,7 +372,15 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         return (
             <ListItem key={key || "list-item" + index} index={index} details={details}>
                 <div className="item-list-row">
-                    {epic.id} - {epic.text}
+                    <Icon
+                        ariaLabel="Video icon"
+                        iconName={epic.iconProps.iconName}
+                        style={{ color: epic.iconProps.style.color }}
+                        size={epic.iconProps.size}
+                    />;
+                    <span>
+                        {epic.id} - {epic.text}
+                    </span>
                 </div>
             </ListItem>
         );
@@ -286,9 +399,9 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         selectedIndexes.forEach(index => {
             newSelectedEpics.push(this._indexToWorkItemIdMap[index]);
         });
-
+ED 7/25 ----- //  TODO keep fixing contract changes
         this.setState({
-            selectedEpics: newSelectedEpics
+            selectedWorkItems: newSelectedEpics
         });
     };
 
@@ -296,7 +409,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         this.props.onAddItems({
             planId: this.props.planId,
             projectId: this.state.selectedProject.id,
-            itemIdsToAdd: this.state.selectedEpics,
+            itemIdsToAdd: this.state.selectedWorkItems,
             workItemType: this.state.selectedProjectBacklogConfiguration.defaultEpicWorkItemType,
             epicBacklogLevelName: this.state.selectedProjectBacklogConfiguration.epicBacklogLevelName,
             requirementWorkItemType: this.state.selectedProjectBacklogConfiguration.defaultRequirementWorkItemType,
@@ -311,21 +424,15 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         return projects.projects;
     };
 
-    private _getEpicsInProject = async (
-        projectId: string
-    ): Promise<{ workItems: WorkItem[]; projectBacklogConfig: ProjectBacklogConfiguration }> => {
-        const projectConfig = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(
-            projectId
-        );
+    private _getProjectConfiguration = async (projectId: string): Promise<ProjectBacklogConfiguration> => {
+        const projectIdKey = projectId.toLowerCase();
+        let result: ProjectBacklogConfiguration = this._projectConfigurationsCache[projectIdKey];
 
-        const epics = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
-            projectId,
-            projectConfig.defaultEpicWorkItemType
-        );
+        if (!result) {
+            result = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(projectId);
+            this._projectConfigurationsCache[projectIdKey] = result;
+        }
 
-        return {
-            workItems: epics.workItems,
-            projectBacklogConfig: projectConfig
-        };
+        return result;
     };
 }
