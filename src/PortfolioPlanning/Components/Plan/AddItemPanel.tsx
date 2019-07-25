@@ -13,6 +13,7 @@ import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
 import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
+import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -96,7 +97,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             >
                 <div className="add-item-panel-container">
                     {this._renderProjectPicker()}
-                    {this._renderEpics()}
+                    <div>{this._renderEpics2()}</div>
                 </div>
             </Panel>
         );
@@ -171,7 +172,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 })
         );
     };
-
+    /*
     private _renderEpics = () => {
         const { loadingEpics, epicsLoaded } = this.state;
 
@@ -195,6 +196,65 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 </FormItem>
             );
         }
+    };
+*/
+
+    private _renderItemsForType = (): JSX.Element => {
+        return this.state.epics.length > 0 ? (
+            <ScrollableList
+                className="item-list"
+                itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
+                renderRow={this.renderRow}
+                selection={this.selection}
+                onSelect={this._onSelectionChanged}
+            />
+        ) : (
+            <div>All epics are already added to plan.</div>
+        );
+    };
+
+    private _renderEpics2 = () => {
+        const { loadingEpics, epicsLoaded } = this.state;
+
+        if (loadingEpics) {
+            return <Spinner label="Loading Epics..." size={SpinnerSize.large} className="loading-epics" />;
+        } else if (epicsLoaded) {
+            const sections: { eventKey: string; workItemType: string; content: JSX.Element }[] = [
+                {
+                    eventKey: "0",
+                    workItemType: "Epic",
+                    content: <div>content</div>
+                },
+                {
+                    eventKey: "1",
+                    workItemType: "Epic2",
+                    content: this._renderItemsForType()
+                }
+            ];
+
+            const test = sections.map(section => (
+                <CollapsiblePanel
+                    contentKey={section.workItemType}
+                    animate={false}
+                    headerLabel={section.workItemType}
+                    headerClassName={"workItemTypeHeader"}
+                    renderContent={this._renderContent}
+                    isCollapsible={true}
+                    initialIsExpanded={true}
+                    alwaysRenderContents={true}
+                />
+            ));
+
+            return (
+                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                    {test}
+                </FormItem>
+            );
+        }
+    };
+
+    private _renderContent = (workItemType: string): JSX.Element => {
+        return this._renderItemsForType();
     };
 
     private renderRow = (
