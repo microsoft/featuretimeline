@@ -56,6 +56,8 @@ export interface IWorkItem {
     teamId: string;
     backlogLevel: string;
     title: string;
+    iconProps: IWorkItemIcon;
+
     startDate?: Date;
     endDate?: Date;
 

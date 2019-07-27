@@ -63,7 +63,7 @@ export const EpicTimelineActions = {
     portfolioItemsReceived: (
         result: PortfolioPlanningFullContentQueryResult,
         projectConfigurations: { [projectId: string]: IProjectConfiguration }
-    ) => createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
+    ) => createAction(EpicTimelineActionTypes.PortfolioItemsReceived, { result, projectConfigurations }),
     portfolioItemDeleted: (itemDeleted: IRemoveItem) =>
         createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
     openAddItemPanel: () => {
@@ -122,7 +122,12 @@ export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
 
 export interface PortfolioItemsReceivedAction extends Action {
     type: EpicTimelineActionTypes.PortfolioItemsReceived;
-    payload: PortfolioPlanningFullContentQueryResult;
+    payload: {
+        result: PortfolioPlanningFullContentQueryResult;
+        projectConfigurations: {
+            [projectId: string]: IProjectConfiguration;
+        };
+    };
 }
 
 export interface PortfolioItemDeletedAction extends Action {

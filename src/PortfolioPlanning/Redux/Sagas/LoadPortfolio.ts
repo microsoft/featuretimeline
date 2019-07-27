@@ -20,23 +20,23 @@ export function* LoadPortfolio(planId: string) {
 
     // No data for this plan, just return empty info
     if (!planInfo.projects || Object.keys(planInfo.projects).length === 0) {
-        yield put(
-            EpicTimelineActions.portfolioItemsReceived({
-                items: {
-                    exceptionMessage: null,
-                    items: []
-                },
-                projects: {
-                    exceptionMessage: null,
-                    projects: []
-                },
-                teamAreas: {
-                    exceptionMessage: null,
-                    teamsInArea: {}
-                },
-                mergeStrategy: MergeType.Replace
-            })
-        );
+        const emptyQueryResult = {
+            items: {
+                exceptionMessage: null,
+                items: []
+            },
+            projects: {
+                exceptionMessage: null,
+                projects: []
+            },
+            teamAreas: {
+                exceptionMessage: null,
+                teamsInArea: {}
+            },
+            mergeStrategy: MergeType.Replace
+        };
+
+        yield put(EpicTimelineActions.portfolioItemsReceived(emptyQueryResult, {}));
 
         return;
     }
@@ -104,8 +104,6 @@ export function* LoadPortfolio(planId: string) {
 
     //  Replace all values when merging. We are loading the full state of the portfolio here.
     queryResult.mergeStrategy = MergeType.Replace;
-
-    //  TODO create project config
 
     yield put(EpicTimelineActions.portfolioItemsReceived(queryResult, projectConfigurations));
 }

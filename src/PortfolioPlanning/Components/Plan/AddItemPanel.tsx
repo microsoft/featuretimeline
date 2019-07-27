@@ -22,7 +22,7 @@ import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
 import { Icon, IconSize } from "azure-devops-ui/Icon";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react/lib/MessageBar";
-import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
+import { ProjectConfigurationDataService } from "../../Common/Services/ProjectConfigurationDataService";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -423,7 +423,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             planId: this.props.planId,
             projectId: this.state.selectedProject.id,
             items,
-            projectBacklogConfiguration: this.state.selectedProjectBacklogConfiguration
+            projectConfiguration: this.state.selectedProjectBacklogConfiguration
         });
 
         this.props.onCloseAddItemPanel();
@@ -439,7 +439,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         let result: IProjectConfiguration = this._projectConfigurationsCache[projectIdKey];
 
         if (!result) {
-            result = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(projectId);
+            result = await ProjectConfigurationDataService.getInstance().getProjectConfiguration(projectId);
             this._projectConfigurationsCache[projectIdKey] = result;
         }
 
