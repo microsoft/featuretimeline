@@ -1,7 +1,7 @@
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Contracts";
 import {
     IProject,
-    IEpic,
+    IWorkItem,
     ITimelineGroup,
     ITimelineItem,
     ProgressTrackingCriteria,
@@ -33,7 +33,7 @@ export function getTimelineGroups(state: IEpicTimelineState): ITimelineGroup[] {
     });
 }
 
-export function getEpics(state: IEpicTimelineState): IEpic[] {
+export function getEpics(state: IEpicTimelineState): IWorkItem[] {
     return state.epics;
 }
 
@@ -91,7 +91,7 @@ export function getMessage(state: IEpicTimelineState): string {
 }
 
 // TODO: Is there a way for the substate to be passed to these selectors?
-export function getEpicById(state: IPortfolioPlanningState, id: number): IEpic {
+export function getWorkItemById(state: IPortfolioPlanningState, id: number): IWorkItem {
     const found = state.epicTimelineState.epics.filter(epic => epic.id === id);
 
     if (found && found.length === 1) {
@@ -99,10 +99,6 @@ export function getEpicById(state: IPortfolioPlanningState, id: number): IEpic {
     }
 
     return null;
-}
-
-export function getProjectConfigurationById(state: IPortfolioPlanningState, projectId: string): IProjectConfiguration {
-    return state.epicTimelineState.projectConfiguration[projectId.toLowerCase()];
 }
 
 export function getSetDatesDialogHidden(state: IEpicTimelineState): boolean {
@@ -135,7 +131,7 @@ export function getPlanExtendedTelemetry(state: IEpicTimelineState): ExtendedSin
     };
 }
 
-export function getEpicCountPerProject(epics: IEpic[]): { [projectId: string]: number } {
+export function getEpicCountPerProject(epics: IWorkItem[]): { [projectId: string]: number } {
     if (!epics) {
         return {};
     }

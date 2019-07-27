@@ -11,11 +11,10 @@ export interface ODataWorkItemQueryResult {
 
 export interface ODataQueryProjectInput {
     projectId: string;
-    WorkItemTypeFilter: string;
+    workItemIds: number[];
     DescendantsWorkItemTypeFilter: string;
     EffortODataColumnName: string;
     EffortWorkItemFieldRefName: string;
-    workItemIds: number[];
 }
 
 export interface ODataAreaQueryResult {

@@ -1,5 +1,11 @@
 import { createAction, ActionsUnion } from "../Helpers";
-import { ProgressTrackingCriteria, IAddItems, IRemoveItem, LoadingStatus } from "../../Contracts";
+import {
+    ProgressTrackingCriteria,
+    IAddItems,
+    IRemoveItem,
+    LoadingStatus,
+    IProjectConfiguration
+} from "../../Contracts";
 import moment = require("moment");
 import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";
 import { Action } from "redux";
@@ -54,8 +60,10 @@ export const EpicTimelineActions = {
             hidden
         }),
     setSelectedItemId: (id: number) => createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
-    portfolioItemsReceived: (result: PortfolioPlanningFullContentQueryResult) =>
-        createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
+    portfolioItemsReceived: (
+        result: PortfolioPlanningFullContentQueryResult,
+        projectConfigurations: { [projectId: string]: IProjectConfiguration }
+    ) => createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
     portfolioItemDeleted: (itemDeleted: IRemoveItem) =>
         createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
     openAddItemPanel: () => {
@@ -64,7 +72,7 @@ export const EpicTimelineActions = {
     },
     closeAddItemPanel: () => createAction(EpicTimelineActionTypes.CloseAddItemPanel),
     addItems: (itemsToAdd: IAddItems) => {
-        const count = itemsToAdd && itemsToAdd.itemIdsToAdd ? itemsToAdd.itemIdsToAdd.length : 0;
+        const count = itemsToAdd && itemsToAdd.items ? itemsToAdd.items.length : 0;
         PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.OpenAddItemPanel, { ["Count"]: count });
         return createAction(EpicTimelineActionTypes.AddItems, itemsToAdd);
     },

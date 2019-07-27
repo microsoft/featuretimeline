@@ -2,7 +2,10 @@ import { TeamContext } from "TFS/Core/Contracts";
 import { BacklogConfiguration } from "TFS/Work/Contracts";
 import { getClient } from "VSS/Service";
 import { WorkHttpClient } from "TFS/Work/RestClient";
+import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
+import { IWorkItemIcon } from "../../Contracts";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
+import { stringifyMSJSON } from "VSS/Utils/Core";
 
 export class BacklogConfigurationDataService {
     private static readonly EffortTypeField: string = "Effort";
@@ -42,8 +45,20 @@ export class BacklogConfigurationDataService {
             ),
 
             effortFieldRefName: projectEfforFieldRefName,
+
             orderedWorkItemTypes: portfolioLevelsData.orderedWorkItemTypes,
             backlogLevelNamesByWorkItemType: portfolioLevelsData.backlogLevelNamesByWorkItemType
+        };
+    }
+
+    public async getWorkItemTypeIconInfo(projectId: string, workItemType: string): Promise<IWorkItemIcon> {
+        const client = this.getWorkItemTrackingClient();
+        const workItemTypeData = await client.getWorkItemType(projectId, workItemType);
+
+        return {
+            workItemType: workItemType,
+            name: workItemTypeData.icon.id,
+            color: workItemTypeData.color
         };
     }
 
@@ -124,5 +139,9 @@ export class BacklogConfigurationDataService {
 
     private getWorkClient(): WorkHttpClient {
         return getClient(WorkHttpClient);
+    }
+
+    private getWorkItemTrackingClient(): WorkItemTrackingHttpClient {
+        return getClient(WorkItemTrackingHttpClient);
     }
 }

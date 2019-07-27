@@ -1,19 +1,22 @@
 import { takeEvery, put } from "redux-saga/effects";
 import { SagaIterator, effects } from "redux-saga";
 import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTimelineActions";
-import { getEpicById, getProjectConfigurationById } from "../Selectors/EpicTimelineSelectors";
-import { IEpic, IProjectConfiguration } from "../../Contracts";
+import { getWorkItemById } from "../Selectors/EpicTimelineSelectors";
+import { IWorkItem } from "../../Contracts";
 import {
     PortfolioPlanningQueryInput,
     PortfolioPlanningFullContentQueryResult,
     MergeType,
-    PortfolioPlanning
+    PortfolioPlanning,
+    PortfolioItem,
+    WorkItemType,
+    ProjectPortfolioPlanning
 } from "../../Models/PortfolioPlanningQueryModels";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { PlanDirectoryActionTypes, PlanDirectoryActions } from "../Actions/PlanDirectoryActions";
 import { LoadPortfolio } from "./LoadPortfolio";
 import { ActionsOfType } from "../Helpers";
-import { SetDefaultDatesForEpics, saveDatesToServer } from "./DefaultDateUtil";
+import { SetDefaultDatesForWorkItems, saveDatesToServer } from "./DefaultDateUtil";
 
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
@@ -59,47 +62,11 @@ function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAct
 }
 function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {
     try {
-        const {
-            planId,
-            projectId,
-            itemIdsToAdd: epicsToAdd,
-            //  TODO    Once "Add Epic Dialog" uses redux, project configuration will be available in the state,
-            //          so there won't be a need to pass these values when adding epics.
-            workItemType,
-            epicBacklogLevelName,
-            requirementWorkItemType,
-            effortWorkItemFieldRefName
-            //  END of TODO
-        } = action.payload;
-
-        //  TODO    sanitize input epics ids (unique ids only)
+        const { planId, projectId, items, projectConfiguration } = action.payload;
 
         const portfolioService = PortfolioPlanningDataService.getInstance();
         const projectIdLowerCase = projectId.toLowerCase();
-
-        //  Check if we have project configuration information from this project already.
-        let projectConfig: IProjectConfiguration = yield effects.select(
-            getProjectConfigurationById,
-            projectIdLowerCase
-        );
-
-        if (!projectConfig) {
-            //  Find out OData column name for this project. We don't have the project config in the state, which means
-            //  this is the first time we see this project.
-            const effortODataColumnName = yield effects.call(
-                [portfolioService, portfolioService.getODataColumnNameFromWorkItemFieldReferenceName],
-                effortWorkItemFieldRefName
-            );
-
-            projectConfig = {
-                id: projectIdLowerCase,
-                epicBacklogLevelName: epicBacklogLevelName,
-                defaultEpicWorkItemType: workItemType,
-                defaultRequirementWorkItemType: requirementWorkItemType,
-                effortWorkItemFieldRefName: effortWorkItemFieldRefName,
-                effortODataColumnName: effortODataColumnName
-            };
-        }
+        const addedWorkItemIds: number[] = [];
 
         //  Updating plan data first.
         const storedPlan: PortfolioPlanning = yield effects.call(
@@ -107,49 +74,89 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
             planId
         );
 
-        if (!storedPlan.projects[projectIdLowerCase]) {
-            storedPlan.projects[projectIdLowerCase] = {
-                ProjectId: projectConfig.id,
-                PortfolioBacklogLevelName: projectConfig.epicBacklogLevelName,
-                PortfolioWorkItemType: projectConfig.defaultEpicWorkItemType,
-                RequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
-                EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
-                EffortODataColumnName: projectConfig.effortODataColumnName,
-                WorkItemIds: epicsToAdd
-            };
-        } else {
-            //  TODO    Check work item ids are not duplicated.
-            storedPlan.projects[projectIdLowerCase].WorkItemIds.push(...epicsToAdd);
+        //  When this saga is called, the portfolio plan has already been loaded by loadPortfolioContent saga,
+        //  which has already updated the plan's storage to the latest version.
+
+        let existingProjectData = storedPlan.projects[projectIdLowerCase];
+        let updatedItems: { [workItemId: number]: PortfolioItem } = {};
+        let updatedWorkItemTypeData: { [workItemTypeKey: string]: WorkItemType } = {};
+
+        if (existingProjectData) {
+            //  Existing project. Need to add new items, and potentially new work item type data.
+            //  Just in case, initializing them if they are undefined.
+            updatedItems = existingProjectData.Items || {};
+            updatedWorkItemTypeData = existingProjectData.WorkItemTypeData || {};
         }
 
-        //  Save plan with new epics added.
+        //  Adding new items.
+        items.forEach(item => {
+            const workItemTypeKey = item.workItemType.toLowerCase();
+
+            updatedItems[item.id] = {
+                workItemId: item.id,
+                workItemType: item.workItemType
+            };
+
+            //  Remember which work item ids were added in the this saga execution.
+            //  These will be used to run the OData query.
+            addedWorkItemIds.push(item.id);
+
+            if (!updatedWorkItemTypeData[workItemTypeKey]) {
+                updatedWorkItemTypeData[workItemTypeKey] = {
+                    workItemType: item.workItemType,
+                    backlogLevelName: item.backlogLevelName,
+                    iconProps: {
+                        name: item.iconInfo.name,
+                        color: item.iconInfo.color
+                    }
+                };
+            }
+        });
+
+        const updatedProjectData: ProjectPortfolioPlanning = {
+            ProjectId: projectConfiguration.id,
+            RequirementWorkItemType: projectConfiguration.defaultRequirementWorkItemType,
+            EffortWorkItemFieldRefName: projectConfiguration.effortWorkItemFieldRefName,
+            EffortODataColumnName: projectConfiguration.effortODataColumnName,
+
+            /**
+             * Added in V2
+             */
+            Items: updatedItems,
+            WorkItemTypeData: updatedWorkItemTypeData
+        };
+
+        storedPlan.projects[projectIdLowerCase] = updatedProjectData;
+
+        //  Save plan with new items added and / or updated project configuration.
         yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
 
+        //  Run query now to get data for new items.
         const portfolioQueryInput: PortfolioPlanningQueryInput = {
             WorkItems: [
                 {
                     projectId: projectId,
-                    WorkItemTypeFilter: projectConfig.defaultEpicWorkItemType,
-                    DescendantsWorkItemTypeFilter: projectConfig.defaultRequirementWorkItemType,
-                    EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
-                    EffortODataColumnName: projectConfig.effortODataColumnName,
-                    workItemIds: epicsToAdd
+                    DescendantsWorkItemTypeFilter: projectConfiguration.defaultRequirementWorkItemType,
+                    EffortWorkItemFieldRefName: projectConfiguration.effortWorkItemFieldRefName,
+                    EffortODataColumnName: projectConfiguration.effortODataColumnName,
+                    workItemIds: addedWorkItemIds
                 }
             ]
         };
 
         const queryResult: PortfolioPlanningFullContentQueryResult = yield effects.call(
             [portfolioService, portfolioService.loadPortfolioContent],
-            portfolioQueryInput,
-            { [projectIdLowerCase]: projectConfig.epicBacklogLevelName }
+            portfolioQueryInput
         );
 
-        yield effects.call(SetDefaultDatesForEpics, queryResult);
+        yield effects.call(SetDefaultDatesForWorkItems, queryResult);
 
         //  Add new epics selected by customer to existing ones in the plan.
         queryResult.mergeStrategy = MergeType.Add;
 
-        yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
+        yield put(
+            EpicTimelineActions.portfolioItemsReceived(queryResult, { [projectIdLowerCase]: projectConfiguration })
+        );
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
@@ -160,7 +167,7 @@ function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAc
     try {
         const { planId, itemIdToRemove } = action.payload;
 
-        const epic: IEpic = yield effects.select(getEpicById, itemIdToRemove);
+        const epic: IWorkItem = yield effects.select(getWorkItemById, itemIdToRemove);
 
         const portfolioService = PortfolioPlanningDataService.getInstance();
         const projectIdLowerCase = epic.project.toLowerCase();
@@ -171,17 +178,16 @@ function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAc
         );
 
         if (storedPlan.projects[projectIdLowerCase]) {
-            const updatedEpics = storedPlan.projects[projectIdLowerCase].WorkItemIds.filter(
-                current => current !== itemIdToRemove
-            );
+            delete storedPlan.projects[projectIdLowerCase].Items[itemIdToRemove];
 
-            if (updatedEpics.length > 0) {
-                storedPlan.projects[projectIdLowerCase].WorkItemIds = updatedEpics;
-            } else {
+            //  NOTE: Not cleaning work item type data on purpose.
+
+            //  Remove project data if no other work items present.
+            if (Object.keys(storedPlan.projects[projectIdLowerCase].Items).length === 0) {
                 delete storedPlan.projects[projectIdLowerCase];
             }
 
-            //  Save plan with epic removed.
+            //  Save plan with work item removed.
             yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
         }
 

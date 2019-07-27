@@ -1,7 +1,15 @@
 import * as React from "react";
 import "./AddItemPanel.scss";
 import { Project } from "../../Models/PortfolioPlanningQueryModels";
-import { IEpic, IProject, IAddItems, IAddItemPanelProjectItems, LoadingStatus, IAddItem } from "../../Contracts";
+import {
+    IWorkItem,
+    IProject,
+    IAddItems,
+    IAddItemPanelProjectItems,
+    LoadingStatus,
+    IAddItem,
+    IProjectConfiguration
+} from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { Panel } from "azure-devops-ui/Panel";
 import { Dropdown, DropdownCallout } from "azure-devops-ui/Dropdown";
@@ -9,7 +17,6 @@ import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
-import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
@@ -25,10 +32,10 @@ export interface IAddItemPanelProps {
 }
 
 interface IAddItemPanelState {
-    epicsToAdd: IEpic[];
+    epicsToAdd: IWorkItem[];
     projects: IListBoxItem[];
     selectedProject: IProject;
-    selectedProjectBacklogConfiguration: ProjectBacklogConfiguration;
+    selectedProjectBacklogConfiguration: IProjectConfiguration;
     /**
      * Map of work items to display, grouped by backlog level.
      */
@@ -43,7 +50,7 @@ interface IAddItemPanelState {
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
     private selection = new ListSelection(true);
     private _indexToWorkItemIdMap: { [index: number]: number } = {};
-    private _projectConfigurationsCache: { [projectIdKey: string]: ProjectBacklogConfiguration } = {};
+    private _projectConfigurationsCache: { [projectIdKey: string]: IProjectConfiguration } = {};
 
     constructor(props) {
         super(props);
@@ -399,21 +406,24 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         selectedIndexes.forEach(index => {
             newSelectedEpics.push(this._indexToWorkItemIdMap[index]);
         });
-ED 7/25 ----- //  TODO keep fixing contract changes
+        //  TODO    Fix selection changes.
+        /*
         this.setState({
             selectedWorkItems: newSelectedEpics
         });
+        */
     };
 
     private _onAddEpics = (): void => {
+        const items: IAddItem[] = Object.keys(this.state.selectedWorkItems).map(
+            wiKey => this.state.selectedWorkItems[wiKey]
+        );
+
         this.props.onAddItems({
             planId: this.props.planId,
             projectId: this.state.selectedProject.id,
-            itemIdsToAdd: this.state.selectedWorkItems,
-            workItemType: this.state.selectedProjectBacklogConfiguration.defaultEpicWorkItemType,
-            epicBacklogLevelName: this.state.selectedProjectBacklogConfiguration.epicBacklogLevelName,
-            requirementWorkItemType: this.state.selectedProjectBacklogConfiguration.defaultRequirementWorkItemType,
-            effortWorkItemFieldRefName: this.state.selectedProjectBacklogConfiguration.effortFieldRefName
+            items,
+            projectBacklogConfiguration: this.state.selectedProjectBacklogConfiguration
         });
 
         this.props.onCloseAddItemPanel();
@@ -424,9 +434,9 @@ ED 7/25 ----- //  TODO keep fixing contract changes
         return projects.projects;
     };
 
-    private _getProjectConfiguration = async (projectId: string): Promise<ProjectBacklogConfiguration> => {
+    private _getProjectConfiguration = async (projectId: string): Promise<IProjectConfiguration> => {
         const projectIdKey = projectId.toLowerCase();
-        let result: ProjectBacklogConfiguration = this._projectConfigurationsCache[projectIdKey];
+        let result: IProjectConfiguration = this._projectConfigurationsCache[projectIdKey];
 
         if (!result) {
             result = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(projectId);

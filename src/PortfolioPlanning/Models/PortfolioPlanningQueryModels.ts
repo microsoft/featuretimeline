@@ -1,5 +1,4 @@
 import { ODataQueryProjectInput } from "./ODataQueryModels";
-import { ProjectConfiguration } from "./ProjectBacklogModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 
 export interface PortfolioPlanningQueryInput {
@@ -42,7 +41,6 @@ export interface PortfolioPlanningProjectQueryInput {
 
 export interface PortfolioPlanningProjectQueryResult extends IQueryResultError {
     projects: Project[];
-    projectConfigurations: { [projectId: string]: ProjectConfiguration };
 }
 
 export interface PortfolioPlanningWorkItemQueryResult extends IQueryResultError {
@@ -76,20 +74,56 @@ export interface PortfolioPlanningMetadata {
     projectNames: string[];
     owner: IdentityRef;
     createdOn: Date;
+    SchemaVersion: number;
 }
 
 export interface PortfolioPlanning extends PortfolioPlanningMetadata {
     projects: { [projectId: string]: ProjectPortfolioPlanning };
 }
 
+export interface PortfolioItem {
+    workItemId: number;
+    workItemType: string;
+}
+
+export interface IconProps {
+    name: string;
+    color: string;
+}
+
+export interface WorkItemType {
+    workItemType: string;
+    backlogLevelName: string;
+    iconProps: IconProps;
+}
+
 export interface ProjectPortfolioPlanning {
+    /**
+     * V1 Properties.
+     */
     ProjectId: string;
-    PortfolioWorkItemType: string;
-    PortfolioBacklogLevelName: string;
+    PortfolioWorkItemType?: string; //  deprecated in V2.
+    PortfolioBacklogLevelName?: string; // deprecated in V2.
     RequirementWorkItemType: string;
     EffortODataColumnName: string;
     EffortWorkItemFieldRefName: string;
-    WorkItemIds: number[];
+    WorkItemIds?: number[]; // deprecated in v2
+
+    /**
+     * V2 changes.
+     *
+     * Deprecated properties:
+     * - PortfolioWorkItemType
+     * - PortfolioBacklogLevelName
+     * - WorkItemIds
+     *
+     * Added properties:
+     * - Items
+     * - WorkItemTypeData
+     */
+    Items: { [workItemId: number]: PortfolioItem };
+
+    WorkItemTypeData: { [workItemTypeKey: string]: WorkItemType };
 }
 
 export interface PortfolioPlanningDirectory extends IQueryResultError {
