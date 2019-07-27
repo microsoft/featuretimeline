@@ -1,12 +1,5 @@
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Contracts";
-import {
-    IProject,
-    IWorkItem,
-    ITimelineGroup,
-    ITimelineItem,
-    ProgressTrackingCriteria,
-    IProjectConfiguration
-} from "../../Contracts";
+import { IProject, IWorkItem, ITimelineGroup, ITimelineItem, ProgressTrackingCriteria } from "../../Contracts";
 import moment = require("moment");
 import { ExtendedSinglePlanTelemetry } from "../../Models/TelemetryModels";
 

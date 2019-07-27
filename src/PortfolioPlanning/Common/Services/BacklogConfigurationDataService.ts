@@ -5,7 +5,6 @@ import { WorkHttpClient } from "TFS/Work/RestClient";
 import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
 import { IWorkItemIcon } from "../../Contracts";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
-import { stringifyMSJSON } from "VSS/Utils/Core";
 
 export class BacklogConfigurationDataService {
     private static readonly EffortTypeField: string = "Effort";

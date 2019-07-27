@@ -37,10 +37,8 @@ export enum WellKnownEffortODataColumnNames {
 export interface WorkItemTypeAggregationClauses {
     aliasMap: {
         [projectId: string]: {
-            [portfolioWorkItemType: string]: {
-                totalEffortAlias: string;
-                completedEffortAlias: string;
-            };
+            totalEffortAlias: string;
+            completedEffortAlias: string;
         };
     };
     allClauses: { [clause: string]: string };

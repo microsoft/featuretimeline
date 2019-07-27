@@ -18,7 +18,6 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
             WorkItems: [
                 {
                     projectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
-                    WorkItemTypeFilter: "Epic",
                     DescendantsWorkItemTypeFilter: "User Story",
                     EffortODataColumnName: "StoryPoints",
                     EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
@@ -26,7 +25,6 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                 },
                 {
                     projectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
-                    WorkItemTypeFilter: "Epic",
                     DescendantsWorkItemTypeFilter: "User Story",
                     EffortODataColumnName: "StoryPoints",
                     EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
