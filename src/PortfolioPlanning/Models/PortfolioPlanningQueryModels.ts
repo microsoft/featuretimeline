@@ -55,8 +55,6 @@ export interface Project {
 export interface WorkItem {
     WorkItemId: number;
     WorkItemType: string;
-    WorkItemIconName: string;
-    WorkItemColor: string;
     Title: string;
     State: string;
 }
@@ -89,6 +87,7 @@ export interface PortfolioItem {
 export interface IconProps {
     name: string;
     color: string;
+    url: string;
 }
 
 export interface WorkItemType {

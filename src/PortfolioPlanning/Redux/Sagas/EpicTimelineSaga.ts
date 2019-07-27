@@ -102,13 +102,13 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
             addedWorkItemIds.push(item.id);
 
             if (!updatedWorkItemTypeData[workItemTypeKey]) {
+                const backlogLevelName = projectConfiguration.backlogLevelNamesByWorkItemType[workItemTypeKey];
+                const iconProps = projectConfiguration.iconInfoByWorkItemType[workItemTypeKey];
+
                 updatedWorkItemTypeData[workItemTypeKey] = {
                     workItemType: item.workItemType,
-                    backlogLevelName: item.backlogLevelName,
-                    iconProps: {
-                        name: item.iconInfo.name,
-                        color: item.iconInfo.color
-                    }
+                    backlogLevelName: backlogLevelName,
+                    iconProps
                 };
             }
         });

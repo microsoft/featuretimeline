@@ -19,6 +19,7 @@
     width: 100%;
     color: $primary-text;
     font-weight: 600;
+    display: flex;
 }
 
 .loading-projects {
@@ -56,4 +57,9 @@
     color: $primary-text;
     font-weight: 600;
     margin-top: 5px;
+}
+
+.workItemIconClass {
+    width: 14px;
+    margin-right: 5px;
 }

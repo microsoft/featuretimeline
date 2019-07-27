@@ -70,7 +70,8 @@ export function* LoadPortfolio(planId: string) {
                 iconInfoByWorkItemType[workItemTypeKey] = {
                     workItemType: workItemType,
                     name: workItemTypeData.iconProps.name,
-                    color: workItemTypeData.iconProps.color
+                    color: workItemTypeData.iconProps.color,
+                    url: workItemTypeData.iconProps.url
                 };
             });
 
@@ -173,7 +174,8 @@ class UpgradeFromV1ToV2 {
                             backlogLevelName: PortfolioBacklogLevelName,
                             iconProps: {
                                 name: iconInfo.name,
-                                color: iconInfo.color
+                                color: iconInfo.color,
+                                url: iconInfo.url
                             }
                         };
                     }

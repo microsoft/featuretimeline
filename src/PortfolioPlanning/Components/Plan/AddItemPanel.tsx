@@ -20,9 +20,9 @@ import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
-import { Icon, IconSize } from "azure-devops-ui/Icon";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react/lib/MessageBar";
 import { ProjectConfigurationDataService } from "../../Common/Services/ProjectConfigurationDataService";
+import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -50,6 +50,7 @@ interface IAddItemPanelState {
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
     private selection = new ListSelection(true);
     private _indexToWorkItemIdMap: { [index: number]: number } = {};
+    private _workItemIdMap: { [index: number]: IAddItem } = {};
     private _projectConfigurationsCache: { [projectIdKey: string]: IProjectConfiguration } = {};
 
     constructor(props) {
@@ -109,7 +110,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             >
                 <div className="add-item-panel-container">
                     {this._renderProjectPicker()}
-                    <div>{this._renderEpics2()}</div>
+                    <div>{this._renderEpics()}</div>
                 </div>
             </Panel>
         );
@@ -122,7 +123,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             return <Spinner label="Loading Projects..." size={SpinnerSize.large} className="loading-projects" />;
         } else {
             return (
-                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                <FormItem message={this.state.errorMessage} error={!!this.state.errorMessage}>
                     <div className="projects-label">Projects</div>
                     <Dropdown
                         className="project-picker"
@@ -161,8 +162,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         let errorMessage: string = null;
 
         try {
-            const projectBacklogConfiguration = await this._getProjectConfiguration(item.id);
-            const firstWorkItemType = projectBacklogConfiguration.orderedWorkItemTypes[0];
+            const projectConfiguration = await this._getProjectConfiguration(item.id);
+            const firstWorkItemType = projectConfiguration.orderedWorkItemTypes[0];
             const firstWorkItemTypeKey = firstWorkItemType.toLowerCase();
             const workItemsOfType = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
                 item.id,
@@ -172,7 +173,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             const projectItems: IAddItemPanelProjectItems = {};
 
             //  Adding all work item types in project.
-            projectBacklogConfiguration.orderedWorkItemTypes.forEach(wiType => {
+            projectConfiguration.orderedWorkItemTypes.forEach(wiType => {
                 const wiTypeKey = wiType.toLowerCase();
                 projectItems[wiTypeKey] = {
                     workItemTypeDisplayName: wiType,
@@ -197,16 +198,15 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 workItemsOfType.workItems.forEach(workItem => {
                     //  Only show work items not yet included in the plan.
                     if (!this.props.epicsInPlan[workItem.WorkItemId]) {
+                        const itemData: IAddItem = {
+                            id: workItem.WorkItemId,
+                            workItemType: workItem.WorkItemType
+                        };
+
                         items.push({
                             id: workItem.WorkItemId.toString(),
                             text: workItem.Title,
-                            iconProps: {
-                                iconName: workItem.WorkItemIconName,
-                                size: IconSize.small,
-                                style: {
-                                    color: `#${workItem.WorkItemColor}`
-                                }
-                            }
+                            data: itemData
                         });
                     }
                 });
@@ -223,7 +223,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             this.setState({
                 workItemsByLevel: projectItems,
                 loadingProjectConfiguration: false,
-                selectedProjectBacklogConfiguration: projectBacklogConfiguration,
+                selectedProjectBacklogConfiguration: projectConfiguration,
                 errorMessage: null
             });
         } catch (error) {
@@ -271,7 +271,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         }
     };
 
-    private _renderEpics2 = () => {
+    private _renderEpics = () => {
         const { loadingProjectConfiguration, workItemsByLevel } = this.state;
 
         if (loadingProjectConfiguration) {
@@ -339,16 +339,15 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     workItemsOfType.workItems.forEach(workItem => {
                         //  Only show work items not yet included in the plan.
                         if (!this.props.epicsInPlan[workItem.WorkItemId]) {
+                            const itemData: IAddItem = {
+                                id: workItem.WorkItemId,
+                                workItemType: workItemTypeKey
+                            };
+
                             items.push({
                                 id: workItem.WorkItemId.toString(),
                                 text: workItem.Title,
-                                iconProps: {
-                                    iconName: workItem.WorkItemIconName,
-                                    size: IconSize.small,
-                                    style: {
-                                        color: `#${workItem.WorkItemColor}`
-                                    }
-                                }
+                                data: itemData
                             });
                         }
                     });
@@ -375,16 +374,25 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         details: IListItemDetails<IListBoxItem>,
         key?: string
     ): JSX.Element => {
+        const itemData: IAddItem = epic.data as IAddItem;
+
         this._indexToWorkItemIdMap[index] = Number(epic.id);
+        this._workItemIdMap[itemData.id] = itemData;
+        const iconProps = this.state.selectedProjectBacklogConfiguration.iconInfoByWorkItemType[
+            itemData.workItemType.toLowerCase()
+        ];
+
+        const imageProps: IImageProps = {
+            src: iconProps.url,
+            className: "workItemIconClass",
+            imageFit: ImageFit.center,
+            maximizeFrame: true
+        };
+
         return (
             <ListItem key={key || "list-item" + index} index={index} details={details}>
                 <div className="item-list-row">
-                    <Icon
-                        ariaLabel="Video icon"
-                        iconName={epic.iconProps.iconName}
-                        style={{ color: epic.iconProps.style.color }}
-                        size={epic.iconProps.size}
-                    />;
+                    <Image {...imageProps as any} />
                     <span>
                         {epic.id} - {epic.text}
                     </span>
@@ -394,7 +402,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     };
 
     private _onSelectionChanged = (event: React.SyntheticEvent<HTMLElement>, listRow: IListRow<IListBoxItem>) => {
-        let newSelectedEpics: number[] = [];
+        const newSelectedEpics: { [workItemId: number]: IAddItem } = [];
         const selectedIndexes: number[] = [];
 
         this.selection.value.forEach(selectedGroup => {
@@ -404,14 +412,13 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         });
 
         selectedIndexes.forEach(index => {
-            newSelectedEpics.push(this._indexToWorkItemIdMap[index]);
+            const workItemId = this._indexToWorkItemIdMap[index];
+            newSelectedEpics[workItemId] = this._workItemIdMap[workItemId];
         });
-        //  TODO    Fix selection changes.
-        /*
+
         this.setState({
             selectedWorkItems: newSelectedEpics
         });
-        */
     };
 
     private _onAddEpics = (): void => {

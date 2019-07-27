@@ -57,7 +57,8 @@ export class BacklogConfigurationDataService {
         return {
             workItemType: workItemType,
             name: workItemTypeData.icon.id,
-            color: workItemTypeData.color
+            color: workItemTypeData.color,
+            url: workItemTypeData.icon.url
         };
     }
 
@@ -101,18 +102,16 @@ export class BacklogConfigurationDataService {
                     };
                 }
 
-                const levelOrderedTypes: string[] = [];
-
                 //  Always show default type first.
                 if (defaultWorkItemType.name) {
-                    levelOrderedTypes.push(defaultWorkItemType.name);
+                    result.orderedWorkItemTypes.push(defaultWorkItemType.name);
                     result.backlogLevelNamesByWorkItemType[defaultWorkItemType.name.toLowerCase()] = name;
                 }
 
                 //  Add other types.
                 workItemTypes.forEach(wiType => {
                     if (wiType.name && wiType.name.toLowerCase() !== defaultWorkItemType.name!.toLowerCase()) {
-                        levelOrderedTypes.push(wiType.name);
+                        result.orderedWorkItemTypes.push(wiType.name);
                         result.backlogLevelNamesByWorkItemType[wiType.name.toLowerCase()] = name;
                     }
                 });

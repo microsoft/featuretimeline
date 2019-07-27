@@ -142,7 +142,8 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                                             backlogLevelName: "Epics",
                                             iconProps: {
                                                 name: "icon_bug",
-                                                color: "OCOCOC"
+                                                color: "OCOCOC",
+                                                url: "test"
                                             }
                                         };
 

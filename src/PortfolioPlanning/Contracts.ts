@@ -10,6 +10,7 @@ export interface IWorkItemIcon {
     workItemType: string;
     name: string;
     color: string;
+    url: string;
 }
 
 export interface IProjectConfiguration {
@@ -81,8 +82,6 @@ export interface IAddItems {
 export interface IAddItem {
     id: number;
     workItemType: string;
-    backlogLevelName: string;
-    iconInfo: IWorkItemIcon;
 }
 
 export interface IRemoveItem {
