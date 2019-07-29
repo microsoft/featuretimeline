@@ -51,15 +51,19 @@
     display: flex;
     width: 100%;
     height: 50px;
-    background: transparent;
-    border-style: none none solid none;
+    background-color: transparent;
+    border-style: none none none none;
     justify-content: space-between;
     color: $primary-text;
-    font-weight: 600;
+    font-weight: 800;
     margin-top: 5px;
 }
 
 .workItemIconClass {
     width: 14px;
     margin-right: 5px;
+}
+
+.workItemTypeEmptyMessage {
+    margin: 5px 0px 0px 15px;
 }

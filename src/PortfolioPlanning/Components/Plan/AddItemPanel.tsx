@@ -41,15 +41,15 @@ interface IAddItemPanelState {
      */
     workItemsByLevel: IAddItemPanelProjectItems;
 
-    selectedWorkItems: { [workItemId: number]: IAddItem };
+    selectedWorkItems: { [workItemTypeKey: string]: { [workItemId: number]: IAddItem } };
     loadingProjects: boolean;
     loadingProjectConfiguration: boolean;
     errorMessage: string;
 }
 
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
-    private selection = new ListSelection(true);
-    private _indexToWorkItemIdMap: { [index: number]: number } = {};
+    private _selectionByWorkItemType: { [workItemTypeKey: string]: ListSelection } = {};
+    private _indexToWorkItemIdMap: { [workItemTypeKey: string]: { [index: number]: number } } = {};
     private _workItemIdMap: { [index: number]: IAddItem } = {};
     private _projectConfigurationsCache: { [projectIdKey: string]: IProjectConfiguration } = {};
 
@@ -61,7 +61,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             selectedProject: null,
             selectedProjectBacklogConfiguration: null,
             workItemsByLevel: {},
-            selectedWorkItems: [],
+            selectedWorkItems: {},
             loadingProjects: true,
             loadingProjectConfiguration: false,
             errorMessage: ""
@@ -151,6 +151,11 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     };
 
     private _onProjectSelected = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<{}>) => {
+        //  Clear selection object for ScrollableList
+        this._selectionByWorkItemType = {};
+        this._workItemIdMap = {};
+        this._indexToWorkItemIdMap = {};
+
         this.setState({
             selectedProject: {
                 id: item.id,
@@ -177,7 +182,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 const wiTypeKey = wiType.toLowerCase();
                 projectItems[wiTypeKey] = {
                     workItemTypeDisplayName: wiType,
-                    loadingStatus: LoadingStatus.Loaded,
+                    loadingStatus: LoadingStatus.NotLoaded,
                     loadingErrorMessage: null,
                     items: null,
                     workItemsFoundInProject: 0
@@ -254,16 +259,24 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     </MessageBar>
                 );
             } else if (content.workItemsFoundInProject === 0) {
-                return <div>No work items of this type were found in the project.</div>;
+                return (
+                    <div className="workItemTypeEmptyMessage">
+                        No work items of this type were found in the project.
+                    </div>
+                );
             } else if (content.items.length === 0) {
-                return <div>All work items are already added to plan.</div>;
+                return <div className="workItemTypeEmptyMessage">All work items are already added to plan.</div>;
             } else {
+                if (!this._selectionByWorkItemType[workItemTypeKey]) {
+                    this._selectionByWorkItemType[workItemTypeKey] = new ListSelection(true);
+                }
+
                 return (
                     <ScrollableList
                         className="item-list"
                         itemProvider={new ArrayItemProvider<IListBoxItem>(content.items)}
                         renderRow={this.renderRow}
-                        selection={this.selection}
+                        selection={this._selectionByWorkItemType[workItemTypeKey]}
                         onSelect={this._onSelectionChanged}
                     />
                 );
@@ -295,6 +308,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                             content.loadingStatus === LoadingStatus.Loaded ||
                             content.loadingStatus === LoadingStatus.Loading
                         }
+                        forceContentUpdate={content.loadingStatus === LoadingStatus.Loaded}
                         alwaysRenderContents={false}
                         onToggle={this._onWorkItemTypeToggle}
                     />
@@ -324,7 +338,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
             //  Load work items for this type.
             let errorMessage: string = null;
-            let items: IListBoxItem[] = null;
+            let items: IListBoxItem[] = [];
             let workItemsFoundInProject = 0;
 
             try {
@@ -336,6 +350,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 if (workItemsOfType.exceptionMessage && workItemsOfType.exceptionMessage.length > 0) {
                     errorMessage = workItemsOfType.exceptionMessage;
                 } else {
+                    workItemsFoundInProject = workItemsOfType.workItems.length;
+
                     workItemsOfType.workItems.forEach(workItem => {
                         //  Only show work items not yet included in the plan.
                         if (!this.props.epicsInPlan[workItem.WorkItemId]) {
@@ -375,12 +391,15 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         key?: string
     ): JSX.Element => {
         const itemData: IAddItem = epic.data as IAddItem;
+        const workItemTypeKey = itemData.workItemType.toLowerCase();
 
-        this._indexToWorkItemIdMap[index] = Number(epic.id);
+        if (!this._indexToWorkItemIdMap[workItemTypeKey]) {
+            this._indexToWorkItemIdMap[workItemTypeKey] = {};
+        }
+
+        this._indexToWorkItemIdMap[workItemTypeKey][index] = Number(epic.id);
         this._workItemIdMap[itemData.id] = itemData;
-        const iconProps = this.state.selectedProjectBacklogConfiguration.iconInfoByWorkItemType[
-            itemData.workItemType.toLowerCase()
-        ];
+        const iconProps = this.state.selectedProjectBacklogConfiguration.iconInfoByWorkItemType[workItemTypeKey];
 
         const imageProps: IImageProps = {
             src: iconProps.url,
@@ -404,27 +423,42 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     private _onSelectionChanged = (event: React.SyntheticEvent<HTMLElement>, listRow: IListRow<IListBoxItem>) => {
         const newSelectedEpics: { [workItemId: number]: IAddItem } = [];
         const selectedIndexes: number[] = [];
+        const rowData: IAddItem = listRow.data.data as IAddItem;
+        const workItemTypeKey = rowData.workItemType.toLowerCase();
+        const { selectedWorkItems } = this.state;
 
-        this.selection.value.forEach(selectedGroup => {
+        this._selectionByWorkItemType[workItemTypeKey].value.forEach(selectedGroup => {
             for (let index = selectedGroup.beginIndex; index <= selectedGroup.endIndex; index++) {
                 selectedIndexes.push(index);
             }
         });
 
         selectedIndexes.forEach(index => {
-            const workItemId = this._indexToWorkItemIdMap[index];
+            const workItemId = this._indexToWorkItemIdMap[workItemTypeKey][index];
             newSelectedEpics[workItemId] = this._workItemIdMap[workItemId];
         });
 
+        if (Object.keys(newSelectedEpics).length === 0) {
+            delete selectedWorkItems[workItemTypeKey];
+        } else {
+            selectedWorkItems[workItemTypeKey] = newSelectedEpics;
+        }
+
         this.setState({
-            selectedWorkItems: newSelectedEpics
+            selectedWorkItems
         });
     };
 
     private _onAddEpics = (): void => {
-        const items: IAddItem[] = Object.keys(this.state.selectedWorkItems).map(
-            wiKey => this.state.selectedWorkItems[wiKey]
-        );
+        const items: IAddItem[] = [];
+
+        Object.keys(this.state.selectedWorkItems).forEach(wiTypeKey => {
+            const workItemsInType = this.state.selectedWorkItems[wiTypeKey];
+
+            Object.keys(workItemsInType).forEach(workItem => {
+                items.push(workItemsInType[workItem]);
+            });
+        });
 
         this.props.onAddItems({
             planId: this.props.planId,

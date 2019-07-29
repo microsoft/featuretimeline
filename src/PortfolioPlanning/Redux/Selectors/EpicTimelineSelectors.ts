@@ -64,6 +64,7 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
             teamId: epic.teamId,
             backlogLevel: epic.backlogLevel,
             title: epic.title,
+            iconUrl: epic.iconProps.url,
             start_time: moment(epic.startDate),
             end_time: moment(epic.endDate),
             itemProps: {

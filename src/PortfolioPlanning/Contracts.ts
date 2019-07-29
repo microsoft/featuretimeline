@@ -100,6 +100,7 @@ export interface ITimelineItem {
     teamId: string;
     backlogLevel: string;
     title: string;
+    iconUrl: string;
     start_time: moment.Moment;
     end_time: moment.Moment;
 }

@@ -88,6 +88,9 @@ export class BacklogConfigurationDataService {
                 allPortfolios.splice(0, 1);
             }
 
+            //  Now order by rank desc to show highest levels first.
+            allPortfolios.sort((a, b) => b.rank - a.rank);
+
             allPortfolios.forEach(level => {
                 let { name, workItemTypes, defaultWorkItemType } = level;
 

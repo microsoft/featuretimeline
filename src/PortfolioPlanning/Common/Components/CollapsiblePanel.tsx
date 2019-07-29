@@ -43,6 +43,9 @@ export interface ICollapsiblePanelProps {
 
     /** Additional css classes to add to the group */
     className?: string;
+
+    /** Force content update */
+    forceContentUpdate: boolean;
 }
 
 export interface ICollapsiblePanelState {
@@ -70,7 +73,7 @@ export class CollapsiblePanel extends React.Component<ICollapsiblePanelProps, IC
     public render(): JSX.Element {
         const shouldRenderContent = this.state.isExpanded || this.props.alwaysRenderContents;
 
-        if (shouldRenderContent && !this._content) {
+        if (shouldRenderContent && (!this._content || this.props.forceContentUpdate)) {
             this._content = this.props.renderContent(this.props.contentKey);
         }
 
