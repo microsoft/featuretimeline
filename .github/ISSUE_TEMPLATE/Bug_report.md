@@ -18,6 +18,7 @@ Choose a browser
 [ ] Azure DevOps/VSTS
 [ ] TFS 2017 Update 2/3
 [ ] TFS 2018
+[ ] Azure DevOps Server 2019
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
