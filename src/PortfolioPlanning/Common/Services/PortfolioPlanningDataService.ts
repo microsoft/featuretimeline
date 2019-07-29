@@ -26,10 +26,9 @@ import {
     ODataConstants
 } from "../../../PortfolioPlanning/Models/ODataQueryModels";
 import { GUIDUtil } from "../Utilities/GUIDUtil";
-import { ProjectConfiguration } from "../../../PortfolioPlanning/Models/ProjectBacklogModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { defaultProjectComparer } from "../Utilities/Comparers";
-import { BacklogConfigurationDataService } from "./BacklogConfigurationDataService";
+import { ExtensionConstants } from "../../Contracts";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -115,53 +114,11 @@ export class PortfolioPlanningDataService {
     }
 
     public async loadPortfolioContent(
-        portfolioQueryInput: PortfolioPlanningQueryInput,
-        backlogLevelNameByProject: { [projectId: string]: string }
+        portfolioQueryInput: PortfolioPlanningQueryInput
     ): Promise<PortfolioPlanningFullContentQueryResult> {
         const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
             projectIds: portfolioQueryInput.WorkItems.map(workItems => workItems.projectId)
         };
-
-        if (!backlogLevelNameByProject) {
-            backlogLevelNameByProject = {};
-        }
-
-        const projectIdsWithNoBacklogLevelName: string[] = [];
-        Object.keys(backlogLevelNameByProject).forEach(projectId => {
-            if (!backlogLevelNameByProject[projectId]) {
-                projectIdsWithNoBacklogLevelName.push(projectId);
-            }
-        });
-
-        if (projectIdsWithNoBacklogLevelName && projectIdsWithNoBacklogLevelName.length > 0) {
-            //  Some stored plans don't have information for backlog level name.
-            const missingProjectConfigs = await Promise.all(
-                projectIdsWithNoBacklogLevelName.map(projectId =>
-                    BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(projectId)
-                )
-            );
-
-            missingProjectConfigs.forEach(projectConfig => {
-                backlogLevelNameByProject[projectConfig.projectId.toLowerCase()] = projectConfig.epicBacklogLevelName;
-            });
-        }
-
-        const projectConfigurations: { [projectId: string]: ProjectConfiguration } = {};
-        portfolioQueryInput.WorkItems.forEach(wi => {
-            const projectKey = wi.projectId.toLowerCase();
-            const backlogLevelName = backlogLevelNameByProject[projectKey];
-
-            if (!projectConfigurations[projectKey]) {
-                projectConfigurations[projectKey] = {
-                    projectId: projectKey,
-                    epicBacklogLevelName: backlogLevelName,
-                    defaultEpicWorkItemType: wi.WorkItemTypeFilter,
-                    defaultRequirementWorkItemType: wi.DescendantsWorkItemTypeFilter,
-                    effortFieldRefName: wi.EffortWorkItemFieldRefName,
-                    effortODataColumnName: wi.EffortODataColumnName
-                };
-            }
-        });
 
         const [portfolioQueryResult, projectQueryResult] = await Promise.all([
             this.runPortfolioItemsQuery(portfolioQueryInput),
@@ -184,9 +141,6 @@ export class PortfolioPlanningDataService {
         }
 
         const teamAreasQueryResult = await this.runTeamsInAreasQuery(teamsInAreaQueryInput);
-
-        //  Assign the default work item types for each project provided in the query input.
-        projectQueryResult.projectConfigurations = projectConfigurations;
 
         return {
             items: portfolioQueryResult,
@@ -295,7 +249,8 @@ export class PortfolioPlanningDataService {
             projectNames: [],
             owner: owner,
             createdOn: new Date(),
-            projects: {}
+            projects: {},
+            SchemaVersion: ExtensionConstants.CURRENT_PORTFOLIO_SCHEMA_VERSION
         };
 
         const savedPlan = await client.setDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan);
@@ -515,9 +470,7 @@ export class PortfolioPlanningDataService {
 
         return {
             exceptionMessage: null,
-            projects: rawResult,
-            // TODO     Return a different model so we don't have to know about default types here.
-            projectConfigurations: null
+            projects: rawResult
         };
     }
 
@@ -554,9 +507,8 @@ export class PortfolioPlanningDataService {
             const descendantsJsonObject = jsonArrayItem[ODataConstants.Descendants];
             if (descendantsJsonObject && descendantsJsonObject.length === 1) {
                 const projectIdLowercase = rawItem.ProjectSK.toLowerCase();
-                const portfolioWorkItemTypeLowercase = rawItem.WorkItemType.toLowerCase();
                 const propertyAliases = aggregationClauses.aliasMap[projectIdLowercase]
-                    ? aggregationClauses.aliasMap[projectIdLowercase][portfolioWorkItemTypeLowercase]
+                    ? aggregationClauses.aliasMap[projectIdLowercase]
                     : null;
 
                 this.ParseDescendant(descendantsJsonObject[0], result, propertyAliases);
@@ -740,14 +692,12 @@ export class ODataQueryBuilder {
     /**
      *  (
                 Project/ProjectId eq FBED1309-56DB-44DB-9006-24AD73EEE785
-            and WorkItemType eq 'Epic'
             and (
                     WorkItemId eq 5250
                 or  WorkItemId eq 5251
                 )
         ) or (
                 Project/ProjectId eq 6974D8FE-08C8-4123-AD1D-FB830A098DFB
-            and WorkItemType eq 'Epic'
             and (
                     WorkItemId eq 5249
             )
@@ -760,7 +710,6 @@ export class ODataQueryBuilder {
 
             const parts: string[] = [];
             parts.push(`Project/ProjectId eq ${wi.projectId}`);
-            parts.push(`WorkItemType eq '${wi.WorkItemTypeFilter}'`);
             parts.push(`(${wiIdClauses.join(" or ")})`);
 
             return `(${parts.join(" and ")})`;
@@ -781,7 +730,6 @@ export class ODataQueryBuilder {
      */
     private static BuildODataDescendantsQueryFilter(input: PortfolioPlanningQueryInput): string {
         const projectFilters = input.WorkItems.map(wi => {
-
             const parts: string[] = [];
             parts.push(`Project/ProjectId eq ${wi.projectId}`);
             parts.push(`WorkItemType eq '${wi.DescendantsWorkItemTypeFilter}'`);
@@ -853,7 +801,6 @@ export class ODataQueryBuilder {
 
         input.WorkItems.forEach(project => {
             const descendantWorkItemTypeLowercase = project.DescendantsWorkItemTypeFilter.toLowerCase();
-            const portfolioWorkItemTypeLowercase = project.WorkItemTypeFilter.toLowerCase();
             const oDataColumnName = project.EffortODataColumnName;
             const projectIdKeyLowercase = project.projectId.toLowerCase();
 
@@ -879,13 +826,9 @@ export class ODataQueryBuilder {
                 `and WorkItemType eq '${descendantWorkItemTypeLowercase}', ${oDataColumnName},  0) ` +
                 `with sum as ${completedAlias}`.toLowerCase();
 
-            //  Save column alias used by project and work item type to read results.
+            //  Save column alias used by project to read results.
             if (!result.aliasMap[projectIdKeyLowercase]) {
-                result.aliasMap[projectIdKeyLowercase] = {};
-            }
-
-            if (!result.aliasMap[projectIdKeyLowercase][portfolioWorkItemTypeLowercase]) {
-                result.aliasMap[projectIdKeyLowercase][portfolioWorkItemTypeLowercase] = {
+                result.aliasMap[projectIdKeyLowercase] = {
                     totalEffortAlias: totalAlias,
                     completedEffortAlias: completedAlias
                 };

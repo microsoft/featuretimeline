@@ -1,7 +1,9 @@
 import { TeamContext } from "TFS/Core/Contracts";
-import { BacklogConfiguration, BacklogLevelConfiguration } from "TFS/Work/Contracts";
+import { BacklogConfiguration } from "TFS/Work/Contracts";
 import { getClient } from "VSS/Service";
 import { WorkHttpClient } from "TFS/Work/RestClient";
+import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
+import { IWorkItemIcon } from "../../Contracts";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
 
 export class BacklogConfigurationDataService {
@@ -32,32 +34,43 @@ export class BacklogConfigurationDataService {
                 ? projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
                 : null;
 
-        const epicPortfolioLevel = this.getEpicPortfolioLevelData(projectBacklogConfiguration);
+        const portfolioLevelsData = this.getPortfolioLevelsData(projectBacklogConfiguration);
 
         return {
             projectId,
-
-            epicBacklogLevelName: epicPortfolioLevel.backlogLevelName,
-
-            defaultEpicWorkItemType: epicPortfolioLevel.defaultWorkItemType,
 
             defaultRequirementWorkItemType: this.getDefaultWorkItemTypeForRequirementBacklog(
                 projectBacklogConfiguration
             ),
 
-            effortFieldRefName: projectEfforFieldRefName
+            effortFieldRefName: projectEfforFieldRefName,
+
+            orderedWorkItemTypes: portfolioLevelsData.orderedWorkItemTypes,
+            backlogLevelNamesByWorkItemType: portfolioLevelsData.backlogLevelNamesByWorkItemType
         };
     }
 
-    private getEpicPortfolioLevelData(
+    public async getWorkItemTypeIconInfo(projectId: string, workItemType: string): Promise<IWorkItemIcon> {
+        const client = this.getWorkItemTrackingClient();
+        const workItemTypeData = await client.getWorkItemType(projectId, workItemType);
+
+        return {
+            workItemType: workItemType,
+            name: workItemTypeData.icon.id,
+            color: workItemTypeData.color,
+            url: workItemTypeData.icon.url
+        };
+    }
+
+    private getPortfolioLevelsData(
         backlogConfiguration: BacklogConfiguration
     ): {
-        defaultWorkItemType: string;
-        backlogLevelName: string;
+        orderedWorkItemTypes: string[];
+        backlogLevelNamesByWorkItemType: { [workItemTypeKey: string]: string };
     } {
         let result = {
-            defaultWorkItemType: null,
-            backlogLevelName: null
+            orderedWorkItemTypes: [],
+            backlogLevelNamesByWorkItemType: {}
         };
 
         if (
@@ -66,27 +79,46 @@ export class BacklogConfigurationDataService {
             backlogConfiguration.portfolioBacklogs.length > 0
         ) {
             const allPortfolios = backlogConfiguration.portfolioBacklogs;
-            let selectedLevel: BacklogLevelConfiguration = null;
 
-            if (allPortfolios.length === 1) {
-                selectedLevel = allPortfolios[0];
-            } else {
+            if (allPortfolios.length > 1) {
                 //  Sort by rank ascending.
                 allPortfolios.sort((a, b) => a.rank - b.rank);
 
                 //  Ignore first level.
                 allPortfolios.splice(0, 1);
-
-                selectedLevel = allPortfolios[0];
             }
 
-            if (selectedLevel) {
-                result.defaultWorkItemType = selectedLevel.defaultWorkItemType
-                    ? selectedLevel.defaultWorkItemType.name
-                    : null;
+            //  Now order by rank desc to show highest levels first.
+            allPortfolios.sort((a, b) => b.rank - a.rank);
 
-                result.backlogLevelName = selectedLevel.name;
-            }
+            allPortfolios.forEach(level => {
+                let { name, workItemTypes, defaultWorkItemType } = level;
+
+                if (!workItemTypes) {
+                    workItemTypes = [];
+                }
+
+                if (!defaultWorkItemType) {
+                    defaultWorkItemType = {
+                        name: null,
+                        url: null
+                    };
+                }
+
+                //  Always show default type first.
+                if (defaultWorkItemType.name) {
+                    result.orderedWorkItemTypes.push(defaultWorkItemType.name);
+                    result.backlogLevelNamesByWorkItemType[defaultWorkItemType.name.toLowerCase()] = name;
+                }
+
+                //  Add other types.
+                workItemTypes.forEach(wiType => {
+                    if (wiType.name && wiType.name.toLowerCase() !== defaultWorkItemType.name!.toLowerCase()) {
+                        result.orderedWorkItemTypes.push(wiType.name);
+                        result.backlogLevelNamesByWorkItemType[wiType.name.toLowerCase()] = name;
+                    }
+                });
+            });
         }
 
         return result;
@@ -108,5 +140,9 @@ export class BacklogConfigurationDataService {
 
     private getWorkClient(): WorkHttpClient {
         return getClient(WorkHttpClient);
+    }
+
+    private getWorkItemTrackingClient(): WorkItemTrackingHttpClient {
+        return getClient(WorkItemTrackingHttpClient);
     }
 }

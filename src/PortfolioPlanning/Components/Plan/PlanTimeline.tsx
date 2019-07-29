@@ -13,6 +13,7 @@ import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelecto
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
+import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -174,6 +175,14 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 border: "none"
             };
         }
+
+        const imageProps: IImageProps = {
+            src: item.iconUrl,
+            className: "iconClass",
+            imageFit: ImageFit.contain,
+            maximizeFrame: true
+        };
+
         return (
             <div
                 {...getItemProps({
@@ -187,6 +196,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 })}
             >
                 <div className="details">
+                    <Image {...imageProps as any} />
                     <div className="title">{itemContext.title}</div>
                     <div className="progress-indicator">
                         <ProgressDetails

@@ -11,11 +11,10 @@ export interface ODataWorkItemQueryResult {
 
 export interface ODataQueryProjectInput {
     projectId: string;
-    WorkItemTypeFilter: string;
+    workItemIds: number[];
     DescendantsWorkItemTypeFilter: string;
     EffortODataColumnName: string;
     EffortWorkItemFieldRefName: string;
-    workItemIds: number[];
 }
 
 export interface ODataAreaQueryResult {
@@ -38,10 +37,8 @@ export enum WellKnownEffortODataColumnNames {
 export interface WorkItemTypeAggregationClauses {
     aliasMap: {
         [projectId: string]: {
-            [portfolioWorkItemType: string]: {
-                totalEffortAlias: string;
-                completedEffortAlias: string;
-            };
+            totalEffortAlias: string;
+            completedEffortAlias: string;
         };
     };
     allClauses: { [clause: string]: string };

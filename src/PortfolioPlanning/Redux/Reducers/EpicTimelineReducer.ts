@@ -7,7 +7,7 @@ import {
     PortfolioItemDeletedAction
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
-import { ProgressTrackingCriteria, LoadingStatus } from "../../Contracts";
+import { ProgressTrackingCriteria, LoadingStatus, IWorkItemIcon } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
 import { defaultIProjectComparer } from "../../Common/Utilities/Comparers";
 
@@ -63,7 +63,8 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
-                const { items, projects } = action.payload;
+                const { result } = action.payload;
+                const { items, projects } = result;
 
                 draft.planLoadingStatus = LoadingStatus.Loaded;
                 draft.exceptionMessage = items.exceptionMessage || projects.exceptionMessage;
@@ -149,7 +150,6 @@ export function getDefaultState(): IEpicTimelineState {
         planLoadingStatus: LoadingStatus.NotLoaded,
         exceptionMessage: "",
         projects: [],
-        projectConfiguration: {},
         teams: {},
         epics: [],
         message: "Initial message",
@@ -171,36 +171,14 @@ function handlePortfolioItemsReceived(
     action: PortfolioItemsReceivedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
-        const { items, projects, teamAreas, mergeStrategy } = action.payload;
+        const { result, projectConfigurations } = action.payload;
+        const { items, projects, teamAreas, mergeStrategy } = result;
 
         if (mergeStrategy === MergeType.Replace) {
             draft.projects = projects.projects.map(project => {
-                const defaultProjectWiTypes = projects.projectConfigurations[project.ProjectSK.toLowerCase()];
-
                 return {
                     id: project.ProjectSK,
-                    title: project.ProjectName,
-                    defaultEpicWorkItemType: defaultProjectWiTypes
-                        ? defaultProjectWiTypes.defaultEpicWorkItemType
-                        : null,
-                    defaultRequirementWorkItemType: defaultProjectWiTypes
-                        ? defaultProjectWiTypes.defaultRequirementWorkItemType
-                        : null
-                };
-            });
-
-            draft.projectConfiguration = {};
-            Object.keys(projects.projectConfigurations).forEach(projectIdKey => {
-                const projectConfig = projects.projectConfigurations[projectIdKey];
-                const projectIdKeyLowercase = projectIdKey.toLowerCase();
-
-                draft.projectConfiguration[projectIdKeyLowercase] = {
-                    id: projectIdKeyLowercase,
-                    epicBacklogLevelName: projectConfig.epicBacklogLevelName,
-                    defaultEpicWorkItemType: projectConfig.defaultEpicWorkItemType,
-                    defaultRequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
-                    effortWorkItemFieldRefName: projectConfig.effortFieldRefName,
-                    effortODataColumnName: projectConfig.effortODataColumnName
+                    title: project.ProjectName
                 };
             });
 
@@ -211,8 +189,14 @@ function handlePortfolioItemsReceived(
                         ? teamAreas.teamsInArea[item.AreaId][0].teamId
                         : null;
 
-                const backlogLevelName: string = projects.projectConfigurations[item.ProjectId]
-                    ? projects.projectConfigurations[item.ProjectId].epicBacklogLevelName
+                const backlogLevelName: string = projectConfigurations[item.ProjectId]
+                    ? projectConfigurations[item.ProjectId].backlogLevelNamesByWorkItemType[
+                          item.WorkItemType.toLowerCase()
+                      ]
+                    : null;
+
+                const iconProps: IWorkItemIcon = projectConfigurations[item.ProjectId]
+                    ? projectConfigurations[item.ProjectId].iconInfoByWorkItemType[item.WorkItemType.toLowerCase()]
                     : null;
 
                 return {
@@ -221,6 +205,7 @@ function handlePortfolioItemsReceived(
                     project: item.ProjectId,
                     teamId: teamIdValue,
                     title: item.Title,
+                    iconProps,
                     startDate: item.StartDate,
                     endDate: item.TargetDate,
                     completedCount: item.CompletedCount,
@@ -253,22 +238,10 @@ function handlePortfolioItemsReceived(
                 const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
 
                 if (filteredProjects.length === 0) {
-                    const newProjectIdLowercase = newProjectInfo.ProjectSK.toLowerCase();
-                    const projectConfig = projects.projectConfigurations[newProjectIdLowercase];
-
                     draft.projects.push({
                         id: newProjectInfo.ProjectSK,
                         title: newProjectInfo.ProjectName
                     });
-
-                    draft.projectConfiguration[newProjectIdLowercase] = {
-                        id: newProjectIdLowercase,
-                        epicBacklogLevelName: projectConfig.epicBacklogLevelName,
-                        defaultEpicWorkItemType: projectConfig.defaultEpicWorkItemType,
-                        defaultRequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
-                        effortWorkItemFieldRefName: projectConfig.effortFieldRefName,
-                        effortODataColumnName: projectConfig.effortODataColumnName
-                    };
                 }
             });
 
@@ -283,8 +256,16 @@ function handlePortfolioItemsReceived(
                             ? teamAreas.teamsInArea[newItemInfo.AreaId][0].teamId
                             : null;
 
-                    const backlogLevelName: string = projects.projectConfigurations[newItemInfo.ProjectId]
-                        ? projects.projectConfigurations[newItemInfo.ProjectId].epicBacklogLevelName
+                    const backlogLevelName: string = projectConfigurations[newItemInfo.ProjectId]
+                        ? projectConfigurations[newItemInfo.ProjectId].backlogLevelNamesByWorkItemType[
+                              newItemInfo.WorkItemType.toLowerCase()
+                          ]
+                        : null;
+
+                    const iconProps: IWorkItemIcon = projectConfigurations[newItemInfo.ProjectId]
+                        ? projectConfigurations[newItemInfo.ProjectId].iconInfoByWorkItemType[
+                              newItemInfo.WorkItemType.toLowerCase()
+                          ]
                         : null;
 
                     draft.epics.push({
@@ -292,6 +273,7 @@ function handlePortfolioItemsReceived(
                         backlogLevel: backlogLevelName,
                         project: newItemInfo.ProjectId,
                         teamId: teamIdValue,
+                        iconProps,
                         title: newItemInfo.Title,
                         startDate: newItemInfo.StartDate,
                         endDate: newItemInfo.TargetDate,

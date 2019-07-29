@@ -2,16 +2,6 @@ export interface ProjectBacklogConfiguration {
     projectId: string;
 
     /**
-     * Name of the Epic backlog level. Used for navigation to epic roadmap.
-     */
-    epicBacklogLevelName: string;
-
-    /**
-     * Default work item type associated to the Microsoft.EpicCategory portfolio backlog level for the project.
-     */
-    defaultEpicWorkItemType: string;
-
-    /**
      * Default work item type associated to the Microsoft.RequirementCategory backlog level for the project.
      */
     defaultRequirementWorkItemType: string;
@@ -25,12 +15,8 @@ export interface ProjectBacklogConfiguration {
      * Custom.MyEffortField
      */
     effortFieldRefName: string;
-}
 
-export interface ProjectConfiguration extends ProjectBacklogConfiguration {
-    /**
-     * Name of the OData column used for retrieving work item effort information.
-     * e.g. Size, StoryPoints, Effort, Custom_MyEffortField, etc...
-     */
-    effortODataColumnName: string;
+    orderedWorkItemTypes: string[];
+
+    backlogLevelNamesByWorkItemType: { [workItemTypeKey: string]: string };
 }

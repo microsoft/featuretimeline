@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as PortfolioModels from "../../Models/PortfolioPlanningQueryModels";
 import { PortfolioPlanningDataService } from "../Services/PortfolioPlanningDataService";
+import { PortfolioItem, WorkItemType } from "../../Models/PortfolioPlanningQueryModels";
 
 export interface ODataTestState {
     results: PortfolioModels.PortfolioPlanningQueryResult;
@@ -17,7 +18,6 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
             WorkItems: [
                 {
                     projectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
-                    WorkItemTypeFilter: "Epic",
                     DescendantsWorkItemTypeFilter: "User Story",
                     EffortODataColumnName: "StoryPoints",
                     EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
@@ -25,7 +25,6 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                 },
                 {
                     projectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
-                    WorkItemTypeFilter: "Epic",
                     DescendantsWorkItemTypeFilter: "User Story",
                     EffortODataColumnName: "StoryPoints",
                     EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
@@ -137,24 +136,40 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                                         console.log(JSON.stringify(planRetrieved, null, "    "));
 
                                         //  Update plan to include information for two projects.
+                                        const WorkItemTypeData: { [workItemType: string]: WorkItemType } = {};
+                                        WorkItemTypeData["epic"] = {
+                                            workItemType: "Epic",
+                                            backlogLevelName: "Epics",
+                                            iconProps: {
+                                                name: "icon_bug",
+                                                color: "OCOCOC",
+                                                url: "test"
+                                            }
+                                        };
+
+                                        const Items1: { [workItemId: number]: PortfolioItem } = {};
+                                        Items1[5251] = { workItemId: 5251, workItemType: "Epic" };
+                                        Items1[5250] = { workItemId: 5250, workItemType: "Epic" };
+
                                         planRetrieved.projects["FBED1309-56DB-44DB-9006-24AD73EEE785"] = {
                                             ProjectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
-                                            PortfolioBacklogLevelName: "Epics",
-                                            PortfolioWorkItemType: "Epic",
                                             RequirementWorkItemType: "User Story",
                                             EffortODataColumnName: "StoryPoints",
                                             EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
-                                            WorkItemIds: [5250, 5251]
+                                            Items: Items1,
+                                            WorkItemTypeData
                                         };
+
+                                        const Items2: { [workItemId: number]: PortfolioItem } = {};
+                                        Items2[5249] = { workItemId: 5249, workItemType: "Epic" };
 
                                         planRetrieved.projects["6974D8FE-08C8-4123-AD1D-FB830A098DFB"] = {
                                             ProjectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
-                                            PortfolioBacklogLevelName: "Epics",
-                                            PortfolioWorkItemType: "Epic",
                                             RequirementWorkItemType: "User Story",
                                             EffortODataColumnName: "StoryPoints",
                                             EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
-                                            WorkItemIds: [5249]
+                                            Items: Items2,
+                                            WorkItemTypeData
                                         };
                                     });
                             });

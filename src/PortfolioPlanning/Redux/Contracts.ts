@@ -1,4 +1,4 @@
-import { IProject, IEpic, ProgressTrackingCriteria, ITeam, IProjectConfiguration, LoadingStatus } from "../Contracts";
+import { IProject, IWorkItem, ProgressTrackingCriteria, ITeam, LoadingStatus } from "../Contracts";
 import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
 import { ExtendedSinglePlanTelemetry } from "../Models/TelemetryModels";
 
@@ -11,9 +11,8 @@ export interface IEpicTimelineState {
     planLoadingStatus: LoadingStatus;
     exceptionMessage: string;
     projects: IProject[];
-    projectConfiguration: { [projectId: string]: IProjectConfiguration };
     teams: { [teamId: string]: ITeam };
-    epics: IEpic[];
+    epics: IWorkItem[];
     message: string;
     addItemsPanelOpen: boolean;
     setDatesDialogHidden: boolean;

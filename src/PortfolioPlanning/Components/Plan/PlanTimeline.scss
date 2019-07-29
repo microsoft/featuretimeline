@@ -32,7 +32,7 @@
         display: flex;
         justify-content: space-between;
         overflow: hidden;
-        align-items: baseline;
+        align-items: center;
         white-space: nowrap;
 
         .title {
@@ -42,6 +42,12 @@
             text-overflow: ellipsis;
             flex: 1 1 auto;
             min-width: 15px;
+        }
+
+        .iconClass {
+            width: 14px;
+            height: 14px;
+            margin-left: 5px;
         }
 
         .progress-indicator {
