@@ -134,7 +134,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.HandleGeneralException: {
-                draft.exceptionMessage = action.payload.message;
+                draft.exceptionMessage = action.payload.message || action.payload.exceptionMessage;
                 break;
             }
             case EpicTimelineActionTypes.DismissErrorMessageCard: {
@@ -318,6 +318,9 @@ function handlePortfolioItemsReceived(
 
             //  Sort projects by name for displaying in the timeline.
             draft.projects.sort(defaultIProjectComparer);
+
+            //  Not loading anymore.
+            draft.planLoadingStatus = LoadingStatus.Loaded;
         }
     });
 }

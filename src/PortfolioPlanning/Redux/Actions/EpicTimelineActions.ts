@@ -111,7 +111,7 @@ export const EpicTimelineActions = {
         PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.ToggleDeletePlanDialogHidden);
         return createAction(EpicTimelineActionTypes.ToggleDeletePlanDialogHidden, { hidden });
     },
-    handleGeneralException: (exception: Error) => {
+    handleGeneralException: (exception: any) => {
         PortfolioTelemetry.getInstance().TrackException(exception);
         return createAction(EpicTimelineActionTypes.HandleGeneralException, exception);
     },
