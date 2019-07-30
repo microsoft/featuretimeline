@@ -134,7 +134,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.HandleGeneralException: {
-                draft.exceptionMessage = action.payload.message;
+                draft.exceptionMessage = action.payload.message || action.payload.exceptionMessage;
                 break;
             }
             case EpicTimelineActionTypes.DismissErrorMessageCard: {
