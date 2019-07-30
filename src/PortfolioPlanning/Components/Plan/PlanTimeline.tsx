@@ -14,6 +14,8 @@ import { IdentityRef } from "VSS/WebApi/Contracts";
 import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
+import { Slider } from "office-ui-fabric-react/lib/Slider";
+import { Button } from "azure-devops-ui/Button";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -39,14 +41,20 @@ interface IPlanTimelineMappedProps {
     exceptionMessage: string;
 }
 
+interface IPlanTimelineState {
+    sliderValue: number;
+}
+
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
 
-export class PlanTimeline extends React.Component<IPlanTimelineProps> {
+export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimelineState> {
     private defaultTimeStart: moment.Moment;
     private defaultTimeEnd: moment.Moment;
 
     constructor() {
         super();
+
+        this.state = { sliderValue: 0 };
     }
 
     public render(): JSX.Element {
@@ -57,6 +65,35 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
 
             return (
                 <div className="plan-timeline-container">
+                    <div className="plan-timeline-zoom-slider">
+                        <Slider
+                            min={0}
+                            max={10}
+                            step={1}
+                            value={this.state.sliderValue}
+                            showValue={true}
+                            onChange={(value: number) => {
+                                if (value < this.state.sliderValue) {
+                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart - day);
+                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd + day);
+                                } else {
+                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart + day);
+                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd - day);
+                                }
+
+                                this.setState({ sliderValue: value });
+                            }}
+                        />
+                    </div>
+                    <Button
+                        text="Zoom fit"
+                        onClick={() => {
+                            const [timeStart, timeEnd] = this._getDefaultTimes(this.props.items);
+
+                            this.props.onUpdateVisibleTimeStart(timeStart.valueOf());
+                            this.props.onUpdateVisibleTimeEnd(timeEnd.valueOf());
+                        }}
+                    />
                     <Timeline
                         groups={this.props.groups}
                         items={this.props.items}
@@ -279,8 +316,11 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 }
             }
 
-            startTime.add(-1, "months");
-            endTime.add(1, "months");
+            // Add small buffer on both sides of plan
+            const buffer = (endTime.valueOf() - startTime.valueOf()) / 10;
+
+            startTime.add(-buffer, "milliseconds");
+            endTime.add(buffer, "milliseconds");
         }
 
         return [startTime, endTime];
