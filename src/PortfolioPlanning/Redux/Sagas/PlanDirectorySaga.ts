@@ -11,6 +11,7 @@ import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTim
 import { getSelectedPlanId } from "../Selectors/PlanDirectorySelectors";
 import { getCurrentUser } from "../../Common/Utilities/Identity";
 import { getProjectNames, getTeamNames, getExceptionMessage } from "../Selectors/EpicTimelineSelectors";
+import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
@@ -80,19 +81,52 @@ function* updateProjectsAndTeamsMetadata(): SagaIterator {
 
             const service = PortfolioPlanningDataService.getInstance();
 
-            const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
-                [service, service.GetPortfolioPlanDirectoryEntry],
-                planId
-            );
+            const storedPlan: PortfolioPlanning = yield effects.call([service, service.GetPortfolioPlanById], planId);
 
-            planToUpdate.projectNames = projectNames;
-            planToUpdate.teamNames = teamNames;
+            if (!storedPlan) {
+                //  Plan might have been deleted by other user, abandoning directory metadata update.
+                PortfolioTelemetry.getInstance().TrackAction("updateProjectsAndTeamsMetadata/PlanNotFound", {
+                    ["PlanId"]: planId
+                });
+            } else {
+                let planToUpdate: PortfolioPlanningMetadata = yield effects.call(
+                    [service, service.GetPortfolioPlanDirectoryEntry],
+                    planId
+                );
 
-            yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+                if (!planToUpdate) {
+                    //  Plan exists, but directory document does not have an entry for it. Let's create one.
+                    PortfolioTelemetry.getInstance().TrackAction(
+                        "updateProjectsAndTeamsMetadata/PlanNotFoundInDirectory",
+                        {
+                            ["PlanId"]: planId
+                        }
+                    );
 
-            yield effects.put(
-                PlanDirectoryActions.updateProjectsAndTeamsMetadata(planToUpdate.projectNames, planToUpdate.teamNames)
-            );
+                    planToUpdate = {
+                        id: storedPlan.id,
+                        name: storedPlan.name,
+                        description: storedPlan.description,
+                        teamNames: [],
+                        projectNames: [],
+                        owner: storedPlan.owner,
+                        createdOn: storedPlan.createdOn,
+                        SchemaVersion: storedPlan.SchemaVersion
+                    };
+                }
+
+                planToUpdate.projectNames = projectNames;
+                planToUpdate.teamNames = teamNames;
+
+                yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+
+                yield effects.put(
+                    PlanDirectoryActions.updateProjectsAndTeamsMetadata(
+                        planToUpdate.projectNames,
+                        planToUpdate.teamNames
+                    )
+                );
+            }
         }
     } catch (exception) {
         console.log(exception);
