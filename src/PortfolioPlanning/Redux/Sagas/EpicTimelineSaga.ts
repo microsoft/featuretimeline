@@ -162,6 +162,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+        yield effects.put(EpicTimelineActions.toggleLoadingStatus(LoadingStatus.Loaded));
     }
 }
 
