@@ -2,7 +2,7 @@ import { takeEvery, put } from "redux-saga/effects";
 import { SagaIterator, effects } from "redux-saga";
 import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTimelineActions";
 import { getWorkItemById } from "../Selectors/EpicTimelineSelectors";
-import { IWorkItem } from "../../Contracts";
+import { IWorkItem, LoadingStatus } from "../../Contracts";
 import {
     PortfolioPlanningQueryInput,
     PortfolioPlanningFullContentQueryResult,
@@ -62,6 +62,8 @@ function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAct
 }
 function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {
     try {
+        yield effects.put(EpicTimelineActions.toggleLoadingStatus(LoadingStatus.NotLoaded));
+
         const { planId, projectId, items, projectConfiguration } = action.payload;
 
         const portfolioService = PortfolioPlanningDataService.getInstance();

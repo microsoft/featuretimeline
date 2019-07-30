@@ -318,6 +318,9 @@ function handlePortfolioItemsReceived(
 
             //  Sort projects by name for displaying in the timeline.
             draft.projects.sort(defaultIProjectComparer);
+
+            //  Not loading anymore.
+            draft.planLoadingStatus = LoadingStatus.Loaded;
         }
     });
 }
