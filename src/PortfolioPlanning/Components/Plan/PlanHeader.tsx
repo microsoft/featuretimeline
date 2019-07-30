@@ -54,7 +54,7 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                             iconProps: {
                                 iconName: "Delete"
                             },
-                            text: "Remove selected epic",
+                            text: "Remove selected item",
                             important: false,
                             subtle: true,
                             disabled: this.props.disabled || !this.props.itemIsSelected,
