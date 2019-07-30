@@ -135,7 +135,7 @@ class UpgradeFromV1ToV2 {
     public static async Upgrade(planInfo: PortfolioPlanning): Promise<PortfolioPlanning> {
         PortfolioTelemetry.getInstance().TrackAction("PortfolioPlanning/SchemaUpgrade/Started", this.VersionUpgrade);
 
-        Object.keys(planInfo.projects).forEach(async projectKey => {
+        const allProjectSchemaUpgrades = Object.keys(planInfo.projects).map(async projectKey => {
             let { PortfolioWorkItemType, PortfolioBacklogLevelName, WorkItemIds } = planInfo.projects[projectKey];
 
             const workItemTypeKey = PortfolioWorkItemType.toLowerCase();
@@ -187,6 +187,9 @@ class UpgradeFromV1ToV2 {
             planInfo.projects[projectKey].PortfolioBacklogLevelName = null;
             planInfo.projects[projectKey].WorkItemIds = null;
         });
+
+        //  Wait for all projects to complete upgrade.
+        await Promise.all(allProjectSchemaUpgrades);
 
         //  We won't clean up the list of team names, and therefore, neither project names.
         //  Cleaning team names would require running OData queries
