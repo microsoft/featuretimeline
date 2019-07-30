@@ -1,6 +1,5 @@
 import { authTokenManager } from "VSS/Authentication/Services";
 import { GUIDUtil } from "./Utilities/GUIDUtil";
-import { ExtensionConstants } from "../Contracts";
 /// <reference types='jquery' />
 /// <reference types='jqueryui' />
 
@@ -38,20 +37,8 @@ export class ODataClient {
 
     public getODataEndpoint(accountName: string, projectName: string): string {
         const projectSegment = projectName != null ? `${projectName}/` : "";
-        const extensionId = VSS.getExtensionContext().extensionId;
 
-        if (
-            extensionId.toLowerCase() === ExtensionConstants.EXTENSION_ID.toLowerCase() ||
-            extensionId.toLowerCase() === ExtensionConstants.EXTENSION_ID_BETA.toLowerCase()
-        ) {
-            //  Production environment (released or beta versions).
-            return `https://analytics.dev.azure.com/${accountName}/${projectSegment}_odata/${
-                ODataClient.oDataVersion
-            }/`;
-        } else {
-            //  Local dev environment.
-            return `https://analytics.codedev.ms/${accountName}/${projectSegment}_odata/${ODataClient.oDataVersion}/`;
-        }
+        return `http://localhost/defaultcollection/${projectSegment}_odata/${ODataClient.oDataVersion}/`;
     }
 
     private constructJsonRequest(authToken: string, type: string, url: string): JQueryAjaxSettings {
