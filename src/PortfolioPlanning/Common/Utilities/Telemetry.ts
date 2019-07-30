@@ -1,5 +1,6 @@
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import { SinglePlanTelemetry, ExtendedSinglePlanTelemetry } from "../../Models/TelemetryModels";
+import { IProjectConfiguration } from "../../Contracts";
 
 interface ExtensionContext {
     PublisherId: string;
@@ -82,6 +83,52 @@ export class PortfolioTelemetry {
                     ...this.getCommonPayload(),
                     ["PlanId"]: planId,
                     ["Plan"]: payload
+                }
+            });
+        } catch (error) {
+            console.log(JSON.stringify(error, null, "    "));
+        }
+    }
+
+    public TrackAddItemPanelProjectSelected(projectId: string, config: IProjectConfiguration) {
+        try {
+            const typeCountPerLevel: { [levelName: string]: number } = {};
+
+            Object.keys(config.backlogLevelNamesByWorkItemType).forEach(wiTypeKey => {
+                const levelNameKey = config.backlogLevelNamesByWorkItemType[wiTypeKey].toLowerCase();
+
+                if (!typeCountPerLevel[levelNameKey]) {
+                    typeCountPerLevel[levelNameKey] = 0;
+                }
+
+                typeCountPerLevel[levelNameKey]++;
+            });
+
+            AppInsightsClient.getAppInsightsInstance().trackEvent({
+                name: "AddItemPanel.ProjectSelected",
+                properties: {
+                    ...this.getCommonPayload(),
+                    ["ProjectId"]: projectId,
+                    ["WorkItemTypeCount"]: config.orderedWorkItemTypes!.length || 0,
+                    ["WorkItemTypeCountPerBacklogLevel"]: Object.keys(typeCountPerLevel).map(
+                        levelName => typeCountPerLevel[levelName]
+                    )
+                }
+            });
+        } catch (error) {
+            console.log(JSON.stringify(error, null, "    "));
+        }
+    }
+
+    public TrackAddItemPanelWorkItemsOfTypeCount(projectId: string, workItemType: string, count: number) {
+        try {
+            AppInsightsClient.getAppInsightsInstance().trackEvent({
+                name: "AddItemPanel.WorkItemsOfTypeCount",
+                properties: {
+                    ...this.getCommonPayload(),
+                    ["ProjectId"]: projectId,
+                    ["WorkItemType"]: workItemType,
+                    ["Count"]: count
                 }
             });
         } catch (error) {

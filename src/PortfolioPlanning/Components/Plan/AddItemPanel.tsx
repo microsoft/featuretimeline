@@ -23,6 +23,7 @@ import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react/lib/MessageBar";
 import { ProjectConfigurationDataService } from "../../Common/Services/ProjectConfigurationDataService";
 import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
+import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -168,11 +169,17 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
         try {
             const projectConfiguration = await this._getProjectConfiguration(item.id);
+            PortfolioTelemetry.getInstance().TrackAddItemPanelProjectSelected(item.id, projectConfiguration);
             const firstWorkItemType = projectConfiguration.orderedWorkItemTypes[0];
             const firstWorkItemTypeKey = firstWorkItemType.toLowerCase();
             const workItemsOfType = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
                 item.id,
                 firstWorkItemType
+            );
+            PortfolioTelemetry.getInstance().TrackAddItemPanelWorkItemsOfTypeCount(
+                item.id,
+                firstWorkItemType,
+                workItemsOfType.workItems!.length || 0
             );
 
             const projectItems: IAddItemPanelProjectItems = {};
@@ -324,6 +331,9 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     };
 
     private _onWorkItemTypeToggle = async (workItemTypeKey: string, isExpanded: boolean) => {
+        PortfolioTelemetry.getInstance().TrackAction("AddItemPanel/WorkItemTypeToggle", {
+            ["IsExpanded"]: isExpanded
+        });
         const { selectedProject, workItemsByLevel } = this.state;
 
         const content = workItemsByLevel[workItemTypeKey];
@@ -351,6 +361,12 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     errorMessage = workItemsOfType.exceptionMessage;
                 } else {
                     workItemsFoundInProject = workItemsOfType.workItems.length;
+
+                    PortfolioTelemetry.getInstance().TrackAddItemPanelWorkItemsOfTypeCount(
+                        selectedProject.id,
+                        content.workItemTypeDisplayName,
+                        workItemsFoundInProject
+                    );
 
                     workItemsOfType.workItems.forEach(workItem => {
                         //  Only show work items not yet included in the plan.
