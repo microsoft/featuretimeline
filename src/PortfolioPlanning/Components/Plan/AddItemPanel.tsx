@@ -24,6 +24,7 @@ import { MessageBar, MessageBarType } from "office-ui-fabric-react/lib/MessageBa
 import { ProjectConfigurationDataService } from "../../Common/Services/ProjectConfigurationDataService";
 import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
+import { Tooltip } from "azure-devops-ui/TooltipEx";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -428,9 +429,11 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             <ListItem key={key || "list-item" + index} index={index} details={details}>
                 <div className="item-list-row">
                     <Image {...imageProps as any} />
-                    <span>
+                    <Tooltip overflowOnly={true}>
+                    <span className="item-list-row-text">
                         {epic.id} - {epic.text}
                     </span>
+                    </Tooltip>
                 </div>
             </ListItem>
         );
