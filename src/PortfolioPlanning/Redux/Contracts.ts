@@ -19,8 +19,6 @@ export interface IEpicTimelineState {
     planSettingsPanelOpen: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
-    visibleTimeStart: number;
-    visibleTimeEnd: number;
     isNewPlanExperience: boolean;
     deletePlanDialogHidden: boolean;
     planTelemetry: ExtendedSinglePlanTelemetry;

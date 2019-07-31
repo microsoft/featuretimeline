@@ -36,13 +36,13 @@ interface IPlanTimelineMappedProps {
     items: ITimelineItem[];
     selectedItemId: number;
     planOwner: IdentityRef;
-    visibleTimeStart: number;
-    visibleTimeEnd: number;
     exceptionMessage: string;
 }
 
 interface IPlanTimelineState {
     sliderValue: number;
+    visibleTimeStart: moment.Moment;
+    visibleTimeEnd: moment.Moment;
 }
 
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
@@ -54,7 +54,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
     constructor() {
         super();
 
-        this.state = { sliderValue: 0 };
+        this.state = { sliderValue: 0, visibleTimeStart: undefined, visibleTimeEnd: undefined };
     }
 
     public render(): JSX.Element {
@@ -80,15 +80,22 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                 const stepSize =
                                     (mostZoomedInTimeStart.valueOf() - this.defaultTimeStart.valueOf()) / 10;
 
+                                let newVisibleTimeStart: moment.Moment;
+                                let newVisibleTimeEnd: moment.Moment;
+
                                 if (value < this.state.sliderValue) {
-                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart - stepSize);
-                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd + stepSize);
+                                    newVisibleTimeStart = this.state.visibleTimeStart.add(-stepSize, "milliseconds");
+                                    newVisibleTimeEnd = this.state.visibleTimeEnd.add(stepSize, "milliseconds");
                                 } else {
-                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart + stepSize);
-                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd - stepSize);
+                                    newVisibleTimeStart = this.state.visibleTimeStart.add(stepSize, "milliseconds");
+                                    newVisibleTimeEnd = this.state.visibleTimeEnd.add(-stepSize, "milliseconds");
                                 }
 
-                                this.setState({ sliderValue: value });
+                                this.setState({
+                                    sliderValue: value,
+                                    visibleTimeStart: newVisibleTimeStart,
+                                    visibleTimeEnd: newVisibleTimeEnd
+                                });
                             }}
                         />
                     </div>
@@ -100,20 +107,23 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                             this.defaultTimeStart = timeStart;
                             this.defaultTimeEnd = timeEnd;
 
-                            this.props.onUpdateVisibleTimeStart(timeStart.valueOf());
-                            this.props.onUpdateVisibleTimeEnd(timeEnd.valueOf());
+                            this.setState({ sliderValue: 0, visibleTimeStart: timeStart, visibleTimeEnd: timeEnd });
                         }}
                     />
                     <Timeline
                         groups={this.props.groups}
                         items={this.props.items}
-                        visibleTimeStart={this.props.visibleTimeStart || this.defaultTimeStart}
-                        visibleTimeEnd={this.props.visibleTimeEnd || this.defaultTimeEnd}
+                        defaultTimeStart={this.defaultTimeStart}
+                        defaultTimeEnd={this.defaultTimeEnd}
+                        visibleTimeStart={this.state.visibleTimeStart}
+                        visibleTimeEnd={this.state.visibleTimeEnd}
                         onTimeChange={this._handleTimeChange}
                         canChangeGroup={false}
                         stackItems={true}
                         dragSnap={day}
                         minZoom={week}
+                        onZoom={this._handleZoom}
+                        timeSteps={{ second: 0, minute: 0, hour: 0, day: 1, month: 1, year: 1 }}
                         canResize={"both"}
                         minResizeWidth={50}
                         onItemResize={this._onItemResize}
@@ -160,6 +170,12 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             );
         }
     }
+
+    private _handleZoom = timelineContext => {
+        if (timelineContext.canvasTimeEnd - timelineContext.canvasTimeStart < day * 6) {
+            // alert("Smaller than a week");
+        }
+    };
 
     private _renderDateHeader(
         [startTime, endTime]: [moment.Moment, moment.Moment],
@@ -272,8 +288,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
 
     // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
     private _handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas): void => {
-        this.props.onUpdateVisibleTimeStart(visibleTimeStart);
-        this.props.onUpdateVisibleTimeEnd(visibleTimeEnd);
+        this.setState({ visibleTimeStart: moment(visibleTimeStart), visibleTimeEnd: moment(visibleTimeEnd) });
     };
 
     private _validateResize(action: string, item: ITimelineItem, time: number, resizeEdge: string) {
@@ -333,6 +348,10 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             endTime.add(buffer, "milliseconds");
         }
 
+        if (!this.state.visibleTimeStart || !this.state.visibleTimeEnd) {
+            this.setState({ visibleTimeStart: startTime, visibleTimeEnd: endTime });
+        }
+
         return [startTime, endTime];
     }
 
@@ -369,8 +388,6 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         items: getTimelineItems(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
-        visibleTimeStart: state.epicTimelineState.visibleTimeStart,
-        visibleTimeEnd: state.epicTimelineState.visibleTimeEnd,
         exceptionMessage: state.epicTimelineState.exceptionMessage
     };
 }
@@ -381,8 +398,6 @@ const Actions = {
     onShiftItem: EpicTimelineActions.shiftItem,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
-    onUpdateVisibleTimeStart: EpicTimelineActions.updateVisibleTimeStart,
-    onUpdateVisibleTimeEnd: EpicTimelineActions.updateVisibleTimeEnd,
     onZeroDataCtaClicked: EpicTimelineActions.openAddItemPanel
 };
 
