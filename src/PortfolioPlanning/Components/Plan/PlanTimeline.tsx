@@ -122,8 +122,6 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                         stackItems={true}
                         dragSnap={day}
                         minZoom={week}
-                        onZoom={this._handleZoom}
-                        timeSteps={{ second: 0, minute: 0, hour: 0, day: 1, month: 1, year: 1 }}
                         canResize={"both"}
                         minResizeWidth={50}
                         onItemResize={this._onItemResize}
@@ -139,18 +137,20 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                         groupRenderer={group => this._renderGroup(group.group)}
                     >
                         <TimelineHeaders>
-                            <DateHeader unit="primaryHeader" />
-                            <DateHeader
-                                labelFormat={this._renderDateHeader}
-                                style={{ height: 50 }}
-                                intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
-                                    return (
-                                        <div className="secondary-date-header" {...getIntervalProps()}>
-                                            {intervalContext.intervalText}
-                                        </div>
-                                    );
-                                }}
-                            />
+                            <div onClickCapture={this._onHeaderClick}>
+                                <DateHeader unit="primaryHeader" />
+                                <DateHeader
+                                    labelFormat={this._renderDateHeader}
+                                    style={{ height: 50 }}
+                                    intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
+                                        return (
+                                            <div className="secondary-date-header" {...getIntervalProps()}>
+                                                {intervalContext.intervalText}
+                                            </div>
+                                        );
+                                    }}
+                                />
+                            </div>
                         </TimelineHeaders>
                     </Timeline>
                 </div>
@@ -171,10 +171,9 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
         }
     }
 
-    private _handleZoom = timelineContext => {
-        if (timelineContext.canvasTimeEnd - timelineContext.canvasTimeStart < day * 6) {
-            // alert("Smaller than a week");
-        }
+    private _onHeaderClick = event => {
+        // Disable header zoom in and out
+        event.stopPropagation();
     };
 
     private _renderDateHeader(
@@ -288,7 +287,17 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
 
     // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
     private _handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas): void => {
-        this.setState({ visibleTimeStart: moment(visibleTimeStart), visibleTimeEnd: moment(visibleTimeEnd) });
+        // Disable scroll using wheel
+        if (
+            (visibleTimeStart < this.state.visibleTimeStart.valueOf() &&
+                visibleTimeEnd > this.state.visibleTimeEnd.valueOf()) ||
+            (visibleTimeStart > this.state.visibleTimeStart.valueOf() &&
+                visibleTimeEnd < this.state.visibleTimeEnd.valueOf())
+        ) {
+            // do nothing
+        } else {
+            this.setState({ visibleTimeStart: moment(visibleTimeStart), visibleTimeEnd: moment(visibleTimeEnd) });
+        }
     };
 
     private _validateResize(action: string, item: ITimelineItem, time: number, resizeEdge: string) {
@@ -348,9 +357,9 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             endTime.add(buffer, "milliseconds");
         }
 
-        if (!this.state.visibleTimeStart || !this.state.visibleTimeEnd) {
-            this.setState({ visibleTimeStart: startTime, visibleTimeEnd: endTime });
-        }
+        // if (!this.state.visibleTimeStart || !this.state.visibleTimeEnd) {
+        this.setState({ visibleTimeStart: startTime, visibleTimeEnd: endTime });
+        // }
 
         return [startTime, endTime];
     }
