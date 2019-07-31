@@ -73,12 +73,19 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                             value={this.state.sliderValue}
                             showValue={true}
                             onChange={(value: number) => {
+                                const middlePoint = moment(
+                                    (this.defaultTimeEnd.valueOf() + this.defaultTimeStart.valueOf()) / 2
+                                );
+                                const mostZoomedInTimeStart = middlePoint.add(-4, "days");
+                                const stepSize =
+                                    (mostZoomedInTimeStart.valueOf() - this.defaultTimeStart.valueOf()) / 10;
+
                                 if (value < this.state.sliderValue) {
-                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart - day);
-                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd + day);
+                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart - stepSize);
+                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd + stepSize);
                                 } else {
-                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart + day);
-                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd - day);
+                                    this.props.onUpdateVisibleTimeStart(this.props.visibleTimeStart + stepSize);
+                                    this.props.onUpdateVisibleTimeEnd(this.props.visibleTimeEnd - stepSize);
                                 }
 
                                 this.setState({ sliderValue: value });
@@ -89,6 +96,9 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                         text="Zoom fit"
                         onClick={() => {
                             const [timeStart, timeEnd] = this._getDefaultTimes(this.props.items);
+
+                            this.defaultTimeStart = timeStart;
+                            this.defaultTimeEnd = timeEnd;
 
                             this.props.onUpdateVisibleTimeStart(timeStart.valueOf());
                             this.props.onUpdateVisibleTimeEnd(timeEnd.valueOf());
