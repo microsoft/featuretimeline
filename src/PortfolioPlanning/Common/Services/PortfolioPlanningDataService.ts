@@ -71,9 +71,9 @@ export class PortfolioPlanningDataService {
         const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
         return client
-            .runGetQuery(fullQueryUrl)
+            .runPostQuery(fullQueryUrl)
             .then(
-                (results: any) => this.ParseODataProjectQueryResultResponse(results),
+                (results: any) => this.ParseODataProjectQueryResultResponseAsBatch(results),
                 error => this.ParseODataErrorResponse(error)
             );
     }
@@ -93,9 +93,9 @@ export class PortfolioPlanningDataService {
         const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
         return client
-            .runGetQuery(fullQueryUrl)
+            .runPostQuery(fullQueryUrl)
             .then(
-                (results: any) => this.ParseODataTeamsInAreaQueryResultResponse(results),
+                (results: any) => this.ParseODataTeamsInAreaQueryResultResponseAsBatch(results),
                 error => this.ParseODataErrorResponse(error)
             );
     }
@@ -116,8 +116,17 @@ export class PortfolioPlanningDataService {
     public async loadPortfolioContent(
         portfolioQueryInput: PortfolioPlanningQueryInput
     ): Promise<PortfolioPlanningFullContentQueryResult> {
+        const projects: { [projectId: string]: boolean } = {};
+
+        portfolioQueryInput.WorkItems.forEach(workItems => {
+            const projectIdKey = workItems.projectId.toLowerCase();
+            if (!projects[projectIdKey]) {
+                projects[projectIdKey] = true;
+            }
+        });
+
         const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
-            projectIds: portfolioQueryInput.WorkItems.map(workItems => workItems.projectId)
+            projects
         };
 
         const [portfolioQueryResult, projectQueryResult] = await Promise.all([
@@ -132,11 +141,11 @@ export class PortfolioPlanningDataService {
             const areaIdKey = entry.AreaId.toLowerCase();
 
             if (!teamsInAreaQueryInput[projectIdKey]) {
-                teamsInAreaQueryInput[projectIdKey] = [];
+                teamsInAreaQueryInput[projectIdKey] = {};
             }
 
-            if (teamsInAreaQueryInput[projectIdKey].indexOf(areaIdKey) === -1) {
-                teamsInAreaQueryInput[projectIdKey].push(areaIdKey);
+            if (!teamsInAreaQueryInput[projectIdKey][areaIdKey]) {
+                teamsInAreaQueryInput[projectIdKey][areaIdKey] = true;
             }
         }
 
@@ -383,10 +392,12 @@ export class PortfolioPlanningDataService {
         };
     }
 
-    private ParseODataPortfolioPlanningQueryResultResponseAsBatch(
-        results: any,
-        aggregationClauses: WorkItemTypeAggregationClauses
-    ): PortfolioPlanningQueryResult {
+    private ParseODataBatchResponse(
+        results: any
+    ): {
+        exceptionMessage: any;
+        responseValue: any;
+    } {
         if (!results) {
             return null;
         }
@@ -408,7 +419,7 @@ export class PortfolioPlanningDataService {
 
                 return {
                     exceptionMessage: null,
-                    items: this.PortfolioPlanningQueryResultItems(jsonObject.value, aggregationClauses)
+                    responseValue: jsonObject
                 };
             } else {
                 //  TODO hack hack ... Didn't find OData success response, let's see if there was an OData error.
@@ -419,9 +430,43 @@ export class PortfolioPlanningDataService {
 
                 return {
                     exceptionMessage: jsonObject.error.message,
+                    responseValue: null
+                };
+            }
+        } catch (error) {
+            console.log(error);
+
+            return {
+                exceptionMessage: error,
+                responseValue: null
+            };
+        }
+    }
+
+    private ParseODataPortfolioPlanningQueryResultResponseAsBatch(
+        results: any,
+        aggregationClauses: WorkItemTypeAggregationClauses
+    ): PortfolioPlanningQueryResult {
+        try {
+            const rawResponseValue = this.ParseODataBatchResponse(results);
+
+            if (
+                !rawResponseValue ||
+                (rawResponseValue.exceptionMessage && rawResponseValue.exceptionMessage.length > 0)
+            ) {
+                const errorMessage =
+                    rawResponseValue!.exceptionMessage || "No response payload found in OData batch query";
+
+                return {
+                    exceptionMessage: errorMessage,
                     items: []
                 };
             }
+
+            return {
+                exceptionMessage: null,
+                items: this.PortfolioPlanningQueryResultItems(rawResponseValue.responseValue, aggregationClauses)
+            };
         } catch (error) {
             console.log(error);
 
@@ -432,57 +477,15 @@ export class PortfolioPlanningDataService {
         }
     }
 
-    private ParseODataTeamsInAreaQueryResultResponse(results: any): PortfolioPlanningTeamsInAreaQueryResult {
-        if (!results || !results["value"]) {
-            return null;
-        }
-
-        const rawResult: ODataAreaQueryResult[] = results.value;
-
-        return {
-            exceptionMessage: null,
-            teamsInArea: this.PortfolioPlanningAreaQueryResultItems(rawResult)
-        };
-    }
-
-    private ParseODataWorkItemQueryResultResponse(results: any): PortfolioPlanningWorkItemQueryResult {
-        if (!results || !results["value"]) {
-            return null;
-        }
-
-        const rawResult: WorkItem[] = results.value;
-
-        return {
-            exceptionMessage: null,
-            workItems: rawResult
-        };
-    }
-
-    private ParseODataProjectQueryResultResponse(results: any): PortfolioPlanningProjectQueryResult {
-        if (!results || !results["value"]) {
-            return null;
-        }
-
-        const rawResult: Project[] = results.value;
-
-        //  Sort results by project name.
-        rawResult.sort(defaultProjectComparer);
-
-        return {
-            exceptionMessage: null,
-            projects: rawResult
-        };
-    }
-
     private PortfolioPlanningQueryResultItems(
         jsonValuePayload: any,
         aggregationClauses: WorkItemTypeAggregationClauses
     ): PortfolioPlanningQueryResultItem[] {
-        if (!jsonValuePayload) {
+        if (!jsonValuePayload || !jsonValuePayload["value"]) {
             return null;
         }
 
-        return jsonValuePayload.map(jsonArrayItem => {
+        return jsonValuePayload.value.map(jsonArrayItem => {
             const rawItem: ODataWorkItemQueryResult = jsonArrayItem;
             const areaIdValue: string = rawItem.AreaSK ? rawItem.AreaSK.toLowerCase() : null;
 
@@ -516,6 +519,104 @@ export class PortfolioPlanningDataService {
 
             return result;
         });
+    }
+
+    private ParseODataTeamsInAreaQueryResultResponseAsBatch(results: any): PortfolioPlanningTeamsInAreaQueryResult {
+        try {
+            const rawResponseValue = this.ParseODataBatchResponse(results);
+
+            if (
+                !rawResponseValue ||
+                (rawResponseValue.exceptionMessage && rawResponseValue.exceptionMessage.length > 0)
+            ) {
+                const errorMessage =
+                    rawResponseValue!.exceptionMessage || "No response payload found in OData batch query";
+
+                return {
+                    exceptionMessage: errorMessage,
+                    teamsInArea: null
+                };
+            }
+
+            return this.ParseODataTeamsInAreaQueryResultResponse(rawResponseValue.responseValue);
+        } catch (error) {
+            console.log(error);
+
+            return {
+                exceptionMessage: error,
+                teamsInArea: null
+            };
+        }
+    }
+
+    private ParseODataTeamsInAreaQueryResultResponse(results: any): PortfolioPlanningTeamsInAreaQueryResult {
+        if (!results || !results["value"]) {
+            return null;
+        }
+
+        const rawResult: ODataAreaQueryResult[] = results.value;
+
+        return {
+            exceptionMessage: null,
+            teamsInArea: this.PortfolioPlanningAreaQueryResultItems(rawResult)
+        };
+    }
+
+    private ParseODataWorkItemQueryResultResponse(results: any): PortfolioPlanningWorkItemQueryResult {
+        if (!results || !results["value"]) {
+            return null;
+        }
+
+        const rawResult: WorkItem[] = results.value;
+
+        return {
+            exceptionMessage: null,
+            workItems: rawResult
+        };
+    }
+
+    private ParseODataProjectQueryResultResponseAsBatch(results: any): PortfolioPlanningProjectQueryResult {
+        try {
+            const rawResponseValue = this.ParseODataBatchResponse(results);
+
+            if (
+                !rawResponseValue ||
+                (rawResponseValue.exceptionMessage && rawResponseValue.exceptionMessage.length > 0)
+            ) {
+                const errorMessage =
+                    rawResponseValue!.exceptionMessage || "No response payload found in OData batch query";
+
+                return {
+                    exceptionMessage: errorMessage,
+                    projects: []
+                };
+            }
+
+            return this.ParseODataProjectQueryResultResponse(rawResponseValue.responseValue);
+        } catch (error) {
+            console.log(error);
+
+            return {
+                exceptionMessage: error,
+                projects: null
+            };
+        }
+    }
+
+    private ParseODataProjectQueryResultResponse(results: any): PortfolioPlanningProjectQueryResult {
+        if (!results || !results["value"]) {
+            return null;
+        }
+
+        const rawResult: Project[] = results.value;
+
+        //  Sort results by project name.
+        rawResult.sort(defaultProjectComparer);
+
+        return {
+            exceptionMessage: null,
+            projects: rawResult
+        };
     }
 
     private ParseDescendant(
@@ -670,7 +771,7 @@ export class ODataQueryBuilder {
         return Object.keys(input)
             .map(
                 projectId =>
-                    `(ProjectSK eq ${projectId} and (${input[projectId]
+                    `(ProjectSK eq ${projectId} and (${Object.keys(input[projectId])
                         .map(areaId => `AreaSK eq ${areaId}`)
                         .join(" or ")}))`
             )
@@ -686,7 +787,9 @@ export class ODataQueryBuilder {
      * @param input 
      */
     private static ProjectsQueryFilter(input: PortfolioPlanningProjectQueryInput): string {
-        return input.projectIds.map(pid => `(ProjectId eq ${pid})`).join(" or ");
+        return Object.keys(input.projects)
+            .map(pid => `(ProjectId eq ${pid})`)
+            .join(" or ");
     }
 
     /**

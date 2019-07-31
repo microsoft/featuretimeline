@@ -36,7 +36,7 @@ export interface PortfolioPlanningQueryResultItem {
 }
 
 export interface PortfolioPlanningProjectQueryInput {
-    projectIds: string[];
+    projects: { [projectId: string]: boolean };
 }
 
 export interface PortfolioPlanningProjectQueryResult extends IQueryResultError {
@@ -142,7 +142,7 @@ export interface PortfolioPlanningTeamsInAreaQueryInput {
     /**
      * AreaIds by project id.
      */
-    [projectId: string]: string[];
+    [projectId: string]: { [areaId: string]: boolean };
 }
 
 export interface PortfolioPlanningTeamsInAreaQueryResult extends IQueryResultError {
