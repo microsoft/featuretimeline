@@ -6,7 +6,7 @@
     background-color: $neutral-2;
     padding-top: $spacing-16;
 
-    .secondary-date-header {
+    .date-header {
         @extend .font-weight-semibold;
         color: $secondary-text;
         text-align: center;

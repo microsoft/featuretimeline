@@ -138,13 +138,22 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                     >
                         <TimelineHeaders>
                             <div onClickCapture={this._onHeaderClick}>
-                                <DateHeader unit="primaryHeader" />
+                                <DateHeader
+                                    unit="primaryHeader"
+                                    intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
+                                        return (
+                                            <div className="date-header" {...getIntervalProps()}>
+                                                {intervalContext.intervalText}
+                                            </div>
+                                        );
+                                    }}
+                                />
                                 <DateHeader
                                     labelFormat={this._renderDateHeader}
                                     style={{ height: 50 }}
                                     intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
                                         return (
-                                            <div className="secondary-date-header" {...getIntervalProps()}>
+                                            <div className="date-header" {...getIntervalProps()}>
                                                 {intervalContext.intervalText}
                                             </div>
                                         );
