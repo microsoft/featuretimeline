@@ -1,6 +1,7 @@
 import { authTokenManager } from "VSS/Authentication/Services";
 import { GUIDUtil } from "./Utilities/GUIDUtil";
 import { ExtensionConstants } from "../Contracts";
+import { PortfolioTelemetry } from "./Utilities/Telemetry";
 /// <reference types='jquery' />
 /// <reference types='jqueryui' />
 
@@ -14,11 +15,23 @@ import { ExtensionConstants } from "../Contracts";
 export class ODataClient {
     private static instance: IPromise<ODataClient> = null;
     private authToken: string;
+    private userId: string;
     private static oDataVersion = "v3.0-preview"; // 3.0-preview supports Descendants
     public static valueKey = "value";
 
     private constructor(authToken: string) {
         this.authToken = authToken;
+
+        try {
+            this.userId = VSS.getWebContext().user.id;
+        } catch (error) {
+            console.log(error);
+            PortfolioTelemetry.getInstance().TrackException(error);
+        } finally {
+            if (!this.userId) {
+                this.userId = GUIDUtil.newGuid();
+            }
+        }
     }
 
     /**
@@ -54,7 +67,7 @@ export class ODataClient {
         }
     }
 
-    private constructJsonRequest(authToken: string, type: string, url: string): JQueryAjaxSettings {
+    private constructJsonRequest(authToken: string, type: string, url: string, userId: string): JQueryAjaxSettings {
         return {
             type: type,
             url: url,
@@ -62,6 +75,7 @@ export class ODataClient {
             dataType: "json",
             beforeSend: function(xhr) {
                 xhr.setRequestHeader("Authorization", authToken);
+                xhr.setRequestHeader("x-tfs-session", `${userId},PortfolioPlansExtension`);
             }
         };
     }
@@ -105,14 +119,19 @@ export class ODataClient {
      * OData traditional OData GET Queries is fine for common/simple queries, less than ~4k long.
      */
     public runGetQuery(fullQueryUrl: string): IPromise<any> {
-        return $.ajax(this.constructJsonRequest(this.authToken, "GET", fullQueryUrl));
+        return $.ajax(this.constructJsonRequest(this.authToken, "GET", fullQueryUrl, this.userId));
     }
 
     /**
      * OData POST Query is neccessary for long queries, particularly user config-driven options which can entail long lists of params.
      */
     public runPostQuery(fullQueryUrl: string): IPromise<any> {
-        let contentRequest = this.constructJsonRequest(this.authToken, "POST", this.generateAccountLink("$batch"));
+        let contentRequest = this.constructJsonRequest(
+            this.authToken,
+            "POST",
+            this.generateAccountLink("$batch"),
+            this.userId
+        );
 
         let batchIdentifier = GUIDUtil.newGuid();
         contentRequest.data = this.generateODataPostPayload(fullQueryUrl, batchIdentifier);
