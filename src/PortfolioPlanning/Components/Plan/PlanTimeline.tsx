@@ -82,19 +82,20 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                 let newVisibleTimeStart: moment.Moment;
                                 let newVisibleTimeEnd: moment.Moment;
 
+                                const maxMinDifference =
+                                    (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / 2;
+
                                 if (value === 0) {
-                                    newVisibleTimeStart = moment(this.defaultTimeStart);
-                                    newVisibleTimeEnd = moment(this.defaultTimeEnd);
+                                    newVisibleTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
+                                    newVisibleTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
                                 } else if (value < 0) {
-                                    const fullPlanTimeSpan =
-                                        this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf();
                                     const stepSize = (365 * day) / sliderSteps;
 
                                     newVisibleTimeStart = moment(middlePoint)
-                                        .add(-fullPlanTimeSpan / 2, "milliseconds")
+                                        .add(-maxMinDifference, "milliseconds")
                                         .add(stepSize * value);
                                     newVisibleTimeEnd = moment(middlePoint)
-                                        .add(fullPlanTimeSpan / 2, "milliseconds")
+                                        .add(maxMinDifference, "milliseconds")
                                         .add(-stepSize * value);
                                 } else {
                                     const stepSize =
