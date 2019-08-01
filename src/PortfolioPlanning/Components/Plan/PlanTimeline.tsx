@@ -368,11 +368,13 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
 
             startTime.add(-buffer, "milliseconds");
             endTime.add(buffer, "milliseconds");
+
+            // Week is max zoom in level
+            startTime.add(-4, "days");
+            endTime.add(4, "days");
         }
 
-        // if (!this.state.visibleTimeStart || !this.state.visibleTimeEnd) {
         this.setState({ visibleTimeStart: startTime, visibleTimeEnd: endTime });
-        // }
 
         return [startTime, endTime];
     }
