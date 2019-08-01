@@ -20,6 +20,7 @@ import { Button } from "azure-devops-ui/Button";
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
 const sliderSteps = 50;
+const totalZoomSteps = (sliderSteps * (sliderSteps + 1)) / 2;
 
 type Unit = `second` | `minute` | `hour` | `day` | `month` | `year`;
 
@@ -78,31 +79,21 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                     (this.state.visibleTimeEnd.valueOf() + this.state.visibleTimeStart.valueOf()) / 2
                                 );
 
-                                const mostZoomedInTimeStart = moment(middlePoint).add(-4, "days");
-                                const mostZoomedInTimeEnd = moment(middlePoint).add(4, "days");
-
                                 const stepSize =
                                     (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / sliderSteps / 2;
+                                const scaledStepSize = stepSize / totalZoomSteps;
 
                                 let newVisibleTimeStart = moment(this.state.visibleTimeStart);
                                 let newVisibleTimeEnd = moment(this.state.visibleTimeEnd);
 
-                                if (value === sliderSteps) {
-                                    newVisibleTimeStart = mostZoomedInTimeStart;
-                                    newVisibleTimeEnd = mostZoomedInTimeEnd;
-                                } else if (value === 0) {
-                                    const difference =
-                                        (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / 2;
+                                let scaledSteps = ((sliderSteps - value) * (sliderSteps - value + 1)) / 2;
 
-                                    newVisibleTimeStart = moment(middlePoint).add(-difference, "milliseconds");
-                                    newVisibleTimeEnd = moment(middlePoint).add(difference, "milliseconds");
-                                } else if (value < this.state.sliderValue) {
-                                    newVisibleTimeStart.add(-stepSize, "milliseconds");
-                                    newVisibleTimeEnd.add(stepSize, "milliseconds");
-                                } else {
-                                    newVisibleTimeStart.add(stepSize, "milliseconds");
-                                    newVisibleTimeEnd.add(-stepSize, "milliseconds");
-                                }
+                                newVisibleTimeStart = moment(middlePoint)
+                                    .add(-scaledStepSize * scaledSteps * sliderSteps)
+                                    .add(-4 * day);
+                                newVisibleTimeEnd = moment(middlePoint)
+                                    .add(scaledStepSize * scaledSteps * sliderSteps)
+                                    .add(4 * day);
 
                                 this.setState({
                                     sliderValue: value,
