@@ -19,7 +19,7 @@ import { Button } from "azure-devops-ui/Button";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
-const sliderSteps = 50;
+const sliderSteps = 30;
 const totalZoomSteps = (sliderSteps * (sliderSteps + 1)) / 2;
 
 type Unit = `second` | `minute` | `hour` | `day` | `month` | `year`;
@@ -69,7 +69,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                 <div className="plan-timeline-container">
                     <div className="plan-timeline-zoom-slider">
                         <Slider
-                            min={0}
+                            min={-sliderSteps}
                             max={sliderSteps}
                             step={1}
                             value={this.state.sliderValue}
@@ -79,21 +79,40 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                     (this.state.visibleTimeEnd.valueOf() + this.state.visibleTimeStart.valueOf()) / 2
                                 );
 
-                                const stepSize =
-                                    (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / sliderSteps / 2;
-                                const scaledStepSize = stepSize / totalZoomSteps;
+                                let newVisibleTimeStart: moment.Moment;
+                                let newVisibleTimeEnd: moment.Moment;
 
-                                let newVisibleTimeStart = moment(this.state.visibleTimeStart);
-                                let newVisibleTimeEnd = moment(this.state.visibleTimeEnd);
+                                if (value === 0) {
+                                    newVisibleTimeStart = moment(this.defaultTimeStart);
+                                    newVisibleTimeEnd = moment(this.defaultTimeEnd);
+                                } else if (value < 0) {
+                                    const fullPlanTimeSpan =
+                                        this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf();
+                                    const stepSize = (365 * day) / sliderSteps;
 
-                                let scaledSteps = ((sliderSteps - value) * (sliderSteps - value + 1)) / 2;
+                                    newVisibleTimeStart = moment(middlePoint)
+                                        .add(-fullPlanTimeSpan / 2, "milliseconds")
+                                        .add(stepSize * value);
+                                    newVisibleTimeEnd = moment(middlePoint)
+                                        .add(fullPlanTimeSpan / 2, "milliseconds")
+                                        .add(-stepSize * value);
+                                } else {
+                                    const stepSize =
+                                        (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf() + 365 * day) /
+                                        sliderSteps /
+                                        2 /
+                                        2;
+                                    const scaledStepSize = stepSize / totalZoomSteps;
 
-                                newVisibleTimeStart = moment(middlePoint)
-                                    .add(-scaledStepSize * scaledSteps * sliderSteps)
-                                    .add(-4 * day);
-                                newVisibleTimeEnd = moment(middlePoint)
-                                    .add(scaledStepSize * scaledSteps * sliderSteps)
-                                    .add(4 * day);
+                                    let scaledSteps = ((sliderSteps - value) * (sliderSteps - value + 1)) / 2;
+
+                                    newVisibleTimeStart = moment(middlePoint)
+                                        .add(-scaledStepSize * scaledSteps * sliderSteps)
+                                        .add(-4 * day);
+                                    newVisibleTimeEnd = moment(middlePoint)
+                                        .add(scaledStepSize * scaledSteps * sliderSteps)
+                                        .add(4 * day);
+                                }
 
                                 this.setState({
                                     sliderValue: value,
@@ -111,7 +130,11 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                             this.defaultTimeStart = timeStart;
                             this.defaultTimeEnd = timeEnd;
 
-                            this.setState({ sliderValue: 0, visibleTimeStart: timeStart, visibleTimeEnd: timeEnd });
+                            this.setState({
+                                sliderValue: 0,
+                                visibleTimeStart: timeStart,
+                                visibleTimeEnd: timeEnd
+                            });
                         }}
                     />
                     <Timeline
