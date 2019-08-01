@@ -20,7 +20,7 @@ import { Button } from "azure-devops-ui/Button";
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
 const sliderSteps = 30;
-const totalZoomSteps = (sliderSteps * (sliderSteps + 1)) / 2;
+// const totalZoomSteps = (sliderSteps * (sliderSteps + 1)) / 2;
 
 type Unit = `second` | `minute` | `hour` | `day` | `month` | `year`;
 
@@ -98,21 +98,40 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                         .add(maxMinDifference, "milliseconds")
                                         .add(-stepSize * value);
                                 } else {
-                                    const stepSize =
-                                        (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf() + 365 * day) /
-                                        sliderSteps /
-                                        2 /
-                                        2;
-                                    const scaledStepSize = stepSize / totalZoomSteps;
+                                    // const stepSize =
+                                    //     (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf() + 365 * day) /
+                                    //     sliderSteps /
+                                    //     2 /
+                                    //     2;
+                                    // const scaledStepSize = stepSize / totalZoomSteps;
 
-                                    let scaledSteps = ((sliderSteps - value) * (sliderSteps - value + 1)) / 2;
+                                    // let scaledSteps = ((sliderSteps - value) * (sliderSteps - value + 1)) / 2;
 
-                                    newVisibleTimeStart = moment(middlePoint)
-                                        .add(-scaledStepSize * scaledSteps * sliderSteps)
-                                        .add(-4 * day);
-                                    newVisibleTimeEnd = moment(middlePoint)
-                                        .add(scaledStepSize * scaledSteps * sliderSteps)
-                                        .add(4 * day);
+                                    // if (scaledStepSize * scaledSteps * sliderSteps * 2 > 8 * day) {
+                                    //     newVisibleTimeStart = moment(middlePoint).add(
+                                    //         -scaledStepSize * scaledSteps * sliderSteps
+                                    //     );
+                                    //     newVisibleTimeEnd = moment(middlePoint).add(
+                                    //         scaledStepSize * scaledSteps * sliderSteps
+                                    //     );
+                                    // } else {
+                                    //     newVisibleTimeStart = moment(this.state.visibleTimeStart);
+                                    //     newVisibleTimeEnd = moment(this.state.visibleTimeEnd);
+                                    // }
+
+                                    const maxTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
+                                    const maxTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
+                                    const minTimeEnd = moment(middlePoint).add(20 * day, "milliseconds");
+                                    const stepSize = (maxTimeEnd.valueOf() - minTimeEnd.valueOf()) / sliderSteps;
+
+                                    newVisibleTimeStart = moment(maxTimeStart).add(value * stepSize, "milliseconds");
+                                    newVisibleTimeEnd = moment(maxTimeEnd).add(-value * stepSize, "milliseconds");
+
+                                    // console.log("Step size: " + stepSize);
+                                    // console.log("Max Time Start: " + maxTimeStart.toLocaleString());
+                                    // console.log("Max Time end: " + maxTimeEnd.toLocaleString());
+                                    // console.log("New Time Start: " + newVisibleTimeStart.toLocaleString());
+                                    // console.log("New Time end: " + newVisibleTimeEnd.toLocaleString());
                                 }
 
                                 this.setState({
@@ -128,8 +147,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                         onClick={() => {
                             const [timeStart, timeEnd] = this._getDefaultTimes(this.props.items);
 
-                            this.defaultTimeStart = timeStart;
-                            this.defaultTimeEnd = timeEnd;
+                            this.defaultTimeStart = moment(timeStart);
+                            this.defaultTimeEnd = moment(timeEnd);
 
                             this.setState({
                                 sliderValue: 0,
@@ -394,8 +413,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             endTime.add(buffer, "milliseconds");
 
             // Week is max zoom in level
-            startTime.add(-4, "days");
-            endTime.add(4, "days");
+            startTime.add(-20, "days");
+            endTime.add(20, "days");
         }
 
         this.setState({ visibleTimeStart: startTime, visibleTimeEnd: endTime });
