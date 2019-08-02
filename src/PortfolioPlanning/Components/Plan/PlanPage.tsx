@@ -56,6 +56,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         return (
             <Page className="plan-page">
                 {this._renderPlanHeader()}
+                {this._renderErrorMessageCard()}
                 {this._renderPlanContent()}
                 {this._renderAddItemPanel()}
                 {this._renderItemDetailsDialog()}
@@ -67,31 +68,22 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
 
     private _renderPlanHeader = (): JSX.Element => {
         return (
-            <>
-                <PlanHeader
-                    id={this.props.plan.id}
-                    name={this.props.plan.name}
-                    description={this.props.plan.description}
-                    disabled={!!this.props.exceptionMessage}
-                    itemIsSelected={!!this.props.selectedItem}
-                    onAddItemClicked={this.props.onOpenAddItemPanel}
-                    onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
-                    onBackButtonClicked={this._backButtonClicked}
-                    onSettingsButtonClicked={this._settingsButtonClicked}
-                    onDeletePlanButonClicked={() => this.props.toggleDeletePlanDialogHidden(false)}
-                />
-                <PlanSummary
-                    projectNames={this.props.projectNames}
-                    teamNames={this.props.teamNames}
-                    owner={this.props.plan.owner}
-                />
-            </>
+            <PlanHeader
+                id={this.props.plan.id}
+                name={this.props.plan.name}
+                description={this.props.plan.description}
+                disabled={!!this.props.exceptionMessage}
+                itemIsSelected={!!this.props.selectedItem}
+                onAddItemClicked={this.props.onOpenAddItemPanel}
+                onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
+                onBackButtonClicked={this._backButtonClicked}
+                onSettingsButtonClicked={this._settingsButtonClicked}
+                onDeletePlanButonClicked={() => this.props.toggleDeletePlanDialogHidden(false)}
+            />
         );
     };
 
     private _renderPlanContent = (): JSX.Element => {
-        let planContent: JSX.Element;
-
         if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
             let loadingLabel = "Loading...";
             if (this.props.plan && this.props.plan.name) {
@@ -99,18 +91,22 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                 loadingLabel = `Loading ${this.props.plan.name}${suffix}`;
             }
 
-            planContent = <Spinner className="plan-spinner" label={loadingLabel} size={SpinnerSize.large} />;
+            return <Spinner className="plan-spinner" label={loadingLabel} size={SpinnerSize.large} />;
         } else {
             PortfolioTelemetry.getInstance().TrackPlanOpened(this.props.plan.id, this.props.planTelemetry);
-            planContent = <ConnectedPlanTimeline />;
+            return (
+                <>
+                    <PlanSummary
+                        projectNames={this.props.projectNames}
+                        teamNames={this.props.teamNames}
+                        owner={this.props.plan.owner}
+                    />
+                    <div className="plan-content">
+                        <ConnectedPlanTimeline />
+                    </div>
+                </>
+            );
         }
-
-        return (
-            <div className="plan-content">
-                {this._renderErrorMessageCard()}
-                {planContent}
-            </div>
-        );
     };
 
     private _renderErrorMessageCard = (): JSX.Element => {
