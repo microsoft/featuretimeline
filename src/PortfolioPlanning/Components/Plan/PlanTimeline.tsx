@@ -113,9 +113,11 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                     (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / 2;
 
                                 if (value === 0) {
+                                    // Zoom fit zoom level
                                     newVisibleTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
                                     newVisibleTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
                                 } else if (value < 0) {
+                                    // Zoom out
                                     const stepSize = (365 * day) / sliderSteps;
 
                                     newVisibleTimeStart = moment(middlePoint)
@@ -125,6 +127,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                         .add(maxMinDifference, "milliseconds")
                                         .add(-stepSize * value);
                                 } else {
+                                    // Zoom in
                                     const maxTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
                                     const maxTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
                                     const minTimeEnd = moment(middlePoint).add(maxZoomIn, "milliseconds");
