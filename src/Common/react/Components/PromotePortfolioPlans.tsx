@@ -7,37 +7,43 @@ export interface IPromotePortfolioPlansBanner {
 }
 
 export const PromotePortfolioPlansBanner = (props: IPromotePortfolioPlansBanner) => {
-    return (
-        <MessageBar
-            messageBarType={MessageBarType.info}
-            isMultiline={false}
-            onDismiss={props.onDismiss}
-            actions={
-                <div>
-                    <MessageBarButton
-                        onClick={() => {
-                            const webContext = VSS.getWebContext();
+    const webContext = VSS.getWebContext();
+    const collectionUri = webContext.collection.uri;
 
-                            const collectionUri = webContext.collection.uri;
-                            const projectName = webContext.project.name;
-                            const extensionContext = VSS.getExtensionContext()
+    if (collectionUri.indexOf("visualstudio.com") > 0 || collectionUri.indexOf("dev.azure.com") > 0) {
+        return (
+            <MessageBar
+                messageBarType={MessageBarType.info}
+                isMultiline={false}
+                onDismiss={props.onDismiss}
+                actions={
+                    <div>
+                        <MessageBarButton
+                            onClick={() => {
+                                const projectName = webContext.project.name;
+                                const extensionContext = VSS.getExtensionContext();
 
-                            const targerUrl = `${collectionUri}${projectName}/_apps/hub/${extensionContext.publisherId}.${extensionContext.extensionId}.workitem-portfolio-planning`;
+                                const targerUrl = `${collectionUri}${projectName}/_apps/hub/${
+                                    extensionContext.publisherId
+                                }.${extensionContext.extensionId}.workitem-portfolio-planning`;
 
-                            VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
-                                client => client.navigate(targerUrl),
-                                error => alert(error)
-                            );
+                                VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
+                                    client => client.navigate(targerUrl),
+                                    error => alert(error)
+                                );
 
-                            props.onDismiss();
-                        }}
-                    >
-                        Try it now!
-                    </MessageBarButton>
-                </div>
-            }
-        >
-            <div>{"Track epics across projects and teams in the Portfolio Plans hub."}</div>
-        </MessageBar>
-    );
+                                props.onDismiss();
+                            }}
+                        >
+                            Try it now!
+                        </MessageBarButton>
+                    </div>
+                }
+            >
+                <div>{"Track epics across projects and teams in the Portfolio Plans hub."}</div>
+            </MessageBar>
+        );
+    } else { // Don't show promotion banner for on-prem
+        return null; 
+    }
 };
