@@ -271,20 +271,6 @@ function handlePortfolioItemsReceived(
                         effortProgress: newItemInfo.EffortProgress,
                         countProgress: newItemInfo.CountProgress
                     });
-
-                    // Add auto scroll to put newly added epic in view.
-                    // const newItemStartDate: number = moment(newItemInfo.StartDate).valueOf();
-                    // const newItemTargetDate: number = moment(newItemInfo.TargetDate).valueOf();
-                    // if (newItemStartDate < draft.visibleTimeStart) {
-                    //     draft.visibleTimeStart = moment(newItemStartDate)
-                    //         .add(-1, "months")
-                    //         .valueOf();
-                    // }
-                    // if (newItemTargetDate > draft.visibleTimeEnd) {
-                    //     draft.visibleTimeEnd = moment(newItemTargetDate)
-                    //         .add(1, "months")
-                    //         .valueOf();
-                    // }
                 }
             });
 

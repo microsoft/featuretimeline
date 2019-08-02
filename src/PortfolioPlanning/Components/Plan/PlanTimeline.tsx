@@ -26,7 +26,7 @@ import { PlanSummary } from "./PlanSummary";
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
 const sliderSteps = 50;
-// const totalZoomSteps = (sliderSteps * (sliderSteps + 1)) / 2;
+const maxZoomIn = 20 * day;
 
 type Unit = `second` | `minute` | `hour` | `day` | `month` | `year`;
 
@@ -127,7 +127,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                 } else {
                                     const maxTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
                                     const maxTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
-                                    const minTimeEnd = moment(middlePoint).add(20 * day, "milliseconds");
+                                    const minTimeEnd = moment(middlePoint).add(maxZoomIn, "milliseconds");
                                     const stepSize = (maxTimeEnd.valueOf() - minTimeEnd.valueOf()) / sliderSteps;
 
                                     newVisibleTimeStart = moment(maxTimeStart).add(value * stepSize, "milliseconds");
@@ -357,9 +357,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
         );
     };
 
-    // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
     private _handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas): void => {
-        // Disable scroll using wheel
+        // Disable zoom using wheel
         if (
             (visibleTimeStart < this.state.visibleTimeStart.valueOf() &&
                 visibleTimeEnd > this.state.visibleTimeEnd.valueOf()) ||
@@ -428,9 +427,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             startTime.add(-buffer, "milliseconds");
             endTime.add(buffer, "milliseconds");
 
-            // Week is max zoom in level
-            startTime.add(-20, "days");
-            endTime.add(20, "days");
+            startTime.add(-maxZoomIn, "milliseconds");
+            endTime.add(maxZoomIn, "milliseconds");
         }
 
         this.setState({ visibleTimeStart: startTime, visibleTimeEnd: endTime });
