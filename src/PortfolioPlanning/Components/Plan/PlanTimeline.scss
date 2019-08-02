@@ -1,6 +1,27 @@
 @import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 @import "node_modules/azure-devops-ui/Core/core.scss";
 
+.plan-timeline-summary-container {
+    margin-left: $spacing-32;
+    margin-right: $spacing-32;
+
+    display: flex;
+    justify-content: space-between;
+
+    .plan-timeline-zoom-controls {
+        display: flex;
+        align-items: center;
+
+        .plan-timeline-zoom-slider {
+            width: 200px;
+
+            button {
+                border: none;
+            }
+        }
+    }
+}
+
 .plan-timeline-container {
     height: 100%;
     background-color: $neutral-2;
@@ -14,10 +35,6 @@
         height: 100%;
         border-right: 1px solid $neutral-10;
     }
-}
-
-.plan-timeline-zoom-slider {
-    width: 200px;
 }
 
 .plan-timeline-group {

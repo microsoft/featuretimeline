@@ -25,7 +25,7 @@ import { PlanSummary } from "./PlanSummary";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
-const sliderSteps = 30;
+const sliderSteps = 50;
 // const totalZoomSteps = (sliderSteps * (sliderSteps + 1)) / 2;
 
 type Unit = `second` | `minute` | `hour` | `day` | `month` | `year`;
@@ -68,103 +68,84 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
     }
 
     public render(): JSX.Element {
+        return (
+            <>
+                <div className="plan-timeline-summary-container">
+                    {this._renderSummary()}
+                    {this._renderZoomControls()}
+                </div>
+                {this._renderTimeline()}
+            </>
+        );
+    }
+
+    private _renderSummary(): JSX.Element {
+        return (
+            <PlanSummary
+                projectNames={this.props.projectNames}
+                teamNames={this.props.teamNames}
+                owner={this.props.planOwner}
+            />
+        );
+    }
+
+    private _renderZoomControls(): JSX.Element {
         if (this.props.items.length > 0) {
-            if (!this.defaultTimeStart || !this.defaultTimeEnd) {
-                [this.defaultTimeStart, this.defaultTimeEnd] = this._getDefaultTimes(this.props.items);
-            }
-
             return (
-                <>
-                    <PlanSummary
-                        projectNames={this.props.projectNames}
-                        teamNames={this.props.teamNames}
-                        owner={this.props.planOwner}
-                    />
-                    <div className="plan-timeline-container">
-                        <div className="plan-timeline-zoom-slider">
-                            <Slider
-                                min={-sliderSteps}
-                                max={sliderSteps}
-                                step={1}
-                                value={this.state.sliderValue}
-                                showValue={true}
-                                onChange={(value: number) => {
-                                    const middlePoint = moment(
-                                        (this.state.visibleTimeEnd.valueOf() + this.state.visibleTimeStart.valueOf()) /
-                                            2
-                                    );
+                <div className="plan-timeline-zoom-controls">
+                    <div className="plan-timeline-zoom-slider">
+                        <Slider
+                            min={-sliderSteps}
+                            max={sliderSteps}
+                            step={1}
+                            showValue={false}
+                            value={this.state.sliderValue}
+                            disabled={this.props.items.length === 0}
+                            onChange={(value: number) => {
+                                const middlePoint = moment(
+                                    (this.state.visibleTimeEnd.valueOf() + this.state.visibleTimeStart.valueOf()) / 2
+                                );
 
-                                    let newVisibleTimeStart: moment.Moment;
-                                    let newVisibleTimeEnd: moment.Moment;
+                                let newVisibleTimeStart: moment.Moment;
+                                let newVisibleTimeEnd: moment.Moment;
 
-                                    const maxMinDifference =
-                                        (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / 2;
+                                const maxMinDifference =
+                                    (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / 2;
 
-                                    if (value === 0) {
-                                        newVisibleTimeStart = moment(middlePoint).add(
-                                            -maxMinDifference,
-                                            "milliseconds"
-                                        );
-                                        newVisibleTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
-                                    } else if (value < 0) {
-                                        const stepSize = (365 * day) / sliderSteps;
+                                if (value === 0) {
+                                    newVisibleTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
+                                    newVisibleTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
+                                } else if (value < 0) {
+                                    const stepSize = (365 * day) / sliderSteps;
 
-                                        newVisibleTimeStart = moment(middlePoint)
-                                            .add(-maxMinDifference, "milliseconds")
-                                            .add(stepSize * value);
-                                        newVisibleTimeEnd = moment(middlePoint)
-                                            .add(maxMinDifference, "milliseconds")
-                                            .add(-stepSize * value);
-                                    } else {
-                                        // const stepSize =
-                                        //     (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf() + 365 * day) /
-                                        //     sliderSteps /
-                                        //     2 /
-                                        //     2;
-                                        // const scaledStepSize = stepSize / totalZoomSteps;
+                                    newVisibleTimeStart = moment(middlePoint)
+                                        .add(-maxMinDifference, "milliseconds")
+                                        .add(stepSize * value);
+                                    newVisibleTimeEnd = moment(middlePoint)
+                                        .add(maxMinDifference, "milliseconds")
+                                        .add(-stepSize * value);
+                                } else {
+                                    const maxTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
+                                    const maxTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
+                                    const minTimeEnd = moment(middlePoint).add(20 * day, "milliseconds");
+                                    const stepSize = (maxTimeEnd.valueOf() - minTimeEnd.valueOf()) / sliderSteps;
 
-                                        // let scaledSteps = ((sliderSteps - value) * (sliderSteps - value + 1)) / 2;
+                                    newVisibleTimeStart = moment(maxTimeStart).add(value * stepSize, "milliseconds");
+                                    newVisibleTimeEnd = moment(maxTimeEnd).add(-value * stepSize, "milliseconds");
+                                }
 
-                                        // if (scaledStepSize * scaledSteps * sliderSteps * 2 > 8 * day) {
-                                        //     newVisibleTimeStart = moment(middlePoint).add(
-                                        //         -scaledStepSize * scaledSteps * sliderSteps
-                                        //     );
-                                        //     newVisibleTimeEnd = moment(middlePoint).add(
-                                        //         scaledStepSize * scaledSteps * sliderSteps
-                                        //     );
-                                        // } else {
-                                        //     newVisibleTimeStart = moment(this.state.visibleTimeStart);
-                                        //     newVisibleTimeEnd = moment(this.state.visibleTimeEnd);
-                                        // }
-
-                                        const maxTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
-                                        const maxTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
-                                        const minTimeEnd = moment(middlePoint).add(20 * day, "milliseconds");
-                                        const stepSize = (maxTimeEnd.valueOf() - minTimeEnd.valueOf()) / sliderSteps;
-
-                                        newVisibleTimeStart = moment(maxTimeStart).add(
-                                            value * stepSize,
-                                            "milliseconds"
-                                        );
-                                        newVisibleTimeEnd = moment(maxTimeEnd).add(-value * stepSize, "milliseconds");
-
-                                        // console.log("Step size: " + stepSize);
-                                        // console.log("Max Time Start: " + maxTimeStart.toLocaleString());
-                                        // console.log("Max Time end: " + maxTimeEnd.toLocaleString());
-                                        // console.log("New Time Start: " + newVisibleTimeStart.toLocaleString());
-                                        // console.log("New Time end: " + newVisibleTimeEnd.toLocaleString());
-                                    }
-
-                                    this.setState({
-                                        sliderValue: value,
-                                        visibleTimeStart: newVisibleTimeStart,
-                                        visibleTimeEnd: newVisibleTimeEnd
-                                    });
-                                }}
-                            />
-                        </div>
+                                this.setState({
+                                    sliderValue: value,
+                                    visibleTimeStart: newVisibleTimeStart,
+                                    visibleTimeEnd: newVisibleTimeEnd
+                                });
+                            }}
+                        />
+                    </div>
+                    <div>
                         <Button
                             text="Zoom fit"
+                            disabled={this.props.items.length === 0}
                             onClick={() => {
                                 const [timeStart, timeEnd] = this._getDefaultTimes(this.props.items);
 
@@ -178,60 +159,73 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                 });
                             }}
                         />
-                        <Timeline
-                            groups={this.props.groups}
-                            items={this.props.items}
-                            defaultTimeStart={this.defaultTimeStart}
-                            defaultTimeEnd={this.defaultTimeEnd}
-                            visibleTimeStart={this.state.visibleTimeStart}
-                            visibleTimeEnd={this.state.visibleTimeEnd}
-                            onTimeChange={this._handleTimeChange}
-                            canChangeGroup={false}
-                            stackItems={true}
-                            dragSnap={day}
-                            minZoom={week}
-                            canResize={"both"}
-                            minResizeWidth={50}
-                            onItemResize={this._onItemResize}
-                            onItemMove={this._onItemMove}
-                            moveResizeValidator={this._validateResize}
-                            selected={[this.props.selectedItemId]}
-                            lineHeight={50}
-                            onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
-                            onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
-                            itemRenderer={({ item, itemContext, getItemProps }) =>
-                                this._renderItem(item, itemContext, getItemProps)
-                            }
-                            groupRenderer={group => this._renderGroup(group.group)}
-                        >
-                            <TimelineHeaders>
-                                <div onClickCapture={this._onHeaderClick}>
-                                    <DateHeader
-                                        unit="primaryHeader"
-                                        intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
-                                            return (
-                                                <div className="date-header" {...getIntervalProps()}>
-                                                    {intervalContext.intervalText}
-                                                </div>
-                                            );
-                                        }}
-                                    />
-                                    <DateHeader
-                                        labelFormat={this._renderDateHeader}
-                                        style={{ height: 50 }}
-                                        intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
-                                            return (
-                                                <div className="date-header" {...getIntervalProps()}>
-                                                    {intervalContext.intervalText}
-                                                </div>
-                                            );
-                                        }}
-                                    />
-                                </div>
-                            </TimelineHeaders>
-                        </Timeline>
                     </div>
-                </>
+                </div>
+            );
+        }
+    }
+
+    private _renderTimeline(): JSX.Element {
+        if (this.props.items.length > 0) {
+            if (!this.defaultTimeStart || !this.defaultTimeEnd) {
+                [this.defaultTimeStart, this.defaultTimeEnd] = this._getDefaultTimes(this.props.items);
+            }
+
+            return (
+                <div className="plan-timeline-container">
+                    <Timeline
+                        groups={this.props.groups}
+                        items={this.props.items}
+                        defaultTimeStart={this.defaultTimeStart}
+                        defaultTimeEnd={this.defaultTimeEnd}
+                        visibleTimeStart={this.state.visibleTimeStart}
+                        visibleTimeEnd={this.state.visibleTimeEnd}
+                        onTimeChange={this._handleTimeChange}
+                        canChangeGroup={false}
+                        stackItems={true}
+                        dragSnap={day}
+                        minZoom={week}
+                        canResize={"both"}
+                        minResizeWidth={50}
+                        onItemResize={this._onItemResize}
+                        onItemMove={this._onItemMove}
+                        moveResizeValidator={this._validateResize}
+                        selected={[this.props.selectedItemId]}
+                        lineHeight={50}
+                        onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
+                        onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
+                        itemRenderer={({ item, itemContext, getItemProps }) =>
+                            this._renderItem(item, itemContext, getItemProps)
+                        }
+                        groupRenderer={group => this._renderGroup(group.group)}
+                    >
+                        <TimelineHeaders>
+                            <div onClickCapture={this._onHeaderClick}>
+                                <DateHeader
+                                    unit="primaryHeader"
+                                    intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
+                                        return (
+                                            <div className="date-header" {...getIntervalProps()}>
+                                                {intervalContext.intervalText}
+                                            </div>
+                                        );
+                                    }}
+                                />
+                                <DateHeader
+                                    labelFormat={this._renderDateHeader}
+                                    style={{ height: 50 }}
+                                    intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
+                                        return (
+                                            <div className="date-header" {...getIntervalProps()}>
+                                                {intervalContext.intervalText}
+                                            </div>
+                                        );
+                                    }}
+                                />
+                            </div>
+                        </TimelineHeaders>
+                    </Timeline>
+                </div>
             );
         } else {
             return (
