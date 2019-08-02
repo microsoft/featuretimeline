@@ -3,6 +3,7 @@
 
 .plan-summary {
     display: flex;
+    overflow: hidden;
 
     .owner {
         display: flex;

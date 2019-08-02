@@ -145,7 +145,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                             }}
                         />
                     </div>
-                    <div>
+                    <div className="plan-timeline-zoom-fit-button">
                         <Button
                             text="Zoom fit"
                             disabled={this.props.items.length === 0}
