@@ -10,7 +10,7 @@ export const PromotePortfolioPlansBanner = (props: IPromotePortfolioPlansBanner)
     const webContext = VSS.getWebContext();
     const collectionUri = webContext.collection.uri;
 
-    if (collectionUri.indexOf("visualstudio.com") > 0 || collectionUri.indexOf("dev.azure.com") > 0) {
+    if (collectionUri.toLocaleLowerCase().indexOf("visualstudio.com") > 0 || collectionUri.toLocaleLowerCase().indexOf("dev.azure.com") > 0) {
         return (
             <MessageBar
                 messageBarType={MessageBarType.info}
