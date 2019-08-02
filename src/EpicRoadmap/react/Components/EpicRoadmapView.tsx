@@ -54,6 +54,14 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
             return (
                 <Spinner size={SpinnerSize.large} className="loading-indicator" label="Loading..." />
             );
+        } else if (uiState === UIStatus.Error) {
+            return (
+                <MessageBar
+                    messageBarType={MessageBarType.error}
+                    isMultiline={false}
+                >{"Epic Roadmap is not supported for Basic process."}
+                </MessageBar>
+            )
         }
 
         let contents = null;
@@ -93,13 +101,13 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
 
         let additionalMessage = null;
         if (uiState === UIStatus.OutofScopeTeamIterations) {
-            const style = {cursor: "pointer"};
+            const style = { cursor: "pointer" };
             additionalMessage = (
                 <MessageBar
                     messageBarType={MessageBarType.severeWarning}
                     isMultiline={true}
                     onClick={this._toggleCallout}
-                >                 
+                >
                     <div style={style} ref={ref => this._calloutContainer = ref} onClick={this._toggleCallout}>{"Some Work Items are excluded as they are in iterations that the current team does not subscribe to. Click here to see the details"}</div>
                 </MessageBar>
             );
@@ -117,7 +125,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
         return (
             <>
                 {!this.props.portfolioPlansBannerDismissed &&
-                <PromotePortfolioPlansBanner onDismiss={this.props.dismissPortfolioPlansBanner}/>}
+                    <PromotePortfolioPlansBanner onDismiss={this.props.dismissPortfolioPlansBanner} />}
                 <div className="epic-container">
                     {showSelector && <EpicSelector />}
                     {additionalMessage}
