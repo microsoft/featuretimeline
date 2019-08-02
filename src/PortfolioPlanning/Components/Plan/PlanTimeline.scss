@@ -1,12 +1,35 @@
 @import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 @import "node_modules/azure-devops-ui/Core/core.scss";
 
+.plan-timeline-summary-container {
+    margin-left: $spacing-32;
+    margin-right: $spacing-32;
+
+    display: flex;
+    justify-content: space-between;
+
+    .plan-timeline-zoom-controls {
+        display: flex;
+        align-items: center;
+
+        .plan-timeline-zoom-slider {
+            width: 200px;
+            margin-right: $spacing-8;
+
+            button {
+                border: none;
+            }
+        }
+    }
+}
+
 .plan-timeline-container {
     height: 100%;
     background-color: $neutral-2;
     padding-top: $spacing-16;
+    overflow-y: auto;
 
-    .secondary-date-header {
+    .date-header {
         @extend .font-weight-semibold;
         color: $secondary-text;
         text-align: center;

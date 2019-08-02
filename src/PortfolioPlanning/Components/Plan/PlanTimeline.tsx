@@ -4,7 +4,12 @@ import { ITimelineGroup, ITimelineItem, ITeam } from "../../Contracts";
 import Timeline, { TimelineHeaders, DateHeader } from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
-import { getTimelineGroups, getTimelineItems } from "../../Redux/Selectors/EpicTimelineSelectors";
+import {
+    getTimelineGroups,
+    getTimelineItems,
+    getProjectNames,
+    getTeamNames
+} from "../../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
@@ -14,9 +19,14 @@ import { IdentityRef } from "VSS/WebApi/Contracts";
 import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
+import { Slider } from "office-ui-fabric-react/lib/Slider";
+import { Button } from "azure-devops-ui/Button";
+import { PlanSummary } from "./PlanSummary";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
+const sliderSteps = 50;
+const maxZoomIn = 20 * day;
 
 type Unit = `second` | `minute` | `hour` | `day` | `month` | `year`;
 
@@ -30,26 +40,135 @@ interface LabelFormat {
 interface IPlanTimelineMappedProps {
     planId: string;
     groups: ITimelineGroup[];
+    projectNames: string[];
+    teamNames: string[];
     teams: { [teamId: string]: ITeam };
     items: ITimelineItem[];
     selectedItemId: number;
     planOwner: IdentityRef;
-    visibleTimeStart: number;
-    visibleTimeEnd: number;
     exceptionMessage: string;
+}
+
+interface IPlanTimelineState {
+    sliderValue: number;
+    visibleTimeStart: moment.Moment;
+    visibleTimeEnd: moment.Moment;
 }
 
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
 
-export class PlanTimeline extends React.Component<IPlanTimelineProps> {
+export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimelineState> {
     private defaultTimeStart: moment.Moment;
     private defaultTimeEnd: moment.Moment;
 
     constructor() {
         super();
+
+        this.state = { sliderValue: 0, visibleTimeStart: undefined, visibleTimeEnd: undefined };
     }
 
     public render(): JSX.Element {
+        return (
+            <>
+                <div className="plan-timeline-summary-container">
+                    {this._renderSummary()}
+                    {this._renderZoomControls()}
+                </div>
+                {this._renderTimeline()}
+            </>
+        );
+    }
+
+    private _renderSummary(): JSX.Element {
+        return (
+            <PlanSummary
+                projectNames={this.props.projectNames}
+                teamNames={this.props.teamNames}
+                owner={this.props.planOwner}
+            />
+        );
+    }
+
+    private _renderZoomControls(): JSX.Element {
+        if (this.props.items.length > 0) {
+            return (
+                <div className="plan-timeline-zoom-controls">
+                    <div className="plan-timeline-zoom-slider">
+                        <Slider
+                            min={-sliderSteps}
+                            max={sliderSteps}
+                            step={1}
+                            showValue={false}
+                            value={this.state.sliderValue}
+                            disabled={this.props.items.length === 0}
+                            onChange={(value: number) => {
+                                const middlePoint = moment(
+                                    (this.state.visibleTimeEnd.valueOf() + this.state.visibleTimeStart.valueOf()) / 2
+                                );
+
+                                let newVisibleTimeStart: moment.Moment;
+                                let newVisibleTimeEnd: moment.Moment;
+
+                                const maxMinDifference =
+                                    (this.defaultTimeEnd.valueOf() - this.defaultTimeStart.valueOf()) / 2;
+
+                                if (value === 0) {
+                                    // Zoom fit zoom level
+                                    newVisibleTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
+                                    newVisibleTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
+                                } else if (value < 0) {
+                                    // Zoom out
+                                    const stepSize = (365 * day) / sliderSteps;
+
+                                    newVisibleTimeStart = moment(middlePoint)
+                                        .add(-maxMinDifference, "milliseconds")
+                                        .add(stepSize * value);
+                                    newVisibleTimeEnd = moment(middlePoint)
+                                        .add(maxMinDifference, "milliseconds")
+                                        .add(-stepSize * value);
+                                } else {
+                                    // Zoom in
+                                    const maxTimeStart = moment(middlePoint).add(-maxMinDifference, "milliseconds");
+                                    const maxTimeEnd = moment(middlePoint).add(maxMinDifference, "milliseconds");
+                                    const minTimeEnd = moment(middlePoint).add(maxZoomIn, "milliseconds");
+                                    const stepSize = (maxTimeEnd.valueOf() - minTimeEnd.valueOf()) / sliderSteps;
+
+                                    newVisibleTimeStart = moment(maxTimeStart).add(value * stepSize, "milliseconds");
+                                    newVisibleTimeEnd = moment(maxTimeEnd).add(-value * stepSize, "milliseconds");
+                                }
+
+                                this.setState({
+                                    sliderValue: value,
+                                    visibleTimeStart: newVisibleTimeStart,
+                                    visibleTimeEnd: newVisibleTimeEnd
+                                });
+                            }}
+                        />
+                    </div>
+                    <div>
+                        <Button
+                            text="Zoom fit"
+                            disabled={this.props.items.length === 0}
+                            onClick={() => {
+                                const [timeStart, timeEnd] = this._getDefaultTimes(this.props.items);
+
+                                this.defaultTimeStart = moment(timeStart);
+                                this.defaultTimeEnd = moment(timeEnd);
+
+                                this.setState({
+                                    sliderValue: 0,
+                                    visibleTimeStart: timeStart,
+                                    visibleTimeEnd: timeEnd
+                                });
+                            }}
+                        />
+                    </div>
+                </div>
+            );
+        }
+    }
+
+    private _renderTimeline(): JSX.Element {
         if (this.props.items.length > 0) {
             if (!this.defaultTimeStart || !this.defaultTimeEnd) {
                 [this.defaultTimeStart, this.defaultTimeEnd] = this._getDefaultTimes(this.props.items);
@@ -60,8 +179,10 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                     <Timeline
                         groups={this.props.groups}
                         items={this.props.items}
-                        visibleTimeStart={this.props.visibleTimeStart || this.defaultTimeStart}
-                        visibleTimeEnd={this.props.visibleTimeEnd || this.defaultTimeEnd}
+                        defaultTimeStart={this.defaultTimeStart}
+                        defaultTimeEnd={this.defaultTimeEnd}
+                        visibleTimeStart={this.state.visibleTimeStart}
+                        visibleTimeEnd={this.state.visibleTimeEnd}
                         onTimeChange={this._handleTimeChange}
                         canChangeGroup={false}
                         stackItems={true}
@@ -82,18 +203,29 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                         groupRenderer={group => this._renderGroup(group.group)}
                     >
                         <TimelineHeaders>
-                            <DateHeader unit="primaryHeader" />
-                            <DateHeader
-                                labelFormat={this._renderDateHeader}
-                                style={{ height: 50 }}
-                                intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
-                                    return (
-                                        <div className="secondary-date-header" {...getIntervalProps()}>
-                                            {intervalContext.intervalText}
-                                        </div>
-                                    );
-                                }}
-                            />
+                            <div onClickCapture={this._onHeaderClick}>
+                                <DateHeader
+                                    unit="primaryHeader"
+                                    intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
+                                        return (
+                                            <div className="date-header" {...getIntervalProps()}>
+                                                {intervalContext.intervalText}
+                                            </div>
+                                        );
+                                    }}
+                                />
+                                <DateHeader
+                                    labelFormat={this._renderDateHeader}
+                                    style={{ height: 50 }}
+                                    intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
+                                        return (
+                                            <div className="date-header" {...getIntervalProps()}>
+                                                {intervalContext.intervalText}
+                                            </div>
+                                        );
+                                    }}
+                                />
+                            </div>
                         </TimelineHeaders>
                     </Timeline>
                 </div>
@@ -113,6 +245,11 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
             );
         }
     }
+
+    private _onHeaderClick = event => {
+        // Disable header zoom in and out
+        event.stopPropagation();
+    };
 
     private _renderDateHeader(
         [startTime, endTime]: [moment.Moment, moment.Moment],
@@ -223,10 +360,18 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         );
     };
 
-    // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
     private _handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas): void => {
-        this.props.onUpdateVisibleTimeStart(visibleTimeStart);
-        this.props.onUpdateVisibleTimeEnd(visibleTimeEnd);
+        // Disable zoom using wheel
+        if (
+            (visibleTimeStart < this.state.visibleTimeStart.valueOf() &&
+                visibleTimeEnd > this.state.visibleTimeEnd.valueOf()) ||
+            (visibleTimeStart > this.state.visibleTimeStart.valueOf() &&
+                visibleTimeEnd < this.state.visibleTimeEnd.valueOf())
+        ) {
+            // do nothing
+        } else {
+            this.setState({ visibleTimeStart: moment(visibleTimeStart), visibleTimeEnd: moment(visibleTimeEnd) });
+        }
     };
 
     private _validateResize(action: string, item: ITimelineItem, time: number, resizeEdge: string) {
@@ -279,9 +424,17 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 }
             }
 
-            startTime.add(-1, "months");
-            endTime.add(1, "months");
+            // Add small buffer on both sides of plan
+            const buffer = (endTime.valueOf() - startTime.valueOf()) / 10;
+
+            startTime.add(-buffer, "milliseconds");
+            endTime.add(buffer, "milliseconds");
+
+            startTime.add(-maxZoomIn, "milliseconds");
+            endTime.add(maxZoomIn, "milliseconds");
         }
+
+        this.setState({ visibleTimeStart: startTime, visibleTimeEnd: endTime });
 
         return [startTime, endTime];
     }
@@ -315,12 +468,12 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
     return {
         planId: state.planDirectoryState.selectedPlanId,
         groups: getTimelineGroups(state.epicTimelineState),
+        projectNames: getProjectNames(state),
+        teamNames: getTeamNames(state),
         teams: state.epicTimelineState.teams,
         items: getTimelineItems(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
-        visibleTimeStart: state.epicTimelineState.visibleTimeStart,
-        visibleTimeEnd: state.epicTimelineState.visibleTimeEnd,
         exceptionMessage: state.epicTimelineState.exceptionMessage
     };
 }
@@ -331,8 +484,6 @@ const Actions = {
     onShiftItem: EpicTimelineActions.shiftItem,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
-    onUpdateVisibleTimeStart: EpicTimelineActions.updateVisibleTimeStart,
-    onUpdateVisibleTimeEnd: EpicTimelineActions.updateVisibleTimeEnd,
     onZeroDataCtaClicked: EpicTimelineActions.openAddItemPanel
 };
 

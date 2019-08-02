@@ -28,8 +28,6 @@ export const enum EpicTimelineActionTypes {
     ToggleLoadingStatus = "EpicTimeline/ToggleLoadingStatus",
     ResetPlanState = "EpicTimeline/ResetPlanState",
     TogglePlanSettingsPanelOpen = "EpicTimeline/TogglePlanSettingsPanelOpen",
-    UpdateVisibleTimeStart = "EpicTimeline/UpdateVisibleTimeStart",
-    UpdateVisibleTimeEnd = "EpicTimeline/UpdateVisibleTimeEnd",
     ToggleIsNewPlanExperience = "EpicTimeline/IsNewPlanExperience",
     ToggleDeletePlanDialogHidden = "EpicTimeline/ToggleDeletePlanDialogHidden",
     HandleGeneralException = "EpicTimeline/HandleGeneralException",
@@ -92,18 +90,6 @@ export const EpicTimelineActions = {
             ["isOpen"]: isOpen
         });
         return createAction(EpicTimelineActionTypes.TogglePlanSettingsPanelOpen, { isOpen });
-    },
-    updateVisibleTimeStart: (visibleTimeStart: number) => {
-        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateVisibleTimeStart);
-        return createAction(EpicTimelineActionTypes.UpdateVisibleTimeStart, {
-            visibleTimeStart
-        });
-    },
-    updateVisibleTimeEnd: (visibleTimeEnd: number) => {
-        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateVisibleTimeEnd);
-        return createAction(EpicTimelineActionTypes.UpdateVisibleTimeEnd, {
-            visibleTimeEnd
-        });
     },
     toggleIsNewPlanExperience: (isNewPlanExperience: boolean) =>
         createAction(EpicTimelineActionTypes.ToggleIsNewPlanExperience, { isNewPlanExperience }),
