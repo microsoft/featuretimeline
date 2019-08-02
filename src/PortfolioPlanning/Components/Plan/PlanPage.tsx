@@ -3,7 +3,6 @@ import "./PlanPage.scss";
 import { Page } from "azure-devops-ui/Page";
 import PlanHeader from "./PlanHeader";
 import { ConnectedPlanTimeline } from "./PlanTimeline";
-import { PlanSummary } from "./PlanSummary";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
 import {
     getProjectNames,
@@ -94,18 +93,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
             return <Spinner className="plan-spinner" label={loadingLabel} size={SpinnerSize.large} />;
         } else {
             PortfolioTelemetry.getInstance().TrackPlanOpened(this.props.plan.id, this.props.planTelemetry);
-            return (
-                <>
-                    <PlanSummary
-                        projectNames={this.props.projectNames}
-                        teamNames={this.props.teamNames}
-                        owner={this.props.plan.owner}
-                    />
-                    <div className="plan-content">
-                        <ConnectedPlanTimeline />
-                    </div>
-                </>
-            );
+            return <ConnectedPlanTimeline />;
         }
     };
 
