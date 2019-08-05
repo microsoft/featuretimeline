@@ -17,7 +17,6 @@ import { SimpleWorkItem } from '../../../Common/react/Components/WorkItem/Simple
 import { Callout } from 'office-ui-fabric-react/lib/Callout';
 import { PromotePortfolioPlansBanner } from '../../../Common/react/Components/PromotePortfolioPlans';
 import { dismissPortfolioPlansBanner } from '../../../Common/redux/modules/SettingsState/SettingsStateActions';
-import { Link } from "azure-devops-ui/Link";
 
 initializeIcons(/* optional base url */);
 
@@ -60,9 +59,9 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
                 <MessageBar
                     messageBarType={MessageBarType.error}
                     isMultiline={false}
-                >{"Epic Roadmap requires atleast two levels of Portfolio backlogs."}
+                >{"Epic Roadmap is not supported for Basic process."}
                 </MessageBar>
-            );
+            )
         }
 
         let contents = null;
