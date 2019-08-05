@@ -59,7 +59,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
                 <MessageBar
                     messageBarType={MessageBarType.error}
                     isMultiline={false}
-                >{"Epic Roadmap is not supported for Basic process."}
+                >{"Epic Roadmap requires atleast two levels of Portfolio Backlogs."}
                 </MessageBar>
             )
         }
