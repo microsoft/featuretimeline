@@ -60,12 +60,14 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
 
         if (portfolioBacklogConfigurationError) {
             return (
-                <MessageBar
-                    messageBarType={MessageBarType.error}
-                    isMultiline={false}
-                >
-                    {portfolioBacklogConfigurationError.message}
-                </MessageBar>
+                <div className="epic-container">
+                    <MessageBar
+                        messageBarType={MessageBarType.error}
+                        isMultiline={false}
+                    >
+                        {portfolioBacklogConfigurationError.message}
+                    </MessageBar>
+                </div>
             )
         }
 
