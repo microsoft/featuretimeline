@@ -82,6 +82,7 @@ export interface IAddItems {
 export interface IAddItem {
     id: number;
     workItemType: string;
+    hide: boolean;
 }
 
 export interface IRemoveItem {
@@ -127,6 +128,7 @@ export class IAddItemPanelProjectItems {
         workItemTypeDisplayName: string;
         loadingStatus: LoadingStatus;
         loadingErrorMessage: string;
+        searchKeyword: string;
         /**
          * Contains work items that should be displayed in the panel. i.e. work items found in
          * project, except those that are already part of the plan.

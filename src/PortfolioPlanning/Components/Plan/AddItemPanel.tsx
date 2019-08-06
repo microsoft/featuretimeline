@@ -25,6 +25,7 @@ import { ProjectConfigurationDataService } from "../../Common/Services/ProjectCo
 import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 import { Tooltip } from "azure-devops-ui/TooltipEx";
+import { TextField, TextFieldWidth, TextFieldStyle } from "azure-devops-ui/TextField";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -39,7 +40,7 @@ interface IAddItemPanelState {
     selectedProject: IProject;
     selectedProjectBacklogConfiguration: IProjectConfiguration;
     /**
-     * Map of work items to display, grouped by backlog level.
+     * Map of work items to display, grouped by work item type.
      */
     workItemsByLevel: IAddItemPanelProjectItems;
 
@@ -54,6 +55,11 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     private _indexToWorkItemIdMap: { [workItemTypeKey: string]: { [index: number]: number } } = {};
     private _workItemIdMap: { [index: number]: IAddItem } = {};
     private _projectConfigurationsCache: { [projectIdKey: string]: IProjectConfiguration } = {};
+
+    /**
+     * Number of work items over which search is available for a work item type section.
+     */
+    private static readonly WORKITEMTYPE_SEARCH_THRESHOLD: number = 20;
 
     constructor(props) {
         super(props);
@@ -193,7 +199,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     loadingStatus: LoadingStatus.NotLoaded,
                     loadingErrorMessage: null,
                     items: null,
-                    workItemsFoundInProject: 0
+                    workItemsFoundInProject: 0,
+                    searchKeyword: null
                 };
             });
 
@@ -205,7 +212,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     loadingStatus: LoadingStatus.Loaded,
                     loadingErrorMessage: workItemsOfType.exceptionMessage,
                     items: null,
-                    workItemsFoundInProject: 0
+                    workItemsFoundInProject: 0,
+                    searchKeyword: null
                 };
             } else {
                 workItemsOfType.workItems.forEach(workItem => {
@@ -213,7 +221,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     if (!this.props.epicsInPlan[workItem.WorkItemId]) {
                         const itemData: IAddItem = {
                             id: workItem.WorkItemId,
-                            workItemType: workItem.WorkItemType
+                            workItemType: workItem.WorkItemType,
+                            hide: false
                         };
 
                         items.push({
@@ -229,7 +238,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     loadingStatus: LoadingStatus.Loaded,
                     loadingErrorMessage: null,
                     items,
-                    workItemsFoundInProject: workItemsOfType.workItems.length
+                    workItemsFoundInProject: workItemsOfType.workItems.length,
+                    searchKeyword: null
                 };
             }
 
@@ -276,10 +286,18 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 return <div className="workItemTypeEmptyMessage">All work items are already added to plan.</div>;
             } else {
                 if (!this._selectionByWorkItemType[workItemTypeKey]) {
-                    this._selectionByWorkItemType[workItemTypeKey] = new ListSelection(true);
+                    this._selectionByWorkItemType[workItemTypeKey] = new ListSelection({
+                        selectOnFocus: true,
+                        multiSelect: true,
+                        alwaysMerge: true
+                    });
                 }
 
-                return (
+                //  TODO    Ed, change from ScrollableList to DetailsList from OfficeFabric.
+                //          Using DetailsList fixes selection issues (e.g. can't use CTRL to multiselect)
+                //          also, remembers selection
+                //  CONS: Need to figure out how to hide the column header
+                const list: JSX.Element = (
                     <ScrollableList
                         className="item-list"
                         itemProvider={new ArrayItemProvider<IListBoxItem>(content.items)}
@@ -288,8 +306,55 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                         onSelect={this._onSelectionChanged}
                     />
                 );
+
+                const searchFilter =
+                    content.items.length > AddItemPanel.WORKITEMTYPE_SEARCH_THRESHOLD
+                        ? this._renderWorkItemTypeSectionFilter(workItemType)
+                        : null;
+
+                return (
+                    <div>
+                        {searchFilter}
+                        {list}
+                    </div>
+                );
             }
         }
+    };
+
+    private _renderWorkItemTypeSectionFilter = (workItemType: string): JSX.Element => {
+        const searchKeyword = this.state.workItemsByLevel[workItemType].searchKeyword || "";
+
+        return (
+            <TextField
+                value={searchKeyword}
+                onChange={(e, value) => this._onFilter(e, value, workItemType)}
+                placeholder={"Search keyword"}
+                width={TextFieldWidth.auto}
+                style={TextFieldStyle.inline}
+            />
+        );
+    };
+
+    private _onFilter = (
+        ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+        value: string,
+        workItemType: string
+    ): void => {
+        const { workItemsByLevel } = this.state;
+
+        const filterEnabled = value && value.length > 0;
+        const valueLowerCase = value!.toLowerCase() || "";
+
+        workItemsByLevel[workItemType].items.forEach(item => {
+            (item.data as IAddItem).hide =
+                filterEnabled === true && item.text.toLowerCase().indexOf(valueLowerCase) === -1;
+        });
+        workItemsByLevel[workItemType].searchKeyword = value;
+
+        this.setState({
+            workItemsByLevel: workItemsByLevel
+        });
     };
 
     private _renderEpics = () => {
@@ -324,7 +389,10 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             });
 
             return (
-                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                <FormItem
+                    message={this.state.errorMessage}
+                    error={this.state.errorMessage && this.state.errorMessage !== ""}
+                >
                     {workItemTypeSections}
                 </FormItem>
             );
@@ -374,7 +442,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                         if (!this.props.epicsInPlan[workItem.WorkItemId]) {
                             const itemData: IAddItem = {
                                 id: workItem.WorkItemId,
-                                workItemType: workItemTypeKey
+                                workItemType: workItemTypeKey,
+                                hide: false
                             };
 
                             items.push({
@@ -416,6 +485,11 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
         this._indexToWorkItemIdMap[workItemTypeKey][index] = Number(epic.id);
         this._workItemIdMap[itemData.id] = itemData;
+
+        if (itemData.hide === true) {
+            //  Don't render this row, as it has been filtered out by search.
+            return null;
+        }
         const iconProps = this.state.selectedProjectBacklogConfiguration.iconInfoByWorkItemType[workItemTypeKey];
 
         const imageProps: IImageProps = {
@@ -430,9 +504,9 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 <div className="item-list-row">
                     <Image {...imageProps as any} />
                     <Tooltip overflowOnly={true}>
-                    <span className="item-list-row-text">
-                        {epic.id} - {epic.text}
-                    </span>
+                        <span className="item-list-row-text">
+                            {epic.id} - {epic.text}
+                        </span>
                     </Tooltip>
                 </div>
             </ListItem>
