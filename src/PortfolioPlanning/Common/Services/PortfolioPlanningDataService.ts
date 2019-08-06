@@ -281,6 +281,9 @@ export class PortfolioPlanningDataService {
     }
 
     public async GetPortfolioPlanById(portfolioPlanId: string): Promise<PortfolioPlanning> {
+        if (!portfolioPlanId) {
+            console.log("hello");
+        }
         const client = await this.GetStorageClient();
         const planIdLowercase = portfolioPlanId.toLowerCase();
 

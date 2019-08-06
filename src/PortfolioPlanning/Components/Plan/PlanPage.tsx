@@ -192,8 +192,10 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
     };
 
     private _backButtonClicked = (): void => {
-        this.props.toggleSelectedPlanId(undefined);
-        this.props.resetPlanState();
+        if(this.props.planLoadingStatus === LoadingStatus.Loaded) {
+            this.props.toggleSelectedPlanId(undefined);
+            this.props.resetPlanState();
+        }
     };
 
     private _deletePlanButtonClicked = (): void => {

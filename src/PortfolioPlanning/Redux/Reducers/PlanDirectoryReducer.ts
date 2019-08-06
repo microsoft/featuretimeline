@@ -42,8 +42,10 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
 
                 const planToUpdate = draft.plans.find(plan => plan.id === draft.selectedPlanId);
 
+                if(planToUpdate){
                 planToUpdate.projectNames = projectNames;
                 planToUpdate.teamNames = teamNames;
+                }
 
                 break;
             }

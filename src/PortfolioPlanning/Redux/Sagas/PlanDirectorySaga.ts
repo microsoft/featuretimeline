@@ -76,6 +76,11 @@ function* updateProjectsAndTeamsMetadata(): SagaIterator {
 
         if (!exceptionMessage) {
             const planId = yield effects.select(getSelectedPlanId);
+
+            if (!planId) {
+                return;
+            }
+
             const projectNames = yield effects.select(getProjectNames);
             const teamNames = yield effects.select(getTeamNames);
 

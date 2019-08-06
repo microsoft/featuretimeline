@@ -16,6 +16,10 @@ export interface IPlanCardProps {
 }
 
 export const PlanCard = (props: IPlanCardProps) => {
+    if (!props.planId) {
+        console.log("here again");
+    }
+
     return (
         <div className="plan-card-container" onClick={() => props.onClick(props.planId)}>
             <Card className="plan-card">
