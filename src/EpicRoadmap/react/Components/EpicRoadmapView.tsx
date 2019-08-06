@@ -28,6 +28,7 @@ export interface IEpicRoadmapViewProps {
     launchWorkItemForm: (id: number) => void;
     portfolioPlansBannerDismissed: boolean;
     dismissPortfolioPlansBanner: () => void;
+    portfolioBacklogConfigurationError: Error;
 }
 
 export interface IEpicRoadmapViewContentState {
@@ -46,6 +47,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
     public render(): JSX.Element {
         const {
             uiState,
+            portfolioBacklogConfigurationError
         } = this.props;
 
         let showSelector: boolean = true;
@@ -54,12 +56,15 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
             return (
                 <Spinner size={SpinnerSize.large} className="loading-indicator" label="Loading..." />
             );
-        } else if (uiState === UIStatus.Error) {
+        }
+
+        if (portfolioBacklogConfigurationError) {
             return (
                 <MessageBar
                     messageBarType={MessageBarType.error}
                     isMultiline={false}
-                >{"Epic Roadmap requires atleast two levels of Portfolio Backlogs."}
+                >
+                    {portfolioBacklogConfigurationError.message}
                 </MessageBar>
             )
         }
@@ -188,7 +193,8 @@ const makeMapStateToProps = () => {
             teamId: getTeamId(),
             uiState: uiStateSelector(state),
             outOfScopeWorkItems: outOfScopeWorkItems(state),
-            portfolioPlansBannerDismissed: state.settingsState.dismissedPortfolioPlansBanner
+            portfolioPlansBannerDismissed: state.settingsState.dismissedPortfolioPlansBanner,
+            portfolioBacklogConfigurationError: state.progress.error
         }
     }
 }
