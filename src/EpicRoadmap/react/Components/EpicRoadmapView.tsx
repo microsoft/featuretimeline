@@ -28,7 +28,7 @@ export interface IEpicRoadmapViewProps {
     launchWorkItemForm: (id: number) => void;
     portfolioPlansBannerDismissed: boolean;
     dismissPortfolioPlansBanner: () => void;
-    portfolioBacklogConfigurationError: Error;
+    progressAwareError: Error;
 }
 
 export interface IEpicRoadmapViewContentState {
@@ -47,7 +47,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
     public render(): JSX.Element {
         const {
             uiState,
-            portfolioBacklogConfigurationError
+            progressAwareError
         } = this.props;
 
         let showSelector: boolean = true;
@@ -58,14 +58,14 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
             );
         }
 
-        if (portfolioBacklogConfigurationError) {
+        if (progressAwareError) {
             return (
                 <div className="epic-container">
                     <MessageBar
                         messageBarType={MessageBarType.error}
                         isMultiline={false}
                     >
-                        {portfolioBacklogConfigurationError.message}
+                        {progressAwareError.message}
                     </MessageBar>
                 </div>
             )
@@ -196,7 +196,7 @@ const makeMapStateToProps = () => {
             uiState: uiStateSelector(state),
             outOfScopeWorkItems: outOfScopeWorkItems(state),
             portfolioPlansBannerDismissed: state.settingsState.dismissedPortfolioPlansBanner,
-            portfolioBacklogConfigurationError: state.progress.error
+            progressAwareError: state.progress.error
         }
     }
 }
