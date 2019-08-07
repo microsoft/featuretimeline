@@ -13,7 +13,6 @@ import {
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
-import { InfoIcon } from "../../Common/Components/InfoIcon";
 import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
@@ -22,6 +21,8 @@ import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
 import { Slider } from "office-ui-fabric-react/lib/Slider";
 import { Button } from "azure-devops-ui/Button";
 import { PlanSummary } from "./PlanSummary";
+import { MenuButton } from "azure-devops-ui/Menu";
+import { IconSize } from "azure-devops-ui/Icon";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -342,19 +343,38 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                             onClick={() => {}}
                         />
                     </div>
-                    <div className="action-icons">
-                        <InfoIcon
-                            className="show-on-hover"
-                            id={item.id}
-                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
-                        />
-                        <div
-                            className="bowtie-icon bowtie-navigate-forward-circle show-on-hover to-epic-roadmap"
-                            onClick={() => this.navigateToEpicRoadmap(item)}
-                        >
-                            &nbsp;
-                        </div>
-                    </div>
+                    <MenuButton
+                        className="item-context-menu-button"
+                        iconProps={{
+                            iconName: "More",
+                            size: IconSize.small
+                        }}
+                        subtle={true}
+                        hideDropdownIcon={true}
+                        contextualMenuProps={{
+                            menuProps: {
+                                id: `item-context-menu-${item.id}`,
+                                items: [
+                                    {
+                                        id: "set-dates",
+                                        text: "Set dates",
+                                        iconProps: {
+                                            iconName: "Calendar"
+                                        },
+                                        onActivate: () => this.props.onToggleSetDatesDialogHidden(false)
+                                    },
+                                    {
+                                        id: "drill-down",
+                                        text: "Drill down",
+                                        iconProps: {
+                                            iconName: "BacklogList"
+                                        },
+                                        onActivate: () => this.navigateToEpicRoadmap(item)
+                                    }
+                                ]
+                            }
+                        }}
+                    />
                 </div>
             </div>
         );

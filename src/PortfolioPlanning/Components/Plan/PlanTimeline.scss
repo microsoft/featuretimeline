@@ -83,29 +83,23 @@
             overflow: hidden;
         }
 
-        .action-icons {
-            display: flex;
-
-            .info-icon {
-                color: $communication-foreground;
-            }
-        }
-
         .progress-indicator-container {
             display: flex;
             justify-content: flex-end;
             flex-shrink: 1;
         }
+
+        .item-context-menu-button {
+            margin-right: $spacing-8;
+
+            button {
+                padding: 2px;
+            }
+        }
     }
 
     &:hover .show-on-hover {
         display: inherit;
-    }
-
-    .to-epic-roadmap {
-        color: $communication-foreground;
-        display: flex;
-        align-items: center;
     }
 
     .show-on-hover {
