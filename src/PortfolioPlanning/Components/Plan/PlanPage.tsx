@@ -169,7 +169,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         if (this.props.planSettingsPanelOpen) {
             return (
                 <PlanSettingsPanel
-                    selectedItem={this.props.selectedItem}
                     progressTrackingCriteria={this.props.progressTrackingCriteria}
                     onProgressTrackingCriteriaChanged={this.props.onToggleProgressTrackingCriteria}
                     onClosePlanSettingsPanel={() => {
