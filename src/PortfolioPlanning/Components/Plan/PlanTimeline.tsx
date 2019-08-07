@@ -127,7 +127,12 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
 
     private _renderDependencyPanel(): JSX.Element {
         if (this.state.contextMenuItem && this.state.dependencyPanelOpen) {
-            return <DependencyPanel onDismiss={() => this.setState({ dependencyPanelOpen: false })} />;
+            return (
+                <DependencyPanel
+                    workItem={this.state.contextMenuItem}
+                    onDismiss={() => this.setState({ dependencyPanelOpen: false })}
+                />
+            );
         }
     }
 
