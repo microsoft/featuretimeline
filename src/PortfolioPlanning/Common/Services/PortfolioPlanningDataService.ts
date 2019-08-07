@@ -106,8 +106,78 @@ export class PortfolioPlanningDataService {
         queryInput: PortfolioPlanningDependencyQueryInput
     ): Promise<PortfolioPlanningDependencyQueryResult> {
         return Promise.resolve({
-            DependsOn: [],
-            HasDependency: [],
+            DependsOn: [
+                {
+                    WorkItemId: 1,
+                    WorkItemType: "Epic",
+                    Title: "1",
+                    State: "In Progress",
+                    StartDate: new Date(),
+                    TargetDate: new Date(),
+                    ProjectId: "1",
+                    AreaId: "1",
+                    TeamId: "1",
+                    CompletedCount: 1,
+                    TotalCount: 10,
+                    CompletedEffort: 5,
+                    TotalEffort: 50,
+                    EffortProgress: 0.1,
+                    CountProgress: 0.1
+                },
+                {
+                    WorkItemId: 2,
+                    WorkItemType: "Epic",
+                    Title: "2",
+                    State: "In Progress",
+                    StartDate: new Date(),
+                    TargetDate: new Date(),
+                    ProjectId: "2",
+                    AreaId: "2",
+                    TeamId: "2",
+                    CompletedCount: 2,
+                    TotalCount: 10,
+                    CompletedEffort: 10,
+                    TotalEffort: 50,
+                    EffortProgress: 0.2,
+                    CountProgress: 0.2
+                }
+            ],
+            HasDependency: [
+                {
+                    WorkItemId: 3,
+                    WorkItemType: "Epic",
+                    Title: "3",
+                    State: "In Progress",
+                    StartDate: new Date(),
+                    TargetDate: new Date(),
+                    ProjectId: "3",
+                    AreaId: "3",
+                    TeamId: "3",
+                    CompletedCount: 3,
+                    TotalCount: 10,
+                    CompletedEffort: 15,
+                    TotalEffort: 50,
+                    EffortProgress: 0.3,
+                    CountProgress: 0.3
+                },
+                {
+                    WorkItemId: 4,
+                    WorkItemType: "Epic",
+                    Title: "4",
+                    State: "In Progress",
+                    StartDate: new Date(),
+                    TargetDate: new Date(),
+                    ProjectId: "4",
+                    AreaId: "4",
+                    TeamId: "4",
+                    CompletedCount: 4,
+                    TotalCount: 10,
+                    CompletedEffort: 20,
+                    TotalEffort: 50,
+                    EffortProgress: 0.4,
+                    CountProgress: 0.4
+                }
+            ],
             exceptionMessage: null
         });
     }
