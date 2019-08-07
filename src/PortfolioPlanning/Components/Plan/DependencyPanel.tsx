@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Panel } from "azure-devops-ui/Panel";
+import "./DependencyPanel.scss";
 import { ITimelineItem } from "../../Contracts";
 
 export interface IDependencyPanelProps {
@@ -19,6 +20,8 @@ export const DependencyPanel = (props: IDependencyPanelProps) => {
                     primary: true
                 }
             ]}
-        />
+        >
+            <div className="dependency-panel" />
+        </Panel>
     );
 };
