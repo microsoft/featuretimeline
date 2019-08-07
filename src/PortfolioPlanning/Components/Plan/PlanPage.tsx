@@ -71,7 +71,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                 disabled={!!this.props.exceptionMessage}
                 itemIsSelected={!!this.props.selectedItem}
                 onAddItemClicked={this.props.onOpenAddItemPanel}
-                onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
                 onBackButtonClicked={this._backButtonClicked}
                 onSettingsButtonClicked={this._settingsButtonClicked}
                 onDeletePlanButonClicked={() => this.props.toggleDeletePlanDialogHidden(false)}
@@ -176,13 +175,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         this.props.resetPlanState();
     };
 
-    private _onRemoveSelectedEpicClick = (): void => {
-        this.props.onRemoveSelectedItem({
-            planId: this.props.plan.id,
-            itemIdToRemove: this.props.selectedItem.id
-        });
-    };
-
     private _settingsButtonClicked = (): void => {
         this.props.onTogglePlanSettingsPanelOpen(true);
     };
@@ -211,7 +203,6 @@ const Actions = {
     toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
     resetPlanState: EpicTimelineActions.resetPlanState,
     onOpenAddItemPanel: EpicTimelineActions.openAddItemPanel,
-    onRemoveSelectedItem: EpicTimelineActions.removeItems,
     onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
     onCloseAddItemPanel: EpicTimelineActions.closeAddItemPanel,
     onAddItems: EpicTimelineActions.addItems,

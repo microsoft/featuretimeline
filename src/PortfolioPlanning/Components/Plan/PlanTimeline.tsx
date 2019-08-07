@@ -402,6 +402,18 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                             iconName: "BacklogList"
                                         },
                                         onActivate: () => this.navigateToEpicRoadmap(item)
+                                    },
+                                    {
+                                        id: "remove-item",
+                                        text: "Remove item",
+                                        iconProps: {
+                                            iconName: "Delete"
+                                        },
+                                        onActivate: () =>
+                                            this.props.onRemoveItem({
+                                                itemIdToRemove: item.id,
+                                                planId: this.props.planId
+                                            })
                                     }
                                 ]
                             }
@@ -537,7 +549,8 @@ const Actions = {
     onShiftItem: EpicTimelineActions.shiftItem,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
-    onZeroDataCtaClicked: EpicTimelineActions.openAddItemPanel
+    onZeroDataCtaClicked: EpicTimelineActions.openAddItemPanel,
+    onRemoveItem: EpicTimelineActions.removeItems
 };
 
 export const ConnectedPlanTimeline = connect(
