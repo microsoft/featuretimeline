@@ -23,6 +23,7 @@ import { Button } from "azure-devops-ui/Button";
 import { PlanSummary } from "./PlanSummary";
 import { MenuButton } from "azure-devops-ui/Menu";
 import { IconSize } from "azure-devops-ui/Icon";
+import { DetailsDialog } from "./DetailsDialog";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -48,12 +49,14 @@ interface IPlanTimelineMappedProps {
     selectedItemId: number;
     planOwner: IdentityRef;
     exceptionMessage: string;
+    setDatesDialogHidden: boolean;
 }
 
 interface IPlanTimelineState {
     sliderValue: number;
     visibleTimeStart: moment.Moment;
     visibleTimeEnd: moment.Moment;
+    contextMenuItem: ITimelineItem;
 }
 
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
@@ -65,7 +68,12 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
     constructor() {
         super();
 
-        this.state = { sliderValue: 0, visibleTimeStart: undefined, visibleTimeEnd: undefined };
+        this.state = {
+            sliderValue: 0,
+            visibleTimeStart: undefined,
+            visibleTimeEnd: undefined,
+            contextMenuItem: undefined
+        };
     }
 
     public render(): JSX.Element {
@@ -76,6 +84,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                     {this._renderZoomControls()}
                 </div>
                 {this._renderTimeline()}
+                {this._renderItemDetailsDialog()}
             </>
         );
     }
@@ -89,6 +98,28 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             />
         );
     }
+
+    private _renderItemDetailsDialog = (): JSX.Element => {
+        if (this.state.contextMenuItem) {
+            return (
+                <DetailsDialog
+                    key={Date.now()} // TODO: Is there a better way to reset the state?
+                    id={this.state.contextMenuItem.id}
+                    title={this.state.contextMenuItem.title}
+                    startDate={this.state.contextMenuItem.start_time}
+                    endDate={this.state.contextMenuItem.end_time}
+                    hidden={this.props.setDatesDialogHidden}
+                    save={(id, startDate, endDate) => {
+                        this.props.onUpdateStartDate(id, startDate);
+                        this.props.onUpdateEndDate(id, endDate);
+                    }}
+                    close={() => {
+                        this.props.onToggleSetDatesDialogHidden(true);
+                    }}
+                />
+            );
+        }
+    };
 
     private _renderZoomControls(): JSX.Element {
         if (this.props.items.length > 0) {
@@ -351,6 +382,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                         }}
                         subtle={true}
                         hideDropdownIcon={true}
+                        onClick={() => this.setState({ contextMenuItem: item as ITimelineItem })}
                         contextualMenuProps={{
                             menuProps: {
                                 id: `item-context-menu-${item.id}`,
@@ -494,7 +526,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         items: getTimelineItems(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
-        exceptionMessage: state.epicTimelineState.exceptionMessage
+        exceptionMessage: state.epicTimelineState.exceptionMessage,
+        setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden
     };
 }
 

@@ -19,7 +19,6 @@ import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryMo
 import { PlanSettingsPanel } from "./PlanSettingsPanel";
 import { ProgressTrackingCriteria, ITimelineItem, LoadingStatus } from "../../Contracts";
 import { AddItemPanel } from "./AddItemPanel";
-import { DetailsDialog } from "./DetailsDialog";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { Link } from "azure-devops-ui/Link";
 import { DeletePlanDialog } from "./DeletePlanDialog";
@@ -35,7 +34,6 @@ interface IPlanPageMappedProps {
     selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
     addItemPanelOpen: boolean;
-    setDatesDialogHidden: boolean;
     planSettingsPanelOpen: boolean;
     exceptionMessage: string;
     planLoadingStatus: LoadingStatus;
@@ -58,7 +56,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                 {this._renderErrorMessageCard()}
                 {this._renderPlanContent()}
                 {this._renderAddItemPanel()}
-                {this._renderItemDetailsDialog()}
                 {this._renderPlanSettingsPanel()}
                 {this._renderDeletePlanDialog()}
             </Page>
@@ -143,28 +140,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         }
     };
 
-    private _renderItemDetailsDialog = (): JSX.Element => {
-        if (this.props.selectedItem) {
-            return (
-                <DetailsDialog
-                    key={Date.now()} // TODO: Is there a better way to reset the state?
-                    id={this.props.selectedItem.id}
-                    title={this.props.selectedItem.title}
-                    startDate={this.props.selectedItem.start_time}
-                    endDate={this.props.selectedItem.end_time}
-                    hidden={this.props.setDatesDialogHidden}
-                    save={(id, startDate, endDate) => {
-                        this.props.onUpdateStartDate(id, startDate);
-                        this.props.onUpdateEndDate(id, endDate);
-                    }}
-                    close={() => {
-                        this.props.onToggleSetDatesDialogHidden(true);
-                    }}
-                />
-            );
-        }
-    };
-
     private _renderPlanSettingsPanel = (): JSX.Element => {
         if (this.props.planSettingsPanelOpen) {
             return (
@@ -222,7 +197,6 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         selectedItem: getSelectedItem(state.epicTimelineState),
         progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
         addItemPanelOpen: state.epicTimelineState.addItemsPanelOpen,
-        setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
         planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen,
         exceptionMessage: state.epicTimelineState.exceptionMessage,
         planLoadingStatus: state.epicTimelineState.planLoadingStatus,
