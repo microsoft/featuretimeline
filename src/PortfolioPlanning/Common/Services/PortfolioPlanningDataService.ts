@@ -15,7 +15,9 @@ import {
     PortfolioPlanningTeamsInAreaQueryResult,
     TeamsInArea,
     PortfolioPlanningFullContentQueryResult,
-    PortfolioPlanningMetadata
+    PortfolioPlanningMetadata,
+    PortfolioPlanningDependencyQueryInput,
+    PortfolioPlanningDependencyQueryResult
 } from "../../../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../ODataClient";
 import {
@@ -98,6 +100,16 @@ export class PortfolioPlanningDataService {
                 (results: any) => this.ParseODataTeamsInAreaQueryResultResponseAsBatch(results),
                 error => this.ParseODataErrorResponse(error)
             );
+    }
+
+    public async runDependencyQuery(
+        queryInput: PortfolioPlanningDependencyQueryInput
+    ): Promise<PortfolioPlanningDependencyQueryResult> {
+        return Promise.resolve({
+            DependsOn: [],
+            HasDependency: [],
+            exceptionMessage: null
+        });
     }
 
     public async getODataColumnNameFromWorkItemFieldReferenceName(fieldReferenceName: string): Promise<string> {
