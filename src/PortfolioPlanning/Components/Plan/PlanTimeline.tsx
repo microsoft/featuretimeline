@@ -24,6 +24,7 @@ import { PlanSummary } from "./PlanSummary";
 import { MenuButton } from "azure-devops-ui/Menu";
 import { IconSize } from "azure-devops-ui/Icon";
 import { DetailsDialog } from "./DetailsDialog";
+import { DependencyPanel } from "./DependencyPanel";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -57,6 +58,7 @@ interface IPlanTimelineState {
     visibleTimeStart: moment.Moment;
     visibleTimeEnd: moment.Moment;
     contextMenuItem: ITimelineItem;
+    dependencyPanelOpen: boolean;
 }
 
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
@@ -72,7 +74,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             sliderValue: 0,
             visibleTimeStart: undefined,
             visibleTimeEnd: undefined,
-            contextMenuItem: undefined
+            contextMenuItem: undefined,
+            dependencyPanelOpen: false
         };
     }
 
@@ -85,6 +88,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                 </div>
                 {this._renderTimeline()}
                 {this._renderItemDetailsDialog()}
+                {this._renderDependencyPanel()}
             </>
         );
     }
@@ -120,6 +124,12 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             );
         }
     };
+
+    private _renderDependencyPanel(): JSX.Element {
+        if (this.state.contextMenuItem && this.state.dependencyPanelOpen) {
+            return <DependencyPanel onDismiss={() => this.setState({ dependencyPanelOpen: false })} />;
+        }
+    }
 
     private _renderZoomControls(): JSX.Element {
         if (this.props.items.length > 0) {
@@ -402,6 +412,14 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                                             iconName: "BacklogList"
                                         },
                                         onActivate: () => this.navigateToEpicRoadmap(item)
+                                    },
+                                    {
+                                        id: "view-dependencies",
+                                        text: "View dependencies",
+                                        iconProps: {
+                                            iconName: "Link"
+                                        },
+                                        onActivate: () => this.setState({ dependencyPanelOpen: true })
                                     },
                                     {
                                         id: "remove-item",
