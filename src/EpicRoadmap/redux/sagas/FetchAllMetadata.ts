@@ -25,7 +25,7 @@ export function* FetchAllMetadata() {
     const backlogConfiguration: BacklogConfiguration = yield select(backlogConfigurationForProjectSelector);
 
     if (backlogConfiguration.portfolioBacklogs.length < 2) {
-        yield put(ProgressAwareActionCreator.setError(new Error("Epic Roadmap requires atleast two levels of Portfolio Backlogs.")));
+        yield put(ProgressAwareActionCreator.setError(new Error("Epic Roadmap requires at least two levels of Portfolio Backlogs.")));
         return;
     }
 
