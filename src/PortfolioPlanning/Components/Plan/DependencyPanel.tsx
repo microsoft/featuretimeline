@@ -8,6 +8,7 @@ import {
     PortfolioPlanningQueryResultItem
 } from "../../Models/PortfolioPlanningQueryModels";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
+import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
@@ -30,8 +31,80 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         this._getDependencies().then(
             dependencies => {
                 this.setState({
-                    dependsOn: dependencies.DependsOn,
-                    hasDependency: dependencies.HasDependency,
+                    dependsOn: dependencies.DependsOn.reduce((res, current, index, array) => {
+                        return res.concat([
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current
+                        ]);
+                    }, []),
+                    hasDependency: dependencies.HasDependency.reduce((res, current, index, array) => {
+                        return res.concat([
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current,
+                            current
+                        ]);
+                    }, []),
                     loading: LoadingStatus.Loaded
                 });
             },
@@ -62,21 +135,43 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
     private _renderDependencies(): JSX.Element {
         if (this.state.loading != LoadingStatus.Loaded) {
-            return (
-                <Spinner
-                    label="Loading dependencies..."
-                    size={SpinnerSize.large}
-                    className="dependency-loading-spinner"
-                />
-            );
+            return <Spinner label="Loading dependencies..." size={SpinnerSize.large} className="loading-spinner" />;
         } else {
             return (
                 <>
-                    <div>{this.state.dependsOn.map(d => <div>{d.Title}</div>)}</div>
-                    <div>{this.state.hasDependency.map(d => <div>{d.Title}</div>)}</div>
+                    <CollapsiblePanel
+                        contentKey="depends-on"
+                        animate={false}
+                        headerLabel="Waiting for others"
+                        headerClassName={"list-header"}
+                        renderContent={(key: string) => {
+                            return <div>{this.state.dependsOn.map(this._renderDependencyItem)}</div>;
+                        }}
+                        isCollapsible={true}
+                        initialIsExpanded={true}
+                        forceContentUpdate={true}
+                        alwaysRenderContents={false}
+                    />
+                    <CollapsiblePanel
+                        contentKey="has-dependency"
+                        animate={false}
+                        headerLabel="Others waiting on"
+                        headerClassName={"list-header"}
+                        renderContent={(key: string) => {
+                            return <div>{this.state.hasDependency.map(this._renderDependencyItem)}</div>;
+                        }}
+                        isCollapsible={true}
+                        initialIsExpanded={true}
+                        forceContentUpdate={true}
+                        alwaysRenderContents={false}
+                    />
                 </>
             );
         }
+    }
+
+    private _renderDependencyItem(item: PortfolioPlanningQueryResultItem): JSX.Element {
+        return <div>{item.Title}</div>;
     }
 
     private _getDependencies = async (): Promise<PortfolioPlanningDependencyQueryResult> => {
