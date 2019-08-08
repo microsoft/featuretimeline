@@ -108,6 +108,43 @@ export class PortfolioPlanningDataService {
         const DependsOn: PortfolioPlanningQueryResultItem[] = [];
         const HasDependency: PortfolioPlanningQueryResultItem[] = [];
 
+        DependsOn.push({
+            WorkItemId: 68,
+            WorkItemType: "Epic",
+            Title: `${1}`,
+            State: "In Progress",
+            StartDate: new Date(),
+            TargetDate: new Date(),
+            ProjectId: `a3bb44bc-725d-4732-81e8-1543b8b34a24`,
+            AreaId: `${1}`,
+            TeamId: `${1}`,
+            CompletedCount: 1,
+            TotalCount: 10,
+            CompletedEffort: 1 * 5,
+            TotalEffort: 50,
+            EffortProgress: 0.1 * 1,
+            CountProgress: 0.1 * 1
+        });
+
+        HasDependency.push({
+            WorkItemId: 65,
+            WorkItemType: "Scenario",
+            Title: `${1}`,
+            State: "In Progress",
+            StartDate: new Date(),
+            TargetDate: new Date(),
+            ProjectId: `a3bb44bc-725d-4732-81e8-1543b8b34a24`,
+            AreaId: `${1}`,
+            TeamId: `${1}`,
+            CompletedCount: 1,
+            TotalCount: 10,
+            CompletedEffort: 1 * 5,
+            TotalEffort: 50,
+            EffortProgress: 0.1 * 1,
+            CountProgress: 0.1 * 1
+        });
+
+        /*
         for (let i = 1; i < 26; i += 2) {
             const title = ["WO"];
 
@@ -150,6 +187,7 @@ export class PortfolioPlanningDataService {
                 CountProgress: 0.1 * (i + 1)
             });
         }
+        */
 
         return Promise.resolve({
             DependsOn: DependsOn,

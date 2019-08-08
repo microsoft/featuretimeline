@@ -15,6 +15,7 @@ import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
+import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 
 type WorkItemIconMap = { [projectId: string]: { [workItemType: string]: IWorkItemIcon } };
 
@@ -200,24 +201,45 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     private _getWorkItemIcons = async (workItems: PortfolioPlanningQueryResultItem[]): Promise<WorkItemIconMap> => {
         const workItemIconMap: WorkItemIconMap = {};
 
-        const icon0: IWorkItemIcon = {
-            workItemType: "Epic",
-            url: "http://localhost/_apis/wit/workItemIcons/icon_crown?color=FF7B00&v=2",
-            color: "",
-            name: ""
-        };
+        await Promise.all(
+            workItems.map(async workItem => {
+                if (workItemIconMap[workItem.ProjectId] === undefined) {
+                    workItemIconMap[workItem.ProjectId] = {};
+                }
 
-        const icon1: IWorkItemIcon = {
-            workItemType: "Epic",
-            url: "http://localhost/_apis/wit/workItemIcons/icon_clipboard?color=222222&v=2",
-            color: "",
-            name: ""
-        };
+                if (workItemIconMap[workItem.ProjectId][workItem.WorkItemType] === undefined) {
+                    await BacklogConfigurationDataService.getInstance()
+                        .getWorkItemTypeIconInfo(workItem.ProjectId, workItem.WorkItemType)
+                        .then(
+                            workItemTypeInfo => {
+                                workItemIconMap[workItem.ProjectId][workItem.WorkItemType] = workItemTypeInfo;
+                            },
+                            error => {
+                                console.log(error);
+                            }
+                        );
+                }
+            })
+        );
 
-        workItemIconMap["0"] = {};
-        workItemIconMap["0"]["Epic"] = icon0;
-        workItemIconMap["1"] = {};
-        workItemIconMap["1"]["Epic"] = icon1;
+        // const icon0: IWorkItemIcon = {
+        //     workItemType: "Epic",
+        //     url: "http://localhost/_apis/wit/workItemIcons/icon_crown?color=FF7B00&v=2",
+        //     color: "",
+        //     name: ""
+        // };
+
+        // const icon1: IWorkItemIcon = {
+        //     workItemType: "Epic",
+        //     url: "http://localhost/_apis/wit/workItemIcons/icon_clipboard?color=222222&v=2",
+        //     color: "",
+        //     name: ""
+        // };
+
+        // workItemIconMap["0"] = {};
+        // workItemIconMap["0"]["Epic"] = icon0;
+        // workItemIconMap["1"] = {};
+        // workItemIconMap["1"]["Epic"] = icon1;
 
         return workItemIconMap;
     };
