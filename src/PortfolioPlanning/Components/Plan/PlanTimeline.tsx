@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as moment from "moment";
-import { ITimelineGroup, ITimelineItem, ITeam } from "../../Contracts";
+import { ITimelineGroup, ITimelineItem, ITeam, ProgressTrackingCriteria } from "../../Contracts";
 import Timeline, { TimelineHeaders, DateHeader } from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
@@ -51,6 +51,7 @@ interface IPlanTimelineMappedProps {
     planOwner: IdentityRef;
     exceptionMessage: string;
     setDatesDialogHidden: boolean;
+    progressTrackingCriteria: ProgressTrackingCriteria;
 }
 
 interface IPlanTimelineState {
@@ -130,6 +131,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             return (
                 <DependencyPanel
                     workItem={this.state.contextMenuItem}
+                    progressTrackingCriteria={this.props.progressTrackingCriteria}
                     onDismiss={() => this.setState({ dependencyPanelOpen: false })}
                 />
             );
@@ -562,7 +564,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
         exceptionMessage: state.epicTimelineState.exceptionMessage,
-        setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden
+        setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
+        progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria
     };
 }
 

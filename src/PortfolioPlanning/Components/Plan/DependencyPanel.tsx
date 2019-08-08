@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Panel } from "azure-devops-ui/Panel";
 import "./DependencyPanel.scss";
-import { ITimelineItem, LoadingStatus } from "../../Contracts";
+import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import {
     PortfolioPlanningDependencyQueryResult,
@@ -9,12 +9,16 @@ import {
 } from "../../Models/PortfolioPlanningQueryModels";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
-import { ScrollableList, IListItemDetails } from "azure-devops-ui/List";
+import { ScrollableList, IListItemDetails, ListItem } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
+import { Tooltip } from "azure-devops-ui/TooltipEx";
+import { ProgressDetails } from "../../Common/Components/ProgressDetails";
+import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
+    progressTrackingCriteria: ProgressTrackingCriteria;
     onDismiss: () => void;
 }
 
@@ -23,6 +27,11 @@ export interface IDependencyPanelState {
     hasDependency: PortfolioPlanningQueryResultItem[];
     loading: LoadingStatus;
     errorMessage: string;
+}
+
+interface IDependencyItemRenderData {
+    completed: number;
+    total: number;
 }
 
 export class DependencyPanel extends React.Component<IDependencyPanelProps, IDependencyPanelState> {
@@ -97,20 +106,22 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         }
     }
 
-    private _renderDependencyGroup(dependencies: PortfolioPlanningQueryResultItem[]): JSX.Element {
-        const items: IListBoxItem[] = [];
+    private _renderDependencyGroup = (dependencies: PortfolioPlanningQueryResultItem[]): JSX.Element => {
+        const items: IListBoxItem<IDependencyItemRenderData>[] = [];
 
         dependencies.forEach(dependency => {
             items.push({
                 id: dependency.WorkItemId.toString(),
                 text: dependency.Title,
                 data: {
-                    completedCount: dependency.CompletedCount,
-                    totalCount: dependency.TotalCount,
-                    countProgress: dependency.CountProgress,
-                    completedEffort: dependency.CompletedEffort,
-                    totalEffort: dependency.TotalEffort,
-                    effortProgress: dependency.EffortProgress
+                    completed:
+                        this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
+                            ? dependency.CompletedCount
+                            : dependency.CompletedEffort,
+                    total:
+                        this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
+                            ? dependency.TotalCount
+                            : dependency.TotalEffort
                 }
             });
         });
@@ -118,19 +129,46 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return (
             <ScrollableList
                 className="item-list"
-                itemProvider={new ArrayItemProvider<IListBoxItem>(items)}
+                itemProvider={new ArrayItemProvider<IListBoxItem<IDependencyItemRenderData>>(items)}
                 renderRow={this._renderDependencyItem}
             />
         );
-    }
+    };
 
     private _renderDependencyItem = (
         index: number,
-        item: IListBoxItem,
-        details: IListItemDetails<IListBoxItem>,
+        item: IListBoxItem<IDependencyItemRenderData>,
+        details: IListItemDetails<IListBoxItem<IDependencyItemRenderData>>,
         key?: string
     ): JSX.Element => {
-        return <div>{item.text}</div>;
+        const imageProps: IImageProps = {
+            src: "http://localhost/_apis/wit/workItemIcons/icon_crown?color=FF7B00&v=2",
+            className: "item-list-icon",
+            imageFit: ImageFit.center,
+            maximizeFrame: true
+        };
+
+        return (
+            <ListItem key={key || item.id} index={index} details={details}>
+                <div className="item-list-row">
+                    <Image {...imageProps as any} />
+                    <div className="item-text-and-progress">
+                        <Tooltip overflowOnly={true}>
+                            <span className="item-text">
+                                {item.id} - {item.text}
+                            </span>
+                        </Tooltip>
+                        <div className="item-progress">
+                            <ProgressDetails
+                                completed={item.data.completed}
+                                total={item.data.total}
+                                onClick={() => {}}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </ListItem>
+        );
     };
 
     private _getDependencies = async (): Promise<PortfolioPlanningDependencyQueryResult> => {

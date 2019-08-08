@@ -108,11 +108,17 @@ export class PortfolioPlanningDataService {
         const DependsOn: PortfolioPlanningQueryResultItem[] = [];
         const HasDependency: PortfolioPlanningQueryResultItem[] = [];
 
-        for (let i = 1; i < 51; i += 2) {
+        for (let i = 1; i < 26; i += 2) {
+            const title = ["WO"];
+
+            for (let j = 0; j < i; j++) {
+                title.push("MO");
+            }
+
             DependsOn.push({
                 WorkItemId: i,
                 WorkItemType: "Epic",
-                Title: `${i}`,
+                Title: `${title}`,
                 State: "In Progress",
                 StartDate: new Date(),
                 TargetDate: new Date(),
@@ -129,7 +135,7 @@ export class PortfolioPlanningDataService {
             HasDependency.push({
                 WorkItemId: i + 1,
                 WorkItemType: "Epic",
-                Title: `${i + 1}`,
+                Title: `${title}`,
                 State: "In Progress",
                 StartDate: new Date(),
                 TargetDate: new Date(),
