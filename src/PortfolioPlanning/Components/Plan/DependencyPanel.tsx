@@ -16,6 +16,7 @@ import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
 import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
+import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 
 type WorkItemIconMap = { [projectId: string]: { [workItemType: string]: IWorkItemIcon } };
 
@@ -60,7 +61,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                             loading: LoadingStatus.Loaded,
                             dependsOn: dependencies.DependsOn,
                             hasDependency: dependencies.HasDependency,
-                            workItemIcons: workItemIcons
+                            workItemIcons: workItemIcons,
+                            errorMessage: dependencies.exceptionMessage
                         });
                     }
                 );
@@ -75,7 +77,6 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return (
             <Panel
                 onDismiss={this.props.onDismiss}
-                showSeparator={true}
                 titleProps={{ text: `Dependencies for ${this.props.workItem.title}` }}
                 footerButtonProps={[
                     {
@@ -93,6 +94,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     private _renderDependencies(): JSX.Element {
         if (this.state.loading != LoadingStatus.Loaded) {
             return <Spinner label="Loading dependencies..." size={SpinnerSize.large} className="loading-spinner" />;
+        } else if (this.state.errorMessage) {
+            return <MessageCard severity={MessageCardSeverity.Error}>{this.state.errorMessage}</MessageCard>;
         } else {
             return (
                 <>
