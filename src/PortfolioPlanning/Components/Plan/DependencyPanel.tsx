@@ -126,6 +126,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     private _renderDependencyGroup = (dependencies: PortfolioPlanningQueryResultItem[]): JSX.Element => {
         const items: IListBoxItem<IDependencyItemRenderData>[] = [];
 
+        if (dependencies.length === 0) {
+            return <div className="empty-group-message">No dependencies found.</div>;
+        }
+
         dependencies.forEach(dependency => {
             items.push({
                 id: dependency.WorkItemId.toString(),
@@ -221,25 +225,6 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                 }
             })
         );
-
-        // const icon0: IWorkItemIcon = {
-        //     workItemType: "Epic",
-        //     url: "http://localhost/_apis/wit/workItemIcons/icon_crown?color=FF7B00&v=2",
-        //     color: "",
-        //     name: ""
-        // };
-
-        // const icon1: IWorkItemIcon = {
-        //     workItemType: "Epic",
-        //     url: "http://localhost/_apis/wit/workItemIcons/icon_clipboard?color=222222&v=2",
-        //     color: "",
-        //     name: ""
-        // };
-
-        // workItemIconMap["0"] = {};
-        // workItemIconMap["0"]["Epic"] = icon0;
-        // workItemIconMap["1"] = {};
-        // workItemIconMap["1"]["Epic"] = icon1;
 
         return workItemIconMap;
     };
