@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Panel } from "azure-devops-ui/Panel";
 import "./DependencyPanel.scss";
-import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria } from "../../Contracts";
+import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import {
     PortfolioPlanningDependencyQueryResult,
@@ -16,6 +16,8 @@ import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
 
+type WorkItemIconMap = { [projectId: string]: { [workItemType: string]: IWorkItemIcon } };
+
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
@@ -23,13 +25,16 @@ export interface IDependencyPanelProps {
 }
 
 export interface IDependencyPanelState {
-    dependsOn: PortfolioPlanningQueryResultItem[];
-    hasDependency: PortfolioPlanningQueryResultItem[];
     loading: LoadingStatus;
     errorMessage: string;
+    dependsOn: PortfolioPlanningQueryResultItem[];
+    hasDependency: PortfolioPlanningQueryResultItem[];
+    workItemIcons: WorkItemIconMap;
 }
 
 interface IDependencyItemRenderData {
+    projectId: string;
+    workItemType: string;
     completed: number;
     total: number;
 }
@@ -38,15 +43,26 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     constructor(props) {
         super(props);
 
-        this.state = { loading: LoadingStatus.NotLoaded, dependsOn: [], hasDependency: [], errorMessage: "" };
+        this.state = {
+            loading: LoadingStatus.NotLoaded,
+            dependsOn: [],
+            hasDependency: [],
+            workItemIcons: {},
+            errorMessage: ""
+        };
 
         this._getDependencies().then(
             dependencies => {
-                this.setState({
-                    dependsOn: dependencies.DependsOn,
-                    hasDependency: dependencies.HasDependency,
-                    loading: LoadingStatus.Loaded
-                });
+                this._getWorkItemIcons(dependencies.DependsOn.concat(dependencies.HasDependency)).then(
+                    workItemIcons => {
+                        this.setState({
+                            loading: LoadingStatus.Loaded,
+                            dependsOn: dependencies.DependsOn,
+                            hasDependency: dependencies.HasDependency,
+                            workItemIcons: workItemIcons
+                        });
+                    }
+                );
             },
             error => {
                 this.setState({ errorMessage: JSON.stringify(error), loading: LoadingStatus.NotLoaded });
@@ -114,6 +130,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                 id: dependency.WorkItemId.toString(),
                 text: dependency.Title,
                 data: {
+                    projectId: dependency.ProjectId,
+                    workItemType: dependency.WorkItemType,
                     completed:
                         this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
                             ? dependency.CompletedCount
@@ -142,7 +160,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         key?: string
     ): JSX.Element => {
         const imageProps: IImageProps = {
-            src: "http://localhost/_apis/wit/workItemIcons/icon_crown?color=FF7B00&v=2",
+            src: this.state.workItemIcons[item.data.projectId][item.data.workItemType].url,
             className: "item-list-icon",
             imageFit: ImageFit.center,
             maximizeFrame: true
@@ -177,5 +195,30 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         });
 
         return dependencies;
+    };
+
+    private _getWorkItemIcons = async (workItems: PortfolioPlanningQueryResultItem[]): Promise<WorkItemIconMap> => {
+        const workItemIconMap: WorkItemIconMap = {};
+
+        const icon0: IWorkItemIcon = {
+            workItemType: "Epic",
+            url: "http://localhost/_apis/wit/workItemIcons/icon_crown?color=FF7B00&v=2",
+            color: "",
+            name: ""
+        };
+
+        const icon1: IWorkItemIcon = {
+            workItemType: "Epic",
+            url: "http://localhost/_apis/wit/workItemIcons/icon_clipboard?color=222222&v=2",
+            color: "",
+            name: ""
+        };
+
+        workItemIconMap["0"] = {};
+        workItemIconMap["0"]["Epic"] = icon0;
+        workItemIconMap["1"] = {};
+        workItemIconMap["1"]["Epic"] = icon1;
+
+        return workItemIconMap;
     };
 }
