@@ -9,6 +9,9 @@ import {
 } from "../../Models/PortfolioPlanningQueryModels";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
+import { ScrollableList, IListItemDetails } from "azure-devops-ui/List";
+import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
+import { IListBoxItem } from "azure-devops-ui/ListBox";
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
@@ -31,80 +34,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         this._getDependencies().then(
             dependencies => {
                 this.setState({
-                    dependsOn: dependencies.DependsOn.reduce((res, current, index, array) => {
-                        return res.concat([
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current
-                        ]);
-                    }, []),
-                    hasDependency: dependencies.HasDependency.reduce((res, current, index, array) => {
-                        return res.concat([
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current,
-                            current
-                        ]);
-                    }, []),
+                    dependsOn: dependencies.DependsOn,
+                    hasDependency: dependencies.HasDependency,
                     loading: LoadingStatus.Loaded
                 });
             },
@@ -144,9 +75,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Waiting for others"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => {
-                            return <div>{this.state.dependsOn.map(this._renderDependencyItem)}</div>;
-                        }}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.dependsOn)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -157,9 +86,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Others waiting on"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => {
-                            return <div>{this.state.hasDependency.map(this._renderDependencyItem)}</div>;
-                        }}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.hasDependency)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -170,9 +97,41 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         }
     }
 
-    private _renderDependencyItem(item: PortfolioPlanningQueryResultItem): JSX.Element {
-        return <div>{item.Title}</div>;
+    private _renderDependencyGroup(dependencies: PortfolioPlanningQueryResultItem[]): JSX.Element {
+        const items: IListBoxItem[] = [];
+
+        dependencies.forEach(dependency => {
+            items.push({
+                id: dependency.WorkItemId.toString(),
+                text: dependency.Title,
+                data: {
+                    completedCount: dependency.CompletedCount,
+                    totalCount: dependency.TotalCount,
+                    countProgress: dependency.CountProgress,
+                    completedEffort: dependency.CompletedEffort,
+                    totalEffort: dependency.TotalEffort,
+                    effortProgress: dependency.EffortProgress
+                }
+            });
+        });
+
+        return (
+            <ScrollableList
+                className="item-list"
+                itemProvider={new ArrayItemProvider<IListBoxItem>(items)}
+                renderRow={this._renderDependencyItem}
+            />
+        );
     }
+
+    private _renderDependencyItem = (
+        index: number,
+        item: IListBoxItem,
+        details: IListItemDetails<IListBoxItem>,
+        key?: string
+    ): JSX.Element => {
+        return <div>{item.text}</div>;
+    };
 
     private _getDependencies = async (): Promise<PortfolioPlanningDependencyQueryResult> => {
         const dependencies = await PortfolioPlanningDataService.getInstance().runDependencyQuery({

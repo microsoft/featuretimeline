@@ -105,79 +105,49 @@ export class PortfolioPlanningDataService {
     public async runDependencyQuery(
         queryInput: PortfolioPlanningDependencyQueryInput
     ): Promise<PortfolioPlanningDependencyQueryResult> {
+        const DependsOn: PortfolioPlanningQueryResultItem[] = [];
+        const HasDependency: PortfolioPlanningQueryResultItem[] = [];
+
+        for (let i = 1; i < 51; i += 2) {
+            DependsOn.push({
+                WorkItemId: i,
+                WorkItemType: "Epic",
+                Title: `${i}`,
+                State: "In Progress",
+                StartDate: new Date(),
+                TargetDate: new Date(),
+                ProjectId: `${i}`,
+                AreaId: `${i}`,
+                TeamId: `${i}`,
+                CompletedCount: i,
+                TotalCount: 10,
+                CompletedEffort: i * 5,
+                TotalEffort: 50,
+                EffortProgress: 0.1 * i,
+                CountProgress: 0.1 * i
+            });
+            HasDependency.push({
+                WorkItemId: i + 1,
+                WorkItemType: "Epic",
+                Title: `${i + 1}`,
+                State: "In Progress",
+                StartDate: new Date(),
+                TargetDate: new Date(),
+                ProjectId: `${i + 1}`,
+                AreaId: `${i + 1}`,
+                TeamId: `${i + 1}`,
+                CompletedCount: i + 1,
+                TotalCount: 10,
+                CompletedEffort: (i + 1) * 5,
+                TotalEffort: 50,
+                EffortProgress: 0.1 * (i + 1),
+                CountProgress: 0.1 * (i + 1)
+            });
+        }
+
         return Promise.resolve({
-            DependsOn: [
-                {
-                    WorkItemId: 1,
-                    WorkItemType: "Epic",
-                    Title: "1",
-                    State: "In Progress",
-                    StartDate: new Date(),
-                    TargetDate: new Date(),
-                    ProjectId: "1",
-                    AreaId: "1",
-                    TeamId: "1",
-                    CompletedCount: 1,
-                    TotalCount: 10,
-                    CompletedEffort: 5,
-                    TotalEffort: 50,
-                    EffortProgress: 0.1,
-                    CountProgress: 0.1
-                },
-                {
-                    WorkItemId: 2,
-                    WorkItemType: "Epic",
-                    Title: "2",
-                    State: "In Progress",
-                    StartDate: new Date(),
-                    TargetDate: new Date(),
-                    ProjectId: "2",
-                    AreaId: "2",
-                    TeamId: "2",
-                    CompletedCount: 2,
-                    TotalCount: 10,
-                    CompletedEffort: 10,
-                    TotalEffort: 50,
-                    EffortProgress: 0.2,
-                    CountProgress: 0.2
-                }
-            ],
-            HasDependency: [
-                {
-                    WorkItemId: 3,
-                    WorkItemType: "Epic",
-                    Title: "3",
-                    State: "In Progress",
-                    StartDate: new Date(),
-                    TargetDate: new Date(),
-                    ProjectId: "3",
-                    AreaId: "3",
-                    TeamId: "3",
-                    CompletedCount: 3,
-                    TotalCount: 10,
-                    CompletedEffort: 15,
-                    TotalEffort: 50,
-                    EffortProgress: 0.3,
-                    CountProgress: 0.3
-                },
-                {
-                    WorkItemId: 4,
-                    WorkItemType: "Epic",
-                    Title: "4",
-                    State: "In Progress",
-                    StartDate: new Date(),
-                    TargetDate: new Date(),
-                    ProjectId: "4",
-                    AreaId: "4",
-                    TeamId: "4",
-                    CompletedCount: 4,
-                    TotalCount: 10,
-                    CompletedEffort: 20,
-                    TotalEffort: 50,
-                    EffortProgress: 0.4,
-                    CountProgress: 0.4
-                }
-            ],
+            DependsOn: DependsOn,
+            HasDependency: HasDependency,
             exceptionMessage: null
         });
     }
