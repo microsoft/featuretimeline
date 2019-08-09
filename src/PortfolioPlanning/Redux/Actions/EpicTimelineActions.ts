@@ -16,6 +16,7 @@ export const enum EpicTimelineActionTypes {
     UpdateStartDate = "EpicTimeline/UpdateStartDate",
     UpdateEndDate = "EpicTimeline/UpdateEndDate",
     ShiftItem = "EpicTimeline/ShiftItem",
+    UpdateItemFinished = "EpicTimeline/UpdateItemFinished",
     ToggleItemDetailsDialogHidden = "EpicTimeline/ToggleItemDetailsDialogHidden",
     SetSelectedItemId = "EpicTimeline/SetSelectedItemId",
     PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived",
@@ -52,6 +53,9 @@ export const EpicTimelineActions = {
     shiftItem: (itemId: number, startDate: moment.Moment) => {
         PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.ShiftItem);
         return createAction(EpicTimelineActionTypes.ShiftItem, { itemId, startDate });
+    },
+    updateItemFinished: (itemId: number) => {
+        return createAction(EpicTimelineActionTypes.UpdateItemFinished, { itemId });
     },
     toggleItemDetailsDialogHidden: (hidden: boolean) =>
         createAction(EpicTimelineActionTypes.ToggleItemDetailsDialogHidden, {

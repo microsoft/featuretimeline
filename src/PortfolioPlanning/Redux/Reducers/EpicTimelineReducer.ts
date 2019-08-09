@@ -20,7 +20,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 epicToUpdate.startDate = startDate.toDate();
                 epicToUpdate.startDate.setHours(0, 0, 0, 0);
-
+                epicToUpdate.itemUpdating = true;
                 break;
             }
             case EpicTimelineActionTypes.UpdateEndDate: {
@@ -30,7 +30,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 epicToUpdate.endDate = endDate.toDate();
                 epicToUpdate.endDate.setHours(0, 0, 0, 0);
-
+                epicToUpdate.itemUpdating = true;
                 break;
             }
             case EpicTimelineActionTypes.ShiftItem: {
@@ -44,7 +44,13 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 epicToUpdate.startDate.setHours(0, 0, 0, 0);
                 epicToUpdate.endDate = startDate.add(epicDuration, "milliseconds").toDate();
                 epicToUpdate.endDate.setHours(0, 0, 0, 0);
-
+                epicToUpdate.itemUpdating = true;
+                break;
+            }
+            case EpicTimelineActionTypes.UpdateItemFinished: {
+                const {itemId} = action.payload;
+                const epicToUpdate = draft.epics.find(epic => epic.id === itemId);
+                epicToUpdate.itemUpdating = false;
                 break;
             }
             case EpicTimelineActionTypes.ToggleItemDetailsDialogHidden: {
@@ -200,7 +206,8 @@ function handlePortfolioItemsReceived(
                     completedEffort: item.CompletedEffort,
                     totalEffort: item.TotalEffort,
                     effortProgress: item.EffortProgress,
-                    countProgress: item.CountProgress
+                    countProgress: item.CountProgress,
+                    itemUpdating: false
                 };
             });
 
@@ -269,7 +276,8 @@ function handlePortfolioItemsReceived(
                         completedEffort: newItemInfo.CompletedEffort,
                         totalEffort: newItemInfo.TotalEffort,
                         effortProgress: newItemInfo.EffortProgress,
-                        countProgress: newItemInfo.CountProgress
+                        countProgress: newItemInfo.CountProgress,
+                        itemUpdating: false
                     });
                 }
             });

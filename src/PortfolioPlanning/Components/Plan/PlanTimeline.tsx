@@ -357,7 +357,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                 {...getItemProps({
                     className: "plan-timeline-item",
                     style: {
-                        background: "white",
+                        background: item.canMove?  "white" : "#f8f8f8",
+                        fontWeight: item.canMove? 600 : 900,
                         color: "black",
                         ...borderStyle,
                         borderRadius: "4px"
@@ -380,6 +381,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                             iconName: "More",
                             size: IconSize.small
                         }}
+                        disabled={!item.canMove}
                         subtle={true}
                         hideDropdownIcon={true}
                         onClick={() => this.setState({ contextMenuItem: item as ITimelineItem })}
