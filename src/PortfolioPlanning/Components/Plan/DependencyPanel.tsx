@@ -64,11 +64,14 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                             workItemIcons: workItemIcons,
                             errorMessage: dependencies.exceptionMessage
                         });
+                    },
+                    error => {
+                        this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
                     }
                 );
             },
             error => {
-                this.setState({ errorMessage: JSON.stringify(error), loading: LoadingStatus.NotLoaded });
+                this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
             }
         );
     }
@@ -91,11 +94,13 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         );
     }
 
+    // TODO: Change loading state check
+
     private _renderDependencies(): JSX.Element {
-        if (this.state.loading != LoadingStatus.Loaded) {
-            return <Spinner label="Loading dependencies..." size={SpinnerSize.large} className="loading-spinner" />;
-        } else if (this.state.errorMessage) {
+        if (this.state.errorMessage) {
             return <MessageCard severity={MessageCardSeverity.Error}>{this.state.errorMessage}</MessageCard>;
+        } else if (this.state.loading != LoadingStatus.Loaded) {
+            return <Spinner label="Loading dependencies..." size={SpinnerSize.large} className="loading-spinner" />;
         } else {
             return (
                 <>
@@ -217,14 +222,9 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                 if (workItemIconMap[workItem.ProjectId][workItem.WorkItemType] === undefined) {
                     await BacklogConfigurationDataService.getInstance()
                         .getWorkItemTypeIconInfo(workItem.ProjectId, workItem.WorkItemType)
-                        .then(
-                            workItemTypeInfo => {
-                                workItemIconMap[workItem.ProjectId][workItem.WorkItemType] = workItemTypeInfo;
-                            },
-                            error => {
-                                console.log(error);
-                            }
-                        );
+                        .then(workItemTypeInfo => {
+                            workItemIconMap[workItem.ProjectId][workItem.WorkItemType] = workItemTypeInfo;
+                        });
                 }
             })
         );
