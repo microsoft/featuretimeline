@@ -14,8 +14,6 @@ import { Panel } from "azure-devops-ui/Panel";
 import { Dropdown, DropdownCallout } from "azure-devops-ui/Dropdown";
 import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
-//import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
-//import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import {
     DetailsList,
     DetailsListLayoutMode,
@@ -56,10 +54,7 @@ interface IAddItemPanelState {
 }
 
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
-    //private _selectionByWorkItemType: { [workItemTypeKey: string]: ListSelection } = {};
     private _selectionByWorkItemType: { [workItemTypeKey: string]: Selection } = {};
-    //private _indexToWorkItemIdMap: { [workItemTypeKey: string]: { [index: number]: number } } = {};
-    //private _workItemIdMap: { [index: number]: IAddItem } = {};
     private _projectConfigurationsCache: { [projectIdKey: string]: IProjectConfiguration } = {};
 
     /**
@@ -164,10 +159,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     };
 
     private _onProjectSelected = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<{}>) => {
-        //  Clear selection object for ScrollableList
+        //  Clear selection objects for DetailsList.
         this._selectionByWorkItemType = {};
-        //this._workItemIdMap = {};
-        //this._indexToWorkItemIdMap = {};
 
         this.setState({
             selectedProject: {
@@ -333,18 +326,6 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                         checkButtonAriaLabel="Row checkbox"
                     />
                 );
-
-                /*
-                const list: JSX.Element = (
-                    <ScrollableList
-                        className="item-list"
-                        itemProvider={new ArrayItemProvider<IListBoxItem>(content.items)}
-                        renderRow={this.renderRow}
-                        selection={this._selectionByWorkItemType[workItemTypeKey]}
-                        onSelect={this._onSelectionChanged}
-                    />
-                );
-*/
 
                 const searchFilter =
                     allItemsCount > AddItemPanel.WORKITEMTYPE_SEARCH_THRESHOLD
@@ -550,81 +531,6 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             }
         }
     };
-
-    /*
-    private renderRow = (
-        index: number,
-        epic: IListBoxItem,
-        details: IListItemDetails<IListBoxItem>,
-        key?: string
-    ): JSX.Element => {
-        const itemData: IAddItem = epic.data as IAddItem;
-        const workItemTypeKey = itemData.workItemType.toLowerCase();
-
-        if (!this._indexToWorkItemIdMap[workItemTypeKey]) {
-            this._indexToWorkItemIdMap[workItemTypeKey] = {};
-        }
-
-        this._indexToWorkItemIdMap[workItemTypeKey][index] = Number(epic.id);
-        this._workItemIdMap[itemData.id] = itemData;
-
-        if (itemData.hide === true) {
-            //  Don't render this row, as it has been filtered out by search.
-            return null;
-        }
-        const iconProps = this.state.selectedProjectBacklogConfiguration.iconInfoByWorkItemType[workItemTypeKey];
-
-        const imageProps: IImageProps = {
-            src: iconProps.url,
-            className: "workItemIconClass",
-            imageFit: ImageFit.center,
-            maximizeFrame: true
-        };
-
-        return (
-            <ListItem key={key || "list-item" + index} index={index} details={details}>
-                <div className="item-list-row">
-                    <Image {...imageProps as any} />
-                    <Tooltip overflowOnly={true}>
-                        <span className="item-list-row-text">
-                            {epic.id} - {epic.text}
-                        </span>
-                    </Tooltip>
-                </div>
-            </ListItem>
-        );
-    };
-*/
-    /*
-    private _onSelectionChanged = (event: React.SyntheticEvent<HTMLElement>, listRow: IListRow<IListBoxItem>) => {
-        const newSelectedEpics: { [workItemId: number]: IAddItem } = [];
-        const selectedIndexes: number[] = [];
-        const rowData: IAddItem = listRow.data.data as IAddItem;
-        const workItemTypeKey = rowData.workItemType.toLowerCase();
-        const { selectedWorkItems } = this.state;
-
-        this._selectionByWorkItemType[workItemTypeKey].value.forEach(selectedGroup => {
-            for (let index = selectedGroup.beginIndex; index <= selectedGroup.endIndex; index++) {
-                selectedIndexes.push(index);
-            }
-        });
-
-        selectedIndexes.forEach(index => {
-            const workItemId = this._indexToWorkItemIdMap[workItemTypeKey][index];
-            newSelectedEpics[workItemId] = this._workItemIdMap[workItemId];
-        });
-
-        if (Object.keys(newSelectedEpics).length === 0) {
-            delete selectedWorkItems[workItemTypeKey];
-        } else {
-            selectedWorkItems[workItemTypeKey] = newSelectedEpics;
-        }
-
-        this.setState({
-            selectedWorkItems
-        });
-    };
-*/
 
     private _onAddEpics = (): void => {
         const items: IAddItem[] = [];
