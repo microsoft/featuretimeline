@@ -30,37 +30,40 @@ export function* epicTimelineSaga(): SagaIterator {
 function* onUpdateStartDate(
     action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateStartDate>
 ): SagaIterator {
+    const epicId = action.payload.epicId;
     try {
-        const epicId = action.payload.epicId;
         yield effects.call(saveDatesToServer, epicId);
-        yield effects.put(EpicTimelineActions.updateItemSucceeded(epicId));
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    } finally {
+        yield effects.put(EpicTimelineActions.updateItemFinished(epicId));
     }
 }
 
 function* onUpdateEndDate(
     action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateEndDate>
 ): SagaIterator {
+    const epicId = action.payload.epicId;
     try {
-        const epicId = action.payload.epicId;
         yield effects.call(saveDatesToServer, epicId);
-        yield effects.put(EpicTimelineActions.updateItemSucceeded(epicId));
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    } finally {
+        yield effects.put(EpicTimelineActions.updateItemFinished(epicId));
     }
 }
 
 function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ShiftItem>): SagaIterator {
+    const epicId = action.payload.itemId;
     try {
-        const epicId = action.payload.itemId;
         yield effects.call(saveDatesToServer, epicId);
-        yield effects.put(EpicTimelineActions.updateItemSucceeded(epicId));
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    } finally {
+        yield effects.put(EpicTimelineActions.updateItemFinished(epicId));
     }
 }
 function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {

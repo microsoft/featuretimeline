@@ -47,7 +47,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 epicToUpdate.itemUpdating = true;
                 break;
             }
-            case EpicTimelineActionTypes.UpdateItemSucceeded: {
+            case EpicTimelineActionTypes.UpdateItemFinished: {
                 const {itemId} = action.payload;
                 const epicToUpdate = draft.epics.find(epic => epic.id === itemId);
                 epicToUpdate.itemUpdating = false;
