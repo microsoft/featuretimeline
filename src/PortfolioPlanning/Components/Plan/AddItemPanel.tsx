@@ -304,7 +304,6 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                         name: "Title",
                         fieldName: "text",
                         minWidth: 100,
-                        maxWidth: 200,
                         isResizable: false,
                         isIconOnly: true
                     }
@@ -393,7 +392,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         return (
             <TextField
                 value={searchKeyword}
-                onChange={(e, value) => this._onFilter(e, value, workItemType)}
+                onChange={(e, value) => this._onChangeSearchKeywordTextField(e, value, workItemType)}
                 placeholder={"Search keyword"}
                 width={TextFieldWidth.auto}
                 style={TextFieldStyle.inline}
@@ -402,7 +401,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         );
     };
 
-    private _onFilter = (
+    private _onChangeSearchKeywordTextField = (
         ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
         value: string,
         workItemType: string
@@ -414,13 +413,24 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
         Object.keys(workItemsByLevel[workItemType].items).forEach(itemKey => {
             const item = workItemsByLevel[workItemType].items[itemKey] as IAddItem;
-            item.hide = filterEnabled === true && item.text.toLowerCase().indexOf(valueLowerCase) === -1;
+            item.hide = filterEnabled === true && !this._matchesSearchKeywordFilter(valueLowerCase, item);
         });
         workItemsByLevel[workItemType].searchKeyword = value;
 
         this.setState({
             workItemsByLevel: workItemsByLevel
         });
+    };
+
+    private _matchesSearchKeywordFilter = (keywordLowerCase: string, item: IAddItem): boolean => {
+        // prettier-ignore
+        return (
+            //  Matches work item id?
+            item.id.toString().indexOf(keywordLowerCase) >= 0
+            ||
+            //  Matches work item text?
+            item.text.toLowerCase().indexOf(keywordLowerCase) >= 0
+        );
     };
 
     private _renderEpics = () => {
