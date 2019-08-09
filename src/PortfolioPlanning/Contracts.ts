@@ -70,6 +70,8 @@ export interface IWorkItem {
 
     effortProgress: number;
     countProgress: number;
+
+    itemUpdating: boolean;
 }
 
 export interface IAddItems {
@@ -103,6 +105,7 @@ export interface ITimelineItem {
     iconUrl: string;
     start_time: moment.Moment;
     end_time: moment.Moment;
+    canMove: boolean;
 }
 
 export enum ProgressTrackingCriteria {

@@ -71,7 +71,9 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
                 completed: completed,
                 total: total,
                 progress: progress
-            }
+            },
+            canMove: !epic.itemUpdating,
+            canResize: !epic.itemUpdating
         };
     });
 }

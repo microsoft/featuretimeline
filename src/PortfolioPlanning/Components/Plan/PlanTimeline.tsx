@@ -325,7 +325,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                 {...getItemProps({
                     className: "plan-timeline-item",
                     style: {
-                        background: "white",
+                        background: item.canMove?  "white" : "#f8f8f8",
+                        fontWeight: item.canMove? 600 : 900,
                         color: "black",
                         ...borderStyle,
                         borderRadius: "4px"

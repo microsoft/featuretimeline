@@ -59,7 +59,7 @@ export function* saveDatesToServer(workItemId: number, defaultStartDate?: Date, 
     const witHttpClient: WorkItemTrackingHttpClient = yield effects.call(
         [VSS_Service, VSS_Service.getClient],
         WorkItemTrackingHttpClient
-    );
+    ); 
 
     yield effects.call([witHttpClient, witHttpClient.updateWorkItem], doc, workItemId);
 

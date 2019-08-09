@@ -144,7 +144,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
     };
 
     private _renderItemDetailsDialog = (): JSX.Element => {
-        if (this.props.selectedItem) {
+        if (this.props.selectedItem && this.props.selectedItem.canMove) {
             return (
                 <DetailsDialog
                     key={Date.now()} // TODO: Is there a better way to reset the state?

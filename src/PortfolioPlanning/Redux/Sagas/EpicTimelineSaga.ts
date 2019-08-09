@@ -33,6 +33,7 @@ function* onUpdateStartDate(
     try {
         const epicId = action.payload.epicId;
         yield effects.call(saveDatesToServer, epicId);
+        yield effects.put(EpicTimelineActions.updateItemSucceeded(epicId));
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
@@ -45,6 +46,7 @@ function* onUpdateEndDate(
     try {
         const epicId = action.payload.epicId;
         yield effects.call(saveDatesToServer, epicId);
+        yield effects.put(EpicTimelineActions.updateItemSucceeded(epicId));
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
@@ -55,6 +57,7 @@ function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAct
     try {
         const epicId = action.payload.itemId;
         yield effects.call(saveDatesToServer, epicId);
+        yield effects.put(EpicTimelineActions.updateItemSucceeded(epicId));
     } catch (exception) {
         console.error(exception);
         yield effects.put(EpicTimelineActions.handleGeneralException(exception));
