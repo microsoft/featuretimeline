@@ -38,9 +38,9 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
                 break;
             }
             case PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata: {
-                const { projectNames, teamNames } = action.payload;
+                const { planId, projectNames, teamNames } = action.payload;
 
-                const planToUpdate = draft.plans.find(plan => plan.id === draft.selectedPlanId);
+                const planToUpdate = draft.plans.find(plan => plan.id === planId);
 
                 planToUpdate.projectNames = projectNames;
                 planToUpdate.teamNames = teamNames;

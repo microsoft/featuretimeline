@@ -43,8 +43,8 @@ export const PlanDirectoryActions = {
         PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.DeletePlan);
         return createAction(PlanDirectoryActionTypes.DeletePlan, { id });
     },
-    updateProjectsAndTeamsMetadata: (projectNames: string[], teamNames: string[]) =>
-        createAction(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, { projectNames, teamNames }),
+    updateProjectsAndTeamsMetadata: (planId:string, projectNames: string[], teamNames: string[]) =>
+        createAction(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, { planId, projectNames, teamNames }),
     toggleSelectedPlanId: (id: string) => {
         PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.ToggleSelectedPlanId);
         return createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {

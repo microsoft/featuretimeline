@@ -73,9 +73,9 @@ function* deletePlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryAc
 function* updateProjectsAndTeamsMetadata(): SagaIterator {
     try {
         const exceptionMessage = yield effects.select(getExceptionMessage);
+        const planId = yield effects.select(getSelectedPlanId);
 
-        if (!exceptionMessage) {
-            const planId = yield effects.select(getSelectedPlanId);
+        if (!exceptionMessage && planId) {
             const projectNames = yield effects.select(getProjectNames);
             const teamNames = yield effects.select(getTeamNames);
 
@@ -122,6 +122,7 @@ function* updateProjectsAndTeamsMetadata(): SagaIterator {
 
                 yield effects.put(
                     PlanDirectoryActions.updateProjectsAndTeamsMetadata(
+                        planToUpdate.id,
                         planToUpdate.projectNames,
                         planToUpdate.teamNames
                     )
