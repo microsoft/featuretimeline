@@ -138,8 +138,8 @@ class UpgradeFromV1ToV2 {
         const allProjectSchemaUpgrades = Object.keys(planInfo.projects).map(async projectKey => {
             let { PortfolioWorkItemType, PortfolioBacklogLevelName, WorkItemIds } = planInfo.projects[projectKey];
 
-            if (PortfolioWorkItemType === null || PortfolioWorkItemType === undefined) { 
-                PortfolioWorkItemType = await BacklogConfigurationDataService.getInstance().getDefaultWorkItemTypeForV1(projectKey); 
+            if (PortfolioWorkItemType === null || PortfolioWorkItemType === undefined) {
+                PortfolioWorkItemType = await BacklogConfigurationDataService.getInstance().getDefaultWorkItemTypeForV1(projectKey);
             }
             const workItemTypeKey = PortfolioWorkItemType.toLowerCase();
 
