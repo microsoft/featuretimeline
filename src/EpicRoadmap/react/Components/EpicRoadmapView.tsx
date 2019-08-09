@@ -28,6 +28,7 @@ export interface IEpicRoadmapViewProps {
     launchWorkItemForm: (id: number) => void;
     portfolioPlansBannerDismissed: boolean;
     dismissPortfolioPlansBanner: () => void;
+    progressAwareError: Error;
 }
 
 export interface IEpicRoadmapViewContentState {
@@ -46,6 +47,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
     public render(): JSX.Element {
         const {
             uiState,
+            progressAwareError
         } = this.props;
 
         let showSelector: boolean = true;
@@ -54,6 +56,19 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
             return (
                 <Spinner size={SpinnerSize.large} className="loading-indicator" label="Loading..." />
             );
+        }
+
+        if (progressAwareError) {
+            return (
+                <div className="epic-container">
+                    <MessageBar
+                        messageBarType={MessageBarType.error}
+                        isMultiline={false}
+                    >
+                        {progressAwareError.message}
+                    </MessageBar>
+                </div>
+            )
         }
 
         let contents = null;
@@ -93,13 +108,13 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
 
         let additionalMessage = null;
         if (uiState === UIStatus.OutofScopeTeamIterations) {
-            const style = {cursor: "pointer"};
+            const style = { cursor: "pointer" };
             additionalMessage = (
                 <MessageBar
                     messageBarType={MessageBarType.severeWarning}
                     isMultiline={true}
                     onClick={this._toggleCallout}
-                >                 
+                >
                     <div style={style} ref={ref => this._calloutContainer = ref} onClick={this._toggleCallout}>{"Some Work Items are excluded as they are in iterations that the current team does not subscribe to. Click here to see the details"}</div>
                 </MessageBar>
             );
@@ -117,7 +132,7 @@ class EpicRoadmapViewContent extends React.Component<IEpicRoadmapViewProps, IEpi
         return (
             <>
                 {!this.props.portfolioPlansBannerDismissed &&
-                <PromotePortfolioPlansBanner onDismiss={this.props.dismissPortfolioPlansBanner}/>}
+                    <PromotePortfolioPlansBanner onDismiss={this.props.dismissPortfolioPlansBanner} />}
                 <div className="epic-container">
                     {showSelector && <EpicSelector />}
                     {additionalMessage}
@@ -180,7 +195,8 @@ const makeMapStateToProps = () => {
             teamId: getTeamId(),
             uiState: uiStateSelector(state),
             outOfScopeWorkItems: outOfScopeWorkItems(state),
-            portfolioPlansBannerDismissed: state.settingsState.dismissedPortfolioPlansBanner
+            portfolioPlansBannerDismissed: state.settingsState.dismissedPortfolioPlansBanner,
+            progressAwareError: state.progress.error
         }
     }
 }

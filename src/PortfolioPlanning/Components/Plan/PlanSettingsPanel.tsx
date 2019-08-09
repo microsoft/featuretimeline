@@ -2,10 +2,9 @@ import * as React from "react";
 import "./PlanSettingsPanel.scss";
 import { Panel } from "azure-devops-ui/Panel";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
-import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
+import { ProgressTrackingCriteria } from "../../Contracts";
 
 export interface IPlanSettingsProps {
-    selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
     onProgressTrackingCriteriaChanged: (criteria: ProgressTrackingCriteria) => void;
     onClosePlanSettingsPanel: () => void;
