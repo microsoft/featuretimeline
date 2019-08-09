@@ -1,5 +1,4 @@
 import moment = require("moment");
-import { IListBoxItem } from "azure-devops-ui/ListBox";
 
 export interface IProject {
     id: string;
@@ -81,6 +80,8 @@ export interface IAddItems {
 
 export interface IAddItem {
     id: number;
+    key: number;
+    text: string;
     workItemType: string;
     hide: boolean;
 }
@@ -133,7 +134,7 @@ export class IAddItemPanelProjectItems {
          * Contains work items that should be displayed in the panel. i.e. work items found in
          * project, except those that are already part of the plan.
          */
-        items: IListBoxItem[];
+        items: { [workItemId: number]: IAddItem };
 
         /**
          * Count of all work items of this type found in the project.
