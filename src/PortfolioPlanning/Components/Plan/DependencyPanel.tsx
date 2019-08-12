@@ -55,6 +55,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
         this._getDependencies().then(
             dependencies => {
+                //Sort dependencies by target date
+                dependencies.DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+                dependencies.HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+
                 this._getWorkItemIcons(dependencies.DependsOn.concat(dependencies.HasDependency)).then(
                     workItemIcons => {
                         this.setState({
@@ -77,7 +81,6 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     }
 
     public render(): JSX.Element {
-        // TODO: Sort dependencies by target date
         // TODO: Add red ! icon to indicate problems
         // TODO: Dependencies should probably be links
         return (
