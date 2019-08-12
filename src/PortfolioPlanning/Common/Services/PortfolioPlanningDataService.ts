@@ -194,17 +194,17 @@ export class PortfolioPlanningDataService {
         //     exceptionMessage: null
         // });
 
-        // return Promise.resolve({
-        //     DependsOn: DependsOn,
-        //     HasDependency: HasDependency,
-        //     exceptionMessage: ""
-        // });
-
         return Promise.resolve({
             DependsOn: DependsOn,
             HasDependency: HasDependency,
-            exceptionMessage: "Big problems. Seriously like some really big problems happened!"
+            exceptionMessage: ""
         });
+
+        // return Promise.resolve({
+        //     DependsOn: DependsOn,
+        //     HasDependency: HasDependency,
+        //     exceptionMessage: "Big problems. Seriously like some really big problems happened!"
+        // });
     }
 
     public async getODataColumnNameFromWorkItemFieldReferenceName(fieldReferenceName: string): Promise<string> {

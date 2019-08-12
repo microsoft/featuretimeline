@@ -77,6 +77,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     }
 
     public render(): JSX.Element {
+        // TODO: Sort dependencies by target date
+        // TODO: Add red ! icon to indicate problems
         return (
             <Panel
                 onDismiss={this.props.onDismiss}
@@ -93,8 +95,6 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
             </Panel>
         );
     }
-
-    // TODO: Change loading state check
 
     private _renderDependencies(): JSX.Element {
         if (this.state.errorMessage) {
