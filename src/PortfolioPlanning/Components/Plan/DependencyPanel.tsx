@@ -55,6 +55,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
         this._getDependencies().then(
             dependencies => {
+                //Sort dependencies by target date
+                dependencies.DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+                dependencies.HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+
                 this._getWorkItemIcons(dependencies.DependsOn.concat(dependencies.HasDependency)).then(
                     workItemIcons => {
                         this.setState({
@@ -102,10 +106,6 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         } else if (this.state.loading != LoadingStatus.Loaded) {
             return <Spinner label="Loading dependencies..." size={SpinnerSize.large} className="loading-spinner" />;
         } else {
-            //Sort dependencies by target date
-            this.state.dependsOn.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
-            this.state.hasDependency.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
-            
             return (
                 <>
                     <CollapsiblePanel
