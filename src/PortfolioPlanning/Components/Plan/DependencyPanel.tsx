@@ -77,7 +77,6 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     }
 
     public render(): JSX.Element {
-        // TODO: Sort dependencies by target date
         // TODO: Add red ! icon to indicate problems
         // TODO: Dependencies should probably be links
         return (
@@ -103,6 +102,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         } else if (this.state.loading != LoadingStatus.Loaded) {
             return <Spinner label="Loading dependencies..." size={SpinnerSize.large} className="loading-spinner" />;
         } else {
+            //Sort dependencies by target date
+            this.state.dependsOn.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+            this.state.hasDependency.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+            
             return (
                 <>
                     <CollapsiblePanel
