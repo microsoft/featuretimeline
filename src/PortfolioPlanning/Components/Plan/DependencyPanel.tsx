@@ -79,6 +79,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     public render(): JSX.Element {
         // TODO: Sort dependencies by target date
         // TODO: Add red ! icon to indicate problems
+        // TODO: Dependencies should probably be links
         return (
             <Panel
                 onDismiss={this.props.onDismiss}
