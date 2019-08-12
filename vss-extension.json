@@ -17,7 +17,13 @@
     "icons": {
         "default": "dist/images/icon.png"
     },
-    "tags": ["work item", "timeline", "feature", "portfolio", "roadmap"],
+    "tags": [
+        "work item",
+        "timeline",
+        "feature",
+        "portfolio",
+        "roadmap"
+    ],
     "content": {
         "details": {
             "path": "dist/details.md"
@@ -27,20 +33,28 @@
         "type": "git",
         "uri": "https://github.com/microsoft/featuretimeline"
     },
-    "scopes": ["vso.work", "vso.work_write", "vso.analytics"],
+    "scopes": [
+        "vso.work",
+        "vso.work_write",
+        "vso.analytics"
+    ],
     "files": [
         {
             "path": "dist",
             "addressable": true
         }
     ],
-    "categories": ["Plan and track"],
+    "categories": [
+        "Plan and track"
+    ],
     "contributions": [
         {
             "id": "workitem-feature-timeline",
             "type": "ms.vss-web.tab",
             "description": "Feature timeline of your in-progress features.",
-            "targets": ["ms.vss-work-web.product-backlog-tabs"],
+            "targets": [
+                "ms.vss-work-web.product-backlog-tabs"
+            ],
             "properties": {
                 "name": "Feature Timeline",
                 "order": 99,
@@ -52,7 +66,9 @@
             "id": "workitem-epic-roadmap",
             "type": "ms.vss-web.tab",
             "description": "Epic roadmap.",
-            "targets": ["ms.vss-work-web.product-backlog-tabs"],
+            "targets": [
+                "ms.vss-work-web.product-backlog-tabs"
+            ],
             "properties": {
                 "name": "Epic Roadmap",
                 "order": 100,
@@ -64,7 +80,9 @@
             "id": "workitem-portfolio-planning",
             "type": "ms.vss-web.hub",
             "description": "Portfolio planning.",
-            "targets": ["ms.vss-work-web.work-hub-group"],
+            "targets": [
+                "ms.vss-work-web.work-hub-group"
+            ],
             "properties": {
                 "name": "Portfolio plans (Beta)",
                 "uri": "dist/PortfolioPlanning.html",

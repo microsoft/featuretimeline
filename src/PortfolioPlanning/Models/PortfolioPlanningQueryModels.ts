@@ -180,3 +180,12 @@ export interface PortfolioPlanningWorkItemTypeFieldNameQueryResult extends IQuer
     FieldType: string;
     FieldName: string;
 }
+
+export interface PortfolioPlanningDependencyQueryInput {
+    WorkItemId: number;
+}
+
+export interface PortfolioPlanningDependencyQueryResult extends IQueryResultError {
+    DependsOn: PortfolioPlanningQueryResultItem[];
+    HasDependency: PortfolioPlanningQueryResultItem[];
+}

@@ -57,12 +57,12 @@ export class ODataClient {
             extensionId.toLowerCase() === ExtensionConstants.EXTENSION_ID.toLowerCase() ||
             extensionId.toLowerCase() === ExtensionConstants.EXTENSION_ID_BETA.toLowerCase()
         ) {
-            //  Production environment (released or beta versions).
+            //  Production environment (released or beta versions). 
             return `https://analytics.dev.azure.com/${accountName}/${projectSegment}_odata/${
                 ODataClient.oDataVersion
-            }/`;
+                }/`;
         } else {
-            //  Local dev environment.
+            //  Local dev environment. 
             return `https://analytics.codedev.ms/${accountName}/${projectSegment}_odata/${ODataClient.oDataVersion}/`;
         }
     }
@@ -73,7 +73,7 @@ export class ODataClient {
             url: url,
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", authToken);
                 xhr.setRequestHeader("x-tfs-session", `${userId},PortfolioPlansExtension`);
             }
@@ -86,7 +86,7 @@ export class ODataClient {
             url: url,
             contentType: "application/json; charset=utf-8",
             dataType: "xml",
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", authToken);
             }
         };
