@@ -17,6 +17,8 @@ import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
 import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
+import { Icon } from "azure-devops-ui/Icon";
+import moment = require("moment");
 
 type WorkItemIconMap = { [projectId: string]: { [workItemType: string]: IWorkItemIcon } };
 
@@ -39,6 +41,8 @@ interface IDependencyItemRenderData {
     workItemType: string;
     completed: number;
     total: number;
+    showInfoIcon: boolean;
+    infoMessage: string;
 }
 
 export class DependencyPanel extends React.Component<IDependencyPanelProps, IDependencyPanelState> {
@@ -56,8 +60,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         this._getDependencies().then(
             dependencies => {
                 //Sort dependencies by target date
-                dependencies.DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
-                dependencies.HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+                dependencies.DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                dependencies.HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
 
                 this._getWorkItemIcons(dependencies.DependsOn.concat(dependencies.HasDependency)).then(
                     workItemIcons => {
@@ -113,7 +117,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Waiting for others"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => this._renderDependencyGroup(this.state.dependsOn)}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.dependsOn, true)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -124,7 +128,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Others waiting on"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => this._renderDependencyGroup(this.state.hasDependency)}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.hasDependency, false)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -135,7 +139,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         }
     }
 
-    private _renderDependencyGroup = (dependencies: PortfolioPlanningQueryResultItem[]): JSX.Element => {
+    private _renderDependencyGroup = (
+        dependencies: PortfolioPlanningQueryResultItem[],
+        dependsOn: boolean
+    ): JSX.Element => {
         const items: IListBoxItem<IDependencyItemRenderData>[] = [];
 
         if (dependencies.length === 0) {
@@ -156,7 +163,11 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                     total:
                         this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
                             ? dependency.TotalCount
-                            : dependency.TotalEffort
+                            : dependency.TotalEffort,
+                    showInfoIcon: this._showInfoIcon(dependency, dependsOn),
+                    infoMessage: dependsOn
+                        ? "Target date is later than " + this.props.workItem.title + "'s target date"
+                        : "Start date is earlier than " + this.props.workItem.title + "'s start date"
                 }
             });
         });
@@ -168,6 +179,18 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                 renderRow={this._renderDependencyItem}
             />
         );
+    };
+
+    private _showInfoIcon = (item: PortfolioPlanningQueryResultItem, dependsOn: boolean): boolean => {
+        // if this depends-on item has end date later than selected work item's end date.
+        if (moment(item.TargetDate) > this.props.workItem.end_time && dependsOn) {
+            return true;
+        }
+        // if this has-dependency item has start date earlier than selected work item's start date.
+        if (moment(item.StartDate) < this.props.workItem.start_time && !dependsOn) {
+            return true;
+        }
+        return false;
     };
 
     private _renderDependencyItem = (
@@ -186,6 +209,13 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return (
             <ListItem key={key || item.id} index={index} details={details}>
                 <div className="item-list-row">
+                    {item.data.showInfoIcon ? (
+                        <Tooltip text={item.data.infoMessage}>
+                            <div className="info-icon">
+                                <Icon ariaLabel="Info icon" iconName="Info" />
+                            </div>
+                        </Tooltip>
+                    ) : null}
                     <Image {...imageProps as any} />
                     <div className="item-text-and-progress">
                         <Tooltip overflowOnly={true}>
