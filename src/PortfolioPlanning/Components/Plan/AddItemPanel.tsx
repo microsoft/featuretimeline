@@ -2,7 +2,6 @@ import * as React from "react";
 import "./AddItemPanel.scss";
 import { Project } from "../../Models/PortfolioPlanningQueryModels";
 import {
-    IWorkItem,
     IProject,
     IAddItems,
     IAddItemPanelProjectItems,
@@ -15,8 +14,13 @@ import { Panel } from "azure-devops-ui/Panel";
 import { Dropdown, DropdownCallout } from "azure-devops-ui/Dropdown";
 import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
-import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
-import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
+import {
+    DetailsList,
+    DetailsListLayoutMode,
+    Selection,
+    IColumn,
+    CheckboxVisibility
+} from "office-ui-fabric-react/lib/DetailsList";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { CollapsiblePanel } from "../../Common/Components/CollapsiblePanel";
@@ -25,6 +29,7 @@ import { ProjectConfigurationDataService } from "../../Common/Services/ProjectCo
 import { Image, IImageProps, ImageFit } from "office-ui-fabric-react/lib/Image";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 import { Tooltip } from "azure-devops-ui/TooltipEx";
+import { TextField, TextFieldWidth, TextFieldStyle } from "azure-devops-ui/TextField";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -34,12 +39,11 @@ export interface IAddItemPanelProps {
 }
 
 interface IAddItemPanelState {
-    epicsToAdd: IWorkItem[];
     projects: IListBoxItem[];
     selectedProject: IProject;
     selectedProjectBacklogConfiguration: IProjectConfiguration;
     /**
-     * Map of work items to display, grouped by backlog level.
+     * Map of work items to display, grouped by work item type.
      */
     workItemsByLevel: IAddItemPanelProjectItems;
 
@@ -50,15 +54,17 @@ interface IAddItemPanelState {
 }
 
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
-    private _selectionByWorkItemType: { [workItemTypeKey: string]: ListSelection } = {};
-    private _indexToWorkItemIdMap: { [workItemTypeKey: string]: { [index: number]: number } } = {};
-    private _workItemIdMap: { [index: number]: IAddItem } = {};
+    private _selectionByWorkItemType: { [workItemTypeKey: string]: Selection } = {};
     private _projectConfigurationsCache: { [projectIdKey: string]: IProjectConfiguration } = {};
+
+    /**
+     * Number of work items over which search is available for a work item type section.
+     */
+    private static readonly WORKITEMTYPE_SEARCH_THRESHOLD: number = 20;
 
     constructor(props) {
         super(props);
         this.state = {
-            epicsToAdd: [],
             projects: [],
             selectedProject: null,
             selectedProjectBacklogConfiguration: null,
@@ -153,10 +159,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     };
 
     private _onProjectSelected = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<{}>) => {
-        //  Clear selection object for ScrollableList
+        //  Clear selection objects for DetailsList.
         this._selectionByWorkItemType = {};
-        this._workItemIdMap = {};
-        this._indexToWorkItemIdMap = {};
 
         this.setState({
             selectedProject: {
@@ -193,34 +197,33 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     loadingStatus: LoadingStatus.NotLoaded,
                     loadingErrorMessage: null,
                     items: null,
-                    workItemsFoundInProject: 0
+                    workItemsFoundInProject: 0,
+                    searchKeyword: null
                 };
             });
 
             //  Populating work items for first type.
-            const items: IListBoxItem[] = [];
+            const items: { [workItemId: number]: IAddItem } = {};
             if (workItemsOfType.exceptionMessage && workItemsOfType.exceptionMessage.length > 0) {
                 projectItems[firstWorkItemTypeKey] = {
                     workItemTypeDisplayName: firstWorkItemType,
                     loadingStatus: LoadingStatus.Loaded,
                     loadingErrorMessage: workItemsOfType.exceptionMessage,
                     items: null,
-                    workItemsFoundInProject: 0
+                    workItemsFoundInProject: 0,
+                    searchKeyword: null
                 };
             } else {
                 workItemsOfType.workItems.forEach(workItem => {
                     //  Only show work items not yet included in the plan.
                     if (!this.props.epicsInPlan[workItem.WorkItemId]) {
-                        const itemData: IAddItem = {
+                        items[workItem.WorkItemId] = {
                             id: workItem.WorkItemId,
-                            workItemType: workItem.WorkItemType
-                        };
-
-                        items.push({
-                            id: workItem.WorkItemId.toString(),
+                            key: workItem.WorkItemId,
                             text: workItem.Title,
-                            data: itemData
-                        });
+                            workItemType: workItem.WorkItemType,
+                            hide: false
+                        };
                     }
                 });
 
@@ -229,7 +232,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     loadingStatus: LoadingStatus.Loaded,
                     loadingErrorMessage: null,
                     items,
-                    workItemsFoundInProject: workItemsOfType.workItems.length
+                    workItemsFoundInProject: workItemsOfType.workItems.length,
+                    searchKeyword: null
                 };
             }
 
@@ -272,24 +276,161 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                         No work items of this type were found in the project.
                     </div>
                 );
-            } else if (content.items.length === 0) {
-                return <div className="workItemTypeEmptyMessage">All work items are already added to plan.</div>;
+            } else if (Object.keys(content.items).length === 0) {
+                return <div className="workItemTypeEmptyMessage">All work items were already added to the plan.</div>;
             } else {
                 if (!this._selectionByWorkItemType[workItemTypeKey]) {
-                    this._selectionByWorkItemType[workItemTypeKey] = new ListSelection(true);
+                    const selection = new Selection({
+                        onSelectionChanged: () => this._onWorkItemSelectionChanged(workItemTypeKey)
+                    });
+
+                    this._selectionByWorkItemType[workItemTypeKey] = selection;
                 }
 
-                return (
-                    <ScrollableList
-                        className="item-list"
-                        itemProvider={new ArrayItemProvider<IListBoxItem>(content.items)}
-                        renderRow={this.renderRow}
+                let allItemsCount: number = 0;
+                const listItems: IAddItem[] = [];
+                Object.keys(content.items).forEach(workItemId => {
+                    const item = content.items[workItemId];
+                    allItemsCount++;
+
+                    if (item.hide === false) {
+                        listItems.push(item);
+                    }
+                });
+
+                const columns: IColumn[] = [
+                    {
+                        key: "titleColumn",
+                        name: "Title",
+                        fieldName: "text",
+                        minWidth: 100,
+                        isResizable: false,
+                        isIconOnly: true
+                    }
+                ];
+
+                const list: JSX.Element = (
+                    <DetailsList
+                        isHeaderVisible={false}
+                        checkboxVisibility={CheckboxVisibility.hidden}
+                        items={listItems}
+                        columns={columns}
+                        setKey="set"
+                        onRenderItemColumn={this._onRenderItemColumn}
+                        layoutMode={DetailsListLayoutMode.justified}
                         selection={this._selectionByWorkItemType[workItemTypeKey]}
-                        onSelect={this._onSelectionChanged}
+                        selectionPreservedOnEmptyClick={true}
+                        ariaLabelForSelectionColumn="Toggle selection"
+                        ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                        checkButtonAriaLabel="Row checkbox"
                     />
+                );
+
+                const searchFilter =
+                    allItemsCount > AddItemPanel.WORKITEMTYPE_SEARCH_THRESHOLD
+                        ? this._renderWorkItemTypeSectionFilter(workItemType)
+                        : null;
+
+                return (
+                    <div className={"workItemTypeSectionBody"}>
+                        {searchFilter}
+                        {list}
+                    </div>
                 );
             }
         }
+    };
+
+    private _onRenderItemColumn = (item: IAddItem, index: number, column: IColumn): JSX.Element => {
+        const workItemTypeKey = item.workItemType.toLowerCase();
+        const iconProps = this.state.selectedProjectBacklogConfiguration.iconInfoByWorkItemType[workItemTypeKey];
+
+        const imageProps: IImageProps = {
+            src: iconProps.url,
+            className: "workItemIconClass",
+            imageFit: ImageFit.center,
+            maximizeFrame: true
+        };
+
+        return (
+            <div className="item-list-row">
+                <Image {...imageProps as any} />
+                <Tooltip overflowOnly={true}>
+                    <span className="item-list-row-text">
+                        {item.id} - {item.text}
+                    </span>
+                </Tooltip>
+            </div>
+        );
+    };
+
+    private _onWorkItemSelectionChanged = (workItemTypeKey: string) => {
+        const { selectedWorkItems, workItemsByLevel } = this.state;
+        const selection = this._selectionByWorkItemType[workItemTypeKey];
+        const newSelectedWorkItems: { [workItemId: number]: IAddItem } = [];
+        const workItemsInlevel = workItemsByLevel[workItemTypeKey];
+
+        selection.getSelection().forEach(selectedWorkItem => {
+            const workItemId: number = selectedWorkItem.key as number;
+            newSelectedWorkItems[workItemId] = workItemsInlevel.items[workItemId];
+        });
+
+        if (Object.keys(newSelectedWorkItems).length === 0) {
+            delete selectedWorkItems[workItemTypeKey];
+        } else {
+            selectedWorkItems[workItemTypeKey] = newSelectedWorkItems;
+        }
+
+        this.setState({
+            selectedWorkItems
+        });
+    };
+
+    private _renderWorkItemTypeSectionFilter = (workItemType: string): JSX.Element => {
+        const searchKeyword = this.state.workItemsByLevel[workItemType].searchKeyword || "";
+
+        return (
+            <TextField
+                value={searchKeyword}
+                onChange={(e, value) => this._onChangeSearchKeywordTextField(e, value, workItemType)}
+                placeholder={"Search keyword"}
+                width={TextFieldWidth.auto}
+                style={TextFieldStyle.inline}
+                className={"searchTextField"}
+            />
+        );
+    };
+
+    private _onChangeSearchKeywordTextField = (
+        ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+        value: string,
+        workItemType: string
+    ): void => {
+        const { workItemsByLevel } = this.state;
+
+        const filterEnabled = value && value.length > 0;
+        const valueLowerCase = value!.toLowerCase() || "";
+
+        Object.keys(workItemsByLevel[workItemType].items).forEach(itemKey => {
+            const item = workItemsByLevel[workItemType].items[itemKey] as IAddItem;
+            item.hide = filterEnabled === true && !this._matchesSearchKeywordFilter(valueLowerCase, item);
+        });
+        workItemsByLevel[workItemType].searchKeyword = value;
+
+        this.setState({
+            workItemsByLevel: workItemsByLevel
+        });
+    };
+
+    private _matchesSearchKeywordFilter = (keywordLowerCase: string, item: IAddItem): boolean => {
+        // prettier-ignore
+        return (
+            //  Matches work item id?
+            item.id.toString().indexOf(keywordLowerCase) >= 0
+            ||
+            //  Matches work item text?
+            item.text.toLowerCase().indexOf(keywordLowerCase) >= 0
+        );
     };
 
     private _renderEpics = () => {
@@ -324,7 +465,10 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             });
 
             return (
-                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                <FormItem
+                    message={this.state.errorMessage}
+                    error={this.state.errorMessage && this.state.errorMessage !== ""}
+                >
                     {workItemTypeSections}
                 </FormItem>
             );
@@ -349,7 +493,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
             //  Load work items for this type.
             let errorMessage: string = null;
-            let items: IListBoxItem[] = [];
+            const items: { [workItemId: number]: IAddItem } = {};
             let workItemsFoundInProject = 0;
 
             try {
@@ -372,16 +516,13 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                     workItemsOfType.workItems.forEach(workItem => {
                         //  Only show work items not yet included in the plan.
                         if (!this.props.epicsInPlan[workItem.WorkItemId]) {
-                            const itemData: IAddItem = {
+                            items[workItem.WorkItemId] = {
                                 id: workItem.WorkItemId,
-                                workItemType: workItemTypeKey
-                            };
-
-                            items.push({
-                                id: workItem.WorkItemId.toString(),
+                                key: workItem.WorkItemId,
                                 text: workItem.Title,
-                                data: itemData
-                            });
+                                workItemType: workItemTypeKey,
+                                hide: false
+                            };
                         }
                     });
                 }
@@ -399,73 +540,6 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
                 });
             }
         }
-    };
-
-    private renderRow = (
-        index: number,
-        epic: IListBoxItem,
-        details: IListItemDetails<IListBoxItem>,
-        key?: string
-    ): JSX.Element => {
-        const itemData: IAddItem = epic.data as IAddItem;
-        const workItemTypeKey = itemData.workItemType.toLowerCase();
-
-        if (!this._indexToWorkItemIdMap[workItemTypeKey]) {
-            this._indexToWorkItemIdMap[workItemTypeKey] = {};
-        }
-
-        this._indexToWorkItemIdMap[workItemTypeKey][index] = Number(epic.id);
-        this._workItemIdMap[itemData.id] = itemData;
-        const iconProps = this.state.selectedProjectBacklogConfiguration.iconInfoByWorkItemType[workItemTypeKey];
-
-        const imageProps: IImageProps = {
-            src: iconProps.url,
-            className: "workItemIconClass",
-            imageFit: ImageFit.center,
-            maximizeFrame: true
-        };
-
-        return (
-            <ListItem key={key || "list-item" + index} index={index} details={details}>
-                <div className="item-list-row">
-                    <Image {...imageProps as any} />
-                    <Tooltip overflowOnly={true}>
-                    <span className="item-list-row-text">
-                        {epic.id} - {epic.text}
-                    </span>
-                    </Tooltip>
-                </div>
-            </ListItem>
-        );
-    };
-
-    private _onSelectionChanged = (event: React.SyntheticEvent<HTMLElement>, listRow: IListRow<IListBoxItem>) => {
-        const newSelectedEpics: { [workItemId: number]: IAddItem } = [];
-        const selectedIndexes: number[] = [];
-        const rowData: IAddItem = listRow.data.data as IAddItem;
-        const workItemTypeKey = rowData.workItemType.toLowerCase();
-        const { selectedWorkItems } = this.state;
-
-        this._selectionByWorkItemType[workItemTypeKey].value.forEach(selectedGroup => {
-            for (let index = selectedGroup.beginIndex; index <= selectedGroup.endIndex; index++) {
-                selectedIndexes.push(index);
-            }
-        });
-
-        selectedIndexes.forEach(index => {
-            const workItemId = this._indexToWorkItemIdMap[workItemTypeKey][index];
-            newSelectedEpics[workItemId] = this._workItemIdMap[workItemId];
-        });
-
-        if (Object.keys(newSelectedEpics).length === 0) {
-            delete selectedWorkItems[workItemTypeKey];
-        } else {
-            selectedWorkItems[workItemTypeKey] = newSelectedEpics;
-        }
-
-        this.setState({
-            selectedWorkItems
-        });
     };
 
     private _onAddEpics = (): void => {
