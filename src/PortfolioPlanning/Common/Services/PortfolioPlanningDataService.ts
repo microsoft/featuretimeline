@@ -15,7 +15,9 @@ import {
     PortfolioPlanningTeamsInAreaQueryResult,
     TeamsInArea,
     PortfolioPlanningFullContentQueryResult,
-    PortfolioPlanningMetadata
+    PortfolioPlanningMetadata,
+    PortfolioPlanningDependencyQueryInput,
+    PortfolioPlanningDependencyQueryResult
 } from "../../../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../ODataClient";
 import {
@@ -98,6 +100,111 @@ export class PortfolioPlanningDataService {
                 (results: any) => this.ParseODataTeamsInAreaQueryResultResponseAsBatch(results),
                 error => this.ParseODataErrorResponse(error)
             );
+    }
+
+    public async runDependencyQuery(
+        queryInput: PortfolioPlanningDependencyQueryInput
+    ): Promise<PortfolioPlanningDependencyQueryResult> {
+        const DependsOn: PortfolioPlanningQueryResultItem[] = [];
+        const HasDependency: PortfolioPlanningQueryResultItem[] = [];
+
+        DependsOn.push({
+            WorkItemId: 68,
+            WorkItemType: "Epic",
+            Title: `${1}`,
+            State: "In Progress",
+            StartDate: new Date(),
+            TargetDate: new Date(),
+            ProjectId: `a3bb44bc-725d-4732-81e8-1543b8b34a24`,
+            AreaId: `${1}`,
+            TeamId: `${1}`,
+            CompletedCount: 1,
+            TotalCount: 10,
+            CompletedEffort: 1 * 5,
+            TotalEffort: 50,
+            EffortProgress: 0.1 * 1,
+            CountProgress: 0.1 * 1
+        });
+
+        HasDependency.push({
+            WorkItemId: 65,
+            WorkItemType: "Scenario",
+            Title: `${1}`,
+            State: "In Progress",
+            StartDate: new Date(),
+            TargetDate: new Date(),
+            ProjectId: `a3bb44bc-725d-4732-81e8-1543b8b34a24`,
+            AreaId: `${1}`,
+            TeamId: `${1}`,
+            CompletedCount: 1,
+            TotalCount: 10,
+            CompletedEffort: 1 * 5,
+            TotalEffort: 50,
+            EffortProgress: 0.1 * 1,
+            CountProgress: 0.1 * 1
+        });
+
+        /*
+        for (let i = 1; i < 26; i += 2) {
+            const title = ["WO"];
+
+            for (let j = 0; j < i; j++) {
+                title.push("MO");
+            }
+
+            DependsOn.push({
+                WorkItemId: i,
+                WorkItemType: "Epic",
+                Title: `${title}`,
+                State: "In Progress",
+                StartDate: new Date(),
+                TargetDate: new Date(),
+                ProjectId: `${i % 2}`,
+                AreaId: `${i}`,
+                TeamId: `${i}`,
+                CompletedCount: i,
+                TotalCount: 10,
+                CompletedEffort: i * 5,
+                TotalEffort: 50,
+                EffortProgress: 0.1 * i,
+                CountProgress: 0.1 * i
+            });
+            HasDependency.push({
+                WorkItemId: i + 1,
+                WorkItemType: "Epic",
+                Title: `${title}`,
+                State: "In Progress",
+                StartDate: new Date(),
+                TargetDate: new Date(),
+                ProjectId: `${(i + 1) % 2}`,
+                AreaId: `${i + 1}`,
+                TeamId: `${i + 1}`,
+                CompletedCount: i + 1,
+                TotalCount: 10,
+                CompletedEffort: (i + 1) * 5,
+                TotalEffort: 50,
+                EffortProgress: 0.1 * (i + 1),
+                CountProgress: 0.1 * (i + 1)
+            });
+        }
+        */
+        // return Promise.resolve({
+        //     DependsOn: [],
+        //     HasDependency: [],
+        //     exceptionMessage: null
+        // });
+
+        return Promise.resolve({
+            DependsOn: DependsOn,
+            HasDependency: HasDependency,
+            exceptionMessage: ""
+        });
+
+        // return Promise.resolve({
+        //     DependsOn: DependsOn,
+        //     HasDependency: HasDependency,
+        //     exceptionMessage: "Big problems. Seriously like some really big problems happened!"
+        // });
     }
 
     public async getODataColumnNameFromWorkItemFieldReferenceName(fieldReferenceName: string): Promise<string> {

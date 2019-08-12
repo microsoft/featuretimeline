@@ -54,7 +54,7 @@
   "devDependencies": {
     "@types/jest": "^22.2.2",
     "@types/jquery": "^2.0.41",
-    "@types/react": "^15.6.18",
+    "@types/react": "^15.6.27",
     "@types/react-dom": "^0.14.23",
     "@types/react-redux": "^5.0.15",
     "awesome-typescript-loader": "^4.0.1",
