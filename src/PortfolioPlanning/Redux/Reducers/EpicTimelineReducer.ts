@@ -8,7 +8,7 @@ import {
 import produce from "immer";
 import { ProgressTrackingCriteria, LoadingStatus, IWorkItemIcon } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
-import { defaultIProjectComparer } from "../../Common/Utilities/Comparers";
+import { defaultIProjectComparer, defaultIWorkItemComparer } from "../../Common/Utilities/Comparers";
 
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
@@ -302,6 +302,11 @@ function handlePortfolioItemsReceived(
 
             //  Not loading anymore.
             draft.planLoadingStatus = LoadingStatus.Loaded;
+        }
+
+        //  Sort timeline items by name.
+        if(draft.epics) {
+            draft.epics.sort(defaultIWorkItemComparer);
         }
     });
 }
