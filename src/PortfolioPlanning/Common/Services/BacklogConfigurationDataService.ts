@@ -30,7 +30,7 @@ export class BacklogConfigurationDataService {
 
         const projectEfforFieldRefName =
             projectBacklogConfiguration.backlogFields &&
-            projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
+                projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
                 ? projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
                 : null;
 
@@ -60,6 +60,32 @@ export class BacklogConfigurationDataService {
             color: workItemTypeData.color,
             url: workItemTypeData.icon.url
         };
+    }
+
+    public async getDefaultWorkItemTypeForV1(projectId: string): Promise<string> {
+        const client = this.getWorkClient();
+        const teamContext: TeamContext = {
+            projectId: projectId,
+            team: null,
+            teamId: null,
+            project: null
+        };
+        const backlogConfiguration: BacklogConfiguration = await client.getBacklogConfigurations(teamContext);
+        if (
+            backlogConfiguration &&
+            backlogConfiguration.portfolioBacklogs &&
+            backlogConfiguration.portfolioBacklogs.length > 0
+        ) {
+            const allPortfolios = backlogConfiguration.portfolioBacklogs;
+            if (allPortfolios.length > 1) {
+                // Sort by rank ascending. 
+                allPortfolios.sort((a, b) => a.rank - b.rank);
+                // Ignore first level. 
+                allPortfolios.splice(0, 1);
+            }
+            return allPortfolios[0].defaultWorkItemType.name;
+        }
+        return Promise.resolve(null);
     }
 
     private getPortfolioLevelsData(
