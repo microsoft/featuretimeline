@@ -48,7 +48,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.UpdateItemFinished: {
-                const {itemId} = action.payload;
+                const { itemId } = action.payload;
                 const epicToUpdate = draft.epics.find(epic => epic.id === itemId);
                 epicToUpdate.itemUpdating = false;
                 break;
@@ -305,7 +305,7 @@ function handlePortfolioItemsReceived(
         }
 
         //  Sort timeline items by name.
-        if(draft.epics) {
+        if (draft.epics) {
             draft.epics.sort(defaultIWorkItemComparer);
         }
     });
