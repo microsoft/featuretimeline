@@ -27,8 +27,8 @@ function defaultStringComparer(a: string, b: string): number {
 }
 
 export function defaultIWorkItemComparer(firstWorkItem: IWorkItem, secondWorkItem: IWorkItem): number {
-    const firstWorkItemName = firstWorkItem!.title!.toLowerCase();
-    const secondWorkItemName = secondWorkItem!.title!.toLowerCase();
+    const firstWorkItemName = convertToString(firstWorkItem.title, true /** upperCase */, true /** useLocale */);
+    const secondWorkItemName = convertToString(secondWorkItem.title, true /** upperCase */, true /** useLocale */);
 
     return defaultStringComparer(firstWorkItemName, secondWorkItemName);
 }
