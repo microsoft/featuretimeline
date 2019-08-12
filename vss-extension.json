@@ -70,15 +70,7 @@
                 "uri": "dist/PortfolioPlanning.html",
                 "dynamic": true,
                 "icon": "dist/images/portfolio-plans-icon.png"
-            },
-            "constraints": [
-                {
-                    "name": "ExecutionEnvironment",
-                    "properties": {
-                        "hosted": true
-                    }
-                }
-            ]
+            }
         }
     ]
 }
