@@ -17,8 +17,7 @@ export enum UIStatus {
     NoWorkItems,
     NoTeamIterations,
     OutofScopeTeamIterations,
-    NoEpics,
-    AtLeastTwoLevelsOfPortfolioBacklogNeeded
+    NoEpics
 }
 
 export enum CropWorkItem {
