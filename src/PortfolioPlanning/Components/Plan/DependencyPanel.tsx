@@ -31,8 +31,8 @@ export interface IDependencyPanelProps {
 export interface IDependencyPanelState {
     loading: LoadingStatus;
     errorMessage: string;
-    dependsOn: PortfolioPlanningQueryResultItem[];
-    hasDependency: PortfolioPlanningQueryResultItem[];
+    predecessors: PortfolioPlanningQueryResultItem[];
+    successors: PortfolioPlanningQueryResultItem[];
     workItemIcons: WorkItemIconMap;
 }
 
@@ -51,8 +51,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
         this.state = {
             loading: LoadingStatus.NotLoaded,
-            dependsOn: [],
-            hasDependency: [],
+            predecessors: [],
+            successors: [],
             workItemIcons: {},
             errorMessage: ""
         };
@@ -60,15 +60,15 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         this._getDependencies().then(
             dependencies => {
                 //Sort dependencies by target date
-                dependencies.DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
-                dependencies.HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                dependencies.Predecessors.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                dependencies.Successors.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
 
-                this._getWorkItemIcons(dependencies.DependsOn.concat(dependencies.HasDependency)).then(
+                this._getWorkItemIcons(dependencies.Predecessors.concat(dependencies.Successors)).then(
                     workItemIcons => {
                         this.setState({
                             loading: LoadingStatus.Loaded,
-                            dependsOn: dependencies.DependsOn,
-                            hasDependency: dependencies.HasDependency,
+                            predecessors: dependencies.Predecessors,
+                            successors: dependencies.Successors,
                             workItemIcons: workItemIcons,
                             errorMessage: dependencies.exceptionMessage
                         });
@@ -117,7 +117,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Waiting for others"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => this._renderDependencyGroup(this.state.dependsOn, true)}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.predecessors, true)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -128,7 +128,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Others waiting on"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => this._renderDependencyGroup(this.state.hasDependency, false)}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.successors, false)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -141,7 +141,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
     private _renderDependencyGroup = (
         dependencies: PortfolioPlanningQueryResultItem[],
-        dependsOn: boolean
+        isPredecessor
     ): JSX.Element => {
         const items: IListBoxItem<IDependencyItemRenderData>[] = [];
 
@@ -164,10 +164,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
                             ? dependency.TotalCount
                             : dependency.TotalEffort,
-                    showInfoIcon: this._showInfoIcon(dependency, dependsOn),
-                    infoMessage: dependsOn
-                        ? "Target date is later than " + this.props.workItem.title + "'s target date"
-                        : "Start date is earlier than " + this.props.workItem.title + "'s start date"
+                    showInfoIcon: this._showInfoIcon(dependency, isPredecessor),
+                    infoMessage: isPredecessor
+                        ? "Target date is later than " + this.props.workItem.title + "'s start date"
+                        : "Start date is earlier than " + this.props.workItem.title + "'s end date"
                 }
             });
         });
@@ -181,13 +181,15 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         );
     };
 
-    private _showInfoIcon = (item: PortfolioPlanningQueryResultItem, dependsOn: boolean): boolean => {
-        // if this depends-on item has end date later than selected work item's end date.
-        if (moment(item.TargetDate) > this.props.workItem.end_time && dependsOn) {
+    private _showInfoIcon = (item: PortfolioPlanningQueryResultItem, isPredecessor: boolean): boolean => {
+        if(item.State !== "In Progress") return false;
+
+        // if this depends-on item has end date later than selected work item's start date.
+        if (moment(item.TargetDate) > this.props.workItem.start_time && isPredecessor) {
             return true;
         }
-        // if this has-dependency item has start date earlier than selected work item's start date.
-        if (moment(item.StartDate) < this.props.workItem.start_time && !dependsOn) {
+        // if this has-dependency item has start date earlier than selected work item's end date.
+        if (moment(item.StartDate) < this.props.workItem.end_time && !isPredecessor) {
             return true;
         }
         return false;

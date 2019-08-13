@@ -105,10 +105,10 @@ export class PortfolioPlanningDataService {
     public async runDependencyQuery(
         queryInput: PortfolioPlanningDependencyQueryInput
     ): Promise<PortfolioPlanningDependencyQueryResult> {
-        const DependsOn: PortfolioPlanningQueryResultItem[] = [];
-        const HasDependency: PortfolioPlanningQueryResultItem[] = [];
+        const Predecessors: PortfolioPlanningQueryResultItem[] = [];
+        const Successors: PortfolioPlanningQueryResultItem[] = [];
 
-        DependsOn.push({
+        Predecessors.push({
             WorkItemId: 68,
             WorkItemType: "Epic",
             Title: `${1}`,
@@ -126,7 +126,7 @@ export class PortfolioPlanningDataService {
             CountProgress: 0.1 * 1
         });
 
-        HasDependency.push({
+        Successors.push({
             WorkItemId: 65,
             WorkItemType: "Scenario",
             Title: `${1}`,
@@ -195,8 +195,8 @@ export class PortfolioPlanningDataService {
         // });
 
         return Promise.resolve({
-            DependsOn: DependsOn,
-            HasDependency: HasDependency,
+            Predecessors: Predecessors,
+            Successors: Successors,
             exceptionMessage: ""
         });
 

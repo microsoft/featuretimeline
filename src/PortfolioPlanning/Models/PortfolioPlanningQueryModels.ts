@@ -186,6 +186,6 @@ export interface PortfolioPlanningDependencyQueryInput {
 }
 
 export interface PortfolioPlanningDependencyQueryResult extends IQueryResultError {
-    DependsOn: PortfolioPlanningQueryResultItem[];
-    HasDependency: PortfolioPlanningQueryResultItem[];
+    Predecessors: PortfolioPlanningQueryResultItem[];
+    Successors: PortfolioPlanningQueryResultItem[];
 }
