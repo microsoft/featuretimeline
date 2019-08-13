@@ -502,7 +502,7 @@ export class PortfolioPlanningDataService {
 
             return {
                 exceptionMessage: null,
-                Links: this.WorkItemLInksQueryResultItems(rawResponseValue.responseValue),
+                Links: this.WorkItemLinksQueryResultItems(rawResponseValue.responseValue),
                 QueryInput: queryInput
             };
         } catch (error) {
@@ -516,7 +516,7 @@ export class PortfolioPlanningDataService {
         }
     }
 
-    private WorkItemLInksQueryResultItems(jsonValuePayload: any): WorkItemLink[] {
+    private WorkItemLinksQueryResultItems(jsonValuePayload: any): WorkItemLink[] {
         if (!jsonValuePayload || !jsonValuePayload["value"]) {
             return null;
         }
@@ -1164,7 +1164,7 @@ export class DependencyQuery {
                         console.log(`${actionName}. ${JSON.stringify(props, null, "    ")}`);
                         PortfolioTelemetry.getInstance().TrackAction(actionName, props);
                     } else {
-                        //  Check if this is a work item type we would like to show as dependecy.
+                        //  Check if this is a work item type we would like to show as dependency.
                         //  TODO    Maybe do this filtering in the portfolio items query?
                         //          WorkItemLinks entity in OData does not have work item type unfortunately.
                         const wiTypeKey = rollUpValues.WorkItemType.toLowerCase();
