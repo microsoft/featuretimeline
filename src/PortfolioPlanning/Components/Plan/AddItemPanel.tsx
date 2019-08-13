@@ -165,7 +165,8 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         this.setState({
             selectedProject: {
                 id: item.id,
-                title: item.text
+                title: item.text,
+                configuration: null
             },
             loadingProjectConfiguration: true
         });

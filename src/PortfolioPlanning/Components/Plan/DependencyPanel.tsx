@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Panel } from "azure-devops-ui/Panel";
 import "./DependencyPanel.scss";
-import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon } from "../../Contracts";
+import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon, IProject } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import {
     PortfolioPlanningDependencyQueryResult,
@@ -22,6 +22,7 @@ type WorkItemIconMap = { [projectId: string]: { [workItemType: string]: IWorkIte
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
+    projectInfo: IProject;
     progressTrackingCriteria: ProgressTrackingCriteria;
     onDismiss: () => void;
 }
@@ -56,15 +57,19 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         this._getDependencies().then(
             dependencies => {
                 //Sort dependencies by target date
-                dependencies.DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
-                dependencies.HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+                const projectIdKey = this.props.projectInfo.id.toLowerCase();
 
-                this._getWorkItemIcons(dependencies.DependsOn.concat(dependencies.HasDependency)).then(
+                let { DependsOn, HasDependency } = dependencies.byProject[projectIdKey];
+
+                DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+
+                this._getWorkItemIcons(DependsOn.concat(HasDependency)).then(
                     workItemIcons => {
                         this.setState({
                             loading: LoadingStatus.Loaded,
-                            dependsOn: dependencies.DependsOn,
-                            hasDependency: dependencies.HasDependency,
+                            dependsOn: DependsOn,
+                            hasDependency: HasDependency,
                             workItemIcons: workItemIcons,
                             errorMessage: dependencies.exceptionMessage
                         });
@@ -207,8 +212,12 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     };
 
     private _getDependencies = async (): Promise<PortfolioPlanningDependencyQueryResult> => {
+        const { id, configuration } = this.props.projectInfo;
         const dependencies = await PortfolioPlanningDataService.getInstance().runDependencyQuery({
-            WorkItemId: this.props.workItem.id
+            [id.toLowerCase()]: {
+                workItemIds: [this.props.workItem.id],
+                projectConfiguration: configuration
+            }
         });
 
         return dependencies;

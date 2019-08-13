@@ -17,7 +17,12 @@ import {
     PortfolioPlanningFullContentQueryResult,
     PortfolioPlanningMetadata,
     PortfolioPlanningDependencyQueryInput,
-    PortfolioPlanningDependencyQueryResult
+    PortfolioPlanningDependencyQueryResult,
+    WorkItemLinksQueryInput,
+    WorkItemLinksQueryResult,
+    WorkItemLink,
+    LinkTypeReferenceName,
+    WorkItemLinkIdType
 } from "../../../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../ODataClient";
 import {
@@ -31,6 +36,7 @@ import { GUIDUtil } from "../Utilities/GUIDUtil";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { defaultProjectComparer } from "../Utilities/Comparers";
 import { ExtensionConstants } from "../../Contracts";
+import { PortfolioTelemetry } from "../Utilities/Telemetry";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -102,109 +108,196 @@ export class PortfolioPlanningDataService {
             );
     }
 
+    public async runWorkItemLinksQuery(queryInput: WorkItemLinksQueryInput): Promise<WorkItemLinksQueryResult> {
+        if (!queryInput || !queryInput.WorkItemIds || queryInput.WorkItemIds.length === 0) {
+            return Promise.resolve({
+                exceptionMessage: null,
+                Links: [],
+                QueryInput: queryInput
+            });
+        }
+
+        const odataQueryString = ODataQueryBuilder.WorkItemLinksQueryString(queryInput);
+
+        const client = await ODataClient.getInstance();
+        const fullQueryUrl = client.generateProjectLink(queryInput.ProjectId, odataQueryString);
+
+        return client
+            .runPostQuery(fullQueryUrl)
+            .then(
+                (results: any) => this.ParseODataWorkItemLinksQueryQueryResultResponseAsBatch(results, queryInput),
+                error => this.ParseODataErrorResponse(error)
+            );
+    }
+
     public async runDependencyQuery(
         queryInput: PortfolioPlanningDependencyQueryInput
     ): Promise<PortfolioPlanningDependencyQueryResult> {
-        const DependsOn: PortfolioPlanningQueryResultItem[] = [];
-        const HasDependency: PortfolioPlanningQueryResultItem[] = [];
+        //  Run project queries to get links information.
+        try {
+            const workItemLinkQueries: Promise<WorkItemLinksQueryResult>[] = [];
+            Object.keys(queryInput).forEach(projectId => {
+                workItemLinkQueries.push(
+                    this.runWorkItemLinksQuery({
+                        ProjectId: projectId,
+                        RefName: LinkTypeReferenceName.Predecessor,
+                        WorkItemIdColumn: WorkItemLinkIdType.Source,
+                        WorkItemIds: queryInput[projectId].workItemIds
+                    })
+                );
 
-        DependsOn.push({
-            WorkItemId: 68,
-            WorkItemType: "Epic",
-            Title: `${1}`,
-            State: "In Progress",
-            StartDate: new Date(),
-            TargetDate: new Date(),
-            ProjectId: `a3bb44bc-725d-4732-81e8-1543b8b34a24`,
-            AreaId: `${1}`,
-            TeamId: `${1}`,
-            CompletedCount: 1,
-            TotalCount: 10,
-            CompletedEffort: 1 * 5,
-            TotalEffort: 50,
-            EffortProgress: 0.1 * 1,
-            CountProgress: 0.1 * 1
-        });
+                workItemLinkQueries.push(
+                    this.runWorkItemLinksQuery({
+                        ProjectId: projectId,
+                        RefName: LinkTypeReferenceName.Successor,
+                        WorkItemIdColumn: WorkItemLinkIdType.Source,
+                        WorkItemIds: queryInput[projectId].workItemIds
+                    })
+                );
+            });
 
-        HasDependency.push({
-            WorkItemId: 65,
-            WorkItemType: "Scenario",
-            Title: `${1}`,
-            State: "In Progress",
-            StartDate: new Date(),
-            TargetDate: new Date(),
-            ProjectId: `a3bb44bc-725d-4732-81e8-1543b8b34a24`,
-            AreaId: `${1}`,
-            TeamId: `${1}`,
-            CompletedCount: 1,
-            TotalCount: 10,
-            CompletedEffort: 1 * 5,
-            TotalEffort: 50,
-            EffortProgress: 0.1 * 1,
-            CountProgress: 0.1 * 1
-        });
+            const workItemLinksQueryResults = await Promise.all(workItemLinkQueries);
+            const linksResultsIndexed: { [projectKey: string]: { [linkTypeKey: string]: number[] } } = {};
+            const targetWorkItemIdsByProject: { [projectKey: string]: { [workItemId: number]: boolean } } = {};
 
-        /*
-        for (let i = 1; i < 26; i += 2) {
-            const title = ["WO"];
+            workItemLinksQueryResults.forEach(linkQueryResult => {
+                if (linkQueryResult.exceptionMessage && linkQueryResult.exceptionMessage.length > 0) {
+                    //  Throw at first exception.
+                    throw new Error(
+                        `runDependencyQuery: Exception running work item links query. Inner exception: ${
+                            linkQueryResult.exceptionMessage
+                        }`
+                    );
+                }
 
-            for (let j = 0; j < i; j++) {
-                title.push("MO");
+                const projectIdKey = linkQueryResult.QueryInput.ProjectId.toLowerCase();
+
+                linkQueryResult.Links.forEach(linkFound => {
+                    const linkTypeKey = linkFound.LinkTypeReferenceName.toLowerCase();
+
+                    if (!linksResultsIndexed[projectIdKey]) {
+                        linksResultsIndexed[projectIdKey] = {};
+                    }
+
+                    if (!linksResultsIndexed[projectIdKey][linkTypeKey]) {
+                        linksResultsIndexed[projectIdKey][linkTypeKey] = [];
+                    }
+
+                    if (!targetWorkItemIdsByProject[projectIdKey]) {
+                        targetWorkItemIdsByProject[projectIdKey] = {};
+                    }
+
+                    linksResultsIndexed[projectIdKey][linkTypeKey].push(linkFound.TargetWorkItemId);
+                    targetWorkItemIdsByProject[projectIdKey][linkFound.TargetWorkItemId] = true;
+                });
+            });
+
+            const workItemRollUpQueryInput: PortfolioPlanningQueryInput = { WorkItems: [] };
+            Object.keys(targetWorkItemIdsByProject).forEach(projectIdKey => {
+                const projectConfig = queryInput[projectIdKey].projectConfiguration;
+
+                workItemRollUpQueryInput.WorkItems.push({
+                    projectId: projectIdKey,
+                    workItemIds: Object.keys(targetWorkItemIdsByProject[projectIdKey]).map(workItemIdStr =>
+                        Number(workItemIdStr)
+                    ),
+                    DescendantsWorkItemTypeFilter: projectConfig.defaultRequirementWorkItemType,
+                    EffortODataColumnName: projectConfig.effortODataColumnName,
+                    EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName
+                });
+            });
+
+            const dependenciesRollUpQueryResult = await this.runPortfolioItemsQuery(workItemRollUpQueryInput);
+
+            if (
+                dependenciesRollUpQueryResult.exceptionMessage &&
+                dependenciesRollUpQueryResult.exceptionMessage.length > 0
+            ) {
+                throw new Error(
+                    `runDependencyQuery: Exception running portfolio items query for dependencies. Inner exception: ${
+                        dependenciesRollUpQueryResult.exceptionMessage
+                    }`
+                );
             }
 
-            DependsOn.push({
-                WorkItemId: i,
-                WorkItemType: "Epic",
-                Title: `${title}`,
-                State: "In Progress",
-                StartDate: new Date(),
-                TargetDate: new Date(),
-                ProjectId: `${i % 2}`,
-                AreaId: `${i}`,
-                TeamId: `${i}`,
-                CompletedCount: i,
-                TotalCount: 10,
-                CompletedEffort: i * 5,
-                TotalEffort: 50,
-                EffortProgress: 0.1 * i,
-                CountProgress: 0.1 * i
+            const rollupsIndexed: {
+                [projectKey: string]: { [workItemId: number]: PortfolioPlanningQueryResultItem };
+            } = {};
+
+            dependenciesRollUpQueryResult.items.forEach(resultItem => {
+                const projectIdKey = resultItem.ProjectId.toLowerCase();
+                const workItemId = resultItem.WorkItemId;
+
+                if (!rollupsIndexed[projectIdKey]) {
+                    rollupsIndexed[projectIdKey] = {};
+                }
+
+                rollupsIndexed[projectIdKey][workItemId] = resultItem;
             });
-            HasDependency.push({
-                WorkItemId: i + 1,
-                WorkItemType: "Epic",
-                Title: `${title}`,
-                State: "In Progress",
-                StartDate: new Date(),
-                TargetDate: new Date(),
-                ProjectId: `${(i + 1) % 2}`,
-                AreaId: `${i + 1}`,
-                TeamId: `${i + 1}`,
-                CompletedCount: i + 1,
-                TotalCount: 10,
-                CompletedEffort: (i + 1) * 5,
-                TotalEffort: 50,
-                EffortProgress: 0.1 * (i + 1),
-                CountProgress: 0.1 * (i + 1)
+
+            const result: PortfolioPlanningDependencyQueryResult = {
+                byProject: {},
+                exceptionMessage: null
+            };
+
+            //  Walk all links found and build the result using roll up values.
+            const successorKey = LinkTypeReferenceName.Successor.toLowerCase();
+            const predecessorKey = LinkTypeReferenceName.Predecessor.toLowerCase();
+
+            Object.keys(linksResultsIndexed).forEach(projectIdKey => {
+                Object.keys(linksResultsIndexed[projectIdKey]).forEach(linkTypeKey => {
+                    linksResultsIndexed[projectIdKey][linkTypeKey].forEach(workItemId => {
+                        if (!result[projectIdKey]) {
+                            result.byProject[projectIdKey] = {
+                                DependsOn: [],
+                                HasDependency: []
+                            };
+                        }
+
+                        const rollUpValues = rollupsIndexed[projectIdKey]![workItemId];
+
+                        if (!rollUpValues) {
+                            //  Shouldn't happen.
+                            const props = {
+                                ["WorkItemId"]: workItemId,
+                                ["ProjectId"]: projectIdKey
+                            };
+                            const actionName =
+                                "PortfolioPlanningDataService/runDependencyQuery/MissingWorkItemRollUpValues";
+
+                            console.log(`${actionName}. ${JSON.stringify(props, null, "    ")}`);
+
+                            PortfolioTelemetry.getInstance().TrackAction(actionName, props);
+                        } else {
+                            if (linkTypeKey === successorKey) {
+                                result.byProject[projectIdKey].DependsOn.push(rollUpValues);
+                            } else if (linkTypeKey === predecessorKey) {
+                                result.byProject[projectIdKey].HasDependency.push(rollUpValues);
+                            } else {
+                                //  Shouldn't happen.
+                                const props = {
+                                    ["WorkItemId"]: workItemId,
+                                    ["ProjectId"]: projectIdKey,
+                                    ["LinkType"]: linkTypeKey
+                                };
+
+                                const actionName = "PortfolioPlanningDataService/runDependencyQuery/UnknownLinkType";
+
+                                console.log(`${actionName}. ${JSON.stringify(props, null, "    ")}`);
+
+                                PortfolioTelemetry.getInstance().TrackAction(actionName, props);
+                            }
+                        }
+                    });
+                });
             });
+        } catch (error) {
+            console.log(error);
+            return {
+                exceptionMessage: error,
+                byProject: {}
+            };
         }
-        */
-        // return Promise.resolve({
-        //     DependsOn: [],
-        //     HasDependency: [],
-        //     exceptionMessage: null
-        // });
-
-        return Promise.resolve({
-            DependsOn: DependsOn,
-            HasDependency: HasDependency,
-            exceptionMessage: ""
-        });
-
-        // return Promise.resolve({
-        //     DependsOn: DependsOn,
-        //     HasDependency: HasDependency,
-        //     exceptionMessage: "Big problems. Seriously like some really big problems happened!"
-        // });
     }
 
     public async getODataColumnNameFromWorkItemFieldReferenceName(fieldReferenceName: string): Promise<string> {
@@ -550,6 +643,52 @@ export class PortfolioPlanningDataService {
         }
     }
 
+    private ParseODataWorkItemLinksQueryQueryResultResponseAsBatch(
+        results: any,
+        queryInput: WorkItemLinksQueryInput
+    ): WorkItemLinksQueryResult {
+        try {
+            const rawResponseValue = this.ParseODataBatchResponse(results);
+
+            if (
+                !rawResponseValue ||
+                (rawResponseValue.exceptionMessage && rawResponseValue.exceptionMessage.length > 0)
+            ) {
+                const errorMessage =
+                    rawResponseValue!.exceptionMessage || "No response payload found in OData batch query";
+
+                return {
+                    exceptionMessage: errorMessage,
+                    Links: [],
+                    QueryInput: queryInput
+                };
+            }
+
+            return {
+                exceptionMessage: null,
+                Links: this.WorkItemLInksQueryResultItems(rawResponseValue.responseValue),
+                QueryInput: queryInput
+            };
+        } catch (error) {
+            console.log(error);
+
+            return {
+                exceptionMessage: error,
+                Links: [],
+                QueryInput: queryInput
+            };
+        }
+    }
+
+    private WorkItemLInksQueryResultItems(jsonValuePayload: any): WorkItemLink[] {
+        if (!jsonValuePayload || !jsonValuePayload["value"]) {
+            return null;
+        }
+
+        const rawResult: WorkItemLink[] = jsonValuePayload.value;
+        return rawResult;
+    }
+
     private ParseODataPortfolioPlanningQueryResultResponseAsBatch(
         results: any,
         aggregationClauses: WorkItemTypeAggregationClauses
@@ -793,6 +932,8 @@ export class PortfolioPlanningDataService {
 
 export class ODataQueryBuilder {
     private static readonly ProjectEntitySelect: string = "ProjectSK,ProjectName";
+    private static readonly WorkItemLinksEntitySelect: string =
+        "WorkItemLinkSK,SourceWorkItemId,TargetWorkItemId,LinkTypeReferenceName,ProjectSK";
 
     public static WorkItemsQueryString(
         input: PortfolioPlanningQueryInput
@@ -1057,5 +1198,38 @@ export class ODataQueryBuilder {
         });
 
         return result;
+    }
+
+    /**
+     * 
+    $select=WorkItemLinkSK,SourceWorkItemId,TargetWorkItemId,LinkTypeReferenceName,ProjectSK
+&
+    $filter=(
+            LinkTypeReferenceName eq 'System.LinkTypes.Dependency-Reverse' 
+            and (
+                    SourceWorkItemId eq 175
+                or  SourceWorkItemId eq 176)
+    )
+     * 
+     */
+    public static WorkItemLinksQueryString(input: WorkItemLinksQueryInput): string {
+        // prettier-ignore
+        return "WorkItemLinks" +
+            "?" +
+                `$select=${ODataQueryBuilder.WorkItemLinksEntitySelect}` +
+            "&" +
+                `$filter=${this.BuildODataWorkItemLinksQueryFilter(input)}`;
+    }
+
+    private static BuildODataWorkItemLinksQueryFilter(input: WorkItemLinksQueryInput): string {
+        const workItemIdFilters = input.WorkItemIds.map(
+            workItemId => `${input.WorkItemIdColumn} eq ${workItemId.toString()}`
+        );
+
+        // prettier-ignore
+        return "( " +
+                `LinkTypeReferenceName eq '${input.RefName}' ` +
+            `and (${workItemIdFilters.join(" or ")}) ` +
+        ")";
     }
 }

@@ -3,6 +3,7 @@ import moment = require("moment");
 export interface IProject {
     id: string;
     title: string;
+    configuration: IProjectConfiguration;
 }
 
 export interface IWorkItemIcon {
@@ -102,6 +103,7 @@ export interface ITimelineItem {
     id: number;
     group: string;
     teamId: string;
+    projectId: string;
     backlogLevel: string;
     title: string;
     iconUrl: string;
