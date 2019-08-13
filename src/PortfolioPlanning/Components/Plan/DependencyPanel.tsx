@@ -213,8 +213,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                 <div className="item-list-row">
                     {item.data.showInfoIcon ? (
                         <Tooltip text={item.data.infoMessage}>
-                            <div className="info-icon">
-                                <Icon ariaLabel="Info icon" iconName="Info" />
+                            <div>
+                                <Icon ariaLabel="Info icon" iconName="Info" className="info-icon"/>
                             </div>
                         </Tooltip>
                     ) : null}
