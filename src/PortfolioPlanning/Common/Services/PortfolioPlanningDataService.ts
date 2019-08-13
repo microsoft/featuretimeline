@@ -1085,6 +1085,7 @@ export class DependencyQuery {
             const dependenciesRollUpQueryResult = await dataService.runPortfolioItemsQuery(workItemRollUpQueryInput);
 
             return DependencyQuery.MatchWorkItemLinksAndRollUpValues(
+                queryInput,
                 dependenciesRollUpQueryResult,
                 linksResultsIndexed
             );
@@ -1098,6 +1099,7 @@ export class DependencyQuery {
     }
 
     private static MatchWorkItemLinksAndRollUpValues(
+        queryInput: PortfolioPlanningDependencyQueryInput,
         dependenciesRollUpQueryResult: PortfolioPlanningQueryResult,
         linksResultsIndexed: { [projectKey: string]: { [linkTypeKey: string]: number[] } }
     ) {
@@ -1137,6 +1139,8 @@ export class DependencyQuery {
         //  Walk through all work item links found, and find the corresponding
         //  roll-up value from the portfolio items query results.
         Object.keys(linksResultsIndexed).forEach(projectIdKey => {
+            const projectConfiguration = queryInput[projectIdKey].projectConfiguration;
+
             Object.keys(linksResultsIndexed[projectIdKey]).forEach(linkTypeKey => {
                 linksResultsIndexed[projectIdKey][linkTypeKey].forEach(workItemId => {
                     if (!result.byProject[projectIdKey]) {
@@ -1160,7 +1164,26 @@ export class DependencyQuery {
                         console.log(`${actionName}. ${JSON.stringify(props, null, "    ")}`);
                         PortfolioTelemetry.getInstance().TrackAction(actionName, props);
                     } else {
-                        if (linkTypeKey === successorKey) {
+                        //  Check if this is a work item type we would like to show as dependecy.
+                        //  TODO    Maybe do this filtering in the portfolio items query?
+                        //          WorkItemLinks entity in OData does not have work item type unfortunately.
+                        const wiTypeKey = rollUpValues.WorkItemType.toLowerCase();
+
+                        if (!projectConfiguration.backlogLevelNamesByWorkItemType[wiTypeKey]) {
+                            //  One of the links is of a work item type below "Epics" backlog level,
+                            //  so we'll just ignore it. This is to prevent seeing dependencies roll-ups for "User Story"
+                            //  work items for example.
+                            const props = {
+                                ["WorkItemId"]: workItemId,
+                                ["ProjectId"]: projectIdKey,
+                                ["LinkType"]: linkTypeKey,
+                                ["WorkItemType"]: wiTypeKey
+                            };
+                            const actionName =
+                                "PortfolioPlanningDataService/runDependencyQuery/IgnoringLinkedWorkItemOfType";
+                            console.log(`${actionName}. ${JSON.stringify(props, null, "    ")}`);
+                            PortfolioTelemetry.getInstance().TrackAction(actionName, props);
+                        } else if (linkTypeKey === successorKey) {
                             result.byProject[projectIdKey].DependsOn.push(rollUpValues);
                         } else if (linkTypeKey === predecessorKey) {
                             result.byProject[projectIdKey].HasDependency.push(rollUpValues);
@@ -1189,7 +1212,6 @@ export class DependencyQuery {
         const dataService = PortfolioPlanningDataService.getInstance();
         const workItemLinkQueries: Promise<WorkItemLinksQueryResult>[] = [];
 
-        //  TODO    Filter links by work item types (Epic and above).
         Object.keys(queryInput).forEach(projectId => {
             workItemLinkQueries.push(
                 dataService.runWorkItemLinksQuery({
