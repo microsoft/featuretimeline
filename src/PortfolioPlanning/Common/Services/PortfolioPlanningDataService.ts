@@ -247,7 +247,7 @@ export class PortfolioPlanningDataService {
             Object.keys(linksResultsIndexed).forEach(projectIdKey => {
                 Object.keys(linksResultsIndexed[projectIdKey]).forEach(linkTypeKey => {
                     linksResultsIndexed[projectIdKey][linkTypeKey].forEach(workItemId => {
-                        if (!result[projectIdKey]) {
+                        if (!result.byProject[projectIdKey]) {
                             result.byProject[projectIdKey] = {
                                 DependsOn: [],
                                 HasDependency: []
@@ -291,6 +291,8 @@ export class PortfolioPlanningDataService {
                     });
                 });
             });
+
+            return result;
         } catch (error) {
             console.log(error);
             return {
