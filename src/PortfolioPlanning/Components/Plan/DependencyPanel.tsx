@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Panel } from "azure-devops-ui/Panel";
 import "./DependencyPanel.scss";
-import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon } from "../../Contracts";
+import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon, IProject } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import {
     PortfolioPlanningDependencyQueryResult,
@@ -15,13 +15,13 @@ import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
-import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 
-type WorkItemIconMap = { [projectId: string]: { [workItemType: string]: IWorkItemIcon } };
+type WorkItemIconMap = { [workItemType: string]: IWorkItemIcon };
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
+    projectInfo: IProject;
     progressTrackingCriteria: ProgressTrackingCriteria;
     onDismiss: () => void;
 }
@@ -55,24 +55,23 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
         this._getDependencies().then(
             dependencies => {
-                //Sort dependencies by target date
-                dependencies.DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
-                dependencies.HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate) ? 1 : -1);
+                const projectIdKey = this.props.projectInfo.id.toLowerCase();
+                const { configuration } = this.props.projectInfo;
+                let DependsOn: PortfolioPlanningQueryResultItem[] = [];
+                let HasDependency: PortfolioPlanningQueryResultItem[] = [];
 
-                this._getWorkItemIcons(dependencies.DependsOn.concat(dependencies.HasDependency)).then(
-                    workItemIcons => {
-                        this.setState({
-                            loading: LoadingStatus.Loaded,
-                            dependsOn: dependencies.DependsOn,
-                            hasDependency: dependencies.HasDependency,
-                            workItemIcons: workItemIcons,
-                            errorMessage: dependencies.exceptionMessage
-                        });
-                    },
-                    error => {
-                        this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
-                    }
-                );
+                if (dependencies && dependencies.byProject[projectIdKey]) {
+                    DependsOn = dependencies.byProject[projectIdKey].DependsOn;
+                    HasDependency = dependencies.byProject[projectIdKey].HasDependency;
+                }
+
+                this.setState({
+                    loading: LoadingStatus.Loaded,
+                    dependsOn: DependsOn,
+                    hasDependency: HasDependency,
+                    workItemIcons: configuration.iconInfoByWorkItemType,
+                    errorMessage: dependencies.exceptionMessage
+                });
             },
             error => {
                 this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
@@ -176,8 +175,9 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         details: IListItemDetails<IListBoxItem<IDependencyItemRenderData>>,
         key?: string
     ): JSX.Element => {
+        const workItemTypeKey = item.data.workItemType.toLowerCase();
         const imageProps: IImageProps = {
-            src: this.state.workItemIcons[item.data.projectId][item.data.workItemType].url,
+            src: this.state.workItemIcons[workItemTypeKey].url,
             className: "item-list-icon",
             imageFit: ImageFit.center,
             maximizeFrame: true
@@ -207,32 +207,14 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     };
 
     private _getDependencies = async (): Promise<PortfolioPlanningDependencyQueryResult> => {
+        const { id, configuration } = this.props.projectInfo;
         const dependencies = await PortfolioPlanningDataService.getInstance().runDependencyQuery({
-            WorkItemId: this.props.workItem.id
+            [id.toLowerCase()]: {
+                workItemIds: [this.props.workItem.id],
+                projectConfiguration: configuration
+            }
         });
 
         return dependencies;
-    };
-
-    private _getWorkItemIcons = async (workItems: PortfolioPlanningQueryResultItem[]): Promise<WorkItemIconMap> => {
-        const workItemIconMap: WorkItemIconMap = {};
-
-        await Promise.all(
-            workItems.map(async workItem => {
-                if (workItemIconMap[workItem.ProjectId] === undefined) {
-                    workItemIconMap[workItem.ProjectId] = {};
-                }
-
-                if (workItemIconMap[workItem.ProjectId][workItem.WorkItemType] === undefined) {
-                    await BacklogConfigurationDataService.getInstance()
-                        .getWorkItemTypeIconInfo(workItem.ProjectId, workItem.WorkItemType)
-                        .then(workItemTypeInfo => {
-                            workItemIconMap[workItem.ProjectId][workItem.WorkItemType] = workItemTypeInfo;
-                        });
-                }
-            })
-        );
-
-        return workItemIconMap;
     };
 }
