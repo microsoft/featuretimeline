@@ -1084,11 +1084,19 @@ export class DependencyQuery {
             );
             const dependenciesRollUpQueryResult = await dataService.runPortfolioItemsQuery(workItemRollUpQueryInput);
 
-            return DependencyQuery.MatchWorkItemLinksAndRollUpValues(
+            const results = DependencyQuery.MatchWorkItemLinksAndRollUpValues(
                 queryInput,
                 dependenciesRollUpQueryResult,
                 linksResultsIndexed
             );
+
+            //  Sort items by target date before returning
+            Object.keys(results.byProject).forEach(projectIdKey => {
+                results.byProject[projectIdKey].DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                results.byProject[projectIdKey].HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+            });
+
+            return results;
         } catch (error) {
             console.log(error);
             return {

@@ -15,10 +15,9 @@ import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
-import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 
-type WorkItemIconMap = { [projectId: string]: { [workItemType: string]: IWorkItemIcon } };
+type WorkItemIconMap = { [workItemType: string]: IWorkItemIcon };
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
@@ -56,28 +55,17 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
         this._getDependencies().then(
             dependencies => {
-                //Sort dependencies by target date
                 const projectIdKey = this.props.projectInfo.id.toLowerCase();
-
                 let { DependsOn, HasDependency } = dependencies.byProject[projectIdKey];
+                const { configuration } = this.props.projectInfo;
 
-                DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
-                HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
-
-                this._getWorkItemIcons(DependsOn.concat(HasDependency)).then(
-                    workItemIcons => {
-                        this.setState({
-                            loading: LoadingStatus.Loaded,
-                            dependsOn: DependsOn,
-                            hasDependency: HasDependency,
-                            workItemIcons: workItemIcons,
-                            errorMessage: dependencies.exceptionMessage
-                        });
-                    },
-                    error => {
-                        this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
-                    }
-                );
+                this.setState({
+                    loading: LoadingStatus.Loaded,
+                    dependsOn: DependsOn,
+                    hasDependency: HasDependency,
+                    workItemIcons: configuration.iconInfoByWorkItemType,
+                    errorMessage: dependencies.exceptionMessage
+                });
             },
             error => {
                 this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
@@ -181,8 +169,9 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         details: IListItemDetails<IListBoxItem<IDependencyItemRenderData>>,
         key?: string
     ): JSX.Element => {
+        const workItemTypeKey = item.data.workItemType.toLowerCase();
         const imageProps: IImageProps = {
-            src: this.state.workItemIcons[item.data.projectId][item.data.workItemType].url,
+            src: this.state.workItemIcons[workItemTypeKey].url,
             className: "item-list-icon",
             imageFit: ImageFit.center,
             maximizeFrame: true
@@ -221,27 +210,5 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         });
 
         return dependencies;
-    };
-
-    private _getWorkItemIcons = async (workItems: PortfolioPlanningQueryResultItem[]): Promise<WorkItemIconMap> => {
-        const workItemIconMap: WorkItemIconMap = {};
-
-        await Promise.all(
-            workItems.map(async workItem => {
-                if (workItemIconMap[workItem.ProjectId] === undefined) {
-                    workItemIconMap[workItem.ProjectId] = {};
-                }
-
-                if (workItemIconMap[workItem.ProjectId][workItem.WorkItemType] === undefined) {
-                    await BacklogConfigurationDataService.getInstance()
-                        .getWorkItemTypeIconInfo(workItem.ProjectId, workItem.WorkItemType)
-                        .then(workItemTypeInfo => {
-                            workItemIconMap[workItem.ProjectId][workItem.WorkItemType] = workItemTypeInfo;
-                        });
-                }
-            })
-        );
-
-        return workItemIconMap;
     };
 }
