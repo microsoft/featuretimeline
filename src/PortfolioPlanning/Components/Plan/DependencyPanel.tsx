@@ -167,7 +167,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                     showInfoIcon: this._showInfoIcon(dependency, isPredecessor),
                     infoMessage: isPredecessor
                         ? "Target date is later than " + this.props.workItem.title + "'s start date"
-                        : "Start date is earlier than " + this.props.workItem.title + "'s end date"
+                        : "Start date is earlier than " + this.props.workItem.title + "'s target date"
                 }
             });
         });
