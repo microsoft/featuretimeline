@@ -56,8 +56,14 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         this._getDependencies().then(
             dependencies => {
                 const projectIdKey = this.props.projectInfo.id.toLowerCase();
-                let { DependsOn, HasDependency } = dependencies.byProject[projectIdKey];
                 const { configuration } = this.props.projectInfo;
+                let DependsOn: PortfolioPlanningQueryResultItem[] = [];
+                let HasDependency: PortfolioPlanningQueryResultItem[] = [];
+
+                if (dependencies && dependencies.byProject[projectIdKey]) {
+                    DependsOn = dependencies.byProject[projectIdKey].DependsOn;
+                    HasDependency = dependencies.byProject[projectIdKey].HasDependency;
+                }
 
                 this.setState({
                     loading: LoadingStatus.Loaded,

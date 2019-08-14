@@ -1078,10 +1078,19 @@ export class DependencyQuery {
             const dataService = PortfolioPlanningDataService.getInstance();
 
             const workItemLinksQueryResults = await this.GetWorkItemLinks(queryInput);
+
             const { linksResultsIndexed, workItemRollUpQueryInput } = this.BuildPortfolioItemsQuery(
                 queryInput,
                 workItemLinksQueryResults
             );
+
+            if (!linksResultsIndexed || Object.keys(linksResultsIndexed).length === 0) {
+                return {
+                    byProject: {},
+                    exceptionMessage: null
+                };
+            }
+
             const dependenciesRollUpQueryResult = await dataService.runPortfolioItemsQuery(workItemRollUpQueryInput);
 
             const results = DependencyQuery.MatchWorkItemLinksAndRollUpValues(
