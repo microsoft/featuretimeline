@@ -7,6 +7,17 @@ export function getProjects(state: IEpicTimelineState): IProject[] {
     return state.projects;
 }
 
+export function getIndexedProjects(state: IEpicTimelineState): { [projectIdKey: string]: IProject } {
+    const result: { [projectIdKey: string]: IProject } = {};
+
+    state.projects.forEach(project => {
+        const projectIdKey = project.id.toLowerCase();
+        result[projectIdKey] = project;
+    });
+
+    return result;
+}
+
 export function getProjectNames(state: IPortfolioPlanningState): string[] {
     return state.epicTimelineState.projects.map(project => project.title);
 }
@@ -62,6 +73,7 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
             id: epic.id,
             group: epic.project,
             teamId: epic.teamId,
+            projectId: epic.project,
             backlogLevel: epic.backlogLevel,
             title: epic.title,
             iconUrl: epic.iconProps.url,

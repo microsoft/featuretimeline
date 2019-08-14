@@ -171,7 +171,8 @@ function handlePortfolioItemsReceived(
             draft.projects = projects.projects.map(project => {
                 return {
                     id: project.ProjectSK,
-                    title: project.ProjectName
+                    title: project.ProjectName,
+                    configuration: projectConfigurations[project.ProjectSK.toLowerCase()]
                 };
             });
 
@@ -234,7 +235,8 @@ function handlePortfolioItemsReceived(
                 if (filteredProjects.length === 0) {
                     draft.projects.push({
                         id: newProjectInfo.ProjectSK,
-                        title: newProjectInfo.ProjectName
+                        title: newProjectInfo.ProjectName,
+                        configuration: projectConfigurations[newProjectInfo.ProjectSK.toLowerCase()]
                     });
                 }
             });
