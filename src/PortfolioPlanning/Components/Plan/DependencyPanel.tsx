@@ -21,7 +21,7 @@ import { Icon } from "azure-devops-ui/Icon";
 import moment = require("moment");
 
 type WorkItemIconMap = { [workItemType: string]: IWorkItemIcon };
-type WorkItemStatesMap = { [WorkItemType: string]: string[] };
+type WorkItemInProgressStatesMap = { [WorkItemType: string]: string[] };
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
@@ -36,7 +36,7 @@ export interface IDependencyPanelState {
     predecessors: PortfolioPlanningQueryResultItem[];
     successors: PortfolioPlanningQueryResultItem[];
     workItemIcons: WorkItemIconMap;
-    workItemTypeMappedStatesInProgress: WorkItemStatesMap;
+    workItemTypeMappedStatesInProgress: WorkItemInProgressStatesMap;
 }
 
 interface IDependencyItemRenderData {
@@ -264,7 +264,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return dependencies;
     };
 
-    private _getWorkItemTypeMappedStatesInProgress = async (): Promise<WorkItemStatesMap> => {
+    private _getWorkItemTypeMappedStatesInProgress = async (): Promise<WorkItemInProgressStatesMap> => {
         const workItemTypeMappedStatesInProgress = await BacklogConfigurationDataService.getInstance().getInProgressStates(
             this.props.projectInfo.id
         );
