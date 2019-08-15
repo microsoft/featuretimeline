@@ -24,7 +24,7 @@ import { PlanSummary } from "./PlanSummary";
 import { MenuButton } from "azure-devops-ui/Menu";
 import { IconSize } from "azure-devops-ui/Icon";
 import { DetailsDialog } from "./DetailsDialog";
-import { DependencyPanel } from "./DependencyPanel";
+import { ConnectedDependencyPanel } from "./DependencyPanel";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -129,7 +129,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
     private _renderDependencyPanel(): JSX.Element {
         if (this.state.contextMenuItem && this.state.dependencyPanelOpen) {
             return (
-                <DependencyPanel
+                <ConnectedDependencyPanel
                     workItem={this.state.contextMenuItem}
                     progressTrackingCriteria={this.props.progressTrackingCriteria}
                     onDismiss={() => this.setState({ dependencyPanelOpen: false })}
