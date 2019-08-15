@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Panel } from "azure-devops-ui/Panel";
-import { WorkItemTypeStateInfo } from "TFS/Work/Contracts";
 import "./DependencyPanel.scss";
 import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon, IProject } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
@@ -22,6 +21,7 @@ import { Icon } from "azure-devops-ui/Icon";
 import moment = require("moment");
 
 type WorkItemIconMap = { [workItemType: string]: IWorkItemIcon };
+type WorkItemStatesMap = { [WorkItemType: string]: string[] };
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
@@ -36,7 +36,7 @@ export interface IDependencyPanelState {
     predecessors: PortfolioPlanningQueryResultItem[];
     successors: PortfolioPlanningQueryResultItem[];
     workItemIcons: WorkItemIconMap;
-    workItemTypeMappedStates: WorkItemTypeStateInfo[];
+    workItemTypeMappedStatesInProgress: WorkItemStatesMap;
 }
 
 interface IDependencyItemRenderData {
@@ -58,7 +58,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
             successors: [],
             workItemIcons: {},
             errorMessage: "",
-            workItemTypeMappedStates: []
+            workItemTypeMappedStatesInProgress: {}
         };
 
         this._getDependencies().then(
@@ -86,10 +86,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
             }
         );
 
-        this._getWorkItemTypeMappedStates().then(
-            workItemTypeMappedStates => {
+        this._getWorkItemTypeMappedStatesInProgress().then(
+            workItemTypeMappedStatesInProgress => {
                 this.setState({
-                    workItemTypeMappedStates: workItemTypeMappedStates
+                    workItemTypeMappedStatesInProgress: workItemTypeMappedStatesInProgress
                 });
             },
             error => {
@@ -194,10 +194,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
     private _showInfoIcon = (item: PortfolioPlanningQueryResultItem, isPredecessor: boolean): boolean => {
         // only show info icon if the item is in InProgress state.
-        const states = this.state.workItemTypeMappedStates.filter(
-            item => item.workItemTypeName === item.workItemTypeName
-        )[0].states;
-        const statesForInProgress = Object.keys(states).filter(key => states[key] === "InProgress");
+        const statesForInProgress = this.state.workItemTypeMappedStatesInProgress[item.WorkItemType.toLowerCase()];
         if (statesForInProgress.indexOf(item.State) === -1) return false;
 
         // if this depends-on item has end date later than selected work item's start date.
@@ -267,10 +264,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return dependencies;
     };
 
-    private _getWorkItemTypeMappedStates = async (): Promise<WorkItemTypeStateInfo[]> => {
-        const backlogConfiguration = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(
+    private _getWorkItemTypeMappedStatesInProgress = async (): Promise<WorkItemStatesMap> => {
+        const workItemTypeMappedStatesInProgress = await BacklogConfigurationDataService.getInstance().getInProgressStates(
             this.props.projectInfo.id
         );
-        return backlogConfiguration.workItemTypeMappedStates;
+        return workItemTypeMappedStatesInProgress;
     };
 }

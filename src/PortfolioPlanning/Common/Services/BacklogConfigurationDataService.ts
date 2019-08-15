@@ -1,6 +1,5 @@
 import { TeamContext } from "TFS/Core/Contracts";
 import { BacklogConfiguration } from "TFS/Work/Contracts";
-import { WorkItemTypeStateInfo } from "TFS/Work/Contracts";
 import { getClient } from "VSS/Service";
 import { WorkHttpClient } from "TFS/Work/RestClient";
 import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
@@ -37,11 +36,6 @@ export class BacklogConfigurationDataService {
 
         const portfolioLevelsData = this.getPortfolioLevelsData(projectBacklogConfiguration);
 
-        const portfolioWorkItemTypes = Object.keys(portfolioLevelsData.backlogLevelNamesByWorkItemType);
-        const workItemTypeMappedStates: WorkItemTypeStateInfo[] = projectBacklogConfiguration.workItemTypeMappedStates.filter(
-            item => portfolioWorkItemTypes.indexOf(item.workItemTypeName.toLowerCase()) !== -1
-        );
-
         return {
             projectId,
 
@@ -53,8 +47,31 @@ export class BacklogConfigurationDataService {
 
             orderedWorkItemTypes: portfolioLevelsData.orderedWorkItemTypes,
             backlogLevelNamesByWorkItemType: portfolioLevelsData.backlogLevelNamesByWorkItemType,
-            workItemTypeMappedStates: workItemTypeMappedStates
         };
+    }
+
+    // returns a mapping for portfolio level work item type and its InProgress states.
+    // For default Agile project, the value will be {epic: ["Active", "Resolved"]}
+    public async getInProgressStates(projectId: string): Promise<{[key: string]: string[]}> {
+        const client = this.getWorkClient();
+        const teamContext: TeamContext = {
+            projectId: projectId,
+            team: null,
+            teamId: null,
+            project: null
+        };
+
+        const projectBacklogConfiguration: BacklogConfiguration = await client.getBacklogConfigurations(teamContext);
+        const portfolioLevelsData = this.getPortfolioLevelsData(projectBacklogConfiguration);
+
+        const workItemTypeMappedStatesInProgress: {[key: string]: string[]} = {};
+        projectBacklogConfiguration.workItemTypeMappedStates.forEach(item => {
+            if(Object.keys(portfolioLevelsData.backlogLevelNamesByWorkItemType).indexOf(item.workItemTypeName.toLowerCase()) !== -1){
+                const statesForInProgress = Object.keys(item.states).filter(key => item.states[key] === "InProgress");
+                workItemTypeMappedStatesInProgress[item.workItemTypeName.toLowerCase()] = statesForInProgress;
+             }
+        })
+        return workItemTypeMappedStatesInProgress;
     }
 
     public async getWorkItemTypeIconInfo(projectId: string, workItemType: string): Promise<IWorkItemIcon> {
