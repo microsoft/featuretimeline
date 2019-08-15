@@ -89,13 +89,13 @@
                 "dynamic": true,
                 "icon": "dist/images/portfolio-plans-icon.png"
             },
-            "constraints": [	
-                {	
-                    "name": "ExecutionEnvironment",	
-                    "properties": {	
-                        "hosted": true	
-                    }	
-                }	
+            "constraints": [
+                {
+                    "name": "ExecutionEnvironment",
+                    "properties": {
+                        "hosted": true
+                    }
+                }
             ]
         }
     ]
