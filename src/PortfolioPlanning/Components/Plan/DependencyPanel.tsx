@@ -187,13 +187,11 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
                 <div className="item-list-row" >
                     <Image {...imageProps as any} />
                     <div className="item-text-and-progress" >
-                        <div>
                         <Tooltip overflowOnly={true} >
                             <span className="item-text" onClick={() => this.props.openWIForm(parseInt(item.id))}>
                                 {item.id} - {item.text}
                             </span>
                         </Tooltip>
-                        </div>
                         <div className="item-progress">
                             <ProgressDetails
                                 completed={item.data.completed}
