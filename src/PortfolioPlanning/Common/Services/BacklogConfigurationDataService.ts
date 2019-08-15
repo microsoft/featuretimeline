@@ -66,9 +66,10 @@ export class BacklogConfigurationDataService {
 
         const workItemTypeMappedStatesInProgress: {[key: string]: string[]} = {};
         projectBacklogConfiguration.workItemTypeMappedStates.forEach(item => {
-            if(Object.keys(portfolioLevelsData.backlogLevelNamesByWorkItemType).indexOf(item.workItemTypeName.toLowerCase()) !== -1){
+            const workItemTypeKey = item.workItemTypeName.toLowerCase();
+            if(Object.keys(portfolioLevelsData.backlogLevelNamesByWorkItemType).indexOf(workItemTypeKey) !== -1){
                 const statesForInProgress = Object.keys(item.states).filter(key => item.states[key] === "InProgress");
-                workItemTypeMappedStatesInProgress[item.workItemTypeName.toLowerCase()] = statesForInProgress;
+                workItemTypeMappedStatesInProgress[workItemTypeKey] = statesForInProgress;
              }
         })
         return workItemTypeMappedStatesInProgress;
