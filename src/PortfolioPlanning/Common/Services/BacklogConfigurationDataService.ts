@@ -1,5 +1,6 @@
 import { TeamContext } from "TFS/Core/Contracts";
 import { BacklogConfiguration } from "TFS/Work/Contracts";
+import { WorkItemTypeStateInfo } from "TFS/Work/Contracts";
 import { getClient } from "VSS/Service";
 import { WorkHttpClient } from "TFS/Work/RestClient";
 import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
@@ -30,11 +31,16 @@ export class BacklogConfigurationDataService {
 
         const projectEfforFieldRefName =
             projectBacklogConfiguration.backlogFields &&
-                projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
+            projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
                 ? projectBacklogConfiguration.backlogFields.typeFields[BacklogConfigurationDataService.EffortTypeField]
                 : null;
 
         const portfolioLevelsData = this.getPortfolioLevelsData(projectBacklogConfiguration);
+
+        const portfolioWorkItemTypes = Object.keys(portfolioLevelsData.backlogLevelNamesByWorkItemType);
+        const workItemTypeMappedStates: WorkItemTypeStateInfo[] = projectBacklogConfiguration.workItemTypeMappedStates.filter(
+            item => portfolioWorkItemTypes.indexOf(item.workItemTypeName.toLowerCase()) !== -1
+        );
 
         return {
             projectId,
@@ -46,7 +52,8 @@ export class BacklogConfigurationDataService {
             effortFieldRefName: projectEfforFieldRefName,
 
             orderedWorkItemTypes: portfolioLevelsData.orderedWorkItemTypes,
-            backlogLevelNamesByWorkItemType: portfolioLevelsData.backlogLevelNamesByWorkItemType
+            backlogLevelNamesByWorkItemType: portfolioLevelsData.backlogLevelNamesByWorkItemType,
+            workItemTypeMappedStates: workItemTypeMappedStates
         };
     }
 
@@ -78,9 +85,9 @@ export class BacklogConfigurationDataService {
         ) {
             const allPortfolios = backlogConfiguration.portfolioBacklogs;
             if (allPortfolios.length > 1) {
-                // Sort by rank ascending. 
+                // Sort by rank ascending.
                 allPortfolios.sort((a, b) => a.rank - b.rank);
-                // Ignore first level. 
+                // Ignore first level.
                 allPortfolios.splice(0, 1);
             }
             return allPortfolios[0].defaultWorkItemType.name;

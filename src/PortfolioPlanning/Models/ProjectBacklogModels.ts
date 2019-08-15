@@ -1,3 +1,5 @@
+import { WorkItemTypeStateInfo } from "TFS/Work/Contracts";
+
 export interface ProjectBacklogConfiguration {
     projectId: string;
 
@@ -19,4 +21,6 @@ export interface ProjectBacklogConfiguration {
     orderedWorkItemTypes: string[];
 
     backlogLevelNamesByWorkItemType: { [workItemTypeKey: string]: string };
+
+    workItemTypeMappedStates: WorkItemTypeStateInfo[];
 }
