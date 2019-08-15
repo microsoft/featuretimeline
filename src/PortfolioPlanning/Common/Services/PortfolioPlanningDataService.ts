@@ -1101,8 +1101,8 @@ export class DependencyQuery {
 
             //  Sort items by target date before returning
             Object.keys(results.byProject).forEach(projectIdKey => {
-                results.byProject[projectIdKey].DependsOn.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
-                results.byProject[projectIdKey].HasDependency.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                results.byProject[projectIdKey].Predecessors.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                results.byProject[projectIdKey].Successors.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
             });
 
             return results;
@@ -1162,8 +1162,8 @@ export class DependencyQuery {
                 linksResultsIndexed[projectIdKey][linkTypeKey].forEach(workItemId => {
                     if (!result.byProject[projectIdKey]) {
                         result.byProject[projectIdKey] = {
-                            DependsOn: [],
-                            HasDependency: []
+                            Predecessors: [],
+                            Successors: []
                         };
                     }
 
@@ -1200,10 +1200,10 @@ export class DependencyQuery {
                                 "PortfolioPlanningDataService/runDependencyQuery/IgnoringLinkedWorkItemOfType";
                             console.log(`${actionName}. ${JSON.stringify(props, null, "    ")}`);
                             PortfolioTelemetry.getInstance().TrackAction(actionName, props);
-                        } else if (linkTypeKey === successorKey) {
-                            result.byProject[projectIdKey].HasDependency.push(rollUpValues);
                         } else if (linkTypeKey === predecessorKey) {
-                            result.byProject[projectIdKey].DependsOn.push(rollUpValues);
+                            result.byProject[projectIdKey].Predecessors.push(rollUpValues);
+                        } else if (linkTypeKey === successorKey) {
+                            result.byProject[projectIdKey].Successors.push(rollUpValues);
                         } else {
                             //  Shouldn't happen. We are only querying for these two types of links.
                             const props = {

@@ -3,6 +3,7 @@ import { Panel } from "azure-devops-ui/Panel";
 import "./DependencyPanel.scss";
 import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon, IProject } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
+import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import {
     PortfolioPlanningDependencyQueryResult,
     PortfolioPlanningQueryResultItem
@@ -16,8 +17,11 @@ import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
+import { Icon } from "azure-devops-ui/Icon";
+import moment = require("moment");
 
 type WorkItemIconMap = { [workItemType: string]: IWorkItemIcon };
+type WorkItemInProgressStatesMap = { [WorkItemType: string]: string[] };
 
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
@@ -29,9 +33,10 @@ export interface IDependencyPanelProps {
 export interface IDependencyPanelState {
     loading: LoadingStatus;
     errorMessage: string;
-    dependsOn: PortfolioPlanningQueryResultItem[];
-    hasDependency: PortfolioPlanningQueryResultItem[];
+    predecessors: PortfolioPlanningQueryResultItem[];
+    successors: PortfolioPlanningQueryResultItem[];
     workItemIcons: WorkItemIconMap;
+    workItemTypeMappedStatesInProgress: WorkItemInProgressStatesMap;
 }
 
 interface IDependencyItemRenderData {
@@ -39,6 +44,8 @@ interface IDependencyItemRenderData {
     workItemType: string;
     completed: number;
     total: number;
+    showInfoIcon: boolean;
+    infoMessage: string;
 }
 
 export class DependencyPanel extends React.Component<IDependencyPanelProps, IDependencyPanelState> {
@@ -47,30 +54,42 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
         this.state = {
             loading: LoadingStatus.NotLoaded,
-            dependsOn: [],
-            hasDependency: [],
+            predecessors: [],
+            successors: [],
             workItemIcons: {},
-            errorMessage: ""
+            errorMessage: "",
+            workItemTypeMappedStatesInProgress: {}
         };
 
         this._getDependencies().then(
             dependencies => {
                 const projectIdKey = this.props.projectInfo.id.toLowerCase();
                 const { configuration } = this.props.projectInfo;
-                let DependsOn: PortfolioPlanningQueryResultItem[] = [];
-                let HasDependency: PortfolioPlanningQueryResultItem[] = [];
+                let Predecessors: PortfolioPlanningQueryResultItem[] = [];
+                let Successors: PortfolioPlanningQueryResultItem[] = [];
 
                 if (dependencies && dependencies.byProject[projectIdKey]) {
-                    DependsOn = dependencies.byProject[projectIdKey].DependsOn;
-                    HasDependency = dependencies.byProject[projectIdKey].HasDependency;
+                    Predecessors = dependencies.byProject[projectIdKey].Predecessors;
+                    Successors = dependencies.byProject[projectIdKey].Successors;
                 }
 
                 this.setState({
                     loading: LoadingStatus.Loaded,
-                    dependsOn: DependsOn,
-                    hasDependency: HasDependency,
+                    predecessors: Predecessors,
+                    successors: Successors,
                     workItemIcons: configuration.iconInfoByWorkItemType,
                     errorMessage: dependencies.exceptionMessage
+                });
+            },
+            error => {
+                this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
+            }
+        );
+
+        this._getWorkItemTypeMappedStatesInProgress().then(
+            workItemTypeMappedStatesInProgress => {
+                this.setState({
+                    workItemTypeMappedStatesInProgress: workItemTypeMappedStatesInProgress
                 });
             },
             error => {
@@ -112,7 +131,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Waiting for others"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => this._renderDependencyGroup(this.state.dependsOn)}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.predecessors, true)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -123,7 +142,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         animate={false}
                         headerLabel="Others waiting on"
                         headerClassName={"list-header"}
-                        renderContent={(key: string) => this._renderDependencyGroup(this.state.hasDependency)}
+                        renderContent={(key: string) => this._renderDependencyGroup(this.state.successors, false)}
                         isCollapsible={true}
                         initialIsExpanded={true}
                         forceContentUpdate={true}
@@ -134,7 +153,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         }
     }
 
-    private _renderDependencyGroup = (dependencies: PortfolioPlanningQueryResultItem[]): JSX.Element => {
+    private _renderDependencyGroup = (dependencies: PortfolioPlanningQueryResultItem[], isPredecessor): JSX.Element => {
         const items: IListBoxItem<IDependencyItemRenderData>[] = [];
 
         if (dependencies.length === 0) {
@@ -155,7 +174,11 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                     total:
                         this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
                             ? dependency.TotalCount
-                            : dependency.TotalEffort
+                            : dependency.TotalEffort,
+                    showInfoIcon: this._showInfoIcon(dependency, isPredecessor),
+                    infoMessage: isPredecessor
+                        ? "Target date is later than " + this.props.workItem.title + "'s start date"
+                        : "Start date is earlier than " + this.props.workItem.title + "'s target date"
                 }
             });
         });
@@ -167,6 +190,22 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                 renderRow={this._renderDependencyItem}
             />
         );
+    };
+
+    private _showInfoIcon = (item: PortfolioPlanningQueryResultItem, isPredecessor: boolean): boolean => {
+        // only show info icon if the item is in InProgress state.
+        const statesForInProgress = this.state.workItemTypeMappedStatesInProgress[item.WorkItemType.toLowerCase()];
+        if (statesForInProgress.indexOf(item.State) === -1) return false;
+
+        // if this depends-on item has end date later than selected work item's start date.
+        if (moment(item.TargetDate) > this.props.workItem.start_time && isPredecessor) {
+            return true;
+        }
+        // if this has-dependency item has start date earlier than selected work item's end date.
+        if (moment(item.StartDate) < this.props.workItem.end_time && !isPredecessor) {
+            return true;
+        }
+        return false;
     };
 
     private _renderDependencyItem = (
@@ -186,6 +225,13 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return (
             <ListItem key={key || item.id} index={index} details={details}>
                 <div className="item-list-row">
+                    {item.data.showInfoIcon ? (
+                        <Tooltip text={item.data.infoMessage}>
+                            <div>
+                                <Icon ariaLabel="Info icon" iconName="Info" className="info-icon" />
+                            </div>
+                        </Tooltip>
+                    ) : null}
                     <Image {...imageProps as any} />
                     <div className="item-text-and-progress">
                         <Tooltip overflowOnly={true}>
@@ -216,5 +262,12 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         });
 
         return dependencies;
+    };
+
+    private _getWorkItemTypeMappedStatesInProgress = async (): Promise<WorkItemInProgressStatesMap> => {
+        const workItemTypeMappedStatesInProgress = await BacklogConfigurationDataService.getInstance().getInProgressStates(
+            this.props.projectInfo.id
+        );
+        return workItemTypeMappedStatesInProgress;
     };
 }
