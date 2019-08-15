@@ -189,7 +189,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
                     <div className="item-text-and-progress" >
                         <div>
                         <Tooltip overflowOnly={true} >
-                            <span className="item-text" onClick={() => this.props.openWIForm(this.props.workItem.id)}>
+                            <span className="item-text" onClick={() => this.props.openWIForm(parseInt(item.id))}>
                                 {item.id} - {item.text}
                             </span>
                         </Tooltip>
