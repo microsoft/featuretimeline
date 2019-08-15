@@ -1201,9 +1201,9 @@ export class DependencyQuery {
                             console.log(`${actionName}. ${JSON.stringify(props, null, "    ")}`);
                             PortfolioTelemetry.getInstance().TrackAction(actionName, props);
                         } else if (linkTypeKey === successorKey) {
-                            result.byProject[projectIdKey].DependsOn.push(rollUpValues);
-                        } else if (linkTypeKey === predecessorKey) {
                             result.byProject[projectIdKey].HasDependency.push(rollUpValues);
+                        } else if (linkTypeKey === predecessorKey) {
+                            result.byProject[projectIdKey].DependsOn.push(rollUpValues);
                         } else {
                             //  Shouldn't happen. We are only querying for these two types of links.
                             const props = {

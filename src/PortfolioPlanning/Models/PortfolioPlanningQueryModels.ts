@@ -193,10 +193,10 @@ export interface PortfolioPlanningDependencyQueryInput {
 export interface PortfolioPlanningDependencyQueryResult extends IQueryResultError {
     byProject: {
         [projectId: string]: {
-            //  successor
+            //  predecessor
             DependsOn: PortfolioPlanningQueryResultItem[];
 
-            //  predecessor
+            //  successor
             HasDependency: PortfolioPlanningQueryResultItem[];
         };
     };
