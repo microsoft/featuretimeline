@@ -19,30 +19,15 @@ import { ActionsOfType } from "../Helpers";
 import { SetDefaultDatesForWorkItems, saveDatesToServer } from "./DefaultDateUtil";
 
 export function* epicTimelineSaga(): SagaIterator {
-    yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
-    yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, onUpdateEndDate);
+    yield takeEvery(EpicTimelineActionTypes.UpdateDates, onUpdateDates);
     yield takeEvery(EpicTimelineActionTypes.ShiftItem, onShiftEpic);
     yield takeEvery(EpicTimelineActionTypes.AddItems, onAddEpics);
     yield takeEvery(PlanDirectoryActionTypes.ToggleSelectedPlanId, onToggleSelectedPlanId);
     yield takeEvery(EpicTimelineActionTypes.RemoveItems, onRemoveEpic);
 }
 
-function* onUpdateStartDate(
-    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateStartDate>
-): SagaIterator {
-    const epicId = action.payload.epicId;
-    try {
-        yield effects.call(saveDatesToServer, epicId);
-    } catch (exception) {
-        console.error(exception);
-        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
-    } finally {
-        yield effects.put(EpicTimelineActions.updateItemFinished(epicId));
-    }
-}
-
-function* onUpdateEndDate(
-    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateEndDate>
+function* onUpdateDates(
+    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateDates>
 ): SagaIterator {
     const epicId = action.payload.epicId;
     try {

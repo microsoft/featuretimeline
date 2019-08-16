@@ -12,9 +12,7 @@ import { Action } from "redux";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 
 export const enum EpicTimelineActionTypes {
-    // TODO: May update these date change actions to be single actio
-    UpdateStartDate = "EpicTimeline/UpdateStartDate",
-    UpdateEndDate = "EpicTimeline/UpdateEndDate",
+    UpdateDates = "EpicTimeline/UpdateDates",
     ShiftItem = "EpicTimeline/ShiftItem",
     UpdateItemFinished = "EpicTimeline/UpdateItemFinished",
     ToggleItemDetailsDialogHidden = "EpicTimeline/ToggleItemDetailsDialogHidden",
@@ -36,17 +34,11 @@ export const enum EpicTimelineActionTypes {
 }
 
 export const EpicTimelineActions = {
-    updateStartDate: (epicId: number, startDate: moment.Moment) => {
-        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateStartDate);
-        return createAction(EpicTimelineActionTypes.UpdateStartDate, {
+    updateDates: (epicId: number, startDate: moment.Moment, endDate: moment.Moment) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateDates);
+        return createAction(EpicTimelineActionTypes.UpdateDates, {
             epicId,
-            startDate
-        });
-    },
-    updateEndDate: (epicId: number, endDate: moment.Moment) => {
-        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.UpdateEndDate);
-        return createAction(EpicTimelineActionTypes.UpdateEndDate, {
-            epicId,
+            startDate,
             endDate
         });
     },

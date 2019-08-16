@@ -13,21 +13,11 @@ import { defaultIProjectComparer, defaultIWorkItemComparer } from "../../Common/
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
         switch (action.type) {
-            case EpicTimelineActionTypes.UpdateStartDate: {
-                const { epicId, startDate } = action.payload;
-
+            case EpicTimelineActionTypes.UpdateDates: {
+                const { epicId, startDate, endDate } = action.payload;
                 const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
-
                 epicToUpdate.startDate = startDate.toDate();
                 epicToUpdate.startDate.setHours(0, 0, 0, 0);
-                epicToUpdate.itemUpdating = true;
-                break;
-            }
-            case EpicTimelineActionTypes.UpdateEndDate: {
-                const { epicId, endDate } = action.payload;
-
-                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
-
                 epicToUpdate.endDate = endDate.toDate();
                 epicToUpdate.endDate.setHours(0, 0, 0, 0);
                 epicToUpdate.itemUpdating = true;

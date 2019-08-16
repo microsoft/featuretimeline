@@ -206,9 +206,6 @@ const Actions = {
     onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
     onCloseAddItemPanel: EpicTimelineActions.closeAddItemPanel,
     onAddItems: EpicTimelineActions.addItems,
-    onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
-    onUpdateStartDate: EpicTimelineActions.updateStartDate,
-    onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onTogglePlanSettingsPanelOpen: EpicTimelineActions.togglePlanSettingsPanelOpen,
     toggleDeletePlanDialogHidden: EpicTimelineActions.toggleDeletePlanDialogHidden,
     dismissErrorMessageCard: EpicTimelineActions.dismissErrorMessageCard

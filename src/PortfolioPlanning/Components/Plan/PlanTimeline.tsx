@@ -117,8 +117,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                     endDate={this.state.contextMenuItem.end_time}
                     hidden={this.props.setDatesDialogHidden}
                     save={(id, startDate, endDate) => {
-                        this.props.onUpdateStartDate(id, startDate);
-                        this.props.onUpdateEndDate(id, endDate);
+                        this.props.onUpdateDates(id, startDate, endDate);
                     }}
                     close={() => {
                         this.props.onToggleSetDatesDialogHidden(true);
@@ -489,11 +488,12 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
     }
 
     private _onItemResize = (itemId: number, time: number, edge: string): void => {
+        const itemToUpdate = this.props.items.find(item => item.id === itemId);
         if (edge == "left") {
-            this.props.onUpdateStartDate(itemId, moment(time));
+            this.props.onUpdateDates(itemId, moment(time), itemToUpdate.end_time);
         } else {
             // "right"
-            this.props.onUpdateEndDate(itemId, moment(time));
+            this.props.onUpdateDates(itemId, itemToUpdate.start_time, moment(time));
         }
     };
 
@@ -576,8 +576,7 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
 }
 
 const Actions = {
-    onUpdateStartDate: EpicTimelineActions.updateStartDate,
-    onUpdateEndDate: EpicTimelineActions.updateEndDate,
+    onUpdateDates: EpicTimelineActions.updateDates,
     onShiftItem: EpicTimelineActions.shiftItem,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
