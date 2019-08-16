@@ -17,6 +17,8 @@ import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
+import { launchWorkItemForm } from "../../../../src/common/redux/actions/launchWorkItemForm";
+import { connect } from 'react-redux';
 import { Icon } from "azure-devops-ui/Icon";
 import moment = require("moment");
 
@@ -48,7 +50,7 @@ interface IDependencyItemRenderData {
     infoMessage: string;
 }
 
-export class DependencyPanel extends React.Component<IDependencyPanelProps, IDependencyPanelState> {
+export class DependencyPanel extends React.Component<IDependencyPanelProps & typeof Actions, IDependencyPanelState> {
     constructor(props) {
         super(props);
 
@@ -224,7 +226,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
         return (
             <ListItem key={key || item.id} index={index} details={details}>
-                <div className="item-list-row">
+                <div className="item-list-row" >
                     {item.data.showInfoIcon ? (
                         <Tooltip text={item.data.infoMessage}>
                             <div>
@@ -233,9 +235,9 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                         </Tooltip>
                     ) : null}
                     <Image {...imageProps as any} />
-                    <div className="item-text-and-progress">
-                        <Tooltip overflowOnly={true}>
-                            <span className="item-text">
+                    <div className="item-text-and-progress" >
+                        <Tooltip overflowOnly={true} >
+                            <span className="item-text" onClick={() => this.props.openWIForm(parseInt(item.id))}>
                                 {item.id} - {item.text}
                             </span>
                         </Tooltip>
@@ -271,3 +273,13 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return workItemTypeMappedStatesInProgress;
     };
 }
+
+const mapStateToProps = (state: IDependencyPanelState, ownProps: IDependencyPanelProps) => ({
+    workItem : ownProps.workItem, 
+    progressTrackingCriteria: ownProps.progressTrackingCriteria, 
+    onDismiss: ownProps.onDismiss
+});
+
+const Actions = { openWIForm: launchWorkItemForm };
+
+export const ConnectedDependencyPanel =  connect (mapStateToProps, Actions)(DependencyPanel);

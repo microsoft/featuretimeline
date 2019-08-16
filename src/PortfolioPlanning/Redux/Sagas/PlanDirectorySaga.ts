@@ -12,6 +12,8 @@ import { getSelectedPlanId } from "../Selectors/PlanDirectorySelectors";
 import { getCurrentUser } from "../../Common/Utilities/Identity";
 import { getProjectNames, getTeamNames, getExceptionMessage } from "../Selectors/EpicTimelineSelectors";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
+import { LaunchWorkItemFormActionType } from "../../../Common/redux/actions/launchWorkItemForm";
+import { launchWorkItemFormSaga } from "./launchWorkItemFromSaga";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
@@ -19,6 +21,7 @@ export function* planDirectorySaga(): SagaIterator {
     yield effects.takeEvery(PlanDirectoryActionTypes.DeletePlan, deletePlan);
     yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemsReceived, updateProjectsAndTeamsMetadata);
     yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemDeleted, updateProjectsAndTeamsMetadata);
+    yield effects.takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga); 
 }
 
 export function* initializePlanDirectory(): SagaIterator {
