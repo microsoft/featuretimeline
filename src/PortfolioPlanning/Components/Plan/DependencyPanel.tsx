@@ -63,36 +63,33 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
             workItemTypeMappedStatesInProgress: {}
         };
 
-        this._getDependencies().then(
-            dependencies => {
-                const projectIdKey = this.props.projectInfo.id.toLowerCase();
-                const { configuration } = this.props.projectInfo;
-                let Predecessors: PortfolioPlanningQueryResultItem[] = [];
-                let Successors: PortfolioPlanningQueryResultItem[] = [];
-
-                if (dependencies && dependencies.byProject[projectIdKey]) {
-                    Predecessors = dependencies.byProject[projectIdKey].Predecessors;
-                    Successors = dependencies.byProject[projectIdKey].Successors;
-                }
-
-                this.setState({
-                    loading: LoadingStatus.Loaded,
-                    predecessors: Predecessors,
-                    successors: Successors,
-                    workItemIcons: configuration.iconInfoByWorkItemType,
-                    errorMessage: dependencies.exceptionMessage
-                });
-            },
-            error => {
-                this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
-            }
-        );
-
         this._getWorkItemTypeMappedStatesInProgress().then(
             workItemTypeMappedStatesInProgress => {
-                this.setState({
-                    workItemTypeMappedStatesInProgress: workItemTypeMappedStatesInProgress
-                });
+                this._getDependencies().then(
+                    dependencies => {
+                        const projectIdKey = this.props.projectInfo.id.toLowerCase();
+                        const { configuration } = this.props.projectInfo;
+                        let Predecessors: PortfolioPlanningQueryResultItem[] = [];
+                        let Successors: PortfolioPlanningQueryResultItem[] = [];
+        
+                        if (dependencies && dependencies.byProject[projectIdKey]) {
+                            Predecessors = dependencies.byProject[projectIdKey].Predecessors;
+                            Successors = dependencies.byProject[projectIdKey].Successors;
+                        }
+        
+                        this.setState({
+                            loading: LoadingStatus.Loaded,
+                            predecessors: Predecessors,
+                            successors: Successors,
+                            workItemIcons: configuration.iconInfoByWorkItemType,
+                            errorMessage: dependencies.exceptionMessage,
+                            workItemTypeMappedStatesInProgress: workItemTypeMappedStatesInProgress
+                        });
+                    },
+                    error => {
+                        this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
+                    }
+                );
             },
             error => {
                 this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
