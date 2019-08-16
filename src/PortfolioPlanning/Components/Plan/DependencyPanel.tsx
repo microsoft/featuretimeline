@@ -21,10 +21,10 @@ import { launchWorkItemForm } from "../../../../src/common/redux/actions/launchW
 import { connect } from 'react-redux';
 import { Icon } from "azure-devops-ui/Icon";
 import moment = require("moment");
+import { Link } from "office-ui-fabric-react/lib/Link";
 
 type WorkItemIconMap = { [workItemType: string]: IWorkItemIcon };
 type WorkItemInProgressStatesMap = { [WorkItemType: string]: string[] };
-
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
     projectInfo: IProject;
@@ -237,9 +237,9 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
                     <Image {...imageProps as any} />
                     <div className="item-text-and-progress" >
                         <Tooltip overflowOnly={true} >
-                            <span className="item-text" onClick={() => this.props.openWIForm(parseInt(item.id))}>
+                            <Link className="item-text" onClick={() => this.props.openWIForm(parseInt(item.id))}>
                                 {item.id} - {item.text}
-                            </span>
+                            </Link>
                         </Tooltip>
                         <div className="item-progress">
                             <ProgressDetails
