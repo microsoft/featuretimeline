@@ -34,10 +34,16 @@
         display: flex;
         cursor: pointer;
 
+        .info-icon,
         .item-list-icon {
             width: 14px;
             margin-right: $spacing-8;
             flex-shrink: 0;
+        }
+
+        .info-icon {
+            vertical-align: middle;
+            color: red;
         }
 
         .item-text-and-progress {

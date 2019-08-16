@@ -8,7 +8,7 @@ import {
 import produce from "immer";
 import { ProgressTrackingCriteria, LoadingStatus, IWorkItemIcon } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
-import { defaultIProjectComparer } from "../../Common/Utilities/Comparers";
+import { defaultIProjectComparer, defaultIWorkItemComparer } from "../../Common/Utilities/Comparers";
 
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
@@ -48,7 +48,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.UpdateItemFinished: {
-                const {itemId} = action.payload;
+                const { itemId } = action.payload;
                 const epicToUpdate = draft.epics.find(epic => epic.id === itemId);
                 epicToUpdate.itemUpdating = false;
                 break;
@@ -171,7 +171,8 @@ function handlePortfolioItemsReceived(
             draft.projects = projects.projects.map(project => {
                 return {
                     id: project.ProjectSK,
-                    title: project.ProjectName
+                    title: project.ProjectName,
+                    configuration: projectConfigurations[project.ProjectSK.toLowerCase()]
                 };
             });
 
@@ -234,7 +235,8 @@ function handlePortfolioItemsReceived(
                 if (filteredProjects.length === 0) {
                     draft.projects.push({
                         id: newProjectInfo.ProjectSK,
-                        title: newProjectInfo.ProjectName
+                        title: newProjectInfo.ProjectName,
+                        configuration: projectConfigurations[newProjectInfo.ProjectSK.toLowerCase()]
                     });
                 }
             });
@@ -302,6 +304,11 @@ function handlePortfolioItemsReceived(
 
             //  Not loading anymore.
             draft.planLoadingStatus = LoadingStatus.Loaded;
+        }
+
+        //  Sort timeline items by name.
+        if (draft.epics) {
+            draft.epics.sort(defaultIWorkItemComparer);
         }
     });
 }

@@ -14,17 +14,15 @@
 }
 
 .item-list-row {
-    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.08);
-    padding: 10px;
-    width: 100%;
-    color: $primary-text;
-    font-weight: 600;
     display: flex;
 }
 
 .item-list-row-text {
     overflow: hidden;
     text-overflow: ellipsis;
+    color: $primary-text;
+    font-size: $fontSizeM;
+    font-weight: 600;
 }
 
 .loading-projects {
@@ -64,12 +62,23 @@
     margin-top: 5px;
 }
 
+.workItemTypeSectionBody {
+    margin-left: $spacing-8;
+    max-width: 95%;
+    overflow: hidden;
+}
+
 .workItemIconClass {
     width: 14px;
+    height: 18px;
     margin-right: 5px;
     flex-shrink: 0;
 }
 
 .workItemTypeEmptyMessage {
     margin: 5px 0px 0px 15px;
+}
+
+.searchTextField {
+    margin-bottom: 10px;
 }

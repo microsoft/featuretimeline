@@ -46,8 +46,33 @@ export class BacklogConfigurationDataService {
             effortFieldRefName: projectEfforFieldRefName,
 
             orderedWorkItemTypes: portfolioLevelsData.orderedWorkItemTypes,
-            backlogLevelNamesByWorkItemType: portfolioLevelsData.backlogLevelNamesByWorkItemType
+            backlogLevelNamesByWorkItemType: portfolioLevelsData.backlogLevelNamesByWorkItemType,
         };
+    }
+
+    // returns a mapping for portfolio level work item type and its InProgress states.
+    // For default Agile project, the value will be {epic: ["Active", "Resolved"]}
+    public async getInProgressStates(projectId: string): Promise<{[key: string]: string[]}> {
+        const client = this.getWorkClient();
+        const teamContext: TeamContext = {
+            projectId: projectId,
+            team: null,
+            teamId: null,
+            project: null
+        };
+
+        const projectBacklogConfiguration: BacklogConfiguration = await client.getBacklogConfigurations(teamContext);
+        const portfolioLevelsData = this.getPortfolioLevelsData(projectBacklogConfiguration);
+
+        const workItemTypeMappedStatesInProgress: {[key: string]: string[]} = {};
+        projectBacklogConfiguration.workItemTypeMappedStates.forEach(item => {
+            const workItemTypeKey = item.workItemTypeName.toLowerCase();
+            if(Object.keys(portfolioLevelsData.backlogLevelNamesByWorkItemType).indexOf(workItemTypeKey) !== -1){
+                const statesForInProgress = Object.keys(item.states).filter(key => item.states[key] === "InProgress");
+                workItemTypeMappedStatesInProgress[workItemTypeKey] = statesForInProgress;
+             }
+        })
+        return workItemTypeMappedStatesInProgress;
     }
 
     public async getWorkItemTypeIconInfo(projectId: string, workItemType: string): Promise<IWorkItemIcon> {
@@ -60,6 +85,32 @@ export class BacklogConfigurationDataService {
             color: workItemTypeData.color,
             url: workItemTypeData.icon.url
         };
+    }
+
+    public async getDefaultWorkItemTypeForV1(projectId: string): Promise<string> {
+        const client = this.getWorkClient();
+        const teamContext: TeamContext = {
+            projectId: projectId,
+            team: null,
+            teamId: null,
+            project: null
+        };
+        const backlogConfiguration: BacklogConfiguration = await client.getBacklogConfigurations(teamContext);
+        if (
+            backlogConfiguration &&
+            backlogConfiguration.portfolioBacklogs &&
+            backlogConfiguration.portfolioBacklogs.length > 0
+        ) {
+            const allPortfolios = backlogConfiguration.portfolioBacklogs;
+            if (allPortfolios.length > 1) {
+                // Sort by rank ascending.
+                allPortfolios.sort((a, b) => a.rank - b.rank);
+                // Ignore first level.
+                allPortfolios.splice(0, 1);
+            }
+            return allPortfolios[0].defaultWorkItemType.name;
+        }
+        return Promise.resolve(null);
     }
 
     private getPortfolioLevelsData(

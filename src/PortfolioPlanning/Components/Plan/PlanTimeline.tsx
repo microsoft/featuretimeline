@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as moment from "moment";
-import { ITimelineGroup, ITimelineItem, ITeam, ProgressTrackingCriteria } from "../../Contracts";
+import { ITimelineGroup, ITimelineItem, ITeam, ProgressTrackingCriteria, IProject } from "../../Contracts";
 import Timeline, { TimelineHeaders, DateHeader } from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
@@ -8,7 +8,8 @@ import {
     getTimelineGroups,
     getTimelineItems,
     getProjectNames,
-    getTeamNames
+    getTeamNames,
+    getIndexedProjects
 } from "../../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
@@ -52,6 +53,7 @@ interface IPlanTimelineMappedProps {
     exceptionMessage: string;
     setDatesDialogHidden: boolean;
     progressTrackingCriteria: ProgressTrackingCriteria;
+    projects: { [projectIdKey: string]: IProject };
 }
 
 interface IPlanTimelineState {
@@ -131,6 +133,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
             return (
                 <ConnectedDependencyPanel
                     workItem={this.state.contextMenuItem}
+                    projectInfo={this.props.projects[this.state.contextMenuItem.projectId.toLowerCase()]}
                     progressTrackingCriteria={this.props.progressTrackingCriteria}
                     onDismiss={() => this.setState({ dependencyPanelOpen: false })}
                 />
@@ -374,8 +377,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                 {...getItemProps({
                     className: "plan-timeline-item",
                     style: {
-                        background: item.canMove?  "white" : "#f8f8f8",
-                        fontWeight: item.canMove? 600 : 900,
+                        background: item.canMove ? "white" : "#f8f8f8",
+                        fontWeight: item.canMove ? 600 : 900,
                         color: "black",
                         ...borderStyle,
                         borderRadius: "4px"
@@ -567,7 +570,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         planOwner: getSelectedPlanOwner(state),
         exceptionMessage: state.epicTimelineState.exceptionMessage,
         setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
-        progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria
+        progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
+        projects: getIndexedProjects(state.epicTimelineState)
     };
 }
 

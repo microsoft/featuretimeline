@@ -1,5 +1,6 @@
 import { ODataQueryProjectInput } from "./ODataQueryModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
+import { IProjectConfiguration } from "../Contracts";
 
 export interface PortfolioPlanningQueryInput {
     /**
@@ -182,10 +183,51 @@ export interface PortfolioPlanningWorkItemTypeFieldNameQueryResult extends IQuer
 }
 
 export interface PortfolioPlanningDependencyQueryInput {
-    WorkItemId: number;
+    /**
+     * Work item ids by project.
+     * ProjectIdKey must be lowercase already.
+     */
+    [projectIdKey: string]: { workItemIds: number[]; projectConfiguration: IProjectConfiguration };
 }
 
 export interface PortfolioPlanningDependencyQueryResult extends IQueryResultError {
-    DependsOn: PortfolioPlanningQueryResultItem[];
-    HasDependency: PortfolioPlanningQueryResultItem[];
+    byProject: {
+        [projectId: string]: {
+            //  predecessor
+            Predecessors: PortfolioPlanningQueryResultItem[];
+
+            //  successor
+            Successors: PortfolioPlanningQueryResultItem[];
+        };
+    };
+}
+
+export interface WorkItemLinksQueryInput {
+    RefName: string;
+    ProjectId: string;
+    WorkItemIds: number[];
+    WorkItemIdColumn: WorkItemLinkIdType;
+}
+
+export interface WorkItemLinksQueryResult extends IQueryResultError {
+    Links: WorkItemLink[];
+    QueryInput: WorkItemLinksQueryInput;
+}
+
+export interface WorkItemLink {
+    WorkItemLinkSK: string;
+    SourceWorkItemId: number;
+    TargetWorkItemId: number;
+    LinkTypeReferenceName: string;
+    ProjectSK: string;
+}
+
+export enum WorkItemLinkIdType {
+    Source = "SourceWorkItemId",
+    Target = "TargetWorkItemId"
+}
+
+export enum LinkTypeReferenceName {
+    Successor = "System.LinkTypes.Dependency-Forward",
+    Predecessor = "System.LinkTypes.Dependency-Reverse"
 }
