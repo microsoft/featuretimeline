@@ -29,7 +29,7 @@ import { Icon } from "azure-devops-ui/Icon";
 import moment = require("moment");
 
 type WorkItemIconMap = { [projectIdKey: string]: { [workItemType: string]: IWorkItemIcon } };
-type WorkItemInProgressStatesMap = { [WorkItemType: string]: string[] };
+type WorkItemInProgressStatesMap = { [projectIdKey: string]: { [WorkItemType: string]: string[] } };
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
     projectInfo: IProject;
@@ -68,33 +68,54 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
             workItemTypeMappedStatesInProgress: {}
         };
 
-        this._getWorkItemTypeMappedStatesInProgress().then(
-            workItemTypeMappedStatesInProgress => {
-                this._getDependencies().then(
-                    dependencies => {
-                        let Predecessors: PortfolioPlanningQueryResultItem[] = [];
-                        let Successors: PortfolioPlanningQueryResultItem[] = [];
-                        const newWorkItemIconMap: WorkItemIconMap = {};
-                        const allPromises: Promise<WorkItemIconMap>[] = [];
+        this._getDependencies().then(
+            dependencies => {
+                let Predecessors: PortfolioPlanningQueryResultItem[] = [];
+                let Successors: PortfolioPlanningQueryResultItem[] = [];
+                const newWorkItemIconMap: WorkItemIconMap = {};
+                const newInProgressStatesMap: WorkItemInProgressStatesMap = {};
+                const allWorkItemIconPromises: Promise<WorkItemIconMap>[] = [];
+                const allInProgressStatePromises: Promise<WorkItemInProgressStatesMap>[] = [];
 
-                        Object.keys(dependencies.byProject).forEach(projectIdKey => {
-                            let {
-                                Predecessors: ProjectPredecessors,
-                                Successors: ProjectSuccessors
-                            } = dependencies.byProject[projectIdKey];
-                            const projectConfiguration = dependencies.targetsProjectConfiguration[projectIdKey];
+                Object.keys(dependencies.byProject).forEach(projectIdKey => {
+                    let { Predecessors: ProjectPredecessors, Successors: ProjectSuccessors } = dependencies.byProject[
+                        projectIdKey
+                    ];
+                    const projectConfiguration = dependencies.targetsProjectConfiguration[projectIdKey];
 
-                            Predecessors = Predecessors.concat(ProjectPredecessors);
-                            Successors = Successors.concat(ProjectSuccessors);
+                    Predecessors = Predecessors.concat(ProjectPredecessors);
+                    Successors = Successors.concat(ProjectSuccessors);
 
-                            allPromises.push(
-                                this._getWorkItemIcons(ProjectPredecessors, ProjectSuccessors, projectConfiguration)
-                            );
-                        });
+                    allWorkItemIconPromises.push(
+                        this._getWorkItemIcons(ProjectPredecessors, ProjectSuccessors, projectConfiguration)
+                    );
 
-                        Promise.all(allPromises).then(
-                            allResults => {
-                                allResults.forEach(res => {
+                    allInProgressStatePromises.push(this._getWorkItemTypeMappedStatesInProgress(projectIdKey));
+                });
+
+                Promise.all(allInProgressStatePromises).then(
+                    allInProgressStates => {
+                        Promise.all(allWorkItemIconPromises).then(
+                            allWorkItemIcons => {
+                                allInProgressStates.forEach(res => {
+                                    Object.keys(res).forEach(projectIdKey => {
+                                        if (!newInProgressStatesMap[projectIdKey]) {
+                                            newInProgressStatesMap[projectIdKey] = {};
+                                        }
+
+                                        Object.keys(res[projectIdKey]).forEach(workItemTypeKey => {
+                                            const inProgressStates = res[projectIdKey][workItemTypeKey];
+
+                                            if (!newInProgressStatesMap[projectIdKey][workItemTypeKey]) {
+                                                newInProgressStatesMap[projectIdKey][
+                                                    workItemTypeKey
+                                                ] = inProgressStates;
+                                            }
+                                        });
+                                    });
+                                });
+
+                                allWorkItemIcons.forEach(res => {
                                     Object.keys(res).forEach(projectIdKey => {
                                         if (!newWorkItemIconMap[projectIdKey]) {
                                             newWorkItemIconMap[projectIdKey] = {};
@@ -120,18 +141,13 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                                     successors: Successors,
                                     workItemIcons: newWorkItemIconMap,
                                     errorMessage: dependencies.exceptionMessage,
-                                    workItemTypeMappedStatesInProgress: workItemTypeMappedStatesInProgress
+                                    workItemTypeMappedStatesInProgress: newInProgressStatesMap
                                 });
                             },
-                            error => {
-                                this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
-                                return null;
-                            }
+                            error => this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded })
                         );
                     },
-                    error => {
-                        this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
-                    }
+                    error => this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded })
                 );
             },
             error => {
@@ -275,8 +291,20 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
     private _showInfoIcon = (item: PortfolioPlanningQueryResultItem, isPredecessor: boolean): boolean => {
         // only show info icon if the item is in InProgress state.
-        const statesForInProgress = this.state.workItemTypeMappedStatesInProgress[item.WorkItemType.toLowerCase()];
-        if (statesForInProgress.indexOf(item.State) === -1) return false;
+        let statesForInProgress: string[] = [];
+        const projectIdKey = item.ProjectId.toLowerCase();
+        const workItemTypeKey = item.WorkItemType.toLowerCase();
+
+        if (
+            this.state.workItemTypeMappedStatesInProgress[projectIdKey] &&
+            this.state.workItemTypeMappedStatesInProgress[projectIdKey][workItemTypeKey]
+        ) {
+            statesForInProgress = this.state.workItemTypeMappedStatesInProgress[projectIdKey][workItemTypeKey];
+        }
+
+        if (statesForInProgress.indexOf(item.State) === -1) {
+            return false;
+        }
 
         // if this depends-on item has end date later than selected work item's start date.
         if (moment(item.TargetDate) > this.props.workItem.start_time && isPredecessor) {
@@ -348,11 +376,17 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
         return dependencies;
     };
 
-    private _getWorkItemTypeMappedStatesInProgress = async (): Promise<WorkItemInProgressStatesMap> => {
+    private _getWorkItemTypeMappedStatesInProgress = async (
+        projectId: string
+    ): Promise<WorkItemInProgressStatesMap> => {
         const workItemTypeMappedStatesInProgress = await BacklogConfigurationDataService.getInstance().getInProgressStates(
-            this.props.projectInfo.id
+            projectId
         );
-        return workItemTypeMappedStatesInProgress;
+
+        const result: WorkItemInProgressStatesMap = {};
+        result[projectId] = workItemTypeMappedStatesInProgress;
+
+        return Promise.resolve(result);
     };
 }
 
