@@ -1,7 +1,14 @@
 import * as React from "react";
 import { Panel } from "azure-devops-ui/Panel";
 import "./DependencyPanel.scss";
-import { ITimelineItem, LoadingStatus, ProgressTrackingCriteria, IWorkItemIcon, IProject } from "../../Contracts";
+import {
+    ITimelineItem,
+    LoadingStatus,
+    ProgressTrackingCriteria,
+    IWorkItemIcon,
+    IProject,
+    IProjectConfiguration
+} from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import {
@@ -17,13 +24,11 @@ import { Tooltip } from "azure-devops-ui/TooltipEx";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { Image, ImageFit, IImageProps } from "office-ui-fabric-react/lib/Image";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
-import { launchWorkItemForm } from "../../../../src/common/redux/actions/launchWorkItemForm";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { Icon } from "azure-devops-ui/Icon";
 import moment = require("moment");
-import { Link } from "office-ui-fabric-react/lib/Link";
 
-type WorkItemIconMap = { [workItemType: string]: IWorkItemIcon };
+type WorkItemIconMap = { [projectIdKey: string]: { [workItemType: string]: IWorkItemIcon } };
 type WorkItemInProgressStatesMap = { [WorkItemType: string]: string[] };
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
@@ -50,7 +55,7 @@ interface IDependencyItemRenderData {
     infoMessage: string;
 }
 
-export class DependencyPanel extends React.Component<IDependencyPanelProps & typeof Actions, IDependencyPanelState> {
+export class DependencyPanel extends React.Component<IDependencyPanelProps, IDependencyPanelState> {
     constructor(props) {
         super(props);
 
@@ -67,24 +72,62 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
             workItemTypeMappedStatesInProgress => {
                 this._getDependencies().then(
                     dependencies => {
-                        const projectIdKey = this.props.projectInfo.id.toLowerCase();
-                        const { configuration } = this.props.projectInfo;
                         let Predecessors: PortfolioPlanningQueryResultItem[] = [];
                         let Successors: PortfolioPlanningQueryResultItem[] = [];
-        
-                        if (dependencies && dependencies.byProject[projectIdKey]) {
-                            Predecessors = dependencies.byProject[projectIdKey].Predecessors;
-                            Successors = dependencies.byProject[projectIdKey].Successors;
-                        }
-        
-                        this.setState({
-                            loading: LoadingStatus.Loaded,
-                            predecessors: Predecessors,
-                            successors: Successors,
-                            workItemIcons: configuration.iconInfoByWorkItemType,
-                            errorMessage: dependencies.exceptionMessage,
-                            workItemTypeMappedStatesInProgress: workItemTypeMappedStatesInProgress
+                        const newWorkItemIconMap: WorkItemIconMap = {};
+                        const allPromises: Promise<WorkItemIconMap>[] = [];
+
+                        Object.keys(dependencies.byProject).forEach(projectIdKey => {
+                            let {
+                                Predecessors: ProjectPredecessors,
+                                Successors: ProjectSuccessors
+                            } = dependencies.byProject[projectIdKey];
+                            const projectConfiguration = dependencies.targetsProjectConfiguration[projectIdKey];
+
+                            Predecessors = Predecessors.concat(ProjectPredecessors);
+                            Successors = Successors.concat(ProjectSuccessors);
+
+                            allPromises.push(
+                                this._getWorkItemIcons(ProjectPredecessors, ProjectSuccessors, projectConfiguration)
+                            );
                         });
+
+                        Promise.all(allPromises).then(
+                            allResults => {
+                                allResults.forEach(res => {
+                                    Object.keys(res).forEach(projectIdKey => {
+                                        if (!newWorkItemIconMap[projectIdKey]) {
+                                            newWorkItemIconMap[projectIdKey] = {};
+                                        }
+
+                                        Object.keys(res[projectIdKey]).forEach(workItemTypeKey => {
+                                            const icon: IWorkItemIcon = res[projectIdKey][workItemTypeKey];
+
+                                            if (!newWorkItemIconMap[projectIdKey][workItemTypeKey]) {
+                                                newWorkItemIconMap[projectIdKey][workItemTypeKey] = icon;
+                                            }
+                                        });
+                                    });
+                                });
+
+                                //  Sort items from all projects by target date.
+                                Predecessors.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+                                Successors.sort((a, b) => (a.TargetDate > b.TargetDate ? 1 : -1));
+
+                                this.setState({
+                                    loading: LoadingStatus.Loaded,
+                                    predecessors: Predecessors,
+                                    successors: Successors,
+                                    workItemIcons: newWorkItemIconMap,
+                                    errorMessage: dependencies.exceptionMessage,
+                                    workItemTypeMappedStatesInProgress: workItemTypeMappedStatesInProgress
+                                });
+                            },
+                            error => {
+                                this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
+                                return null;
+                            }
+                        );
                     },
                     error => {
                         this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
@@ -96,6 +139,45 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
             }
         );
     }
+
+    private _getWorkItemIcons = async (
+        Predecessors: PortfolioPlanningQueryResultItem[],
+        Successors: PortfolioPlanningQueryResultItem[],
+        configuration: IProjectConfiguration
+    ): Promise<WorkItemIconMap> => {
+        const projectIdKey = configuration.id.toLowerCase();
+
+        let result: WorkItemIconMap = {
+            [projectIdKey]: { ...configuration.iconInfoByWorkItemType }
+        };
+
+        const missingWorkItemTypes: { [workItemTypeKey: string]: boolean } = {};
+        const allPromises: Promise<IWorkItemIcon>[] = [];
+
+        Predecessors.concat(Successors).forEach(item => {
+            const workItemTypeKey = item.WorkItemType.toLowerCase();
+
+            if (!configuration.iconInfoByWorkItemType[workItemTypeKey] && !missingWorkItemTypes[workItemTypeKey]) {
+                missingWorkItemTypes[workItemTypeKey] = true;
+                allPromises.push(
+                    BacklogConfigurationDataService.getInstance().getWorkItemTypeIconInfo(projectIdKey, workItemTypeKey)
+                );
+            }
+        });
+
+        if (allPromises.length > 0) {
+            const missingIcons = await Promise.all(allPromises);
+            missingIcons.forEach(missingIcon => {
+                const workItemTypeKey = missingIcon.workItemType.toLowerCase();
+
+                if (!result[projectIdKey][workItemTypeKey]) {
+                    result[projectIdKey][workItemTypeKey] = missingIcon;
+                }
+            });
+        }
+
+        return result;
+    };
 
     public render(): JSX.Element {
         // TODO: Add red ! icon to indicate problems
@@ -214,8 +296,15 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
         key?: string
     ): JSX.Element => {
         const workItemTypeKey = item.data.workItemType.toLowerCase();
+        const projectIdKey = item.data.projectId.toLowerCase();
+        let imageUrl: string = null;
+
+        if (this.state.workItemIcons[projectIdKey] && this.state.workItemIcons[projectIdKey][workItemTypeKey]) {
+            imageUrl = this.state.workItemIcons[projectIdKey]![workItemTypeKey]!.url;
+        }
+
         const imageProps: IImageProps = {
-            src: this.state.workItemIcons[workItemTypeKey].url,
+            src: imageUrl,
             className: "item-list-icon",
             imageFit: ImageFit.center,
             maximizeFrame: true
@@ -223,7 +312,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
 
         return (
             <ListItem key={key || item.id} index={index} details={details}>
-                <div className="item-list-row" >
+                <div className="item-list-row">
                     {item.data.showInfoIcon ? (
                         <Tooltip text={item.data.infoMessage}>
                             <div>
@@ -232,11 +321,11 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
                         </Tooltip>
                     ) : null}
                     <Image {...imageProps as any} />
-                    <div className="item-text-and-progress" >
-                        <Tooltip overflowOnly={true} >
-                            <Link className="item-text" onClick={() => this.props.openWIForm(parseInt(item.id))}>
+                    <div className="item-text-and-progress">
+                        <Tooltip overflowOnly={true}>
+                            <span className="item-text">
                                 {item.id} - {item.text}
-                            </Link>
+                            </span>
                         </Tooltip>
                         <div className="item-progress">
                             <ProgressDetails
@@ -252,12 +341,8 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
     };
 
     private _getDependencies = async (): Promise<PortfolioPlanningDependencyQueryResult> => {
-        const { id, configuration } = this.props.projectInfo;
         const dependencies = await PortfolioPlanningDataService.getInstance().runDependencyQuery({
-            [id.toLowerCase()]: {
-                workItemIds: [this.props.workItem.id],
-                projectConfiguration: configuration
-            }
+            workItemIds: [this.props.workItem.id]
         });
 
         return dependencies;
@@ -272,11 +357,9 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps & typ
 }
 
 const mapStateToProps = (state: IDependencyPanelState, ownProps: IDependencyPanelProps) => ({
-    workItem : ownProps.workItem, 
-    progressTrackingCriteria: ownProps.progressTrackingCriteria, 
+    workItem: ownProps.workItem,
+    progressTrackingCriteria: ownProps.progressTrackingCriteria,
     onDismiss: ownProps.onDismiss
 });
 
-const Actions = { openWIForm: launchWorkItemForm };
-
-export const ConnectedDependencyPanel =  connect (mapStateToProps, Actions)(DependencyPanel);
+export const ConnectedDependencyPanel = connect(mapStateToProps)(DependencyPanel);
