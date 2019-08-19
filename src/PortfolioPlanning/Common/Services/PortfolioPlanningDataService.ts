@@ -1238,6 +1238,10 @@ export class DependencyQuery {
             );
         }
 
+        if (!workItemProjectIdsQueryResult.Results || workItemProjectIdsQueryResult.Results.length === 0) {
+            return {};
+        }
+
         const result: { [projectIdKey: string]: IProjectConfiguration } = {};
         const allPromises: Promise<IProjectConfiguration>[] = [];
         const dataService = ProjectConfigurationDataService.getInstance();
