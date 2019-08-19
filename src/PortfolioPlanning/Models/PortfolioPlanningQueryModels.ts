@@ -183,15 +183,12 @@ export interface PortfolioPlanningWorkItemTypeFieldNameQueryResult extends IQuer
 }
 
 export interface PortfolioPlanningDependencyQueryInput {
-    /**
-     * Work item ids by project.
-     * ProjectIdKey must be lowercase already.
-     */
-    [projectIdKey: string]: { workItemIds: number[]; projectConfiguration: IProjectConfiguration };
+    workItemIds: number[];
 }
 
 export interface PortfolioPlanningDependencyQueryResult extends IQueryResultError {
     byProject: {
+        //  Project id of the source work item(s)
         [projectId: string]: {
             //  predecessor
             Predecessors: PortfolioPlanningQueryResultItem[];
@@ -200,11 +197,11 @@ export interface PortfolioPlanningDependencyQueryResult extends IQueryResultErro
             Successors: PortfolioPlanningQueryResultItem[];
         };
     };
+    targetsProjectConfiguration: { [projectId: string]: IProjectConfiguration };
 }
 
 export interface WorkItemLinksQueryInput {
     RefName: string;
-    ProjectId: string;
     WorkItemIds: number[];
     WorkItemIdColumn: WorkItemLinkIdType;
 }
@@ -230,4 +227,14 @@ export enum WorkItemLinkIdType {
 export enum LinkTypeReferenceName {
     Successor = "System.LinkTypes.Dependency-Forward",
     Predecessor = "System.LinkTypes.Dependency-Reverse"
+}
+
+export interface WorkItemProjectId {
+    WorkItemId: number;
+    ProjectSK: string;
+}
+
+export interface WorkItemProjectIdsQueryResult extends IQueryResultError {
+    Results: WorkItemProjectId[];
+    QueryInput: number[];
 }
