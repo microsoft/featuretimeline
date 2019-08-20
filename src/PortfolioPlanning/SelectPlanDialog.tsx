@@ -1,3 +1,4 @@
+import "./SelectPlanDialog.scss";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { iePollyfill } from "../polyfill";
@@ -83,7 +84,7 @@ class SelectPlanComponent extends React.Component<ISelectPlanComponentProps, ISe
         this.indexToPlan[index] = item.id;
         return (
             <ListItem key={key || "list-item" + index} index={index} details={details}>
-                <span>{item.text}</span>
+                <p className={"plan-name"}>{item.text}</p>
             </ListItem>
         );
     };

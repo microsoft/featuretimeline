@@ -2,6 +2,7 @@ import { PortfolioPlanningDataService } from "./Common/Services/PortfolioPlannin
 import { IDialogInputData } from "./SelectPlanDialog";
 import { PortfolioPlanningDirectory } from "./Models/PortfolioPlanningQueryModels";
 import { PortfolioTelemetry } from "./Common/Utilities/Telemetry";
+import { defaultPortfolioPlanningMetadataComparer } from "./Common/Utilities/Comparers";
 
 export class PortfolioPlanActionsService {
     private static _instance: PortfolioPlanActionsService;
@@ -26,20 +27,26 @@ export class PortfolioPlanActionsService {
                 const workItemIds = this.getWorkItemIds(context);
 
                 return dataService.GetAllPortfolioPlans().then(plans => {
-                    //  TODO    Show only first 3 plans - sort by something... Later, implement MRUs for plans.
-
                     const childItems: IContributedMenuItem[] = [];
                     const result: IContributedMenuItem[] = [];
 
-                    plans.entries.forEach(metadata => {
-                        childItems.push({
-                            title: metadata.name,
-                            action: () => this.addWorkItemIdsToPlan(metadata.id, workItemIds)
-                        });
-                    });
+                    //  TODO    Update to use MRU.
+
+                    //  Showing first three plans in alphabetical order
+                    plans.entries.sort(defaultPortfolioPlanningMetadataComparer);
+
+                    for (let i = 0; i < 3; i++) {
+                        if (plans.entries[i]) {
+                            const metadata = plans.entries[i];
+                            childItems.push({
+                                title: metadata.name,
+                                action: () => this.addWorkItemIdsToPlan(metadata.id, workItemIds)
+                            });
+                        }
+                    }
 
                     childItems.push({
-                        title: "Other plan...",
+                        title: "See all plans...",
                         action: () => this.openAllPlansDialog(workItemIds, plans)
                     });
 
@@ -74,8 +81,8 @@ export class PortfolioPlanActionsService {
                     }.workitem-portfolio-planning-show-all-plans-action`,
                     {
                         title: "Select Portfolio Plan",
-                        width: 500,
-                        height: 400,
+                        width: 400,
+                        height: 200,
                         modal: true,
                         buttons: {
                             add: {
