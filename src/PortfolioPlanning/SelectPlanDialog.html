@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%">
+    <head>
+        <meta charset="utf-8" />
+        <!-- VSS Framework -->
+        <script src="libs/VSS.SDK.min.js"></script>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            VSS.init({
+                usePlatformStyles: true,
+                explicitNotifyLoaded: true,
+                usePlatformScripts: true,
+                moduleLoaderConfig: {
+                    paths: {
+                        "react": "dist/react",
+                        "react-dom": "dist/react-dom",
+                        "AddToPlanAction": "dist/SelectPlanDialog"
+                    }
+                }
+            });
+
+            VSS.ready(function() {
+                VSS.require(["SelectPlanDialog"], function(SelectPlanDialog) {
+                    SelectPlanDialog.initialize();
+                    // loading succeeded
+                    VSS.notifyLoadSucceeded();
+                });
+            });
+        </script>
+        <div id="root" style="width:100%;overflow: auto;" />
+    </body>
+</html>

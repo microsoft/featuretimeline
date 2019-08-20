@@ -1,0 +1,12 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.plan-name {
+    font-family: sans-serif;
+    color: $primary-text;
+    font-size: $fontSizeM;
+    font-weight: 400;
+    line-height: 30px;
+    margin: 0px 0px 0px 5px;
+    vertical-align: middle;
+}

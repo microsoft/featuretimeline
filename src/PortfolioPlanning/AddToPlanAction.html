@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%">
+    <head>
+        <meta charset="utf-8" />
+        <!-- VSS Framework -->
+        <script src="libs/VSS.SDK.min.js"></script>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            VSS.init({
+                usePlatformStyles: true,
+                explicitNotifyLoaded: true,
+                usePlatformScripts: true,
+                moduleLoaderConfig: {
+                    paths: {
+                        AddToPlanAction: "dist/AddToPlanAction"
+                    }
+                }
+            });
+
+            VSS.ready(function() {
+                VSS.require(["AddToPlanAction"], function(AddToPlanAction) {
+                    const contribution = VSS.getContribution();
+                    const actionProvider = AddToPlanAction.PortfolioPlanActionsService.getInstance().getAddToPlanActionProvider();
+
+                    VSS.register(contribution.id, actionProvider);
+
+                    // loading succeeded
+                    VSS.notifyLoadSucceeded();
+                });
+            });
+        </script>
+    </body>
+</html>

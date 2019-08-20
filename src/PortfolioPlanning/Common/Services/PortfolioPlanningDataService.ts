@@ -24,7 +24,9 @@ import {
     LinkTypeReferenceName,
     WorkItemLinkIdType,
     WorkItemProjectIdsQueryResult,
-    WorkItemProjectId
+    WorkItemProjectId,
+    PortfolioItem,
+    WorkItemType
 } from "../../../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../ODataClient";
 import {
@@ -397,6 +399,252 @@ export class PortfolioPlanningDataService {
         });
 
         return totalThatWillBeDeleted;
+    }
+
+    public async AddWorkItemsToPlan(planId: string, workItemIds: number[]): Promise<PortfolioPlanning> {
+        try {
+            console.log(`AddWorkItemsToPlan. WorkItemIds: ${workItemIds.join(", ")}. Plan: ${planId}`);
+
+            if (workItemIds.length === 0) {
+                //  No-op.
+                const props = {
+                    ["PlanId"]: planId
+                };
+
+                PortfolioTelemetry.getInstance().TrackAction(
+                    "PortfolioPlanningDataService/AddWorkItemsToPlan/NoOp",
+                    props
+                );
+
+                return null;
+            }
+
+            const plan = await this.GetPortfolioPlanById(planId);
+            if (!plan) {
+                //  Couldn't find plan to update. Ignoring.
+                const props = {
+                    ["PlanId"]: planId,
+                    ["WorkItemIds"]: workItemIds
+                };
+
+                PortfolioTelemetry.getInstance().TrackAction(
+                    "PortfolioPlanningDataService/AddWorkItemsToPlan/NoPlanFound",
+                    props
+                );
+
+                return null;
+            }
+
+            const workItemIdsSet: { [workItemId: number]: true } = {};
+            workItemIds.forEach(id => (workItemIdsSet[id.toString()] = true));
+            const projectMapping = await this.getWorkItemProjectIds(workItemIds);
+
+            if (projectMapping && projectMapping.exceptionMessage && projectMapping.exceptionMessage.length > 0) {
+                throw new Error(
+                    `Error querying project information for work item ids. Details: ${projectMapping.exceptionMessage}`
+                );
+            }
+
+            if (!projectMapping || !projectMapping.Results || projectMapping.Results.length === 0) {
+                //  Work item project ids query returned no results.
+                const props = {
+                    ["WorkItemIds"]: workItemIds
+                };
+
+                PortfolioTelemetry.getInstance().TrackAction(
+                    "PortfolioPlanningDataService/AddWorkItemsToPlan/WorkItemProjectIdsNoResults",
+                    props
+                );
+
+                return null;
+            }
+
+            const allProjectConfigPromises: Promise<IProjectConfiguration>[] = [];
+            const newProjectConfigsByProjectId: { [projectIdKey: string]: IProjectConfiguration } = {};
+            const byWorkItemId: { [workItemId: number]: WorkItemProjectId } = {};
+
+            //  Do we need to get configuration for projects we are seeing for the first time?
+            projectMapping.Results.forEach(map => {
+                const projectIdKey = map.ProjectSK.toLowerCase();
+                const workItemId = map.WorkItemId;
+
+                byWorkItemId[workItemId.toString()] = map;
+
+                if (!plan.projects[projectIdKey]) {
+                    //  New project, need to get project configuration.
+                    allProjectConfigPromises.push(
+                        ProjectConfigurationDataService.getInstance().getProjectConfiguration(projectIdKey)
+                    );
+                }
+            });
+
+            //  Are we missing work item type data for new work item ids?
+            const projectIdsNoTypes: { [projectIdKey: string]: boolean } = {};
+            Object.keys(byWorkItemId).forEach(newWorkItemId => {
+                const newWorkItem: WorkItemProjectId = byWorkItemId[newWorkItemId];
+                const projectIdKey = newWorkItem.ProjectSK.toLowerCase();
+                const workItemTypeKey = newWorkItem.WorkItemType.toLowerCase();
+
+                if (
+                    plan.projects[projectIdKey] &&
+                    (!plan.projects[projectIdKey].WorkItemTypeData ||
+                        !plan.projects[projectIdKey].WorkItemTypeData[workItemTypeKey])
+                ) {
+                    projectIdsNoTypes[projectIdKey] = true;
+                }
+            });
+
+            Object.keys(projectIdsNoTypes).forEach(projectIdKey => {
+                allProjectConfigPromises.push(
+                    ProjectConfigurationDataService.getInstance().getProjectConfiguration(projectIdKey)
+                );
+            });
+
+            //  New projects?
+            if (allProjectConfigPromises.length > 0) {
+                const newProjectConfigs = await Promise.all(allProjectConfigPromises);
+                newProjectConfigs.forEach(config => {
+                    const projectIdKey = config.id.toLowerCase();
+                    newProjectConfigsByProjectId[projectIdKey] = config;
+                });
+            }
+
+            //  Merge new data.
+            Object.keys(workItemIdsSet).forEach(newWorkItemId => {
+                if (byWorkItemId[newWorkItemId]) {
+                    const workItemInfo: WorkItemProjectId = byWorkItemId[newWorkItemId];
+                    const projectIdKey = workItemInfo.ProjectSK.toLowerCase();
+                    const workItemTypeKey = workItemInfo.WorkItemType.toLowerCase();
+
+                    if (plan.projects[projectIdKey]) {
+                        if (!plan.projects[projectIdKey].Items) {
+                            plan.projects[projectIdKey].Items = {};
+                        }
+
+                        if (!plan.projects[projectIdKey].Items[newWorkItemId]) {
+                            if (!plan.projects[projectIdKey].WorkItemTypeData) {
+                                plan.projects[projectIdKey].WorkItemTypeData = {};
+                            }
+
+                            if (!plan.projects[projectIdKey].WorkItemTypeData[workItemTypeKey]) {
+                                //  Did we just query for this project's config?
+                                if (newProjectConfigsByProjectId[projectIdKey]) {
+                                    const projectConfig = newProjectConfigsByProjectId[projectIdKey];
+
+                                    //  Does the project config support this work item type?
+                                    if (projectConfig.iconInfoByWorkItemType[workItemTypeKey]) {
+                                        //  Ok, we can add the work item id to the project. It's type is
+                                        //  supported based on the project configuration.
+                                        plan.projects[projectIdKey].Items[newWorkItemId] = {
+                                            workItemId: newWorkItemId,
+                                            workItemType: workItemInfo.WorkItemType
+                                        };
+
+                                        plan.projects[projectIdKey].WorkItemTypeData[workItemTypeKey] = {
+                                            workItemType: workItemInfo.WorkItemType,
+                                            backlogLevelName:
+                                                projectConfig.backlogLevelNamesByWorkItemType[workItemTypeKey],
+                                            iconProps: projectConfig.iconInfoByWorkItemType[workItemTypeKey]
+                                        };
+                                    } else {
+                                        //  Work item type is not supported.
+                                        const props = {
+                                            ["WorkItemId"]: newWorkItemId,
+                                            ["WorkItemType"]: workItemTypeKey
+                                        };
+
+                                        PortfolioTelemetry.getInstance().TrackAction(
+                                            "PortfolioPlanningDataService/AddWorkItemsToPlan/WorkItemTypeNotSupported",
+                                            props
+                                        );
+                                    }
+                                } else {
+                                    const errorMessage = `Cannot add work item id '${newWorkItemId}' to plan id '${
+                                        plan.id
+                                    }'. Couldn't retrieve configuration for project '${projectIdKey}'`;
+                                    const error = new Error(errorMessage);
+                                    PortfolioTelemetry.getInstance().TrackException(error);
+                                    throw error;
+                                }
+                            } else {
+                                //  Work item type was already supported in the project, just add the work item id.
+                                plan.projects[projectIdKey].Items[newWorkItemId] = {
+                                    workItemId: newWorkItemId,
+                                    workItemType: workItemInfo.WorkItemType
+                                };
+                            }
+                        }
+                    } else if (newProjectConfigsByProjectId[projectIdKey]) {
+                        const newProjectInfo: IProjectConfiguration = newProjectConfigsByProjectId[projectIdKey];
+
+                        //  Does the project config support this work item type?
+                        if (newProjectInfo.iconInfoByWorkItemType[workItemTypeKey]) {
+                            const Items: { [workItemId: number]: PortfolioItem } = {};
+                            const WorkItemTypeData: { [workItemTypeKey: string]: WorkItemType } = {};
+
+                            Items[newWorkItemId] = {
+                                workItemId: newWorkItemId,
+                                workItemType: workItemInfo.WorkItemType
+                            };
+
+                            WorkItemTypeData[workItemTypeKey] = {
+                                workItemType: workItemInfo.WorkItemType,
+                                backlogLevelName: newProjectInfo.backlogLevelNamesByWorkItemType[workItemTypeKey],
+                                iconProps: newProjectInfo.iconInfoByWorkItemType[workItemTypeKey]
+                            };
+
+                            plan.projects[projectIdKey] = {
+                                ProjectId: projectIdKey,
+                                RequirementWorkItemType: newProjectInfo.defaultRequirementWorkItemType,
+                                EffortODataColumnName: newProjectInfo.effortODataColumnName,
+                                EffortWorkItemFieldRefName: newProjectInfo.effortWorkItemFieldRefName,
+                                Items,
+                                WorkItemTypeData
+                            };
+                        } else {
+                            //  Work item type is not supported.
+                            const props = {
+                                ["WorkItemId"]: newWorkItemId,
+                                ["WorkItemType"]: workItemTypeKey
+                            };
+
+                            PortfolioTelemetry.getInstance().TrackAction(
+                                "PortfolioPlanningDataService/AddWorkItemsToPlan/WorkItemTypeNotSupported",
+                                props
+                            );
+                        }
+                    } else {
+                        //  Couldn't find project configuration for work item's project id. Ignoring.
+                        const props = {
+                            ["WorkItemId"]: newWorkItemId,
+                            ["ProjectId"]: projectIdKey
+                        };
+
+                        PortfolioTelemetry.getInstance().TrackAction(
+                            "PortfolioPlanningDataService/AddWorkItemsToPlan/MissingProjectConfiguration",
+                            props
+                        );
+                    }
+                } else {
+                    //  Couldn't find project mapping for work item id. Ignoring.
+                    const props = {
+                        ["WorkItemId"]: newWorkItemId
+                    };
+
+                    PortfolioTelemetry.getInstance().TrackAction(
+                        "PortfolioPlanningDataService/AddWorkItemsToPlan/MissingProjectIdForNewWorkItemId",
+                        props
+                    );
+                }
+            });
+
+            //  Persist plan changes
+            return await this.UpdatePortfolioPlan(plan);
+        } catch (error) {
+            PortfolioTelemetry.getInstance().TrackException(error);
+            console.log(error);
+            return Promise.reject(error);
+        }
     }
 
     private GetODataColumnNameFromFieldRefName(fieldReferenceName: string): WellKnownEffortODataColumnNames {
@@ -1126,7 +1374,7 @@ export class ODataQueryBuilder {
         // prettier-ignore
         return "WorkItems" +
             "?" +
-                `$select=WorkItemId,ProjectSK` +
+                `$select=WorkItemId,ProjectSK,WorkItemType` +
             "&" +
                 `$filter=${workItemIdFilters.join(" or ")}`;
     }
