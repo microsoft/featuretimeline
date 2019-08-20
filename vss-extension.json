@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
-    "version": "0.0.360",
+    "version": "0.0.362",
     "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",
@@ -70,15 +70,7 @@
                 "uri": "dist/PortfolioPlanning.html",
                 "dynamic": true,
                 "icon": "dist/images/portfolio-plans-icon.png"
-            },
-            "constraints": [
-                {
-                    "name": "ExecutionEnvironment",
-                    "properties": {
-                        "hosted": true
-                    }
-                }
-            ]
+            }
         },
         {
             "id": "workitem-portfolio-planning-add-to-plan-action",
@@ -88,6 +80,14 @@
             "properties": {
                 "group": "contributed",
                 "uri": "dist/AddToPlanAction.html"
+            }
+        },
+        {
+            "id": "workitem-portfolio-planning-show-all-plans-action",
+            "type": "ms.vss-web.control",
+            "targets": [],
+            "properties": {
+                "uri": "dist/SelectPlanDialog.html"
             }
         }
     ]

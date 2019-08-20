@@ -57,6 +57,10 @@ const plugins = [
             to: "./"
         },
         {
+            from: "./src/PortfolioPlanning/SelectPlanDialog.html",
+            to: "./"
+        },
+        {
             from: "./images",
             to: "./images"
         },
@@ -82,7 +86,8 @@ module.exports = {
         FeatureTimeline: "./src/FeatureTimeline/FeatureTimeline.tsx",
         EpicRoadmap: "./src/EpicRoadmap/EpicRoadmap.tsx",
         PortfolioPlanning: "./src/PortfolioPlanning/PortfolioPlanning.tsx",
-        AddToPlanAction: "./src/PortfolioPlanning/AddToPlanAction.tsx"
+        AddToPlanAction: "./src/PortfolioPlanning/AddToPlanAction.tsx",
+        SelectPlanDialog: "./src/PortfolioPlanning/SelectPlanDialog.tsx"
     },
     output: {
         filename: "[name].js",

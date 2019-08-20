@@ -14,22 +14,21 @@
                 usePlatformScripts: true,
                 moduleLoaderConfig: {
                     paths: {
-                        AddToPlanAction: "dist/AddToPlanAction"
+                        "react": "dist/react",
+                        "react-dom": "dist/react-dom",
+                        "AddToPlanAction": "dist/SelectPlanDialog"
                     }
                 }
             });
 
             VSS.ready(function() {
-                VSS.require(["AddToPlanAction"], function(AddToPlanAction) {
-                    const contribution = VSS.getContribution();
-                    const actionProvider = AddToPlanAction.PortfolioPlanActionsService.getInstance().getAddToPlanActionProvider();
-
-                    VSS.register(contribution.id, actionProvider);
-
+                VSS.require(["SelectPlanDialog"], function(SelectPlanDialog) {
+                    SelectPlanDialog.initialize();
                     // loading succeeded
                     VSS.notifyLoadSucceeded();
                 });
             });
         </script>
+        <div id="root" style="width:100%" />
     </body>
 </html>
