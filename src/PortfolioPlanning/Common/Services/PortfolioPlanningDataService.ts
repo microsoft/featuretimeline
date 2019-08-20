@@ -461,8 +461,6 @@ export class PortfolioPlanningDataService {
 
             const allProjectConfigPromises: Promise<IProjectConfiguration>[] = [];
             const newProjectConfigsByProjectId: { [projectIdKey: string]: IProjectConfiguration } = {};
-
-            //  Index by project.
             const byWorkItemId: { [workItemId: number]: WorkItemProjectId } = {};
 
             //  Do we need to get configuration for projects we are seeing for the first time?
@@ -524,7 +522,6 @@ export class PortfolioPlanningDataService {
                         }
 
                         if (!plan.projects[projectIdKey].Items[newWorkItemId]) {
-                            //  Check if we have work item type's data.
                             if (!plan.projects[projectIdKey].WorkItemTypeData) {
                                 plan.projects[projectIdKey].WorkItemTypeData = {};
                             }
