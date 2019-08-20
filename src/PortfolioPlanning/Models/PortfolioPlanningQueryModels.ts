@@ -231,6 +231,7 @@ export enum LinkTypeReferenceName {
 
 export interface WorkItemProjectId {
     WorkItemId: number;
+    WorkItemType: string;
     ProjectSK: string;
 }
 

@@ -6,6 +6,8 @@ import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ScrollableList, ListSelection, IListItemDetails, ListItem } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { FormItem } from "azure-devops-ui/FormItem";
+import { PortfolioPlanningDataService } from "./Common/Services/PortfolioPlanningDataService";
+import { PortfolioTelemetry } from "./Common/Utilities/Telemetry";
 
 export function initialize(): void {
     if (!isBackground()) {
@@ -86,16 +88,23 @@ class SelectPlanComponent extends React.Component<ISelectPlanComponentProps, ISe
         );
     };
 
-    private onOkClicked = (): Promise<void> => {
+    private onOkClicked = async (): Promise<void> => {
         if (this.selection.value && this.selection.value[0] && this.selection.value[0].beginIndex) {
             const planSelected = this.indexToPlan[this.selection.value[0].beginIndex];
-            console.log(
-                `Ok clicked. WorkItemIds: ${this.props.inputData.workItemIds.join(
-                    ", "
-                )}. Selected plan: ${planSelected}`
-            );
+            const workItemIds = this.props.inputData.workItemIds;
 
-            return Promise.resolve();
+            const plan = await PortfolioPlanningDataService.getInstance().AddWorkItemsToPlan(planSelected, workItemIds);
+            if (!plan) {
+                //  TODO    Error scenario handling - e.g. plan doesn't exist.
+                //  Something went wrong. A valid plan should have been returned.
+                const errorMessage = `[Dialog] Failed to add work item ids (${workItemIds.join(
+                    ", "
+                )}) to plan '${planSelected}'`;
+                console.log(errorMessage);
+                PortfolioTelemetry.getInstance().TrackException(new Error(errorMessage));
+            }
+
+            return;
         } else {
             this.setState({
                 errorMessage: "Please select a plan"

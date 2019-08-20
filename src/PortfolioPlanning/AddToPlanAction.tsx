@@ -1,6 +1,7 @@
 import { PortfolioPlanningDataService } from "./Common/Services/PortfolioPlanningDataService";
 import { IDialogInputData } from "./SelectPlanDialog";
 import { PortfolioPlanningDirectory } from "./Models/PortfolioPlanningQueryModels";
+import { PortfolioTelemetry } from "./Common/Utilities/Telemetry";
 
 export class PortfolioPlanActionsService {
     private static _instance: PortfolioPlanActionsService;
@@ -25,13 +26,15 @@ export class PortfolioPlanActionsService {
                 const workItemIds = this.getWorkItemIds(context);
 
                 return dataService.GetAllPortfolioPlans().then(plans => {
+                    //  TODO    Show only first 3 plans - sort by something... Later, implement MRUs for plans.
+
                     const childItems: IContributedMenuItem[] = [];
                     const result: IContributedMenuItem[] = [];
 
                     plans.entries.forEach(metadata => {
                         childItems.push({
                             title: metadata.name,
-                            action: () => this.addToPlan(metadata.id, workItemIds)
+                            action: () => this.addWorkItemIdsToPlan(metadata.id, workItemIds)
                         });
                     });
 
@@ -135,8 +138,17 @@ export class PortfolioPlanActionsService {
         return result;
     }
 
-    private addToPlan(planId: string, workItemIds: number[]): Promise<void> {
-        console.log(`Adding ${workItemIds.join(",")} to plan ${planId}`);
-        return Promise.resolve();
+    private async addWorkItemIdsToPlan(planId: string, workItemIds: number[]): Promise<void> {
+        const plan = await PortfolioPlanningDataService.getInstance().AddWorkItemsToPlan(planId, workItemIds);
+
+        if (!plan) {
+            //  TODO    Error scenario handling - e.g. plan doesn't exist.
+            //  Something went wrong. A valid plan should have been returned.
+            const errorMessage = `[ContextMenu] Failed to add work item ids (${workItemIds.join(
+                ", "
+            )}) to plan '${planId}'`;
+            console.log(errorMessage);
+            PortfolioTelemetry.getInstance().TrackException(new Error(errorMessage));
+        }
     }
 }
