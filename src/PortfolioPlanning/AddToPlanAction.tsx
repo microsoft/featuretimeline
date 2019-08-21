@@ -22,13 +22,17 @@ export class PortfolioPlanActionsService {
     public getAddToPlanActionProvider() {
         return {
             getMenuItems: context => {
-                console.log(context);
                 const dataService = PortfolioPlanningDataService.getInstance();
                 const workItemIds = this.getWorkItemIds(context);
 
                 return dataService.GetAllPortfolioPlans().then(plans => {
                     const childItems: IContributedMenuItem[] = [];
                     const result: IContributedMenuItem[] = [];
+
+                    if (plans.entries.length === 0) {
+                        //  Don't show any items if there are no plans created yet.
+                        return result;
+                    }
 
                     //  TODO    Update to use MRU.
 
@@ -52,7 +56,8 @@ export class PortfolioPlanActionsService {
 
                     result.push({
                         title: "Add to Portfolio Plan",
-                        childItems: childItems
+                        childItems: childItems,
+                        icon: "dist/images/portfolio-plans-icon-small.png"
                     });
 
                     return result;
