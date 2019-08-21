@@ -469,6 +469,7 @@ export class PortfolioPlanningDataService {
             }
 
             const allProjectConfigPromises: Promise<IProjectConfiguration>[] = [];
+            const allProjectConfigPromisesProjectIds: { [projectIdKey: string]: boolean } = {};
             const newProjectConfigsByProjectId: { [projectIdKey: string]: IProjectConfiguration } = {};
             const byWorkItemId: { [workItemId: number]: WorkItemProjectId } = {};
 
@@ -479,11 +480,13 @@ export class PortfolioPlanningDataService {
 
                 byWorkItemId[workItemId.toString()] = map;
 
-                if (!plan.projects[projectIdKey]) {
+                if (!plan.projects[projectIdKey] && !allProjectConfigPromisesProjectIds[projectIdKey]) {
                     //  New project, need to get project configuration.
                     allProjectConfigPromises.push(
                         ProjectConfigurationDataService.getInstance().getProjectConfiguration(projectIdKey)
                     );
+
+                    allProjectConfigPromisesProjectIds[projectIdKey] = true;
                 }
             });
 
@@ -497,7 +500,8 @@ export class PortfolioPlanningDataService {
                 if (
                     plan.projects[projectIdKey] &&
                     (!plan.projects[projectIdKey].WorkItemTypeData ||
-                        !plan.projects[projectIdKey].WorkItemTypeData[workItemTypeKey])
+                        !plan.projects[projectIdKey].WorkItemTypeData[workItemTypeKey]) &&
+                    !allProjectConfigPromisesProjectIds[projectIdKey]
                 ) {
                     projectIdsNoTypes[projectIdKey] = true;
                 }
