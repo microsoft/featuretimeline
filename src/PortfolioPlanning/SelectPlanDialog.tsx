@@ -33,6 +33,7 @@ export interface IDialogInputData {
     workItemIds: number[];
     directory: PortfolioPlanningDirectory;
     setOnOkClickHandler: (onOkClickHandler: () => IPromise<void>) => void;
+    telemetryService: PortfolioTelemetry;
 }
 
 export interface ISelectPlanComponentProps {
@@ -93,8 +94,19 @@ class SelectPlanComponent extends React.Component<ISelectPlanComponentProps, ISe
         if (this.selection.value && this.selection.value[0]) {
             const planSelected = this.indexToPlan[this.selection.value[0].beginIndex];
             const workItemIds = this.props.inputData.workItemIds;
+            const telemetryService = this.props.inputData.telemetryService;
 
-            const plan = await PortfolioPlanningDataService.getInstance().AddWorkItemsToPlan(planSelected, workItemIds);
+            const telemetryData = {
+                ["PlanId"]: planSelected,
+                ["WorkItemCount"]: workItemIds.length
+            };
+            telemetryService.TrackAction("SelectPlanDialog/onOkClicked", telemetryData);
+
+            const plan = await PortfolioPlanningDataService.getInstance().AddWorkItemsToPlan(
+                planSelected,
+                workItemIds,
+                telemetryService
+            );
             if (!plan) {
                 //  TODO    Error scenario handling - e.g. plan doesn't exist.
                 //  Something went wrong. A valid plan should have been returned.

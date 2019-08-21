@@ -401,9 +401,23 @@ export class PortfolioPlanningDataService {
         return totalThatWillBeDeleted;
     }
 
-    public async AddWorkItemsToPlan(planId: string, workItemIds: number[]): Promise<PortfolioPlanning> {
+    public async AddWorkItemsToPlan(
+        planId: string,
+        workItemIds: number[],
+        telemetryService?: PortfolioTelemetry
+    ): Promise<PortfolioPlanning> {
+        if (!telemetryService) {
+            telemetryService = PortfolioTelemetry.getInstance();
+        }
+
         try {
             console.log(`AddWorkItemsToPlan. WorkItemIds: ${workItemIds.join(", ")}. Plan: ${planId}`);
+
+            const telemetryData = {
+                ["PlanId"]: planId,
+                ["WorkItemCount"]: workItemIds.length
+            };
+            telemetryService.TrackAction("PortfolioPlanningDataService/AddWorkItemsToPlan", telemetryData);
 
             if (workItemIds.length === 0) {
                 //  No-op.
@@ -411,10 +425,7 @@ export class PortfolioPlanningDataService {
                     ["PlanId"]: planId
                 };
 
-                PortfolioTelemetry.getInstance().TrackAction(
-                    "PortfolioPlanningDataService/AddWorkItemsToPlan/NoOp",
-                    props
-                );
+                telemetryService.TrackAction("PortfolioPlanningDataService/AddWorkItemsToPlan/NoOp", props);
 
                 return null;
             }
@@ -427,10 +438,7 @@ export class PortfolioPlanningDataService {
                     ["WorkItemIds"]: workItemIds
                 };
 
-                PortfolioTelemetry.getInstance().TrackAction(
-                    "PortfolioPlanningDataService/AddWorkItemsToPlan/NoPlanFound",
-                    props
-                );
+                telemetryService.TrackAction("PortfolioPlanningDataService/AddWorkItemsToPlan/NoPlanFound", props);
 
                 return null;
             }
@@ -452,7 +460,7 @@ export class PortfolioPlanningDataService {
                     ["WorkItemIds"]: workItemIds
                 };
 
-                PortfolioTelemetry.getInstance().TrackAction(
+                telemetryService.TrackAction(
                     "PortfolioPlanningDataService/AddWorkItemsToPlan/WorkItemProjectIdsNoResults",
                     props
                 );
@@ -554,7 +562,7 @@ export class PortfolioPlanningDataService {
                                             ["WorkItemType"]: workItemTypeKey
                                         };
 
-                                        PortfolioTelemetry.getInstance().TrackAction(
+                                        telemetryService.TrackAction(
                                             "PortfolioPlanningDataService/AddWorkItemsToPlan/WorkItemTypeNotSupported",
                                             props
                                         );
@@ -609,7 +617,7 @@ export class PortfolioPlanningDataService {
                                 ["WorkItemType"]: workItemTypeKey
                             };
 
-                            PortfolioTelemetry.getInstance().TrackAction(
+                            telemetryService.TrackAction(
                                 "PortfolioPlanningDataService/AddWorkItemsToPlan/WorkItemTypeNotSupported",
                                 props
                             );
@@ -621,7 +629,7 @@ export class PortfolioPlanningDataService {
                             ["ProjectId"]: projectIdKey
                         };
 
-                        PortfolioTelemetry.getInstance().TrackAction(
+                        telemetryService.TrackAction(
                             "PortfolioPlanningDataService/AddWorkItemsToPlan/MissingProjectConfiguration",
                             props
                         );
@@ -632,7 +640,7 @@ export class PortfolioPlanningDataService {
                         ["WorkItemId"]: newWorkItemId
                     };
 
-                    PortfolioTelemetry.getInstance().TrackAction(
+                    telemetryService.TrackAction(
                         "PortfolioPlanningDataService/AddWorkItemsToPlan/MissingProjectIdForNewWorkItemId",
                         props
                     );
@@ -642,7 +650,7 @@ export class PortfolioPlanningDataService {
             //  Persist plan changes
             return await this.UpdatePortfolioPlan(plan);
         } catch (error) {
-            PortfolioTelemetry.getInstance().TrackException(error);
+            telemetryService.TrackException(error);
             console.log(error);
             return Promise.reject(error);
         }

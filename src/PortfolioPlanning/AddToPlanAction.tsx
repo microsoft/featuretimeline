@@ -31,6 +31,7 @@ export class PortfolioPlanActionsService {
 
                     if (plans.entries.length === 0) {
                         //  Don't show any items if there are no plans created yet.
+                        PortfolioTelemetry.getInstance().TrackAction("AddToPlanAction/NoPlansFoundInDirectory");
                         return result;
                     }
 
@@ -67,6 +68,12 @@ export class PortfolioPlanActionsService {
     }
 
     private openAllPlansDialog(workItemIds: number[], directory: PortfolioPlanningDirectory): void {
+        const telemetryService = PortfolioTelemetry.getInstance();
+        const telemetryData = {
+            ["WorkItemCount"]: workItemIds.length
+        };
+        PortfolioTelemetry.getInstance().TrackAction("AddToPlanAction/openAllPlansDialog", telemetryData);
+
         let onOkClickHandler: () => Promise<void> = null;
 
         const dialogInput: IDialogInputData = {
@@ -74,7 +81,8 @@ export class PortfolioPlanActionsService {
             directory,
             setOnOkClickHandler: (onOkClickHandlerInstance: () => Promise<void>) => {
                 onOkClickHandler = onOkClickHandlerInstance;
-            }
+            },
+            telemetryService
         };
 
         VSS.getService(VSS.ServiceIds.Dialog).then((hostDialogService: IHostDialogService) => {
@@ -151,6 +159,12 @@ export class PortfolioPlanActionsService {
     }
 
     private async addWorkItemIdsToPlan(planId: string, workItemIds: number[]): Promise<void> {
+        const telemetryData = {
+            ["PlanId"]: planId,
+            ["WorkItemCount"]: workItemIds.length
+        };
+        PortfolioTelemetry.getInstance().TrackAction("AddToPlanAction/addWorkItemIdsToPlan", telemetryData);
+
         const plan = await PortfolioPlanningDataService.getInstance().AddWorkItemsToPlan(planId, workItemIds);
 
         if (!plan) {
