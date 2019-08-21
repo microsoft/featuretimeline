@@ -437,7 +437,8 @@ export class PortfolioPlanningDataService {
 
             const workItemIdsSet: { [workItemId: number]: true } = {};
             workItemIds.forEach(id => (workItemIdsSet[id.toString()] = true));
-            const projectMapping = await this.getWorkItemProjectIds(workItemIds);
+
+            const projectMapping = await this.getWorkItemProjectIds(Object.keys(workItemIdsSet).map(id => Number(id)));
 
             if (projectMapping && projectMapping.exceptionMessage && projectMapping.exceptionMessage.length > 0) {
                 throw new Error(

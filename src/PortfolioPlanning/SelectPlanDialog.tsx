@@ -90,7 +90,7 @@ class SelectPlanComponent extends React.Component<ISelectPlanComponentProps, ISe
     };
 
     private onOkClicked = async (): Promise<void> => {
-        if (this.selection.value && this.selection.value[0] && this.selection.value[0].beginIndex) {
+        if (this.selection.value && this.selection.value[0]) {
             const planSelected = this.indexToPlan[this.selection.value[0].beginIndex];
             const workItemIds = this.props.inputData.workItemIds;
 
