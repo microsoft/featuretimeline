@@ -26,7 +26,8 @@ import {
     WorkItemProjectIdsQueryResult,
     WorkItemProjectId,
     PortfolioItem,
-    WorkItemType
+    WorkItemType,
+    ProjectIdsQueryResult
 } from "../../../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../ODataClient";
 import {
@@ -42,6 +43,7 @@ import { defaultProjectComparer } from "../Utilities/Comparers";
 import { ExtensionConstants, IProjectConfiguration } from "../../Contracts";
 import { PortfolioTelemetry } from "../Utilities/Telemetry";
 import { ProjectConfigurationDataService } from "./ProjectConfigurationDataService";
+import { PageWorkItemHelper } from "../../../Common/redux/Helpers/PageWorkItemHelper";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -114,7 +116,11 @@ export class PortfolioPlanningDataService {
     }
 
     public async runWorkItemLinksQuery(queryInput: WorkItemLinksQueryInput): Promise<WorkItemLinksQueryResult> {
-        if (!queryInput || !queryInput.WorkItemIds || queryInput.WorkItemIds.length === 0) {
+        if (
+            !queryInput ||
+            !queryInput.WorkItemIdsByProject ||
+            Object.keys(queryInput.WorkItemIdsByProject).length === 0
+        ) {
             return Promise.resolve({
                 exceptionMessage: null,
                 Links: [],
@@ -135,7 +141,14 @@ export class PortfolioPlanningDataService {
             );
     }
 
-    public async getWorkItemProjectIds(workItemIds: number[]): Promise<WorkItemProjectIdsQueryResult> {
+    public async getWorkItemProjectIds(
+        workItemIds: number[],
+        telemetryService?: PortfolioTelemetry
+    ): Promise<WorkItemProjectIdsQueryResult> {
+        if (!telemetryService) {
+            telemetryService = PortfolioTelemetry.getInstance();
+        }
+
         if (!workItemIds || workItemIds.length === 0) {
             return Promise.resolve({
                 exceptionMessage: null,
@@ -144,18 +157,91 @@ export class PortfolioPlanningDataService {
             });
         }
 
-        const odataQueryString = ODataQueryBuilder.WorkItemProjectIds(workItemIds);
+        //  Can't use OData service to get work item information just based on Ids.
+        //  OData requires a project id or name filter to check security, and we don't have it.
+        //  Using WIQL query service to get project name and work item type for each work item id,
+        //  then using OData service to get project ids based on project names.
+        //  Unfortunately, WIQL doesn't support System.ProjectId :-(.
+        const workItemIdsMap: { [workitemId: number]: number } = {};
+        workItemIds.forEach(id => {
+            workItemIdsMap[id.toString()] = true;
+        });
+        const workItemIdsSet = Object.keys(workItemIdsMap).map(idStr => Number(idStr));
+        const workItemInfo = await PageWorkItemHelper.pageWorkItems(workItemIdsSet, null /** projectName */, [
+            "System.Id",
+            "System.WorkItemType",
+            "System.TeamProject"
+        ]);
 
-        const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
+        const projectIdsByName: { [projectNameKey: string]: string } = {};
+        workItemInfo.forEach(wi => {
+            const projectNameKey = (wi.fields["System.TeamProject"] as string).toLowerCase();
+            //  will add project id later.
+            projectIdsByName[projectNameKey] = null;
+        });
+        const projectNamesSet = Object.keys(projectIdsByName).map(name => name);
+        const projectIdQueryResult: ProjectIdsQueryResult = await PortfolioPlanningDataService.getInstance().getProjectIds(
+            projectNamesSet
+        );
 
-        return client
-            .runPostQuery(fullQueryUrl)
-            .then(
-                (results: any) =>
-                    this.ParseODataWorkItemProjectIdsQueryQueryResultResponseAsBatch(results, workItemIds),
-                error => this.ParseODataErrorResponse(error)
+        if (projectIdQueryResult.exceptionMessage && projectIdQueryResult.exceptionMessage.length > 0) {
+            throw new Error(
+                `runDependencyQuery: Exception running project ids query. Inner exception: ${
+                    projectIdQueryResult.exceptionMessage
+                }`
             );
+        }
+
+        if (!projectIdQueryResult.Results || projectIdQueryResult.Results.length === 0) {
+            const exceptionMessage = `Could not retrieve project ids for linked work items: ${workItemIdsSet.join(
+                ", "
+            )}. Project names found: ${projectNamesSet.join(", ")}`;
+            telemetryService.TrackException(new Error(exceptionMessage));
+
+            return {
+                exceptionMessage,
+                Results: [],
+                QueryInput: workItemIdsSet
+            };
+        }
+
+        projectIdQueryResult.Results.forEach(res => {
+            const projectNameKey = res.ProjectName.toLowerCase();
+
+            if (!projectIdsByName[projectNameKey]) {
+                projectIdsByName[projectNameKey] = res.ProjectSK;
+            }
+        });
+
+        const Results: WorkItemProjectId[] = [];
+
+        workItemInfo.forEach(wi => {
+            const projectNameKey = (wi.fields["System.TeamProject"] as string).toLowerCase();
+
+            if (!projectIdsByName[projectNameKey]) {
+                //  Couldn't find the project id for this linked work item, so ignoring it.
+                const telemetryData = {
+                    ["ProjectName"]: projectNameKey,
+                    ["WorkItemId"]: wi.id
+                };
+                telemetryService.TrackAction(
+                    "PortfolioPlanningDataService/GetWorkItemProjectIds/MissingProjectId",
+                    telemetryData
+                );
+            } else {
+                Results.push({
+                    WorkItemId: wi.fields["System.Id"],
+                    WorkItemType: wi.fields["System.WorkItemType"],
+                    ProjectSK: projectIdsByName[projectNameKey]
+                });
+            }
+        });
+
+        return {
+            exceptionMessage: null,
+            Results,
+            QueryInput: workItemIdsSet
+        };
     }
 
     public async runDependencyQuery(
@@ -233,6 +319,28 @@ export class PortfolioPlanningDataService {
             .runGetQuery(fullQueryUrl)
             .then(
                 (results: any) => this.ParseODataProjectQueryResultResponse(results),
+                error => this.ParseODataErrorResponse(error)
+            );
+    }
+
+    public async getProjectIds(projectNamesSet: string[]): Promise<ProjectIdsQueryResult> {
+        if (!projectNamesSet || projectNamesSet.length === 0) {
+            return Promise.resolve({
+                exceptionMessage: null,
+                Results: [],
+                QueryInput: projectNamesSet
+            });
+        }
+
+        const odataQueryString = ODataQueryBuilder.ProjectIdsQueryString(projectNamesSet);
+
+        const client = await ODataClient.getInstance();
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
+
+        return client
+            .runPostQuery(fullQueryUrl)
+            .then(
+                (results: any) => this.ParseODataProjectIdsQueryQueryResultResponseAsBatch(results, projectNamesSet),
                 error => this.ParseODataErrorResponse(error)
             );
     }
@@ -446,7 +554,10 @@ export class PortfolioPlanningDataService {
             const workItemIdsSet: { [workItemId: number]: true } = {};
             workItemIds.forEach(id => (workItemIdsSet[id.toString()] = true));
 
-            const projectMapping = await this.getWorkItemProjectIds(Object.keys(workItemIdsSet).map(id => Number(id)));
+            const projectMapping = await this.getWorkItemProjectIds(
+                Object.keys(workItemIdsSet).map(id => Number(id)),
+                telemetryService
+            );
 
             if (projectMapping && projectMapping.exceptionMessage && projectMapping.exceptionMessage.length > 0) {
                 throw new Error(
@@ -656,7 +767,8 @@ export class PortfolioPlanningDataService {
         } catch (error) {
             telemetryService.TrackException(error);
             console.log(error);
-            return Promise.reject(error);
+            const exceptionMessage: string = (error as Error).message;
+            return Promise.reject(exceptionMessage);
         }
     }
 
@@ -758,18 +870,19 @@ export class PortfolioPlanningDataService {
             }
         } catch (error) {
             console.log(error);
+            const exceptionMessage: string = (error as Error).message;
 
             return {
-                exceptionMessage: error,
+                exceptionMessage,
                 responseValue: null
             };
         }
     }
 
-    private ParseODataWorkItemProjectIdsQueryQueryResultResponseAsBatch(
+    private ParseODataProjectIdsQueryQueryResultResponseAsBatch(
         results: any,
-        queryInput: number[]
-    ): WorkItemProjectIdsQueryResult {
+        queryInput: string[]
+    ): ProjectIdsQueryResult {
         try {
             const rawResponseValue = this.ParseODataBatchResponse(results);
 
@@ -789,26 +902,27 @@ export class PortfolioPlanningDataService {
 
             return {
                 exceptionMessage: null,
-                Results: this.WorkItemProjectIdsQueryResultItems(rawResponseValue.responseValue),
+                Results: this.ProjectIdsQueryResultItems(rawResponseValue.responseValue),
                 QueryInput: queryInput
             };
         } catch (error) {
             console.log(error);
+            const exceptionMessage: string = (error as Error).message;
 
             return {
-                exceptionMessage: error,
+                exceptionMessage,
                 Results: [],
                 QueryInput: queryInput
             };
         }
     }
 
-    private WorkItemProjectIdsQueryResultItems(jsonValuePayload: any): WorkItemProjectId[] {
+    private ProjectIdsQueryResultItems(jsonValuePayload: any): Project[] {
         if (!jsonValuePayload || !jsonValuePayload["value"]) {
             return null;
         }
 
-        const rawResult: WorkItemProjectId[] = jsonValuePayload.value;
+        const rawResult: Project[] = jsonValuePayload.value;
         return rawResult;
     }
 
@@ -840,9 +954,10 @@ export class PortfolioPlanningDataService {
             };
         } catch (error) {
             console.log(error);
+            const exceptionMessage: string = (error as Error).message;
 
             return {
-                exceptionMessage: error,
+                exceptionMessage,
                 Links: [],
                 QueryInput: queryInput
             };
@@ -884,9 +999,10 @@ export class PortfolioPlanningDataService {
             };
         } catch (error) {
             console.log(error);
+            const exceptionMessage: string = (error as Error).message;
 
             return {
-                exceptionMessage: error,
+                exceptionMessage,
                 items: []
             };
         }
@@ -956,9 +1072,10 @@ export class PortfolioPlanningDataService {
             return this.ParseODataTeamsInAreaQueryResultResponse(rawResponseValue.responseValue);
         } catch (error) {
             console.log(error);
+            const exceptionMessage: string = (error as Error).message;
 
             return {
-                exceptionMessage: error,
+                exceptionMessage,
                 teamsInArea: null
             };
         }
@@ -1010,9 +1127,10 @@ export class PortfolioPlanningDataService {
             return this.ParseODataProjectQueryResultResponse(rawResponseValue.responseValue);
         } catch (error) {
             console.log(error);
+            const exceptionMessage: string = (error as Error).message;
 
             return {
-                exceptionMessage: error,
+                exceptionMessage,
                 projects: null
             };
         }
@@ -1143,6 +1261,19 @@ export class ODataQueryBuilder {
             "Projects" +
             "?" +
                 `$select=${ODataQueryBuilder.ProjectEntitySelect}`
+        );
+    }
+
+    public static ProjectIdsQueryString(projectNamesSet: string[]): string {
+        const filters: string[] = projectNamesSet.map(projectName => `ProjectName eq '${projectName}'`);
+
+        // prettier-ignore
+        return (
+            "Projects" +
+            "?" +
+                `$select=${ODataQueryBuilder.ProjectEntitySelect}` +
+            "&" +
+                `$filter=(${filters.join(" or ")})`
         );
     }
 
@@ -1369,18 +1500,6 @@ export class ODataQueryBuilder {
         return result;
     }
 
-    /**
-     * 
-    $select=WorkItemLinkSK,SourceWorkItemId,TargetWorkItemId,LinkTypeReferenceName,ProjectSK
-&
-    $filter=(
-            LinkTypeReferenceName eq 'System.LinkTypes.Dependency-Reverse' 
-            and (
-                    SourceWorkItemId eq 175
-                or  SourceWorkItemId eq 176)
-    )
-     * 
-     */
     public static WorkItemProjectIds(workItemIds: number[]): string {
         const workItemIdFilters = workItemIds.map(workItemId => `WorkItemId eq ${workItemId}`);
 
@@ -1414,9 +1533,14 @@ export class ODataQueryBuilder {
     }
 
     private static BuildODataWorkItemLinksQueryFilter(input: WorkItemLinksQueryInput): string {
-        const workItemIdFilters = input.WorkItemIds.map(
-            workItemId => `${input.WorkItemIdColumn} eq ${workItemId.toString()}`
-        );
+        const workItemIdFilters: string[] = [];
+        Object.keys(input.WorkItemIdsByProject).forEach(projectId => {
+            const idsFilter = input.WorkItemIdsByProject[projectId].map(id => {
+                return `${input.WorkItemIdColumn} eq ${id.toString()}`;
+            });
+
+            workItemIdFilters.push(`(ProjectSK eq ${projectId} and (${idsFilter.join(" or ")}))`);
+        });
 
         // prettier-ignore
         return "( " +
@@ -1477,8 +1601,9 @@ export class DependencyQuery {
             return results;
         } catch (error) {
             console.log(error);
+            const exceptionMessage: string = (error as Error).message;
             return {
-                exceptionMessage: error,
+                exceptionMessage,
                 byProject: {},
                 targetsProjectConfiguration: {}
             };
@@ -1626,7 +1751,7 @@ export class DependencyQuery {
             dataService.runWorkItemLinksQuery({
                 RefName: LinkTypeReferenceName.Predecessor,
                 WorkItemIdColumn: WorkItemLinkIdType.Source,
-                WorkItemIds: queryInput.workItemIds
+                WorkItemIdsByProject: queryInput.byProject
             })
         );
 
@@ -1634,7 +1759,7 @@ export class DependencyQuery {
             dataService.runWorkItemLinksQuery({
                 RefName: LinkTypeReferenceName.Successor,
                 WorkItemIdColumn: WorkItemLinkIdType.Source,
-                WorkItemIds: queryInput.workItemIds
+                WorkItemIdsByProject: queryInput.byProject
             })
         );
 
@@ -1661,10 +1786,8 @@ export class DependencyQuery {
             });
         });
 
-        //  Query project ids from work item ids.
-        return PortfolioPlanningDataService.getInstance().getWorkItemProjectIds(
-            Object.keys(workItemIds).map(workItemIdStr => Number(workItemIdStr))
-        );
+        const workItemIdsSet = Object.keys(workItemIds).map(idStr => Number(idStr));
+        return PortfolioPlanningDataService.getInstance().getWorkItemProjectIds(workItemIdsSet);
     }
 
     private static BuildPortfolioItemsQuery(

@@ -68,8 +68,22 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
             workItemTypeMappedStatesInProgress: {}
         };
 
+        try {
+            this._initialize();
+        } catch (error) {
+            const errorMessage = JSON.stringify(error, null, "   ");
+            this.setState({ errorMessage, loading: LoadingStatus.NotLoaded });
+        }
+    }
+
+    private _initialize = () => {
         this._getDependencies().then(
             dependencies => {
+                if (dependencies && dependencies.exceptionMessage && dependencies.exceptionMessage.length > 0) {
+                    this.setState({ errorMessage: dependencies.exceptionMessage, loading: LoadingStatus.NotLoaded });
+                    return;
+                }
+
                 let Predecessors: PortfolioPlanningQueryResultItem[] = [];
                 let Successors: PortfolioPlanningQueryResultItem[] = [];
                 const newWorkItemIconMap: WorkItemIconMap = {};
@@ -154,7 +168,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                 this.setState({ errorMessage: error.message, loading: LoadingStatus.NotLoaded });
             }
         );
-    }
+    };
 
     private _getWorkItemIcons = async (
         Predecessors: PortfolioPlanningQueryResultItem[],
@@ -369,8 +383,10 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
     };
 
     private _getDependencies = async (): Promise<PortfolioPlanningDependencyQueryResult> => {
+        const byProject: { [projectIdKey: string]: number[] } = {};
+        byProject[this.props.projectInfo.id] = [this.props.workItem.id];
         const dependencies = await PortfolioPlanningDataService.getInstance().runDependencyQuery({
-            workItemIds: [this.props.workItem.id]
+            byProject
         });
 
         return dependencies;

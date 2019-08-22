@@ -183,7 +183,7 @@ export interface PortfolioPlanningWorkItemTypeFieldNameQueryResult extends IQuer
 }
 
 export interface PortfolioPlanningDependencyQueryInput {
-    workItemIds: number[];
+    byProject: { [projectIdKey: string]: number[] };
 }
 
 export interface PortfolioPlanningDependencyQueryResult extends IQueryResultError {
@@ -202,7 +202,7 @@ export interface PortfolioPlanningDependencyQueryResult extends IQueryResultErro
 
 export interface WorkItemLinksQueryInput {
     RefName: string;
-    WorkItemIds: number[];
+    WorkItemIdsByProject: { [projectIdKey: string]: number[] };
     WorkItemIdColumn: WorkItemLinkIdType;
 }
 
@@ -238,4 +238,9 @@ export interface WorkItemProjectId {
 export interface WorkItemProjectIdsQueryResult extends IQueryResultError {
     Results: WorkItemProjectId[];
     QueryInput: number[];
+}
+
+export interface ProjectIdsQueryResult extends IQueryResultError {
+    Results: Project[];
+    QueryInput: string[];
 }
