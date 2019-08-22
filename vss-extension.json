@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "workitem-feature-timeline-extension",
-    "version": "0.0.362",
+    "version": "0.0.353",
     "name": "Feature timeline and Epic Roadmap",
     "description": "Feature timeline of your in-progress features.",
     "publisher": "ms-devlabs",
