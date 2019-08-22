@@ -239,3 +239,8 @@ export interface WorkItemProjectIdsQueryResult extends IQueryResultError {
     Results: WorkItemProjectId[];
     QueryInput: number[];
 }
+
+export interface ProjectIdsQueryResult extends IQueryResultError {
+    Results: Project[];
+    QueryInput: string[];
+}
