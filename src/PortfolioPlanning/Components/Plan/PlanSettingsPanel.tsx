@@ -2,21 +2,17 @@ import * as React from "react";
 import "./PlanSettingsPanel.scss";
 import { Panel } from "azure-devops-ui/Panel";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
-import { ProgressTrackingCriteria } from "../../Contracts";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
+import { ProgressTrackingUserSetting, RollupHierachyUserSetting } from "../../Contracts";
 
 export interface IPlanSettingsProps {
-    progressTrackingCriteria: ProgressTrackingCriteria;
-    onProgressTrackingCriteriaChanged: (criteria: ProgressTrackingCriteria) => void;
+    userSettings: UserSettings;
+    onProgressTrackingCriteriaChanged: (criteria: ProgressTrackingUserSetting.Options) => void;
+    onTimelineItemRollupChanged: (criteria: RollupHierachyUserSetting.Options) => void;
     onClosePlanSettingsPanel: () => void;
 }
 
 export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
-    const completedCountKey = "completedCount";
-    const effortKey = "effort";
-
-    const selectedProgressCriteriaKey =
-        props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount ? completedCountKey : effortKey;
-
     return (
         <Panel onDismiss={props.onClosePlanSettingsPanel} titleProps={{ text: "Settings" }}>
             <div className="settings-container">
@@ -24,28 +20,43 @@ export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
                     <div className="progress-options-label">Track Progress Using: </div>
                     <ComboBox
                         className="progress-options-dropdown"
-                        selectedKey={selectedProgressCriteriaKey}
+                        selectedKey={props.userSettings.ProgressTrackingOption}
                         allowFreeform={false}
                         autoComplete="off"
                         options={[
                             {
-                                key: completedCountKey,
-                                text: ProgressTrackingCriteria.CompletedCount
+                                key: ProgressTrackingUserSetting.CompletedCount.Key,
+                                text: ProgressTrackingUserSetting.CompletedCount.Text
                             },
                             {
-                                key: effortKey,
-                                text: ProgressTrackingCriteria.Effort
+                                key: ProgressTrackingUserSetting.Effort.Key,
+                                text: ProgressTrackingUserSetting.Effort.Text
                             }
                         ]}
                         onChanged={(item: { key: string; text: string }) => {
-                            switch (item.key) {
-                                case completedCountKey:
-                                    props.onProgressTrackingCriteriaChanged(ProgressTrackingCriteria.CompletedCount);
-                                    break;
-                                case effortKey:
-                                    props.onProgressTrackingCriteriaChanged(ProgressTrackingCriteria.Effort);
-                                    break;
+                            props.onProgressTrackingCriteriaChanged(item.key as ProgressTrackingUserSetting.Options);
+                        }}
+                    />
+                </div>
+                <div className="progress-options settings-item">
+                    <div className="progress-options-label">Track Progress Using: </div>
+                    <ComboBox
+                        className="progress-options-dropdown"
+                        selectedKey={props.userSettings.TimelineItemRollup}
+                        allowFreeform={false}
+                        autoComplete="off"
+                        options={[
+                            {
+                                key: RollupHierachyUserSetting.Children.Key,
+                                text: RollupHierachyUserSetting.Children.Text
+                            },
+                            {
+                                key: RollupHierachyUserSetting.Descendants.Key,
+                                text: RollupHierachyUserSetting.Descendants.Text
                             }
+                        ]}
+                        onChanged={(item: { key: string; text: string }) => {
+                            props.onTimelineItemRollupChanged(item.key as RollupHierachyUserSetting.Options);
                         }}
                     />
                 </div>

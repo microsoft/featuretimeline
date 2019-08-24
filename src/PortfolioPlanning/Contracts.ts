@@ -112,9 +112,43 @@ export interface ITimelineItem {
     canMove: boolean;
 }
 
-export enum ProgressTrackingCriteria {
-    CompletedCount = "Completed Count",
-    Effort = "Effort"
+export interface IUseSettingKeyTextPair {
+    Key: ProgressTrackingUserSetting.Options | RollupHierachyUserSetting.Options;
+    Text: string;
+}
+
+export namespace ProgressTrackingUserSetting {
+    export enum Options {
+        CompletedCount = "completedcount",
+        Effort = "effort"
+    }
+
+    export const CompletedCount: IUseSettingKeyTextPair = {
+        Key: Options.CompletedCount,
+        Text: "Completed Count"
+    };
+
+    export const Effort: IUseSettingKeyTextPair = {
+        Key: Options.Effort,
+        Text: "Effort"
+    };
+}
+
+export namespace RollupHierachyUserSetting {
+    export enum Options {
+        Children = "children",
+        Descendants = "descendants"
+    }
+
+    export const Children: IUseSettingKeyTextPair = {
+        Key: Options.Descendants,
+        Text: "Children"
+    };
+
+    export const Descendants: IUseSettingKeyTextPair = {
+        Key: Options.Descendants,
+        Text: "Descendants"
+    };
 }
 
 export enum LoadingStatus {

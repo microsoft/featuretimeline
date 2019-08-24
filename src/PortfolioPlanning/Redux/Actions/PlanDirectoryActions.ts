@@ -1,6 +1,7 @@
 import { createAction, ActionsUnion } from "../Helpers";
 import { PortfolioPlanningDirectory, PortfolioPlanning } from "../../Models/PortfolioPlanningQueryModels";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
 
 export const enum PlanDirectoryActionTypes {
     Initialize = "PlanDirectory/Initialize",
@@ -16,8 +17,8 @@ export const enum PlanDirectoryActionTypes {
 }
 
 export const PlanDirectoryActions = {
-    initialize: (directoryData: PortfolioPlanningDirectory) =>
-        createAction(PlanDirectoryActionTypes.Initialize, { directoryData }),
+    initialize: (directoryData: PortfolioPlanningDirectory, userSettings: UserSettings) =>
+        createAction(PlanDirectoryActionTypes.Initialize, { directoryData, userSettings }),
     createPlan: (name: string, description: string) => {
         PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.CreatePlan);
         return createAction(PlanDirectoryActionTypes.CreatePlan, {
@@ -43,7 +44,7 @@ export const PlanDirectoryActions = {
         PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.DeletePlan);
         return createAction(PlanDirectoryActionTypes.DeletePlan, { id });
     },
-    updateProjectsAndTeamsMetadata: (planId:string, projectNames: string[], teamNames: string[]) =>
+    updateProjectsAndTeamsMetadata: (planId: string, projectNames: string[], teamNames: string[]) =>
         createAction(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, { planId, projectNames, teamNames }),
     toggleSelectedPlanId: (id: string) => {
         PortfolioTelemetry.getInstance().TrackAction(PlanDirectoryActionTypes.ToggleSelectedPlanId);

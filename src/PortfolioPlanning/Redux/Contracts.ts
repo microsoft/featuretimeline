@@ -1,6 +1,7 @@
-import { IProject, IWorkItem, ProgressTrackingCriteria, ITeam, LoadingStatus } from "../Contracts";
+import { IProject, IWorkItem, ITeam, LoadingStatus } from "../Contracts";
 import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
 import { ExtendedSinglePlanTelemetry } from "../Models/TelemetryModels";
+import { UserSettings } from "../Models/UserSettingsDataModels";
 
 export interface IPortfolioPlanningState {
     planDirectoryState: IPlanDirectoryState;
@@ -18,10 +19,10 @@ export interface IEpicTimelineState {
     setDatesDialogHidden: boolean;
     planSettingsPanelOpen: boolean;
     selectedItemId: number;
-    progressTrackingCriteria: ProgressTrackingCriteria;
     isNewPlanExperience: boolean;
     deletePlanDialogHidden: boolean;
     planTelemetry: ExtendedSinglePlanTelemetry;
+    userSettings: UserSettings;
 }
 
 export interface IPlanDirectoryState {
@@ -30,4 +31,5 @@ export interface IPlanDirectoryState {
     selectedPlanId: string;
     newPlanDialogVisible: boolean;
     plans: PortfolioPlanningMetadata[];
+    userSettings: UserSettings;
 }

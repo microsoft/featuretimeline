@@ -17,7 +17,7 @@ import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 import { PlanSettingsPanel } from "./PlanSettingsPanel";
-import { ProgressTrackingCriteria, ITimelineItem, LoadingStatus } from "../../Contracts";
+import { ITimelineItem, LoadingStatus } from "../../Contracts";
 import { AddItemPanel } from "./AddItemPanel";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { Link } from "azure-devops-ui/Link";
@@ -25,6 +25,7 @@ import { DeletePlanDialog } from "./DeletePlanDialog";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 import { ExtendedSinglePlanTelemetry } from "../../Models/TelemetryModels";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
 
 interface IPlanPageMappedProps {
     plan: PortfolioPlanningMetadata;
@@ -32,7 +33,6 @@ interface IPlanPageMappedProps {
     teamNames: string[];
     epicIds: { [epicId: number]: number };
     selectedItem: ITimelineItem;
-    progressTrackingCriteria: ProgressTrackingCriteria;
     addItemPanelOpen: boolean;
     planSettingsPanelOpen: boolean;
     exceptionMessage: string;
@@ -40,6 +40,7 @@ interface IPlanPageMappedProps {
     isNewPlanExperience: boolean;
     deletePlanDialogHidden: boolean;
     planTelemetry: ExtendedSinglePlanTelemetry;
+    userSettings: UserSettings;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -143,8 +144,9 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         if (this.props.planSettingsPanelOpen) {
             return (
                 <PlanSettingsPanel
-                    progressTrackingCriteria={this.props.progressTrackingCriteria}
+                    userSettings={this.props.userSettings}
                     onProgressTrackingCriteriaChanged={this.props.onToggleProgressTrackingCriteria}
+                    onTimelineItemRollupChanged={this.props.onToggleTimelineItemRollupCriteria}
                     onClosePlanSettingsPanel={() => {
                         this.props.onTogglePlanSettingsPanelOpen(false);
                     }}
@@ -186,15 +188,15 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         projectNames: getProjectNames(state),
         teamNames: getTeamNames(state),
         epicIds: getEpicIds(state.epicTimelineState),
-        selectedItem: getSelectedItem(state.epicTimelineState),
-        progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
+        selectedItem: getSelectedItem(state.epicTimelineState, state.planDirectoryState.userSettings),
         addItemPanelOpen: state.epicTimelineState.addItemsPanelOpen,
         planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen,
         exceptionMessage: state.epicTimelineState.exceptionMessage,
         planLoadingStatus: state.epicTimelineState.planLoadingStatus,
         isNewPlanExperience: state.epicTimelineState.isNewPlanExperience,
         deletePlanDialogHidden: state.epicTimelineState.deletePlanDialogHidden,
-        planTelemetry: getPlanExtendedTelemetry(state.epicTimelineState)
+        planTelemetry: getPlanExtendedTelemetry(state.epicTimelineState),
+        userSettings: state.planDirectoryState.userSettings
     };
 }
 
@@ -204,9 +206,13 @@ const Actions = {
     resetPlanState: EpicTimelineActions.resetPlanState,
     onOpenAddItemPanel: EpicTimelineActions.openAddItemPanel,
     onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
+    onToggleTimelineItemRollupCriteria: EpicTimelineActions.toggleTimelineRollupCriteria,
     onCloseAddItemPanel: EpicTimelineActions.closeAddItemPanel,
     onAddItems: EpicTimelineActions.addItems,
     onTogglePlanSettingsPanelOpen: EpicTimelineActions.togglePlanSettingsPanelOpen,
+
+    // TODO Need another action when the panel is closed.
+    //  Check if settings changed, and reload timeline if needed.
     toggleDeletePlanDialogHidden: EpicTimelineActions.toggleDeletePlanDialogHidden,
     dismissErrorMessageCard: EpicTimelineActions.dismissErrorMessageCard
 };

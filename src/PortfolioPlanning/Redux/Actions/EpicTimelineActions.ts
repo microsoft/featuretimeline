@@ -1,10 +1,11 @@
 import { createAction, ActionsUnion } from "../Helpers";
 import {
-    ProgressTrackingCriteria,
+    ProgressTrackingUserSetting,
     IAddItems,
     IRemoveItem,
     LoadingStatus,
-    IProjectConfiguration
+    IProjectConfiguration,
+    RollupHierachyUserSetting
 } from "../../Contracts";
 import moment = require("moment");
 import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";
@@ -24,6 +25,7 @@ export const enum EpicTimelineActionTypes {
     AddItems = "EpicTimeline/AddItems",
     RemoveItems = "EpicTimeline/RemoveItems",
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria",
+    ToggleTimelineRollupCriteria = "EpicTimeline/ToggleTimelineRollupCriteria",
     ToggleLoadingStatus = "EpicTimeline/ToggleLoadingStatus",
     ResetPlanState = "EpicTimeline/ResetPlanState",
     TogglePlanSettingsPanelOpen = "EpicTimeline/TogglePlanSettingsPanelOpen",
@@ -74,10 +76,22 @@ export const EpicTimelineActions = {
         PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.RemoveItems);
         return createAction(EpicTimelineActionTypes.RemoveItems, itemToRemove);
     },
-    toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
-        createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
+    toggleProgressTrackingCriteria: (criteria: ProgressTrackingUserSetting.Options) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
+            ["Value"]: criteria
+        });
+        return createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
-        }),
+        });
+    },
+    toggleTimelineRollupCriteria: (criteria: RollupHierachyUserSetting.Options) => {
+        PortfolioTelemetry.getInstance().TrackAction(EpicTimelineActionTypes.ToggleTimelineRollupCriteria, {
+            ["Value"]: criteria
+        });
+        return createAction(EpicTimelineActionTypes.ToggleTimelineRollupCriteria, {
+            criteria
+        });
+    },
     toggleLoadingStatus: (status: LoadingStatus) =>
         createAction(EpicTimelineActionTypes.ToggleLoadingStatus, { status }),
     resetPlanState: () => createAction(EpicTimelineActionTypes.ResetPlanState),

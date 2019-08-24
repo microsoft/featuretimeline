@@ -2,6 +2,7 @@ import { IPortfolioPlanningState, IPlanDirectoryState } from "../Contracts";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 import { SinglePlanTelemetry } from "../../Models/TelemetryModels";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
 
 export function getSelectedPlanId(state: IPortfolioPlanningState): string {
     return state.planDirectoryState.selectedPlanId;
@@ -26,4 +27,8 @@ export function getPlansTelemetry(state: IPlanDirectoryState): SinglePlanTelemet
             projects: plan.projectNames ? plan.projectNames.length : 0
         };
     });
+}
+
+export function getUserSettings(state: IPlanDirectoryState): UserSettings {
+    return state.userSettings;
 }

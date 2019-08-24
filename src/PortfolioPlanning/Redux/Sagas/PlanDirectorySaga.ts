@@ -14,6 +14,8 @@ import { getProjectNames, getTeamNames, getExceptionMessage } from "../Selectors
 import { PortfolioTelemetry } from "../../Common/Utilities/Telemetry";
 import { LaunchWorkItemFormActionType } from "../../../Common/redux/actions/launchWorkItemForm";
 import { launchWorkItemFormSaga } from "./launchWorkItemFromSaga";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
+import { UserSettingsDataService } from "../../Common/Services/UserSettingsDataService";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
@@ -21,16 +23,18 @@ export function* planDirectorySaga(): SagaIterator {
     yield effects.takeEvery(PlanDirectoryActionTypes.DeletePlan, deletePlan);
     yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemsReceived, updateProjectsAndTeamsMetadata);
     yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemDeleted, updateProjectsAndTeamsMetadata);
-    yield effects.takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga); 
+    yield effects.takeEvery(LaunchWorkItemFormActionType, launchWorkItemFormSaga);
 }
 
 export function* initializePlanDirectory(): SagaIterator {
     try {
         const service = PortfolioPlanningDataService.getInstance();
+        const settingsService = UserSettingsDataService.getInstance();
 
         const allPlans: PortfolioPlanningDirectory = yield effects.call([service, service.GetAllPortfolioPlans]);
+        const userSettings: UserSettings = yield effects.call([settingsService, settingsService.getUserSettings]);
 
-        yield effects.put(PlanDirectoryActions.initialize(allPlans));
+        yield effects.put(PlanDirectoryActions.initialize(allPlans, userSettings));
     } catch (exception) {
         console.error(exception);
         yield effects.put(PlanDirectoryActions.handleGeneralException(exception));

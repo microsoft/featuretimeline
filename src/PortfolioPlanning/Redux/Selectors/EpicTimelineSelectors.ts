@@ -1,7 +1,8 @@
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Contracts";
-import { IProject, IWorkItem, ITimelineGroup, ITimelineItem, ProgressTrackingCriteria } from "../../Contracts";
+import { IProject, IWorkItem, ITimelineGroup, ITimelineItem, ProgressTrackingUserSetting } from "../../Contracts";
 import moment = require("moment");
 import { ExtendedSinglePlanTelemetry } from "../../Models/TelemetryModels";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
 
 export function getProjects(state: IEpicTimelineState): IProject[] {
     return state.projects;
@@ -53,13 +54,13 @@ export function getEpicIds(state: IEpicTimelineState): { [epicId: number]: numbe
     return result;
 }
 
-export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
+export function getTimelineItems(state: IEpicTimelineState, userSettings: UserSettings): ITimelineItem[] {
     return state.epics.map(epic => {
         let completed: number;
         let total: number;
         let progress: number;
 
-        if (state.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount) {
+        if (userSettings.ProgressTrackingOption === ProgressTrackingUserSetting.CompletedCount.Key) {
             completed = epic.completedCount;
             total = epic.totalCount;
             progress = epic.countProgress;
@@ -90,8 +91,8 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
     });
 }
 
-export function getSelectedItem(state: IEpicTimelineState): ITimelineItem {
-    return getTimelineItems(state).find(item => item.id === state.selectedItemId);
+export function getSelectedItem(state: IEpicTimelineState, userSettings: UserSettings): ITimelineItem {
+    return getTimelineItems(state, userSettings).find(item => item.id === state.selectedItemId);
 }
 
 export function getMessage(state: IEpicTimelineState): string {
@@ -115,10 +116,6 @@ export function getSetDatesDialogHidden(state: IEpicTimelineState): boolean {
 
 export function getAddEpicPanelOpen(state: IEpicTimelineState): boolean {
     return state.addItemsPanelOpen;
-}
-
-export function getProgressTrackingCriteria(state: IEpicTimelineState): ProgressTrackingCriteria {
-    return state.progressTrackingCriteria;
 }
 
 export function getExceptionMessage(state: IPortfolioPlanningState): string {

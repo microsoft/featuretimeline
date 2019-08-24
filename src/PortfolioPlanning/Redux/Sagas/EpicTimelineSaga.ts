@@ -17,6 +17,9 @@ import { PlanDirectoryActionTypes, PlanDirectoryActions } from "../Actions/PlanD
 import { LoadPortfolio } from "./LoadPortfolio";
 import { ActionsOfType } from "../Helpers";
 import { SetDefaultDatesForWorkItems, saveDatesToServer } from "./DefaultDateUtil";
+import { UserSettingsDataService } from "../../Common/Services/UserSettingsDataService";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
+import { getUserSettings } from "../Selectors/PlanDirectorySelectors";
 
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateDates, onUpdateDates);
@@ -24,11 +27,45 @@ export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.AddItems, onAddEpics);
     yield takeEvery(PlanDirectoryActionTypes.ToggleSelectedPlanId, onToggleSelectedPlanId);
     yield takeEvery(EpicTimelineActionTypes.RemoveItems, onRemoveEpic);
+    yield takeEvery(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, onProgressTrackingCriteria);
+    yield takeEvery(EpicTimelineActionTypes.ToggleTimelineRollupCriteria, onTimelineRollupCriteria);
 }
 
-function* onUpdateDates(
-    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateDates>
+function* onProgressTrackingCriteria(
+    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ToggleProgressTrackingCriteria>
 ): SagaIterator {
+    const newOption = action.payload.criteria;
+    try {
+        const dataService = UserSettingsDataService.getInstance();
+        const userSettings: UserSettings = yield effects.select(getUserSettings);
+
+        userSettings.ProgressTrackingOption = newOption;
+
+        yield effects.call([dataService, dataService.updateUserSettings], userSettings);
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    }
+}
+
+function* onTimelineRollupCriteria(
+    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ToggleTimelineRollupCriteria>
+): SagaIterator {
+    const newOption = action.payload.criteria;
+    try {
+        const dataService = UserSettingsDataService.getInstance();
+        const userSettings: UserSettings = yield effects.select(getUserSettings);
+
+        userSettings.TimelineItemRollup = newOption;
+
+        yield effects.call([dataService, dataService.updateUserSettings], userSettings);
+    } catch (exception) {
+        console.error(exception);
+        yield effects.put(EpicTimelineActions.handleGeneralException(exception));
+    }
+}
+
+function* onUpdateDates(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.UpdateDates>): SagaIterator {
     const epicId = action.payload.epicId;
     try {
         yield effects.call(saveDatesToServer, epicId);
@@ -51,6 +88,7 @@ function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAct
         yield effects.put(EpicTimelineActions.updateItemFinished(epicId));
     }
 }
+
 function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {
     try {
         yield effects.put(EpicTimelineActions.toggleLoadingStatus(LoadingStatus.NotLoaded));

@@ -3,17 +3,19 @@ import produce from "immer";
 import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
 import { LoadingStatus } from "../../Contracts";
 import { caseInsensitiveComparer } from "../../Common/Utilities/String";
+import { UserSettingsDataService } from "../../Common/Services/UserSettingsDataService";
 
 export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDirectoryActions): IPlanDirectoryState {
     return produce(state || getDefaultState(), (draft: IPlanDirectoryState) => {
         switch (action.type) {
             case PlanDirectoryActionTypes.Initialize: {
-                const { directoryData } = action.payload;
+                const { directoryData, userSettings } = action.payload;
 
                 draft.directoryLoadingStatus = LoadingStatus.Loaded;
                 draft.exceptionMessage = directoryData.exceptionMessage;
                 draft.plans = directoryData.entries;
                 draft.plans.sort((a, b) => caseInsensitiveComparer(a.name, b.name));
+                draft.userSettings = userSettings;
 
                 break;
             }
@@ -83,6 +85,7 @@ export function getDefaultState(): IPlanDirectoryState {
         exceptionMessage: "",
         selectedPlanId: undefined,
         plans: [],
-        newPlanDialogVisible: false
+        newPlanDialogVisible: false,
+        userSettings: UserSettingsDataService.getInstance().getDefaultUserSettings()
     };
 }

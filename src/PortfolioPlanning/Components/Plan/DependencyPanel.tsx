@@ -4,7 +4,7 @@ import "./DependencyPanel.scss";
 import {
     ITimelineItem,
     LoadingStatus,
-    ProgressTrackingCriteria,
+    ProgressTrackingUserSetting,
     IWorkItemIcon,
     IProject,
     IProjectConfiguration
@@ -27,13 +27,14 @@ import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 import { connect } from "react-redux";
 import { Icon } from "azure-devops-ui/Icon";
 import moment = require("moment");
+import { UserSettings } from "../../Models/UserSettingsDataModels";
 
 type WorkItemIconMap = { [projectIdKey: string]: { [workItemType: string]: IWorkItemIcon } };
 type WorkItemInProgressStatesMap = { [projectIdKey: string]: { [WorkItemType: string]: string[] } };
 export interface IDependencyPanelProps {
     workItem: ITimelineItem;
     projectInfo: IProject;
-    progressTrackingCriteria: ProgressTrackingCriteria;
+    userSettings: UserSettings;
     onDismiss: () => void;
 }
 
@@ -279,11 +280,13 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
                     projectId: dependency.ProjectId,
                     workItemType: dependency.WorkItemType,
                     completed:
-                        this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
+                        this.props.userSettings.ProgressTrackingOption ===
+                        ProgressTrackingUserSetting.CompletedCount.Key
                             ? dependency.CompletedCount
                             : dependency.CompletedEffort,
                     total:
-                        this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
+                        this.props.userSettings.ProgressTrackingOption ===
+                        ProgressTrackingUserSetting.CompletedCount.Key
                             ? dependency.TotalCount
                             : dependency.TotalEffort,
                     showInfoIcon: this._showInfoIcon(dependency, isPredecessor),
@@ -408,7 +411,7 @@ export class DependencyPanel extends React.Component<IDependencyPanelProps, IDep
 
 const mapStateToProps = (state: IDependencyPanelState, ownProps: IDependencyPanelProps) => ({
     workItem: ownProps.workItem,
-    progressTrackingCriteria: ownProps.progressTrackingCriteria,
+    userSettings: ownProps.userSettings,
     onDismiss: ownProps.onDismiss
 });
 

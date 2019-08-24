@@ -138,6 +138,7 @@ export class PortfolioTelemetry {
 
     public TrackException(exception: Error) {
         try {
+            console.log(JSON.stringify(exception, null, "    "));
             AppInsightsClient.getAppInsightsInstance().trackException({
                 error: exception,
                 properties: {

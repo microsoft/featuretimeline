@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as moment from "moment";
-import { ITimelineGroup, ITimelineItem, ITeam, ProgressTrackingCriteria, IProject } from "../../Contracts";
+import { ITimelineGroup, ITimelineItem, ITeam, IProject } from "../../Contracts";
 import Timeline, { TimelineHeaders, DateHeader } from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
@@ -26,6 +26,7 @@ import { MenuButton } from "azure-devops-ui/Menu";
 import { IconSize } from "azure-devops-ui/Icon";
 import { DetailsDialog } from "./DetailsDialog";
 import { ConnectedDependencyPanel } from "./DependencyPanel";
+import { UserSettings } from "../../Models/UserSettingsDataModels";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -52,8 +53,8 @@ interface IPlanTimelineMappedProps {
     planOwner: IdentityRef;
     exceptionMessage: string;
     setDatesDialogHidden: boolean;
-    progressTrackingCriteria: ProgressTrackingCriteria;
     projects: { [projectIdKey: string]: IProject };
+    userSettings: UserSettings;
 }
 
 interface IPlanTimelineState {
@@ -133,7 +134,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps, IPlanTimel
                 <ConnectedDependencyPanel
                     workItem={this.state.contextMenuItem}
                     projectInfo={this.props.projects[this.state.contextMenuItem.projectId.toLowerCase()]}
-                    progressTrackingCriteria={this.props.progressTrackingCriteria}
+                    userSettings={this.props.userSettings}
                     onDismiss={() => this.setState({ dependencyPanelOpen: false })}
                 />
             );
@@ -565,13 +566,13 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         projectNames: getProjectNames(state),
         teamNames: getTeamNames(state),
         teams: state.epicTimelineState.teams,
-        items: getTimelineItems(state.epicTimelineState),
+        items: getTimelineItems(state.epicTimelineState, state.planDirectoryState.userSettings),
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
         exceptionMessage: state.epicTimelineState.exceptionMessage,
         setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
-        progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
-        projects: getIndexedProjects(state.epicTimelineState)
+        projects: getIndexedProjects(state.epicTimelineState),
+        userSettings: state.planDirectoryState.userSettings
     };
 }
 

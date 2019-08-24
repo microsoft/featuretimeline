@@ -6,9 +6,10 @@ import {
     PortfolioItemDeletedAction
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
-import { ProgressTrackingCriteria, LoadingStatus, IWorkItemIcon } from "../../Contracts";
+import { LoadingStatus, IWorkItemIcon } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
 import { defaultIProjectComparer, defaultIWorkItemComparer } from "../../Common/Utilities/Comparers";
+import { UserSettingsDataService } from "../../Common/Services/UserSettingsDataService";
 
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
@@ -79,7 +80,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 return handlePortfolioItemDeleted(state, action as PortfolioItemDeletedAction);
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
-                draft.progressTrackingCriteria = action.payload.criteria;
+                draft.userSettings.ProgressTrackingOption = action.payload.criteria;
                 break;
             }
             case EpicTimelineActionTypes.ToggleLoadingStatus: {
@@ -142,10 +143,10 @@ export function getDefaultState(): IEpicTimelineState {
         setDatesDialogHidden: true,
         planSettingsPanelOpen: false,
         selectedItemId: null,
-        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
         isNewPlanExperience: false,
         deletePlanDialogHidden: true,
-        planTelemetry: null
+        planTelemetry: null,
+        userSettings: UserSettingsDataService.getInstance().getDefaultUserSettings()
     };
 }
 
