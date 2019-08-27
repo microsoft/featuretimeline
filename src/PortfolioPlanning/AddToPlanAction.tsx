@@ -31,7 +31,6 @@ export class PortfolioPlanActionsService {
 
                     if (plans.entries.length === 0) {
                         //  Don't show any items if there are no plans created yet.
-                        PortfolioTelemetry.getInstance().TrackAction("AddToPlanAction/NoPlansFoundInDirectory");
                         return result;
                     }
 
@@ -90,7 +89,7 @@ export class PortfolioPlanActionsService {
             hostDialogService
                 .openDialog(
                     `${extensionContext.publisherId}.${
-                        extensionContext.extensionId
+                    extensionContext.extensionId
                     }.workitem-portfolio-planning-show-all-plans-action`,
                     {
                         title: "Select Portfolio Plan",
