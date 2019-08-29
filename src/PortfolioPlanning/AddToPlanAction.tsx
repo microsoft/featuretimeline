@@ -44,6 +44,7 @@ export class PortfolioPlanActionsService {
                             const metadata = plans.entries[i];
                             childItems.push({
                                 title: metadata.name,
+                                text: metadata.name,
                                 action: () => this.addWorkItemIdsToPlan(metadata.id, workItemIds)
                             });
                         }
@@ -51,11 +52,13 @@ export class PortfolioPlanActionsService {
 
                     childItems.push({
                         title: "See all plans...",
+                        text: "See all plans...",
                         action: () => this.openAllPlansDialog(workItemIds, plans)
                     });
 
                     result.push({
                         title: "Add to Portfolio Plan",
+                        text: "Add to Portfolio Plan",
                         childItems: childItems,
                         icon: "dist/images/portfolio-plans-icon-small.png"
                     });
