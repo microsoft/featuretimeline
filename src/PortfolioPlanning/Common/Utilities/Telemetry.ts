@@ -233,7 +233,7 @@ export class AppInsightsClient {
 
     private getDefaultConfig(): AppInsightsConfig {
         const result = new AppInsightsConfig();
-        result.instrumentationKey = "a91fdcf6-4456-4692-98d3-e390c0b65939";
+        result.instrumentationKey = "3ebb5cca-565e-4f7c-b54a-43476b04e0a7";
 
         return result;
     }
