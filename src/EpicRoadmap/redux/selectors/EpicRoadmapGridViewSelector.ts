@@ -158,7 +158,9 @@ function _getGridItems(
         let workItemStartRow = teamGroupStartRow;
         const childItems = orderedWorkItems.map(workItem => {
             if (workItem.id === 11) {
-                debugger;
+               //Why is this here?
+                // debugger;
+
             }
             const { iterationDuration: { startIteration, endIteration } } = workItem;
             const iterationsForIndex = !isSubGrid && iterationDisplayOptions ? teamIterations : displayIterations; // isSubGrid ? displayIterations : teamIterations;
@@ -186,7 +188,7 @@ function _getGridItems(
                 }
             }
             if (outofScope || startIterationIndex < 0 || endIterationIndex < 0) {
-                debugger;
+                
                 return null;
             }
             if (startIterationIndex < 0) {

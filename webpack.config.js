@@ -10,7 +10,9 @@ const path = require("path");
  *
  */
 
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+//deprecated in webpack 5
+//const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
@@ -27,7 +29,8 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPl
 const mode = process.env.NODE_ENV || "development";
 const sourcemap = mode === "development";
 const plugins = [
-    new CopyWebpackPlugin([
+    new CopyWebpackPlugin({ 
+        patterns: [
         {
             from: "./node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js",
             to: "libs/VSS.SDK.min.js"
@@ -68,11 +71,11 @@ const plugins = [
             from: "./details.md",
             to: "details.md"
         }
-    ])
+    ]
+})
 ];
 
 if (mode !== "development") {
-    plugins.unshift(new UglifyJSPlugin());
     plugins.unshift(
         new BundleAnalyzerPlugin({
             analyzerMode: "static",
@@ -95,24 +98,32 @@ module.exports = {
         libraryTarget: "umd",
         library: "[name]"
     },
-    devtool: "source-map",
+    devtool: "inline-source-map",
     mode: mode,
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".json"],
         alias: {
-            "azure-devops-extension-sdk": path.resolve("node_modules/azure-devops-extension-sdk")
-        }
+            "azure-devops-extension-sdk": path.resolve(__dirname, "node_modules/azure-devops-extension-sdk"),
+            "vss-web-extension-sdk": path.resolve(__dirname, "node_modules/vss-web-extension-sdk/lib/VSS.SDK"),
+        },
+        modules: [path.resolve("."), "node_modules"]
     },
+    // optimization: {
+    //     minimize: true,
+    //     minimizer: [new TerserPlugin()],
+    //   },
     module: {
         rules: [
             {
+                test: /\.m?js/,
+                resolve: {
+                  fullySpecified: false
+                }
+              },
+            {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
-                use: [
-                    {
-                        loader: "ts-loader"
-                    }
-                ]
+                use: "ts-loader"
             },
             {
                 enforce: "pre",
@@ -129,30 +140,7 @@ module.exports = {
             },
             {
                 test: /\.(scss)$/,
-
-                use: [
-                    {
-                        loader: "style-loader",
-                        options: {
-                            sourcemap: sourcemap
-                        }
-                    },
-                    {
-                        loader: "css-loader",
-                        options: {
-                            sourcemap: sourcemap
-                        }
-                    },
-                    {
-                        loader: "azure-devops-ui/buildScripts/css-variables-loader"
-                    },
-                    {
-                        loader: "sass-loader",
-                        options: {
-                            sourcemap: sourcemap
-                        }
-                    }
-                ]
+                use: ["style-loader","css-loader", "azure-devops-ui/buildScripts/css-variables-loader","sass-loader"]
             },
             {
                 test: /\.woff$/,
