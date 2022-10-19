@@ -35,7 +35,7 @@
     "immer": "^9.0.6",
     "interactjs": "^1.4.14",
     "moment": "^2.24.0",
-    "npm": "^6.3.0",
+    "npm": "^8.19.2",
     "office-ui-fabric-react": "^5.117.0",
     "rc-input-number": "^4.0.12",
     "react": "~16.13.1",
