@@ -98,18 +98,20 @@ module.exports = {
         libraryTarget: "umd",
         library: "[name]"
     },
-    devtool: "source-map",
+    devtool: "inline-source-map",
     mode: mode,
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".json"],
         alias: {
-            "azure-devops-extension-sdk": path.resolve("node_modules/azure-devops-extension-sdk")
-        }
+            "azure-devops-extension-sdk": path.resolve(__dirname, "node_modules/azure-devops-extension-sdk"),
+            "vss-web-extension-sdk": path.resolve(__dirname, "node_modules/vss-web-extension-sdk/lib/VSS.SDK"),
+        },
+        modules: [path.resolve("."), "node_modules"]
     },
-    optimization: {
-        minimize: true,
-        minimizer: [new TerserPlugin()],
-      },
+    // optimization: {
+    //     minimize: true,
+    //     minimizer: [new TerserPlugin()],
+    //   },
     module: {
         rules: [
             {

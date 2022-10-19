@@ -34,7 +34,7 @@
             "addressable": true
         }
     ],
-    "categories": ["Plan and track"],
+    "categories": ["Azure Boards"],
     "contributions": [
         {
             "id": "workitem-feature-timeline",

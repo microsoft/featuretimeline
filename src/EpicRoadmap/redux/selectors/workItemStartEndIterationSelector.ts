@@ -135,7 +135,6 @@ export function getWorkItemIterationDuration(
                     break;
                 }
                 case IterationDurationKind.Predecessors: {
-                    debugger;
                     kindMessage = "Predecessors iterations are not subscribed by the team. ";
                     break;
                 }

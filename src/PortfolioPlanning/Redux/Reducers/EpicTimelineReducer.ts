@@ -16,11 +16,12 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
             case EpicTimelineActionTypes.UpdateDates: {
                 const { epicId, startDate, endDate } = action.payload;
                 const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
+                {
                 epicToUpdate.startDate = startDate.toDate();
                 epicToUpdate.startDate.setHours(0, 0, 0, 0);
                 epicToUpdate.endDate = endDate.toDate();
                 epicToUpdate.endDate.setHours(0, 0, 0, 0);
-                epicToUpdate.itemUpdating = true;
+                epicToUpdate.itemUpdating = true;}
                 break;
             }
             case EpicTimelineActionTypes.ShiftItem: {
@@ -57,15 +58,16 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 break;
             }
-            case EpicTimelineActionTypes.PortfolioItemsReceived:
+            case EpicTimelineActionTypes.PortfolioItemsReceived: {
                 const { result } = action.payload;
                 const { items, projects } = result;
 
                 draft.planLoadingStatus = LoadingStatus.Loaded;
                 draft.exceptionMessage = items.exceptionMessage || projects.exceptionMessage;
-
-                return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
-
+               
+                handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
+                break;
+            }
             case EpicTimelineActionTypes.OpenAddItemPanel: {
                 draft.addItemsPanelOpen = true;
                 break;
@@ -76,7 +78,8 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemDeleted: {
-                return handlePortfolioItemDeleted(state, action as PortfolioItemDeletedAction);
+                handlePortfolioItemDeleted(state, action as PortfolioItemDeletedAction);
+                break;
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
                 draft.progressTrackingCriteria = action.payload.criteria;
@@ -156,7 +159,6 @@ function handlePortfolioItemsReceived(
     return produce(state, draft => {
         const { result, projectConfigurations } = action.payload;
         const { items, projects, teamAreas, mergeStrategy } = result;
-
         if (mergeStrategy === MergeType.Replace) {
             draft.projects = projects.projects.map(project => {
                 return {

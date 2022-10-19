@@ -27,7 +27,6 @@ export function workItemsReducer(state: IWorkItemsState, action: WorkItemsAction
                         workItem,
                         teamIteration
                     } = action.payload;
-                    debugger;
                     const workItemId = workItem[0];
                     const pagedItems =  draft.pagedWorkItems.filter(w => w.id === workItemId);
                     if (pagedItems && pagedItems[0] && pagedItems[0].fields) {

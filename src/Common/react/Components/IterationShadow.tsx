@@ -39,7 +39,6 @@ export class IterationShadow extends React.Component<IIterationSahdowProps, IIte
             // do nothing
         }        
         if (e) {
-            //debugger;
             this._div = e;
             this._clientRect = e.getBoundingClientRect();
             if (!this._listnerAdded) {
