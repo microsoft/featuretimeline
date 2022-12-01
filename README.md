@@ -1,3 +1,5 @@
+> **NOTE: This extension has been deprecated.** The code is still available but there will be no updates moving forward. Feel free to use the code as-is to build something on your own.
+
 **Plan or track work items in progress by visualizing them on a sprint calendar**. 
 Portfolio level work items are worked for multiple sprints and this tool helps you visualize features or epics across sprints, yes you heard it right, **cross sprint schedule**!!!
 
